@@ -11,6 +11,7 @@
 
 import SwiftUI
 import WebKit
+import UIKit
 
 // MARK: - Verdict rendu au natif
 
@@ -24,7 +25,7 @@ struct VerdictProduit: Codable {
 // MARK: - Le pont
 
 @MainActor
-final class Pont: NSObject, ObservableObject, WKScriptMessageHandler, WKNavigationDelegate {
+final class Pont: NSObject, ObservableObject, @preconcurrency WKScriptMessageHandler, WKNavigationDelegate {
     let vueWeb: WKWebView
     @Published var pret = false
     var surDemandeAbonnement: (() -> Void)?
@@ -52,7 +53,7 @@ final class Pont: NSObject, ObservableObject, WKScriptMessageHandler, WKNavigati
     func webView(_ w: WKWebView, didFinish nav: WKNavigation!) { pret = true }
 
     /// Messages venus du JS. Un seul canal, une liste fermée d'actions.
-    nonisolated func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
         guard let corps = message.body as? [String: Any],
               let action = corps["action"] as? String else { return }
         Task { @MainActor in

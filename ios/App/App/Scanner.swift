@@ -13,6 +13,7 @@
 
 import SwiftUI
 import AVFoundation
+import UIKit
 
 // MARK: - Capture
 

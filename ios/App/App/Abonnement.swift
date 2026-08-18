@@ -13,6 +13,10 @@ import Foundation
 import StoreKit
 import SwiftUI
 
+// StoreKit et SwiftUI définissent tous les deux un type « Transaction ».
+// Cet alias tranche une fois pour toutes, au lieu de qualifier chaque usage.
+typealias TransactionAchat = StoreKit.Transaction
+
 @MainActor
 final class Abonnement: ObservableObject {
     @Published private(set) var produits: [Product] = []
@@ -29,12 +33,14 @@ final class Abonnement: ObservableObject {
     init() {
         ecoute = Task.detached { [weak self] in
             // Les renouvellements et remboursements arrivent ici, hors achat.
-            for await maj in Transaction.updates {
+            for await maj in TransactionAchat.updates {
                 await self?.traiter(maj)
             }
         }
     }
-    deinit { ecoute?.cancel() }
+    // Pas de cleanup dans deinit : accéder à une propriété depuis le deinit
+    // d'une classe @MainActor est refusé selon la version du compilateur.
+    // La tâche vit aussi longtemps que l'objet, ce qui est le comportement voulu.
 
     func charger() async {
         do {
@@ -88,7 +94,7 @@ final class Abonnement: ObservableObject {
 
     // MARK: - Vérification
 
-    private func traiter(_ v: VerificationResult<Transaction>) async {
+    private func traiter(_ v: VerificationResult<TransactionAchat>) async {
         guard case .verified(let transaction) = v else {
             // Signature locale invalide : on ne touche à rien.
             message = "Transaction non vérifiable sur cet appareil."
@@ -101,7 +107,7 @@ final class Abonnement: ObservableObject {
 
     private func verifierDroits() async {
         var actif = false
-        for await droit in Transaction.currentEntitlements {
+        for await droit in TransactionAchat.currentEntitlements {
             guard case .verified(let t) = droit else { continue }
             if Self.identifiants.contains(t.productID),
                t.revocationDate == nil,
@@ -117,7 +123,7 @@ final class Abonnement: ObservableObject {
 
     /// Envoie la représentation JWS signée par Apple. Le serveur vérifie la
     /// chaîne x5c jusqu'à la racine Apple épinglée avant d'accorder l'accès.
-    private func transmettreAuServeur(_ v: VerificationResult<Transaction>) async {
+    private func transmettreAuServeur(_ v: VerificationResult<TransactionAchat>) async {
         guard let jeton = jetonServeur else { return }   // pas connecté : rien à lier
         let jws = v.jwsRepresentation
         var req = URLRequest(url: Reglages.baseServeur.appendingPathComponent("api/apple/transaction"))
