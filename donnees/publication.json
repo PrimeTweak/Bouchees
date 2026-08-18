@@ -1,0 +1,65 @@
+{
+  "_doc": "Quel lot mensuel publie quelle recette, et quel niveau d accès. Les tables de sécurité (moteur, substitutions, règles d âge) ne sont JAMAIS derrière le mur — seul le flux de nouvelles recettes l est.",
+  "lots": [
+    {
+      "id": "2026-06",
+      "titre": "Les bases",
+      "date": "2026-06-01",
+      "acces": "libre",
+      "note": "Le socle : de quoi manger toute une semaine, quel que soit le profil."
+    },
+    {
+      "id": "2026-07",
+      "titre": "Premières textures",
+      "date": "2026-07-01",
+      "acces": "libre",
+      "note": "Pour la diversification — purées, écrasés, premiers morceaux."
+    },
+    {
+      "id": "2026-08",
+      "titre": "Repas de famille",
+      "date": "2026-08-01",
+      "acces": "abonne",
+      "note": "Des plats que toute la maisonnée mange, adaptés pour le plus jeune."
+    },
+    {
+      "id": "2026-09",
+      "titre": "Boîte à lunch",
+      "date": "2026-09-01",
+      "acces": "abonne",
+      "note": "Collations et lunchs qui voyagent — garderie et école."
+    }
+  ],
+  "attribution": {
+    "muffins-banane-avoine": "2026-06",
+    "crepes-moelleuses": "2026-06",
+    "galettes-lentilles-carotte": "2026-06",
+    "puree-patate-douce-poulet": "2026-06",
+    "gruau-pommes-cannelle": "2026-06",
+    "boules-energie-dattes": "2026-06",
+    "sauce-rosee-poulet": "2026-06",
+    "croquettes-poisson": "2026-06",
+    "houmous-veloute": "2026-07",
+    "pain-bananes": "2026-07",
+    "biscuits-avoine-raisins": "2026-07",
+    "mini-frittatas-legumes": "2026-07",
+    "potage-courge-coco": "2026-07",
+    "macaroni-fromage-courge": "2026-07",
+    "boulettes-dinde-pomme": "2026-07",
+    "riz-au-lait-vanille": "2026-08",
+    "smoothie-mangue-banane": "2026-08",
+    "barres-granola-tendres": "2026-08",
+    "pouding-chia-vanille": "2026-08",
+    "trempette-yogourt-crudites": "2026-08",
+    "couscous-poulet": "2026-08",
+    "risotto-crevettes-petits-pois": "2026-08",
+    "granola-tendre-abricots": "2026-08",
+    "quesadillas-poulet-douces": "2026-09",
+    "soupe-alphabet-tomate": "2026-09",
+    "tofu-croustillant-sauce-douce": "2026-09",
+    "muffins-carottes-erable": "2026-09",
+    "pates-cremeuses-saumon": "2026-09",
+    "pancakes-banane-avoine": "2026-09",
+    "riz-frit-legumes": "2026-09"
+  }
+}

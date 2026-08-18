@@ -1,0 +1,46 @@
+{
+  "version": "2026-08-18",
+  "sommeSecurite": "85f967819a69",
+  "lots": [
+    {
+      "id": "2026-06",
+      "titre": "Les bases",
+      "date": "2026-06-01",
+      "acces": "libre",
+      "note": "Le socle : de quoi manger toute une semaine, quel que soit le profil.",
+      "nombre": 8,
+      "somme": "503d8a73cc4e"
+    },
+    {
+      "id": "2026-07",
+      "titre": "Premières textures",
+      "date": "2026-07-01",
+      "acces": "libre",
+      "note": "Pour la diversification — purées, écrasés, premiers morceaux.",
+      "nombre": 7,
+      "somme": "dceb0e16640a"
+    },
+    {
+      "id": "2026-08",
+      "titre": "Repas de famille",
+      "date": "2026-08-01",
+      "acces": "abonne",
+      "note": "Des plats que toute la maisonnée mange, adaptés pour le plus jeune.",
+      "nombre": 8,
+      "somme": "9c07144729c1"
+    },
+    {
+      "id": "2026-09",
+      "titre": "Boîte à lunch",
+      "date": "2026-09-01",
+      "acces": "abonne",
+      "note": "Collations et lunchs qui voyagent — garderie et école.",
+      "nombre": 7,
+      "somme": "a82f517be444"
+    }
+  ],
+  "libres": [
+    "2026-06",
+    "2026-07"
+  ]
+}

@@ -1,0 +1,353 @@
+[
+  {
+    "id": "muffins-banane-avoine", "nom": "Muffins banane et avoine", "categorie": "Déjeuner",
+    "portions": "12 muffins", "ageMinBase": 6, "tempsMin": 35,
+    "ingredients": [
+      { "id": "puree_banane", "qte": 250, "unite": "ml" },
+      { "id": "farine_ble", "qte": 250, "unite": "ml", "role": "farine" },
+      { "id": "flocons_avoine", "qte": 250, "unite": "ml" },
+      { "id": "oeuf", "qte": 1, "unite": "unité", "role": "liant" },
+      { "id": "lait_vache", "qte": 125, "unite": "ml", "role": "liquide" },
+      { "id": "huile_canola", "qte": 60, "unite": "ml", "role": "gras" },
+      { "id": "levure_chimique", "qte": 10, "unite": "ml" },
+      { "id": "cannelle", "qte": 2, "unite": "ml" }
+    ],
+    "etapes": [
+      "Préchauffer le four à 180 °C et graisser 12 moules à muffins.",
+      "Mélanger la banane, l'œuf, le lait et l'huile.",
+      "Incorporer la farine, l'avoine, la poudre à pâte et la cannelle sans trop brasser.",
+      "Répartir dans les moules et cuire 20 à 22 minutes."
+    ]
+  },
+  {
+    "id": "crepes-moelleuses", "nom": "Crêpes moelleuses", "categorie": "Déjeuner",
+    "portions": "8 crêpes", "ageMinBase": 6, "tempsMin": 20,
+    "ingredients": [
+      { "id": "farine_ble", "qte": 250, "unite": "ml", "role": "farine" },
+      { "id": "lait_vache", "qte": 300, "unite": "ml", "role": "liquide" },
+      { "id": "oeuf", "qte": 2, "unite": "unité", "role": "liant" },
+      { "id": "huile_canola", "qte": 15, "unite": "ml", "role": "gras" },
+      { "id": "levure_chimique", "qte": 5, "unite": "ml" }
+    ],
+    "etapes": [
+      "Fouetter les œufs avec le lait et l'huile.",
+      "Incorporer la farine et la poudre à pâte jusqu'à texture lisse.",
+      "Cuire à feu moyen, environ 2 minutes par côté.",
+      "Servir en lanières de la largeur d'un doigt pour les plus petits."
+    ]
+  },
+  {
+    "id": "galettes-lentilles-carotte", "nom": "Galettes de lentilles et carotte", "categorie": "Repas",
+    "portions": "10 galettes", "ageMinBase": 6, "tempsMin": 30,
+    "ingredients": [
+      { "id": "lentilles", "qte": 250, "unite": "ml", "role": "proteine" },
+      { "id": "carotte", "qte": 1, "unite": "unité râpée" },
+      { "id": "oeuf", "qte": 1, "unite": "unité", "role": "liant" },
+      { "id": "chapelure", "qte": 125, "unite": "ml", "role": "liant" },
+      { "id": "ail", "qte": 1, "unite": "gousse" },
+      { "id": "huile_olive", "qte": 15, "unite": "ml", "role": "gras" },
+      { "id": "sel", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Écraser grossièrement les lentilles à la fourchette.",
+      "Mélanger avec la carotte râpée, l'œuf, la chapelure et l'ail.",
+      "Former des galettes plates et bien tassées.",
+      "Dorer 3 à 4 minutes par côté dans l'huile."
+    ]
+  },
+  {
+    "id": "puree-patate-douce-poulet", "nom": "Purée patate douce et poulet", "categorie": "Repas",
+    "portions": "4 portions", "ageMinBase": 6, "tempsMin": 25,
+    "ingredients": [
+      { "id": "patate_douce", "qte": 1, "unite": "grosse" },
+      { "id": "poulet", "qte": 100, "unite": "g", "role": "proteine" },
+      { "id": "bouillon_sans_sel", "qte": 125, "unite": "ml", "role": "liquide" },
+      { "id": "huile_olive", "qte": 5, "unite": "ml", "role": "gras" }
+    ],
+    "etapes": [
+      "Cuire la patate douce et le poulet dans le bouillon jusqu'à tendreté.",
+      "Réduire en purée avec le liquide de cuisson et l'huile.",
+      "Ajuster la texture selon l'âge : lisse, écrasée ou en morceaux."
+    ]
+  },
+  {
+    "id": "gruau-pommes-cannelle", "nom": "Gruau aux pommes et cannelle", "categorie": "Déjeuner",
+    "portions": "2 portions", "ageMinBase": 6, "tempsMin": 15,
+    "ingredients": [
+      { "id": "flocons_avoine", "qte": 125, "unite": "ml" },
+      { "id": "lait_vache", "qte": 250, "unite": "ml", "role": "liquide" },
+      { "id": "pomme", "qte": 1, "unite": "unité râpée" },
+      { "id": "cannelle", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Porter le lait à frémissement avec la pomme râpée.",
+      "Ajouter l'avoine et cuire 5 minutes en brassant.",
+      "Laisser tiédir — la texture épaissit en refroidissant."
+    ]
+  },
+  {
+    "id": "boules-energie-dattes", "nom": "Boules d'énergie aux dattes", "categorie": "Collation",
+    "portions": "15 boules", "ageMinBase": 18, "tempsMin": 15,
+    "ingredients": [
+      { "id": "dattes", "qte": 250, "unite": "ml" },
+      { "id": "beurre_arachide", "qte": 125, "unite": "ml", "role": "gras" },
+      { "id": "flocons_avoine", "qte": 250, "unite": "ml" },
+      { "id": "graines_chia", "qte": 30, "unite": "ml" },
+      { "id": "vanille", "qte": 5, "unite": "ml" }
+    ],
+    "etapes": [
+      "Réduire les dattes en pâte au robot.",
+      "Ajouter le beurre d'arachide, l'avoine, le chia et la vanille; pulser.",
+      "Façonner en petites boules et réfrigérer 30 minutes."
+    ]
+  },
+  {
+    "id": "sauce-rosee-poulet", "nom": "Pâtes sauce rosée au poulet", "categorie": "Repas",
+    "portions": "4 portions", "ageMinBase": 9, "tempsMin": 30,
+    "ingredients": [
+      { "id": "pates_ble", "qte": 300, "unite": "g", "role": "farine" },
+      { "id": "poulet", "qte": 300, "unite": "g", "role": "proteine" },
+      { "id": "tomates_broyees", "qte": 400, "unite": "ml" },
+      { "id": "creme_35", "qte": 125, "unite": "ml", "role": "lacte" },
+      { "id": "oignon", "qte": 1, "unite": "unité" },
+      { "id": "ail", "qte": 2, "unite": "gousses" },
+      { "id": "huile_olive", "qte": 15, "unite": "ml", "role": "gras" },
+      { "id": "sel", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Faire revenir l'oignon et l'ail dans l'huile, puis le poulet en dés.",
+      "Ajouter les tomates et mijoter 15 minutes.",
+      "Incorporer la crème hors du feu.",
+      "Mélanger aux pâtes cuites, coupées court pour les petits."
+    ]
+  },
+  {
+    "id": "croquettes-poisson", "nom": "Croquettes de poisson au four", "categorie": "Repas",
+    "portions": "12 croquettes", "ageMinBase": 9, "tempsMin": 35,
+    "ingredients": [
+      { "id": "poisson_blanc", "qte": 300, "unite": "g", "role": "proteine" },
+      { "id": "oeuf", "qte": 1, "unite": "unité", "role": "liant" },
+      { "id": "chapelure", "qte": 180, "unite": "ml", "role": "liant" },
+      { "id": "oignon", "qte": 0.5, "unite": "unité" },
+      { "id": "huile_canola", "qte": 30, "unite": "ml", "role": "gras" },
+      { "id": "sel", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Hacher finement le poisson cru et l'oignon.",
+      "Mélanger avec l'œuf et la moitié de la chapelure.",
+      "Former des croquettes, les rouler dans le reste de chapelure.",
+      "Cuire au four à 200 °C, 15 minutes, en retournant à mi-cuisson."
+    ]
+  },
+  {
+    "id": "houmous-veloute", "nom": "Houmous velouté", "categorie": "Collation",
+    "portions": "500 ml", "ageMinBase": 6, "tempsMin": 10,
+    "ingredients": [
+      { "id": "pois_chiches", "qte": 540, "unite": "ml", "role": "proteine" },
+      { "id": "tahini", "qte": 45, "unite": "ml", "role": "gras" },
+      { "id": "huile_olive", "qte": 45, "unite": "ml" },
+      { "id": "jus_citron", "qte": 30, "unite": "ml" },
+      { "id": "ail", "qte": 1, "unite": "gousse" },
+      { "id": "eau", "qte": 60, "unite": "ml", "role": "liquide" }
+    ],
+    "etapes": [
+      "Rincer les pois chiches à l'eau chaude.",
+      "Mixer tous les ingrédients jusqu'à texture très lisse.",
+      "Détendre avec de l'eau au besoin — plus lisse pour les plus jeunes."
+    ]
+  },
+  {
+    "id": "pain-bananes", "nom": "Pain aux bananes", "categorie": "Collation",
+    "portions": "1 pain", "ageMinBase": 9, "tempsMin": 70,
+    "ingredients": [
+      { "id": "puree_banane", "qte": 375, "unite": "ml" },
+      { "id": "farine_ble", "qte": 375, "unite": "ml", "role": "farine" },
+      { "id": "oeuf", "qte": 2, "unite": "unité", "role": "liant" },
+      { "id": "beurre", "qte": 80, "unite": "g", "role": "gras" },
+      { "id": "sucre", "qte": 60, "unite": "ml" },
+      { "id": "levure_chimique", "qte": 5, "unite": "ml" },
+      { "id": "bicarbonate", "qte": 2, "unite": "ml" },
+      { "id": "vanille", "qte": 5, "unite": "ml" }
+    ],
+    "etapes": [
+      "Préchauffer le four à 180 °C.",
+      "Battre le beurre fondu, le sucre, les œufs et la vanille.",
+      "Incorporer les bananes, puis les ingrédients secs.",
+      "Cuire dans un moule à pain 55 à 60 minutes."
+    ]
+  },
+  {
+    "id": "biscuits-avoine-raisins", "nom": "Biscuits avoine et raisins", "categorie": "Collation",
+    "portions": "20 biscuits", "ageMinBase": 12, "tempsMin": 30,
+    "ingredients": [
+      { "id": "flocons_avoine", "qte": 375, "unite": "ml" },
+      { "id": "farine_ble", "qte": 250, "unite": "ml", "role": "farine" },
+      { "id": "beurre", "qte": 125, "unite": "g", "role": "gras" },
+      { "id": "sucre", "qte": 125, "unite": "ml" },
+      { "id": "oeuf", "qte": 1, "unite": "unité", "role": "liant" },
+      { "id": "raisins_secs", "qte": 125, "unite": "ml" },
+      { "id": "cannelle", "qte": 2, "unite": "ml" },
+      { "id": "bicarbonate", "qte": 2, "unite": "ml" }
+    ],
+    "etapes": [
+      "Crémer le beurre et le sucre, puis ajouter l'œuf.",
+      "Incorporer les secs, puis les raisins.",
+      "Déposer en boules aplaties sur une plaque.",
+      "Cuire à 180 °C, 10 à 12 minutes."
+    ]
+  },
+  {
+    "id": "mini-frittatas-legumes", "nom": "Mini-frittatas aux légumes", "categorie": "Déjeuner",
+    "portions": "8 mini-frittatas", "ageMinBase": 6, "tempsMin": 30,
+    "ingredients": [
+      { "id": "oeuf", "qte": 4, "unite": "unité", "role": "proteine" },
+      { "id": "courgette", "qte": 1, "unite": "unité râpée" },
+      { "id": "epinards", "qte": 60, "unite": "ml hachés" },
+      { "id": "fromage_cheddar", "qte": 80, "unite": "g", "role": "lacte" },
+      { "id": "lait_vache", "qte": 60, "unite": "ml", "role": "liquide" },
+      { "id": "huile_olive", "qte": 10, "unite": "ml", "role": "gras" }
+    ],
+    "etapes": [
+      "Préchauffer le four à 180 °C et huiler 8 moules à muffins.",
+      "Fouetter les œufs avec le lait.",
+      "Ajouter les légumes essorés et le fromage.",
+      "Cuire 18 à 20 minutes, jusqu'à ce que le centre soit pris."
+    ]
+  },
+  {
+    "id": "potage-courge-coco", "nom": "Potage courge et coco", "categorie": "Repas",
+    "portions": "4 portions", "ageMinBase": 6, "tempsMin": 35,
+    "ingredients": [
+      { "id": "courge_butternut", "qte": 1, "unite": "unité" },
+      { "id": "lait_coco", "qte": 250, "unite": "ml", "role": "liquide" },
+      { "id": "bouillon_sans_sel", "qte": 500, "unite": "ml" },
+      { "id": "oignon", "qte": 1, "unite": "unité" },
+      { "id": "huile_olive", "qte": 15, "unite": "ml", "role": "gras" }
+    ],
+    "etapes": [
+      "Faire revenir l'oignon dans l'huile.",
+      "Ajouter la courge en cubes et le bouillon; mijoter 20 minutes.",
+      "Mixer avec le lait de coco jusqu'à texture veloutée."
+    ]
+  },
+  {
+    "id": "macaroni-fromage-courge", "nom": "Macaroni au fromage et courge cachée", "categorie": "Repas",
+    "portions": "4 portions", "ageMinBase": 9, "tempsMin": 30,
+    "ingredients": [
+      { "id": "pates_ble", "qte": 300, "unite": "g", "role": "farine" },
+      { "id": "fromage_cheddar", "qte": 250, "unite": "ml râpé", "role": "lacte" },
+      { "id": "lait_vache", "qte": 250, "unite": "ml", "role": "liquide" },
+      { "id": "courge_butternut", "qte": 250, "unite": "ml en purée" },
+      { "id": "beurre", "qte": 30, "unite": "g", "role": "gras" },
+      { "id": "farine_ble", "qte": 30, "unite": "ml", "role": "liant" },
+      { "id": "sel", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Cuire les pâtes; réserver.",
+      "Faire un roux avec le beurre et la farine, puis verser le lait.",
+      "Incorporer la purée de courge et le fromage hors du feu.",
+      "Mélanger aux pâtes."
+    ]
+  },
+  {
+    "id": "boulettes-dinde-pomme", "nom": "Boulettes de dinde à la pomme", "categorie": "Repas",
+    "portions": "20 boulettes", "ageMinBase": 9, "tempsMin": 35,
+    "ingredients": [
+      { "id": "dinde_hachee", "qte": 450, "unite": "g", "role": "proteine" },
+      { "id": "pomme", "qte": 1, "unite": "unité râpée" },
+      { "id": "oeuf", "qte": 1, "unite": "unité", "role": "liant" },
+      { "id": "chapelure", "qte": 125, "unite": "ml", "role": "liant" },
+      { "id": "moutarde_dijon", "qte": 5, "unite": "ml", "role": "assaisonnement" },
+      { "id": "ail", "qte": 1, "unite": "gousse" },
+      { "id": "sel", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Mélanger tous les ingrédients sans trop travailler la viande.",
+      "Former des boulettes de la taille d'une balle de ping-pong.",
+      "Cuire au four à 200 °C, 18 à 20 minutes.",
+      "Écraser ou couper en quartiers pour les plus jeunes."
+    ]
+  },
+  {
+    "id": "riz-au-lait-vanille", "nom": "Riz au lait à la vanille", "categorie": "Dessert",
+    "portions": "4 portions", "ageMinBase": 6, "tempsMin": 40,
+    "ingredients": [
+      { "id": "riz", "qte": 180, "unite": "ml" },
+      { "id": "lait_vache", "qte": 750, "unite": "ml", "role": "liquide" },
+      { "id": "sirop_erable", "qte": 30, "unite": "ml" },
+      { "id": "vanille", "qte": 5, "unite": "ml" },
+      { "id": "cannelle", "qte": 1, "unite": "ml" }
+    ],
+    "etapes": [
+      "Cuire le riz dans le lait à feu doux, 30 minutes, en brassant souvent.",
+      "Ajouter le sirop d'érable et la vanille en fin de cuisson.",
+      "Servir tiède, saupoudré de cannelle."
+    ]
+  },
+  {
+    "id": "smoothie-mangue-banane", "nom": "Smoothie mangue et banane", "categorie": "Collation",
+    "portions": "2 verres", "ageMinBase": 6, "tempsMin": 5,
+    "ingredients": [
+      { "id": "mangue", "qte": 250, "unite": "ml en cubes" },
+      { "id": "banane", "qte": 1, "unite": "unité" },
+      { "id": "yogourt_nature", "qte": 175, "unite": "ml", "role": "lacte" },
+      { "id": "lait_vache", "qte": 125, "unite": "ml", "role": "liquide" },
+      { "id": "graines_chia", "qte": 15, "unite": "ml" }
+    ],
+    "etapes": [
+      "Mixer tous les ingrédients jusqu'à texture lisse.",
+      "Servir à la cuillère ou au verre à bec selon l'âge."
+    ]
+  },
+  {
+    "id": "barres-granola-tendres", "nom": "Barres granola tendres", "categorie": "Collation",
+    "portions": "12 barres", "ageMinBase": 12, "tempsMin": 40,
+    "ingredients": [
+      { "id": "flocons_avoine", "qte": 500, "unite": "ml" },
+      { "id": "beurre_arachide", "qte": 125, "unite": "ml", "role": "gras" },
+      { "id": "miel", "qte": 80, "unite": "ml", "role": "sucrant" },
+      { "id": "raisins_secs", "qte": 80, "unite": "ml" },
+      { "id": "noix_grenoble", "qte": 60, "unite": "ml", "role": "garniture" },
+      { "id": "huile_canola", "qte": 30, "unite": "ml" },
+      { "id": "cannelle", "qte": 2, "unite": "ml" }
+    ],
+    "etapes": [
+      "Chauffer doucement le beurre d'arachide, le miel et l'huile.",
+      "Verser sur l'avoine, les raisins et les noix; bien mélanger.",
+      "Presser fermement dans un moule tapissé de papier parchemin.",
+      "Cuire à 160 °C, 20 minutes, puis laisser refroidir avant de couper."
+    ]
+  },
+  {
+    "id": "pouding-chia-vanille", "nom": "Pouding de chia à la vanille", "categorie": "Dessert",
+    "portions": "4 portions", "ageMinBase": 6, "tempsMin": 10,
+    "ingredients": [
+      { "id": "graines_chia", "qte": 60, "unite": "ml", "role": "liant" },
+      { "id": "lait_vache", "qte": 500, "unite": "ml", "role": "liquide" },
+      { "id": "sirop_erable", "qte": 15, "unite": "ml" },
+      { "id": "vanille", "qte": 5, "unite": "ml" },
+      { "id": "bleuets", "qte": 125, "unite": "ml" }
+    ],
+    "etapes": [
+      "Fouetter le chia, le lait, le sirop et la vanille.",
+      "Réfrigérer 4 heures en fouettant une fois après 30 minutes.",
+      "Garnir de bleuets au moment de servir."
+    ]
+  },
+  {
+    "id": "trempette-yogourt-crudites", "nom": "Trempette au yogourt et crudités", "categorie": "Collation",
+    "portions": "4 portions", "ageMinBase": 6, "tempsMin": 10,
+    "ingredients": [
+      { "id": "yogourt_grec", "qte": 250, "unite": "ml", "role": "lacte" },
+      { "id": "concombre", "qte": 0.5, "unite": "unité râpé" },
+      { "id": "jus_citron", "qte": 15, "unite": "ml" },
+      { "id": "ail", "qte": 0.5, "unite": "gousse" },
+      { "id": "carotte_crue", "qte": 2, "unite": "unités" }
+    ],
+    "etapes": [
+      "Essorer le concombre râpé dans un linge propre.",
+      "Mélanger au yogourt avec le citron et l'ail.",
+      "Servir avec les légumes préparés selon l'âge."
+    ]
+  }
+]

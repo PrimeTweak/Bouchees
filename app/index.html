@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bouchées — peut-il manger ça?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#F1F3EC;
+  --craie:#FFFFFF;
+  --encre:#1B211B;
+  --encre-2:#59634F;
+  --encre-3:#8A9182;
+  --trait:#DCE2D5;
+  --trait-fort:#C6CFBD;
+  --betterave:#7A3557;
+  --betterave-fonce:#5E2642;
+  --betterave-pale:#F7EAF1;
+  --pois:#43703A;
+  --pois-pale:#E7F0E2;
+  --courge:#9C5809;
+  --courge-pale:#FAEEDC;
+  --canneberge:#9E2B2B;
+  --canneberge-pale:#F9E7E7;
+  --r:20px;
+  --r-s:14px;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corps:"Instrument Sans",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --ombre:0 1px 2px rgba(27,33,27,.04), 0 8px 24px rgba(27,33,27,.05);
+  --ombre-forte:0 2px 4px rgba(27,33,27,.05), 0 16px 40px rgba(27,33,27,.11);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--corps);color:var(--encre);background:var(--fond);
+  font-size:16px;line-height:1.5;min-height:100dvh;overflow-x:hidden;
+}
+button,input{font:inherit;color:inherit;background:none;border:none}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--betterave);outline-offset:2px;border-radius:10px}
+::placeholder{color:var(--encre-3)}
+svg{display:block}
+
+.cadre{max-width:1120px;margin:0 auto;padding:0 18px calc(56px + env(safe-area-inset-bottom))}
+
+/* ======================= ACCUEIL GUIDÉ ======================= */
+.accueil{position:fixed;inset:0;z-index:50;background:var(--fond);overflow-y:auto;display:flex;flex-direction:column}
+.accueil[hidden]{display:none}
+.accueil-cadre{width:100%;max-width:520px;margin:auto;padding:32px 22px calc(40px + env(safe-area-inset-bottom))}
+.jauge{display:flex;gap:6px;margin-bottom:30px}
+.jauge span{height:4px;flex:1;border-radius:99px;background:var(--trait)}
+.jauge span.on{background:var(--betterave)}
+.accueil .marque{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.035em;line-height:1;margin-bottom:8px}
+.accueil .marque i{font-style:normal;color:var(--betterave)}
+.accueil .accroche{color:var(--encre-2);font-size:16px;margin-bottom:34px;max-width:34ch}
+.accueil h1{font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:-.025em;line-height:1.14;margin-bottom:8px}
+.accueil .sous{color:var(--encre-2);font-size:15px;margin-bottom:22px}
+.accueil-pied{display:flex;gap:12px;align-items:center;margin-top:30px;flex-wrap:wrap}
+
+.champ-nom{
+  width:100%;background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);
+  padding:15px 18px;font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;
+}
+.champ-nom:focus{border-color:var(--betterave);outline:none}
+
+.stades{display:grid;gap:9px}
+.stade{
+  display:flex;align-items:center;gap:14px;text-align:left;width:100%;
+  background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);padding:13px 15px;
+  transition:border-color .14s, background .14s;
+}
+.stade:hover{border-color:var(--trait-fort)}
+.stade[aria-pressed="true"]{border-color:var(--betterave);background:var(--betterave-pale)}
+.stade .st-age{font-family:var(--display);font-weight:700;font-size:16px;flex:none;width:78px}
+.stade .st-txt{font-size:13.5px;color:var(--encre-2);line-height:1.35}
+.stade[aria-pressed="true"] .st-txt{color:var(--betterave-fonce)}
+
+.reglage-fin{display:flex;align-items:center;gap:12px;margin-top:16px;justify-content:center}
+.reglage-fin button{width:42px;height:42px;border-radius:12px;border:2px solid var(--trait);background:var(--craie);font-family:var(--mono);font-size:19px;line-height:1}
+.reglage-fin button:active{background:var(--trait)}
+.reglage-fin .val{font-family:var(--mono);font-size:13px;color:var(--encre-2);min-width:74px;text-align:center}
+.reglage-fin .val b{font-family:var(--display);font-size:20px;color:var(--encre);display:block;line-height:1.1}
+
+.grille-all{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(min-width:440px){.grille-all{grid-template-columns:1fr 1fr 1fr}}
+.all-btn{
+  display:flex;align-items:center;gap:9px;text-align:left;
+  background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);
+  padding:12px 13px;font-size:14.5px;font-weight:500;transition:all .14s;color:var(--encre-2);
+}
+.all-btn:hover{border-color:var(--trait-fort)}
+.all-btn[aria-pressed="true"]{border-color:var(--encre);background:var(--encre);color:#fff}
+.all-btn svg{flex:none;opacity:.85}
+.lien-plus{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:14.5px;font-weight:600;color:var(--betterave);padding:6px 2px}
+.aucune-all{font-size:13.5px;color:var(--encre-3);margin-top:14px}
+
+.btn{border-radius:99px;padding:13px 24px;font-weight:600;font-size:16px;border:2px solid transparent;transition:all .15s}
+.btn-principal{background:var(--betterave);color:#fff}
+.btn-principal:hover{background:var(--betterave-fonce)}
+.btn-fantome{color:var(--encre-2);font-weight:600;font-size:15px;padding:12px 6px}
+.btn-second{border:2px solid var(--trait);background:var(--craie);border-radius:99px;padding:12px 20px;font-weight:600;font-size:15px}
+
+/* ======================= BARRE ======================= */
+.barre{
+  position:sticky;top:0;z-index:20;
+  background:color-mix(in srgb, var(--fond) 86%, transparent);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  border-bottom:1px solid color-mix(in srgb, var(--trait) 70%, transparent);
+}
+.barre-cadre{max-width:1120px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.03em;flex:none}
+.logo i{font-style:normal;color:var(--betterave)}
+.avatars{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;flex:1;padding:2px 0}
+.avatars::-webkit-scrollbar{display:none}
+.av{
+  display:inline-flex;align-items:center;gap:8px;flex:none;
+  border:1.5px solid var(--trait);background:var(--craie);border-radius:99px;
+  padding:5px 13px 5px 5px;font-weight:600;font-size:14px;transition:all .14s;white-space:nowrap;
+}
+.av .pastille{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;flex:none;font-family:var(--display);font-weight:700;font-size:13px;color:#fff}
+.av[aria-pressed="true"]{border-color:var(--encre);background:var(--encre);color:#fff}
+.av-fam .pastille{background:var(--encre-2);font-size:10.5px;letter-spacing:-.02em}
+.av-plus{padding:5px 14px;border-style:dashed;color:var(--encre-2);font-weight:500}
+
+/* ======================= HÉRO ======================= */
+.entete-jour{padding:26px 2px 14px}
+.entete-jour .eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--encre-3)}
+.entete-jour h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);letter-spacing:-.035em;line-height:1.04;margin-top:7px}
+.entete-jour h1 em{font-style:normal;color:var(--betterave)}
+.entete-jour p{color:var(--encre-2);font-size:15px;margin-top:9px;max-width:52ch}
+
+.hero{
+  display:block;width:100%;text-align:left;background:var(--craie);border:1px solid var(--trait);
+  border-radius:var(--r);overflow:hidden;box-shadow:var(--ombre);transition:transform .18s, box-shadow .18s;
+}
+.hero:hover{transform:translateY(-3px);box-shadow:var(--ombre-forte)}
+@media(min-width:720px){.hero{display:grid;grid-template-columns:1.02fr 1fr;align-items:stretch}}
+.hero-img{position:relative;aspect-ratio:4/3;overflow:hidden}
+@media(min-width:720px){.hero-img{aspect-ratio:auto;min-height:290px}}
+.hero-img svg{width:100%;height:100%}
+.hero-txt{padding:22px 22px 24px;display:flex;flex-direction:column;gap:11px;justify-content:center}
+.hero-txt h2{font-family:var(--display);font-weight:800;font-size:clamp(23px,5.2vw,30px);letter-spacing:-.028em;line-height:1.1}
+.hero-txt .meta{font-family:var(--mono);font-size:12px;color:var(--encre-3)}
+.hero-txt .pourquoi{font-size:15px;color:var(--encre-2)}
+.cta{align-self:flex-start;margin-top:5px;background:var(--encre);color:#fff;border-radius:99px;padding:11px 21px;font-weight:600;font-size:15px}
+
+/* ======================= FILTRES ======================= */
+.outils{margin-top:30px;display:grid;gap:11px}
+.recherche{position:relative}
+.recherche input{width:100%;background:var(--craie);border:1.5px solid var(--trait);border-radius:99px;padding:13px 20px 13px 46px;font-size:15.5px}
+.recherche input:focus{border-color:var(--trait-fort);outline:none}
+.recherche .ic{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--encre-3)}
+.pilules{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.pilules::-webkit-scrollbar{display:none}
+.pilule{flex:none;border:1.5px solid var(--trait);background:var(--craie);border-radius:99px;padding:9px 16px;font-size:14.5px;font-weight:500;white-space:nowrap;transition:all .14s}
+.pilule[aria-pressed="true"]{background:var(--encre);border-color:var(--encre);color:#fff}
+
+/* ======================= SECTIONS ======================= */
+.section{margin-top:34px}
+.section-tete{display:flex;align-items:baseline;gap:11px;margin-bottom:14px;padding:0 2px}
+.section-tete h3{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.section-tete .compte{font-family:var(--mono);font-size:12px;color:var(--encre-3)}
+.section-tete .filet{flex:1;height:1px;background:var(--trait)}
+
+.grille{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media(min-width:700px){.grille{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:980px){.grille{grid-template-columns:repeat(4,1fr)}}
+.carte{
+  text-align:left;background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;transition:transform .16s, box-shadow .16s;
+  box-shadow:0 1px 2px rgba(27,33,27,.03);
+}
+.carte:hover{transform:translateY(-3px);box-shadow:var(--ombre)}
+.carte-img{position:relative;aspect-ratio:4/3;overflow:hidden}
+.carte-img svg{width:100%;height:100%}
+.jeton{
+  position:absolute;left:9px;top:9px;display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:99px;padding:5px 9px;
+  background:color-mix(in srgb, var(--craie) 92%, transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.j-ok{color:var(--pois)}
+.j-adapt{color:var(--betterave)}
+.j-non{color:var(--canneberge)}
+.jeton-age{
+  position:absolute;right:9px;top:9px;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  border-radius:99px;padding:5px 9px;color:var(--courge);
+  background:color-mix(in srgb, var(--craie) 92%, transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.carte-txt{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
+.carte-txt h4{font-family:var(--display);font-weight:700;font-size:16.5px;letter-spacing:-.015em;line-height:1.2}
+.carte-txt .meta{font-family:var(--mono);font-size:11px;color:var(--encre-3)}
+.echange{margin-top:auto;padding-top:9px;border-top:1px dashed var(--trait);font-size:12.5px;color:var(--encre-2);line-height:1.4}
+.echange s{color:var(--encre-3);text-decoration-thickness:1.5px;text-decoration-color:var(--canneberge)}
+.echange b{color:var(--betterave);font-weight:600}
+.carte.non .carte-img{filter:saturate(.35) opacity(.75)}
+.carte.non{border-style:dashed}
+
+.vide{grid-column:1/-1;background:var(--craie);border:1px dashed var(--trait-fort);border-radius:var(--r);padding:40px 24px;text-align:center}
+.vide .t{font-family:var(--display);font-weight:700;font-size:18px;margin-bottom:6px}
+.vide .s{color:var(--encre-2);font-size:14.5px}
+
+.pied{font-size:12.5px;color:var(--encre-3);padding:44px 4px 0;line-height:1.6;max-width:70ch}
+.pied b{color:var(--encre-2)}
+
+/* ======================= FEUILLE PROFIL ======================= */
+.voile{position:fixed;inset:0;z-index:38;background:rgba(27,33,27,.35);opacity:0;pointer-events:none;transition:opacity .2s}
+.voile.on{opacity:1;pointer-events:auto}
+.feuille{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--fond);
+  border-radius:26px 26px 0 0;box-shadow:0 -8px 40px rgba(27,33,27,.2);
+  transform:translateY(102%);transition:transform .26s cubic-bezier(.22,.85,.3,1);
+  max-height:88dvh;overflow-y:auto;
+}
+.feuille.on{transform:none}
+.feuille-cadre{max-width:560px;margin:0 auto;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
+.poignee{width:38px;height:4px;border-radius:99px;background:var(--trait-fort);margin:0 auto 16px}
+.feuille h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:16px}
+.f-bloc{margin-bottom:20px}
+.f-titre{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--encre-3);margin-bottom:10px}
+.f-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:4px}
+.f-suppr{margin-left:auto;color:var(--canneberge);font-weight:600;font-size:14px;padding:8px 4px}
+
+/* ======================= FICHE ======================= */
+.fiche{position:fixed;inset:0;background:var(--fond);overflow-y:auto;z-index:45;transform:translateY(18px);opacity:0;pointer-events:none;transition:transform .22s ease, opacity .22s ease}
+.fiche.on{transform:none;opacity:1;pointer-events:auto}
+.fiche-heros{position:relative;width:100%;aspect-ratio:16/10;max-height:44dvh;overflow:hidden;background:var(--trait)}
+.fiche-heros svg{width:100%;height:100%}
+.fiche-retour{
+  position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));
+  display:inline-flex;align-items:center;gap:7px;background:color-mix(in srgb, var(--craie) 90%, transparent);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-radius:99px;padding:9px 16px;font-size:14px;font-weight:600;box-shadow:var(--ombre);
+}
+.fiche-cadre{max-width:740px;margin:0 auto;padding:22px 18px calc(64px + env(safe-area-inset-bottom))}
+.fiche h2{font-family:var(--display);font-weight:800;font-size:clamp(27px,6.6vw,38px);letter-spacing:-.03em;line-height:1.06}
+.fiche .meta{font-family:var(--mono);font-size:12px;color:var(--encre-3);margin:9px 0 18px}
+.verdict{border-radius:16px;padding:15px 17px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start}
+.verdict .ic{font-family:var(--mono);font-weight:600;font-size:16px;line-height:1.35}
+.verdict .tt{font-family:var(--display);font-weight:700;font-size:17.5px;letter-spacing:-.015em}
+.verdict .ss{font-size:14.5px;margin-top:3px;opacity:.92}
+.v-ok{background:var(--pois-pale);color:var(--pois)}
+.v-adapt{background:var(--betterave-pale);color:var(--betterave-fonce)}
+.v-non{background:var(--canneberge-pale);color:var(--canneberge)}
+
+.bloc{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:18px;margin-bottom:13px}
+.bloc .etiquette{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--encre-3);margin-bottom:12px}
+.bloc-texture{border-left:4px solid var(--betterave)}
+.bloc-texture .stade-nom{font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:5px}
+.bloc-texture p{font-size:14.5px}
+.bloc-texture .n2{font-size:13px;color:var(--encre-2);margin-top:7px}
+.alerte{display:flex;gap:11px;border-radius:13px;padding:12px 14px;font-size:14.5px;margin-bottom:9px;align-items:flex-start}
+.alerte::before{font-family:var(--mono);font-weight:600;font-size:10.5px;margin-top:3px;flex:none;letter-spacing:.06em}
+.a-bloquant{background:var(--canneberge-pale);color:var(--canneberge)}.a-bloquant::before{content:"STOP"}
+.a-securite{background:var(--courge-pale);color:var(--courge)}.a-securite::before{content:"ÂGE"}
+.a-attention{background:var(--courge-pale);color:var(--courge)}.a-attention::before{content:"NOTE"}
+.a-info{background:var(--betterave-pale);color:var(--betterave-fonce)}.a-info::before{content:"ÉCH."}
+
+.ligne{padding:13px 2px;border-bottom:1px dashed var(--trait)}
+.ligne:last-child{border-bottom:none}
+.l-haut{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.l-nom{font-weight:600;font-size:15.5px}
+.l-nom s{color:var(--encre-3);font-weight:500;text-decoration-thickness:2px;text-decoration-color:var(--canneberge)}
+.l-vers{color:var(--betterave)}
+.l-fleche{font-family:var(--mono);color:var(--betterave);font-weight:600}
+.l-qte{font-family:var(--mono);font-size:12.5px;color:var(--encre-3);white-space:nowrap}
+.l-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-family:var(--mono);font-size:11px;border-radius:8px;padding:4px 8px;background:var(--fond);border:1px solid var(--trait);color:var(--encre-2)}
+.tag.t-motif{background:var(--betterave-pale);border-color:transparent;color:var(--betterave)}
+.tag.t-ratio{background:var(--pois-pale);border-color:transparent;color:var(--pois)}
+.tag.t-prep{background:var(--courge-pale);border-color:transparent;color:var(--courge)}
+.tag.t-non{background:var(--canneberge-pale);border-color:transparent;color:var(--canneberge)}
+.l-note{font-size:13px;color:var(--encre-2);margin-top:7px}
+.etapes{counter-reset:etape}
+.etapes p{display:flex;gap:13px;padding:10px 0;font-size:15.5px}
+.etapes p::before{
+  counter-increment:etape;content:counter(etape);flex:none;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--betterave);
+  width:25px;height:25px;border:1.5px solid var(--betterave);border-radius:50%;
+  display:grid;place-items:center;margin-top:1px;
+}
+.provenance{font-family:var(--mono);font-size:11.5px;color:var(--encre-3);line-height:1.65;word-break:break-word}
+
+/* ======================= ABONNEMENT ======================= */
+.btn-abo{
+  flex:none;display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--betterave);
+  color:var(--betterave);border-radius:99px;padding:6px 14px;font-size:13.5px;font-weight:600;white-space:nowrap;
+}
+.btn-abo.actif{background:var(--betterave);color:#fff}
+.bandeau-demo{
+  background:var(--courge-pale);color:var(--courge);border-radius:14px;padding:11px 15px;
+  font-size:13.5px;margin-top:18px;line-height:1.45;
+}
+.carte-verrou .carte-img{
+  display:grid;place-items:center;
+  background:repeating-linear-gradient(135deg,var(--betterave-pale) 0 14px,#F2E2EC 14px 28px);
+}
+.carte-verrou .cadenas{color:var(--betterave);opacity:.75}
+.carte-verrou h4{color:var(--encre-2)}
+.section-verrou .section-tete h3{color:var(--betterave)}
+.lot-note{font-size:13.5px;color:var(--encre-2);margin:-4px 2px 12px;max-width:60ch}
+.paywall .grand{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.025em;line-height:1.12;margin-bottom:10px}
+.paywall .corps{font-size:15px;color:var(--encre-2);margin-bottom:18px}
+.compare{display:grid;gap:10px;margin-bottom:20px}
+@media(min-width:520px){.compare{grid-template-columns:1fr 1fr}}
+.compare .col{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r-s);padding:15px}
+.compare .col.paye{border-color:var(--betterave)}
+.compare .tt{font-family:var(--display);font-weight:700;font-size:15.5px;margin-bottom:9px}
+.compare .col.paye .tt{color:var(--betterave)}
+.compare ul{list-style:none;display:grid;gap:7px}
+.compare li{font-size:14px;color:var(--encre-2);display:flex;gap:8px;align-items:flex-start}
+.compare li::before{content:"✓";color:var(--pois);font-family:var(--mono);font-size:12px;margin-top:2px}
+.etat-abo{font-family:var(--mono);font-size:12px;color:var(--encre-3);margin-top:14px;line-height:1.6}
+.msg{font-size:13.5px;border-radius:12px;padding:10px 13px;margin-top:12px}
+.msg-ok{background:var(--pois-pale);color:var(--pois)}
+.msg-err{background:var(--canneberge-pale);color:var(--canneberge)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="accueil" id="accueil" hidden><div class="accueil-cadre" id="accueilCadre"></div></div>
+
+<div id="app" hidden>
+  <div class="barre">
+    <div class="barre-cadre">
+      <div class="logo">Bouchées<i>.</i></div>
+      <div class="avatars" id="avatars"></div>
+      <button class="btn-abo" id="btnAbo">Abonnement</button>
+    </div>
+  </div>
+
+  <div class="cadre">
+    <div class="entete-jour" id="enteteJour"></div>
+    <div id="zoneHero"></div>
+
+    <div class="outils">
+      <div class="recherche">
+        <span class="ic"><svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2 17 17"/></svg></span>
+        <input id="recherche" type="text" placeholder="Chercher — poulet, muffins, courge…" aria-label="Chercher une recette ou un ingrédient">
+      </div>
+      <div class="pilules" id="pilules"></div>
+    </div>
+
+    <div id="bandeau"></div>
+    <div id="sections"></div>
+
+    <p class="pied">
+      <b>Bouchées ne remplace pas un avis médical.</b> Les échanges d'ingrédients et les repères d'âge
+      viennent de tables déterministes, à faire valider par un professionnel (nutritionniste, allergologue)
+      avant toute vraie mise en service. En cas d'allergie diagnostiquée, le plan de votre allergologue a
+      toujours préséance. Les illustrations sont générées à partir de la liste d'ingrédients réelle —
+      elles changent quand la recette change. « Bouchées » est un nom de travail.
+    </p>
+  </div>
+</div>
+
+<div class="voile" id="voile"></div>
+<div class="feuille" id="feuille" role="dialog" aria-modal="true" aria-label="Profil"><div class="feuille-cadre" id="feuilleCadre"></div></div>
+<div class="feuille paywall" id="paywall" role="dialog" aria-modal="true" aria-label="Abonnement"><div class="feuille-cadre" id="paywallCadre"></div></div>
+<div class="fiche" id="fiche" role="dialog" aria-modal="true" aria-label="Recette"><div id="ficheContenu"></div></div>
+
+<script>
+/* Moteur de recettes — lot 2, v0.1
+ * Fonctions pures, déterministes, sans dépendance.
+ * Règle d'or : l'IA rédige, les règles décident. Aucune décision de
+ * sécurité (allergène, âge) ne sort d'un modèle — tout vient des tables.
+ */
+(function (racine, fabrique) {
+  if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
+  else racine.Moteur = fabrique();
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  /* ---------- utilitaires ---------- */
+
+  function roleDe(usage, def) {
+    return usage.role || (def && def.roles && def.roles[0]) || "autre";
+  }
+
+  function intersection(a, b) {
+    return a.filter(function (x) { return b.indexOf(x) !== -1; });
+  }
+
+  /* Familles d'allergènes présentes dans une liste d'usages d'ingrédients,
+   * dérivées du catalogue — jamais lues depuis des étiquettes externes. */
+  function allergenesDe(usages, catalogue) {
+    var vus = {};
+    usages.forEach(function (u) {
+      if (u.statut === "omis" || u.statut === "impossible") return;
+      var id = u.vers || u.id;
+      var def = catalogue[id];
+      if (!def) return;
+      def.allergenes.forEach(function (a) { vus[a] = true; });
+    });
+    return Object.keys(vus).sort();
+  }
+
+  function analyserAllergenes(recette, catalogue) {
+    return allergenesDe(recette.ingredients, catalogue);
+  }
+
+  /* Stade de texture applicable à un âge donné. */
+  function stadePour(ageMois, base) {
+    for (var i = 0; i < base.stades.length; i++) {
+      var s = base.stades[i];
+      if (ageMois >= s.min && ageMois <= s.max) return s;
+    }
+    return base.stades[base.stades.length - 1];
+  }
+
+  /* Première règle d'interdit applicable à un ingrédient pour un âge.
+   * Les règles sont ordonnées de la tranche la plus jeune à la plus vieille
+   * dans base.interdits; on retourne la première qui s'applique. */
+  function interditPour(id, ageMois, base) {
+    for (var i = 0; i < base.interdits.length; i++) {
+      var r = base.interdits[i];
+      if (r.cible === id && ageMois < r.avantMois) return r;
+    }
+    return null;
+  }
+
+  /* Règle de substitution pour (ingrédient, rôle). */
+  function reglePour(id, role, tableSubst) {
+    for (var i = 0; i < tableSubst.length; i++) {
+      var r = tableSubst[i];
+      if (r.cible === id && r.role === role) return r;
+    }
+    return null;
+  }
+
+  /* Choix déterministe d'un substitut : première option de la table qui
+   * (1) n'introduit aucun allergène évité,
+   * (2) respecte son âge minimum,
+   * (3) n'est pas elle-même interdite à cet âge sans porte de sortie.
+   * Retourne null si aucune option ne passe. */
+  function choisirSubstitut(regle, allergenesEvites, ageMois, catalogue, base) {
+    if (!regle) return null;
+    for (var i = 0; i < regle.options.length; i++) {
+      var o = regle.options[i];
+      if (o.ageMin > ageMois) continue;
+      if (o.id === "_omettre") return o;
+      var def = catalogue[o.id];
+      if (!def) continue;
+      if (intersection(def.allergenes, allergenesEvites).length > 0) continue;
+      var interdit = interditPour(o.id, ageMois, base);
+      if (interdit && interdit.action.type === "bloquer") continue;
+      return o;
+    }
+    return null;
+  }
+
+  /* ---------- fonction principale ---------- */
+
+  /* adapterRecette(recette, { allergenes: [...], ageMois: n }, donnees)
+   * donnees = { catalogue, substitutions, base }
+   * Retourne un objet complet : ingrédients avec provenance de chaque
+   * décision, alertes graduées, consigne de texture, statut global. */
+  function adapterRecette(recette, options, donnees) {
+    var evites = (options.allergenes || []).slice().sort();
+    var ageMois = options.ageMois;
+    var catalogue = donnees.catalogue;
+    var base = donnees.base;
+
+    var resultat = {
+      id: recette.id,
+      nom: recette.nom,
+      statut: "telle_quelle",          /* telle_quelle | adaptee | non_adaptable */
+      nbSubstitutions: 0,
+      ingredients: [],
+      alertes: [],
+      texture: stadePour(ageMois, base),
+      etapes: recette.etapes
+    };
+
+    if (ageMois < recette.ageMinBase) {
+      resultat.alertes.push({
+        niveau: "attention",
+        message: "Recette pensée pour " + recette.ageMinBase + " mois et plus — texture et format à revoir avant cet âge."
+      });
+    }
+
+    recette.ingredients.forEach(function (usage) {
+      var def = catalogue[usage.id];
+      var role = roleDe(usage, def);
+      var item = {
+        id: usage.id,
+        nom: def ? def.nom : usage.id,
+        qte: usage.qte,
+        unite: usage.unite,
+        role: role,
+        statut: "conserve"
+      };
+      if (def && def.note) item.noteIngredient = def.note;
+
+      /* 1 — conflit d'allergène sur l'ingrédient d'origine */
+      var conflit = def ? intersection(def.allergenes, evites) : [];
+      if (conflit.length > 0) {
+        var regle = reglePour(usage.id, role, donnees.substitutions);
+        var choix = choisirSubstitut(regle, evites, ageMois, catalogue, base);
+        if (!choix) {
+          item.statut = "impossible";
+          item.motif = "Contient : " + conflit.join(", ");
+          resultat.statut = "non_adaptable";
+          resultat.alertes.push({
+            niveau: "bloquant",
+            message: "Aucun substitut sûr pour « " + item.nom + " » (" + conflit.join(", ") + ") à cet âge."
+          });
+        } else if (choix.id === "_omettre") {
+          item.statut = "omis";
+          item.motif = "Contient : " + conflit.join(", ");
+          item.ratio = choix.ratio;
+          resultat.nbSubstitutions++;
+        } else {
+          var defSub = catalogue[choix.id];
+          item.statut = "substitue";
+          item.vers = choix.id;
+          item.nomVers = defSub.nom;
+          item.ratio = choix.ratio;
+          item.motif = "Contient : " + conflit.join(", ");
+          if (choix.note) item.noteSubstitut = choix.note;
+          if (defSub.note) item.noteIngredient = defSub.note;
+          resultat.nbSubstitutions++;
+        }
+      }
+
+      /* 2 — règles d'âge sur l'ingrédient FINAL (origine ou substitut) */
+      if (item.statut !== "impossible") {
+        var idFinal = item.vers || item.id;
+        var interdit = (item.statut === "omis") ? null : interditPour(idFinal, ageMois, base);
+        if (interdit) {
+          if (interdit.action.type === "swap") {
+            var defSwap = catalogue[interdit.action.vers];
+            var conflitSwap = intersection(defSwap.allergenes, evites);
+            if (conflitSwap.length > 0) {
+              item.statut = "impossible";
+              resultat.statut = "non_adaptable";
+              resultat.alertes.push({
+                niveau: "bloquant",
+                message: "« " + item.nom + " » est à éviter avant " + interdit.avantMois +
+                  " mois et son remplacement (" + defSwap.nom + ") contient : " + conflitSwap.join(", ") + "."
+              });
+            } else {
+              item.statut = "substitue";
+              item.vers = interdit.action.vers;
+              item.nomVers = defSwap.nom;
+              item.ratio = interdit.action.ratio;
+              item.motif = interdit.raison;
+              resultat.nbSubstitutions++;
+              resultat.alertes.push({ niveau: "info", message: item.nom + " → " + defSwap.nom + " : " + interdit.raison + "." });
+            }
+          } else if (interdit.action.type === "preparation") {
+            item.preparation = interdit.action.note;
+            resultat.alertes.push({
+              niveau: "securite",
+              message: item.nom + " — " + interdit.raison + ". " + interdit.action.note + "."
+            });
+          } else {
+            item.statut = "impossible";
+            resultat.statut = "non_adaptable";
+            resultat.alertes.push({
+              niveau: "bloquant",
+              message: "« " + item.nom + " » est à éviter avant " + interdit.avantMois + " mois : " + interdit.raison + "."
+            });
+          }
+        }
+      }
+
+      resultat.ingredients.push(item);
+    });
+
+    if (resultat.statut !== "non_adaptable" && resultat.nbSubstitutions > 0) {
+      resultat.statut = "adaptee";
+    }
+
+    /* Invariant vérifiable : les allergènes dérivés du résultat ne
+     * croisent jamais la liste évitée, sauf statut non_adaptable. */
+    resultat.allergenesRestants = allergenesDe(resultat.ingredients, catalogue);
+    return resultat;
+  }
+
+  return {
+    analyserAllergenes: analyserAllergenes,
+    adapterRecette: adapterRecette,
+    stadePour: stadePour,
+    interditPour: interditPour,
+    choisirSubstitut: choisirSubstitut,
+    allergenesDe: allergenesDe
+  };
+});
+
+/* Système visuel — v0.3
+ * Illustration.plat(resultatAdapte, catalogue) → SVG (chaîne)
+ *
+ * Point clé : l'illustration est dérivée des ingrédients APRÈS adaptation.
+ * Quand le beurre d'arachide devient du beurre de tournesol, la tuile change
+ * de couleur. Une image ne peut donc jamais contredire la fiche — c'est le
+ * défaut fatal d'une photo de stock dans une app d'allergies.
+ *
+ * Déterministe : même recette + même profil → même image, au pixel près.
+ */
+(function (racine, fabrique) {
+  if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
+  else racine.Illustration = fabrique();
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  /* ---------- palette alimentaire ----------
+   * [couleur, forme, masse]  masse : 3 = base du plat, 2 = garniture, 1 = touche */
+  var ING = {
+    farine_ble: ["#E6CB93", "poudre", 3], farine_avoine: ["#DEC49B", "poudre", 3],
+    farine_riz: ["#EDE3CE", "poudre", 3], farine_pois_chiches: ["#E0C583", "poudre", 3],
+    melange_sans_gluten: ["#E9DCBE", "poudre", 3], chapelure: ["#DBB782", "grain", 2],
+    chapelure_sans_gluten: ["#E4CDA6", "grain", 2], flocons_avoine: ["#D9C49A", "grain", 3],
+    pates_ble: ["#E9C97F", "brin", 3], pates_riz: ["#EFE2CB", "brin", 3],
+    riz: ["#F1EADB", "grain", 3], couscous: ["#E6CE9B", "grain", 3], quinoa: ["#D8C6A4", "grain", 3],
+    tortillas_ble: ["#E7CE9C", "poudre", 3], tortillas_mais: ["#EFCF80", "poudre", 3],
+    fecule_mais: ["#F2ECDE", "poudre", 1],
+
+    oeuf: ["#F2C64E", "rond", 2], compote_pommes: ["#E3CE93", "arc", 2],
+    puree_banane: ["#EBD588", "arc", 2], lin_moulu: ["#9E7A50", "poudre", 1],
+    graines_chia: ["#4C4237", "poudre", 1], aquafaba: ["#EDE6D3", "arc", 1],
+
+    lait_vache: ["#F6F1E4", "arc", 2], boisson_soya: ["#EFE7D2", "arc", 2],
+    boisson_avoine: ["#EDE2CC", "arc", 2], lait_coco: ["#F8F5EC", "arc", 2],
+    beurre: ["#F0D479", "goutte", 1], margarine_sans_lait: ["#F2DA92", "goutte", 1],
+    creme_35: ["#F7F2E5", "arc", 2], yogourt_nature: ["#F6F2E8", "arc", 2],
+    yogourt_grec: ["#F4F0E6", "arc", 2], yogourt_soya: ["#EFE8D6", "arc", 2],
+    yogourt_coco: ["#F8F5EC", "arc", 2],
+    fromage_cheddar: ["#E79B33", "chunk", 2], fromage_mozzarella: ["#F4EEDD", "chunk", 2],
+    fromage_parmesan: ["#EBD9A8", "poudre", 1], levure_alimentaire: ["#E0B84E", "poudre", 1],
+
+    huile_olive: ["#B7A03C", "goutte", 1], huile_canola: ["#E2C558", "goutte", 1],
+    puree_avocat: ["#7E9B4E", "arc", 2],
+    beurre_arachide: ["#BE8347", "goutte", 2], beurre_tournesol: ["#A98A55", "goutte", 2],
+    beurre_soya: ["#B79A62", "goutte", 2], tahini: ["#D3BC86", "goutte", 2],
+    beurre_amande: ["#B98D5E", "goutte", 2], noix_grenoble: ["#9C7248", "rond", 1],
+
+    poulet: ["#D8A778", "chunk", 3], dinde_hachee: ["#C99672", "chunk", 3],
+    poisson_blanc: ["#EBDCC6", "chunk", 3], saumon: ["#E8926B", "chunk", 3],
+    crevette: ["#EE9F80", "chunk", 2], tofu_ferme: ["#F1EBDA", "chunk", 3],
+    lentilles: ["#9A7A4E", "rond", 3], pois_chiches: ["#D8BC7E", "rond", 3],
+
+    miel: ["#E0A32C", "goutte", 1], sirop_erable: ["#B5722C", "goutte", 1],
+    sucre: ["#F4EFE3", "poudre", 1], dattes: ["#7A5136", "rond", 2],
+
+    banane: ["#EDD264", "rond", 2], pomme: ["#C5533A", "rond", 2],
+    mangue: ["#EFA22F", "rond", 2], bleuets: ["#5A5A93", "rond", 1],
+    raisins_secs: ["#7B5340", "rond", 1], abricots_seches: ["#DE9440", "rond", 1],
+    jus_citron: ["#EFDD73", "goutte", 1],
+
+    patate_douce: ["#DE8B41", "chunk", 3], courge_butternut: ["#E5A03F", "chunk", 3],
+    carotte: ["#DE7F32", "chunk", 2], carotte_crue: ["#E88A38", "chunk", 2],
+    concombre: ["#8FAE5E", "rond", 2], courgette: ["#7C9E4F", "rond", 2],
+    epinards: ["#4F7A3E", "feuille", 2], petits_pois: ["#6E9B45", "rond", 2],
+    poivron: ["#CE4C39", "chunk", 2], brocoli: ["#557F42", "feuille", 2],
+    oignon: ["#E8DFC9", "arc", 1], ail: ["#EFE8D6", "rond", 1],
+    tomates_broyees: ["#C24A2E", "arc", 3],
+
+    moutarde_dijon: ["#D8B23F", "goutte", 1], sel: ["#F5F2EA", "poudre", 1],
+    cannelle: ["#9A6238", "poudre", 1], vanille: ["#C4A578", "goutte", 1],
+    basilic: ["#4E7B3C", "feuille", 1], gingembre: ["#D7B36A", "poudre", 1],
+    sauce_soya: ["#4A3226", "arc", 1], sauce_tamari: ["#4A3226", "arc", 1],
+    coco_aminos: ["#6B4A33", "arc", 1], sauce_poisson: ["#8A6437", "goutte", 1],
+    levure_chimique: ["#F5F2EA", "poudre", 1], bicarbonate: ["#F5F2EA", "poudre", 1],
+    bouillon_sans_sel: ["#E4D7B4", "arc", 2], eau: ["#EDF1EE", "arc", 1]
+  };
+
+  var PAR_ROLE = {
+    farine: ["#E6CB93", "poudre", 3], proteine: ["#D8A778", "chunk", 3],
+    legume: ["#7C9E4F", "rond", 2], fruit: ["#D98A50", "rond", 2],
+    lacte: ["#F5F0E3", "arc", 2], liquide: ["#EAE3D0", "arc", 2],
+    gras: ["#E2C558", "goutte", 1], liant: ["#E3CE93", "arc", 1],
+    sucrant: ["#C98A34", "goutte", 1], garniture: ["#9C7248", "rond", 1],
+    assaisonnement: ["#C8B994", "poudre", 1], levant: ["#F5F2EA", "poudre", 1]
+  };
+
+  var TEINTES_FOND = {
+    "Déjeuner":  ["#F7F1E4", "#EFE4CE"],
+    "Repas":     ["#EDF2EA", "#DFEAD9"],
+    "Collation": ["#F8EFF3", "#F0E1E9"],
+    "Dessert":   ["#F4EFF6", "#E8E0EF"]
+  };
+
+  /* ---------- aléa déterministe ---------- */
+  function graine(texte) {
+    var h = 2166136261;
+    for (var i = 0; i < texte.length; i++) { h ^= texte.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function alea(etat) {
+    return function () {
+      etat |= 0; etat = (etat + 0x6D2B79F5) | 0;
+      var t = Math.imul(etat ^ (etat >>> 15), 1 | etat);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var arr = function (n) { return Math.round(n * 100) / 100; };
+  function foncer(hex, k) {
+    var n = parseInt(hex.slice(1), 16);
+    var r = Math.round(((n >> 16) & 255) * k), v = Math.round(((n >> 8) & 255) * k), b = Math.round((n & 255) * k);
+    return "#" + (1 << 24 | r << 16 | v << 8 | b).toString(16).slice(1);
+  }
+
+  /* ---------- formes ---------- */
+  function blob(cx, cy, r, rnd, points) {
+    points = points || 9;
+    var d = "", i, a, rr, x, y;
+    for (i = 0; i < points; i++) {
+      a = (i / points) * Math.PI * 2;
+      rr = r * (0.9 + rnd() * 0.2);
+      x = cx + Math.cos(a) * rr; y = cy + Math.sin(a) * rr * 0.94;
+      d += (i === 0 ? "M" : "L") + arr(x) + " " + arr(y);
+    }
+    return d + "Z";
+  }
+  function goutte(cx, cy, t) {
+    return "M" + arr(cx) + " " + arr(cy - t) +
+      "C" + arr(cx + t * 0.85) + " " + arr(cy - t * 0.15) +
+      " " + arr(cx + t * 0.6) + " " + arr(cy + t) +
+      " " + arr(cx) + " " + arr(cy + t) +
+      "C" + arr(cx - t * 0.6) + " " + arr(cy + t) +
+      " " + arr(cx - t * 0.85) + " " + arr(cy - t * 0.15) +
+      " " + arr(cx) + " " + arr(cy - t) + "Z";
+  }
+  function feuille(cx, cy, t, rot) {
+    return '<path d="M' + arr(cx - t) + " " + arr(cy) +
+      "Q" + arr(cx) + " " + arr(cy - t * 0.95) + " " + arr(cx + t) + " " + arr(cy) +
+      "Q" + arr(cx) + " " + arr(cy + t * 0.95) + " " + arr(cx - t) + " " + arr(cy) +
+      'Z" transform="rotate(' + arr(rot) + " " + arr(cx) + " " + arr(cy) + ')"';
+  }
+
+  function dessiner(forme, cx, cy, t, couleur, rnd) {
+    var rot = rnd() * 360, o = "", i;
+    if (forme === "chunk") {
+      return '<rect x="' + arr(cx - t) + '" y="' + arr(cy - t * 0.78) + '" width="' + arr(t * 2) +
+        '" height="' + arr(t * 1.56) + '" rx="' + arr(t * 0.42) + '" fill="' + couleur +
+        '" transform="rotate(' + arr(rot * 0.16 - 8) + " " + arr(cx) + " " + arr(cy) + ')"/>';
+    }
+    if (forme === "rond") {
+      for (i = 0; i < 3; i++) {
+        var a = rot + i * 118, d = t * 0.72;
+        o += '<circle cx="' + arr(cx + Math.cos(a * Math.PI / 180) * d) + '" cy="' +
+          arr(cy + Math.sin(a * Math.PI / 180) * d * 0.9) + '" r="' + arr(t * 0.6) + '" fill="' + couleur + '"/>';
+      }
+      return o;
+    }
+    if (forme === "grain") {
+      for (i = 0; i < 5; i++) {
+        var ag = rot + i * 72;
+        o += '<ellipse cx="' + arr(cx + Math.cos(ag * Math.PI / 180) * t * 0.8) + '" cy="' +
+          arr(cy + Math.sin(ag * Math.PI / 180) * t * 0.7) + '" rx="' + arr(t * 0.46) + '" ry="' + arr(t * 0.26) +
+          '" fill="' + couleur + '" transform="rotate(' + arr(ag * 0.7) + " " + arr(cx) + " " + arr(cy) + ')"/>';
+      }
+      return o;
+    }
+    if (forme === "brin") {
+      for (i = 0; i < 3; i++) {
+        var dy = (i - 1) * t * 0.62;
+        o += '<path d="M' + arr(cx - t * 1.5) + " " + arr(cy + dy) + "q" + arr(t * 0.75) + " " + arr(-t * 0.5) +
+          " " + arr(t * 1.5) + " 0 q" + arr(t * 0.75) + " " + arr(t * 0.5) + " " + arr(t * 1.5) + ' 0" fill="none" stroke="' +
+          couleur + '" stroke-width="' + arr(t * 0.42) + '" stroke-linecap="round"/>';
+      }
+      return o;
+    }
+    if (forme === "arc") {
+      return '<path d="M' + arr(cx - t * 1.35) + " " + arr(cy) + "a" + arr(t * 1.35) + " " + arr(t * 0.95) +
+        " 0 0 1 " + arr(t * 2.7) + ' 0" fill="none" stroke="' + couleur + '" stroke-width="' + arr(t * 0.6) +
+        '" stroke-linecap="round" transform="rotate(' + arr(rot * 0.3 - 15) + " " + arr(cx) + " " + arr(cy) + ')"/>';
+    }
+    if (forme === "goutte") return '<path d="' + goutte(cx, cy, t * 0.95) + '" fill="' + couleur + '"/>';
+    if (forme === "feuille") return "<" + "path " + feuille(cx, cy, t * 1.15, rot * 0.4 - 20).slice(6) + ' fill="' + couleur + '"/>';
+    /* poudre */
+    for (i = 0; i < 7; i++) {
+      o += '<circle cx="' + arr(cx + (rnd() - 0.5) * t * 2.6) + '" cy="' + arr(cy + (rnd() - 0.5) * t * 2.2) +
+        '" r="' + arr(t * 0.19 + rnd() * t * 0.1) + '" fill="' + couleur + '"/>';
+    }
+    return o;
+  }
+
+  /* ---------- composition ---------- */
+  function visuelDe(id, role, catalogue) {
+    if (ING[id]) return ING[id];
+    var def = catalogue[id];
+    var r = role || (def && def.roles && def.roles[0]) || "assaisonnement";
+    return PAR_ROLE[r] || PAR_ROLE.assaisonnement;
+  }
+
+  function plat(resultat, catalogue, categorie) {
+    var visibles = resultat.ingredients.filter(function (i) {
+      return i.statut !== "omis" && i.statut !== "impossible";
+    }).map(function (i) {
+      var id = i.vers || i.id;
+      var v = visuelDe(id, i.role, catalogue);
+      return { id: id, couleur: v[0], forme: v[1], masse: v[2] };
+    });
+
+    var cle = resultat.id + "|" + visibles.map(function (v) { return v.id; }).join(",");
+    var rnd = alea(graine(cle));
+    var fond = TEINTES_FOND[categorie] || TEINTES_FOND["Repas"];
+
+    var tries = visibles.slice().sort(function (a, b) { return b.masse - a.masse; });
+    var base = tries[0] || { couleur: "#E9E3D2", forme: "poudre" };
+    var accents = [];
+    var vus = {};
+    tries.slice(1).forEach(function (v) {
+      if (vus[v.couleur + v.forme] || accents.length >= 6) return;
+      vus[v.couleur + v.forme] = 1;
+      accents.push(v);
+    });
+
+    var cx = 160, cy = 126, uid = "b" + (graine(cle) % 100000);
+    var s = '<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" preserveAspectRatio="xMidYMid slice">';
+    s += '<defs><clipPath id="' + uid + '"><circle cx="' + cx + '" cy="' + cy + '" r="74"/></clipPath>' +
+      '<linearGradient id="g' + uid + '" x1="0" y1="0" x2="0.6" y2="1">' +
+      '<stop offset="0" stop-color="' + fond[0] + '"/><stop offset="1" stop-color="' + fond[1] + '"/></linearGradient>' +
+      '<radialGradient id="o' + uid + '" cx="0.5" cy="0.5" r="0.5">' +
+      '<stop offset="0.62" stop-color="#1B211B" stop-opacity="0"/>' +
+      '<stop offset="1" stop-color="#1B211B" stop-opacity="0.17"/></radialGradient></defs>';
+    s += '<rect width="320" height="240" fill="url(#g' + uid + ')"/>';
+
+    /* miettes sur la table : positions semées, jamais les mêmes deux fois */
+    accents.slice(0, 3).forEach(function (a, i) {
+      var ang = (graine(a.id + cle) % 360) * Math.PI / 180;
+      var d0 = 112 + rnd() * 26;
+      var px = cx + Math.cos(ang) * d0, py = cy + Math.sin(ang) * d0 * 0.78;
+      var dist = Math.sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
+      if (dist < 104) { px = cx + (px - cx) / dist * 106; py = cy + (py - cy) / dist * 106; }
+      px = Math.max(24, Math.min(296, px)); py = Math.max(24, Math.min(216, py));
+      s += '<g opacity=".6">' + dessiner(a.forme, px, py, 7 + rnd() * 3, a.couleur, rnd) + "</g>";
+    });
+
+    s += '<ellipse cx="' + cx + '" cy="' + (cy + 84) + '" rx="86" ry="12" fill="#1B211B" opacity=".08"/>';
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="90" fill="#FCFBF6"/>';
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="90" fill="none" stroke="#1B211B" opacity=".12" stroke-width="1.5"/>';
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="76" fill="#F8F5EC"/>';
+
+    s += '<g clip-path="url(#' + uid + ')">';
+
+    /* La base se dessine selon sa NATURE : un potage remplit le bol,
+     * un plat en morceaux se pose en pièces, une pâtisserie fait un dôme. */
+    var mode = (base.forme === "arc") ? "liquide" : (base.forme === "chunk" ? "morceaux" : "dome");
+    if (mode === "liquide") {
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="74" fill="' + base.couleur + '"/>';
+      s += '<circle cx="' + cx + '" cy="' + (cy + 10) + '" r="70" fill="' + foncer(base.couleur, 0.92) + '"/>';
+      s += '<path d="M' + (cx - 46) + " " + (cy + 6) + "q23 -20 46 0 q23 20 46 0" +
+        '" fill="none" stroke="#FFFFFF" opacity=".3" stroke-width="5" stroke-linecap="round"/>';
+    } else if (mode === "morceaux") {
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="72" fill="' + base.couleur + '" opacity=".3"/>';
+      for (var c = 0; c < 5; c++) {
+        var ac = c * 72 + rnd() * 26;
+        s += dessiner("chunk", cx + Math.cos(ac * Math.PI / 180) * (16 + rnd() * 24),
+          cy + Math.sin(ac * Math.PI / 180) * (15 + rnd() * 22), 15 + rnd() * 6, base.couleur, rnd);
+      }
+    } else {
+      s += '<path d="' + blob(cx, cy + 9, 64, rnd, 11) + '" fill="' + foncer(base.couleur, 0.86) + '"/>';
+      s += '<path d="' + blob(cx, cy + 1, 65, rnd, 11) + '" fill="' + base.couleur + '"/>';
+      if (base.forme === "brin" || base.forme === "grain") {
+        for (var k = 0; k < 8; k++) {
+          var ab = k * 45 + rnd() * 22;
+          s += dessiner(base.forme, cx + Math.cos(ab * Math.PI / 180) * (18 + rnd() * 24),
+            cy + Math.sin(ab * Math.PI / 180) * (16 + rnd() * 22), 11, foncer(base.couleur, 0.84), rnd);
+        }
+      }
+    }
+
+    /* garnitures : assez nombreuses pour que le bol ait l'air plein */
+    var n = accents.length;
+    accents.forEach(function (a, i) {
+      var reps = n <= 2 ? 3 : (n <= 4 ? 2 : 1);
+      for (var j = 0; j < reps; j++) {
+        var idx = i + j * n;
+        var ang = idx * 137.508 + (graine(a.id) % 70);
+        var ray = 13 + 42 * Math.sqrt((idx + 0.55) / Math.max(n * reps, 1));
+        s += dessiner(a.forme, cx + Math.cos(ang * Math.PI / 180) * ray,
+          cy + Math.sin(ang * Math.PI / 180) * ray * 0.93, 12 + rnd() * 5, a.couleur, rnd);
+      }
+    });
+    s += "</g>";
+
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="74" fill="url(#o' + uid + ')"/>';
+    s += '<circle cx="' + cx + '" cy="' + cy + '" r="76" fill="none" stroke="#1B211B" opacity=".1" stroke-width="1"/>';
+    s += '<path d="M' + (cx - 58) + " " + (cy - 52) + "a76 76 0 0 1 44 -21" +
+      '" fill="none" stroke="#FFFFFF" opacity=".8" stroke-width="3.5" stroke-linecap="round"/>';
+    return s + "</svg>";
+  }
+
+  /* ---------- glyphes d'allergènes (monoline, currentColor) ---------- */
+  var G = {
+    lait: '<path d="M7 3h6v3l2 3v9H5v-9l2-3z"/><path d="M7 6h6"/>',
+    oeuf: '<path d="M10 3c3 0 5 4.2 5 7.6C15 14.3 12.8 17 10 17s-5-2.7-5-6.4C5 7.2 7 3 10 3z"/>',
+    arachide: '<path d="M7.4 4.2c2 0 2.6 1.6 3.4 2.8.9 1.3 2.4 1.6 2.4 3.6 0 2.2-1.6 3.9-3.6 3.9-2 0-2.7-1.5-3.5-2.7C5.2 10.5 3.7 10 3.7 8.1c0-2.1 1.7-3.9 3.7-3.9z" transform="translate(3 1)"/><path d="M8.6 8.6l2.8 2.8"/>',
+    noix: '<circle cx="10" cy="10" r="6.5"/><path d="M10 3.5v13M7 5.2c1.6 2.4 1.6 7.2 0 9.6M13 5.2c-1.6 2.4-1.6 7.2 0 9.6"/>',
+    ble: '<path d="M10 17V7"/><path d="M10 7.5c0-2 1.2-3.4 3-3.9.3 2.1-.8 3.6-3 3.9zM10 7.5c0-2-1.2-3.4-3-3.9-.3 2.1.8 3.6 3 3.9zM10 12c0-2 1.2-3.4 3-3.9.3 2.1-.8 3.6-3 3.9zM10 12c0-2-1.2-3.4-3-3.9-.3 2.1.8 3.6 3 3.9z"/>',
+    soya: '<path d="M4.5 12.5c0-4 3.5-7.5 7.5-7.5 2 0 3.5 1.5 3.5 3.5 0 4-3.5 7.5-7.5 7.5-2 0-3.5-1.5-3.5-3.5z"/><circle cx="8" cy="12.5" r="1.4"/><circle cx="11.8" cy="9" r="1.4"/>',
+    sesame: '<ellipse cx="7" cy="8" rx="1.8" ry="2.8" transform="rotate(-25 7 8)"/><ellipse cx="12.5" cy="7" rx="1.8" ry="2.8" transform="rotate(20 12.5 7)"/><ellipse cx="10" cy="13" rx="1.8" ry="2.8" transform="rotate(-8 10 13)"/>',
+    poisson: '<path d="M3 10c2.6-3 5.6-4.5 8.6-4.5 2.4 0 4.2 1.8 5.4 4.5-1.2 2.7-3 4.5-5.4 4.5C8.6 14.5 5.6 13 3 10z"/><path d="M3 10L1.2 7v6L3 10z"/><circle cx="12.6" cy="9" r=".9"/>',
+    crustaces_mollusques: '<path d="M15 5.5c-4 0-7.5 2.4-7.5 5.4 0 2.2 1.8 3.8 4 3.8 2 0 3.5-1.3 3.5-3"/><path d="M7.5 11c-1.6 0-3-.9-3.6-2.3M15 5.5c1.2-.6 2-1.5 2.3-2.5"/><circle cx="14.4" cy="7.6" r=".8"/>',
+    moutarde: '<path d="M8 3h4v2.2l1.6 2.3V17H6.4V7.5L8 5.2z"/><path d="M6.4 10h7.2"/>',
+    sulfites: '<path d="M8 3h4v4.4l3.3 7.1c.5 1.1-.2 2.5-1.5 2.5H6.2c-1.3 0-2-1.4-1.5-2.5L8 7.4V3z"/><circle cx="9" cy="13.4" r="1"/><circle cx="11.8" cy="15" r=".8"/>'
+  };
+  function glyphe(id) {
+    return '<svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (G[id] || '<circle cx="10" cy="10" r="6"/>') + "</svg>";
+  }
+
+  return { plat: plat, glyphe: glyphe, visuelDe: visuelDe };
+});
+
+var DONNEES = {"ingredients":{"farine_ble":{"nom":"Farine de blé","allergenes":["ble"],"roles":["farine","liant"]},"farine_avoine":{"nom":"Farine d'avoine","allergenes":[],"roles":["farine"],"note":"Choisir une avoine certifiée sans gluten en cas de maladie cœliaque"},"farine_riz":{"nom":"Farine de riz","allergenes":[],"roles":["farine","liant"]},"farine_pois_chiches":{"nom":"Farine de pois chiches","allergenes":[],"roles":["farine","proteine"]},"melange_sans_gluten":{"nom":"Mélange à pâtisserie sans gluten","allergenes":[],"roles":["farine"],"note":"Vérifier la composition — certains mélanges contiennent du soya"},"fecule_mais":{"nom":"Fécule de maïs","allergenes":[],"roles":["liant"]},"flocons_avoine":{"nom":"Flocons d'avoine","allergenes":[],"roles":["farine"],"note":"Avoine pure certifiée sans gluten si cœliaquie"},"chapelure":{"nom":"Chapelure","allergenes":["ble"],"roles":["liant","farine"]},"chapelure_sans_gluten":{"nom":"Chapelure sans gluten","allergenes":[],"roles":["liant"]},"pates_ble":{"nom":"Pâtes de blé","allergenes":["ble"],"roles":["farine"]},"pates_riz":{"nom":"Pâtes de riz","allergenes":[],"roles":["farine"]},"riz":{"nom":"Riz","allergenes":[],"roles":["farine"]},"oeuf":{"nom":"Œuf","allergenes":["oeuf"],"roles":["liant","proteine"],"unite":"unité"},"compote_pommes":{"nom":"Compote de pommes non sucrée","allergenes":[],"roles":["liant","sucrant"]},"puree_banane":{"nom":"Banane écrasée","allergenes":[],"roles":["liant","sucrant"]},"lin_moulu":{"nom":"Graines de lin moulues","allergenes":[],"roles":["liant"]},"graines_chia":{"nom":"Graines de chia","allergenes":[],"roles":["liant"]},"aquafaba":{"nom":"Aquafaba (eau de pois chiches sans sel)","allergenes":[],"roles":["liant"]},"lait_vache":{"nom":"Lait de vache","allergenes":["lait"],"roles":["liquide","lacte"]},"beurre":{"nom":"Beurre","allergenes":["lait"],"roles":["gras"]},"creme_35":{"nom":"Crème 35 %","allergenes":["lait"],"roles":["lacte"]},"fromage_cheddar":{"nom":"Cheddar","allergenes":["lait"],"roles":["lacte","proteine"]},"fromage_parmesan":{"nom":"Parmesan","allergenes":["lait"],"roles":["lacte"]},"yogourt_nature":{"nom":"Yogourt nature","allergenes":["lait"],"roles":["lacte"]},"yogourt_grec":{"nom":"Yogourt grec nature","allergenes":["lait"],"roles":["lacte"]},"boisson_soya":{"nom":"Boisson de soya enrichie","allergenes":["soya"],"roles":["liquide","proteine"]},"boisson_avoine":{"nom":"Boisson d'avoine enrichie","allergenes":[],"roles":["liquide"],"note":"Correct en cuisine dès 6 mois; pas comme boisson principale avant 2 ans"},"lait_coco":{"nom":"Lait de coco","allergenes":[],"roles":["liquide","lacte"],"note":"La noix de coco n'est pas classée parmi les noix au Canada; allergie possible mais rare"},"yogourt_coco":{"nom":"Yogourt de coco","allergenes":[],"roles":["lacte"]},"yogourt_soya":{"nom":"Yogourt de soya","allergenes":["soya"],"roles":["lacte"]},"margarine_sans_lait":{"nom":"Margarine sans produits laitiers","allergenes":[],"roles":["gras"],"note":"Vérifier l'étiquette — certaines marques contiennent du soya"},"huile_olive":{"nom":"Huile d'olive","allergenes":[],"roles":["gras"]},"huile_canola":{"nom":"Huile de canola","allergenes":[],"roles":["gras"]},"puree_avocat":{"nom":"Avocat écrasé","allergenes":[],"roles":["gras"]},"levure_alimentaire":{"nom":"Levure alimentaire","allergenes":[],"roles":["lacte"],"note":"Goût fromagé; ne fond pas — à lier avec une purée (courge, patate douce)"},"beurre_arachide":{"nom":"Beurre d'arachide naturel","allergenes":["arachide"],"roles":["gras","proteine"]},"beurre_tournesol":{"nom":"Beurre de graines de tournesol","allergenes":[],"roles":["gras","proteine"]},"beurre_soya":{"nom":"Beurre de soya","allergenes":["soya"],"roles":["gras","proteine"]},"tahini":{"nom":"Tahini (beurre de sésame)","allergenes":["sesame"],"roles":["gras"]},"beurre_amande":{"nom":"Beurre d'amande","allergenes":["noix"],"roles":["gras","proteine"]},"poulet":{"nom":"Poulet","allergenes":[],"roles":["proteine"]},"dinde_hachee":{"nom":"Dinde hachée","allergenes":[],"roles":["proteine"]},"poisson_blanc":{"nom":"Poisson blanc (morue, aiglefin)","allergenes":["poisson"],"roles":["proteine"]},"tofu_ferme":{"nom":"Tofu ferme","allergenes":["soya"],"roles":["proteine"]},"lentilles":{"nom":"Lentilles cuites","allergenes":[],"roles":["proteine"]},"pois_chiches":{"nom":"Pois chiches cuits","allergenes":[],"roles":["proteine"]},"miel":{"nom":"Miel","allergenes":[],"roles":["sucrant"]},"sirop_erable":{"nom":"Sirop d'érable","allergenes":[],"roles":["sucrant"]},"sucre":{"nom":"Sucre","allergenes":[],"roles":["sucrant"]},"dattes":{"nom":"Dattes dénoyautées","allergenes":[],"roles":["sucrant"]},"banane":{"nom":"Banane","allergenes":[],"roles":["fruit"]},"pomme":{"nom":"Pomme","allergenes":[],"roles":["fruit"]},"mangue":{"nom":"Mangue","allergenes":[],"roles":["fruit"]},"bleuets":{"nom":"Bleuets","allergenes":[],"roles":["fruit"]},"raisins_secs":{"nom":"Raisins secs","allergenes":[],"roles":["fruit"],"note":"Les raisins dorés sont sulfités — choisir des raisins bruns si allergie aux sulfites"},"jus_citron":{"nom":"Jus de citron","allergenes":[],"roles":["assaisonnement"]},"patate_douce":{"nom":"Patate douce","allergenes":[],"roles":["legume"]},"courge_butternut":{"nom":"Courge musquée","allergenes":[],"roles":["legume"]},"carotte":{"nom":"Carotte (cuite)","allergenes":[],"roles":["legume"]},"carotte_crue":{"nom":"Carotte crue","allergenes":[],"roles":["legume"]},"concombre":{"nom":"Concombre","allergenes":[],"roles":["legume"]},"courgette":{"nom":"Courgette","allergenes":[],"roles":["legume"]},"epinards":{"nom":"Épinards","allergenes":[],"roles":["legume"]},"oignon":{"nom":"Oignon","allergenes":[],"roles":["legume"]},"ail":{"nom":"Ail","allergenes":[],"roles":["assaisonnement"]},"tomates_broyees":{"nom":"Tomates broyées","allergenes":[],"roles":["legume"]},"moutarde_dijon":{"nom":"Moutarde de Dijon","allergenes":["moutarde"],"roles":["assaisonnement"]},"sel":{"nom":"Sel","allergenes":[],"roles":["assaisonnement"]},"cannelle":{"nom":"Cannelle","allergenes":[],"roles":["assaisonnement"]},"vanille":{"nom":"Extrait de vanille","allergenes":[],"roles":["assaisonnement"]},"levure_chimique":{"nom":"Poudre à pâte","allergenes":[],"roles":["levant"]},"bicarbonate":{"nom":"Bicarbonate de soude","allergenes":[],"roles":["levant"]},"bouillon_sans_sel":{"nom":"Bouillon de poulet sans sel","allergenes":[],"roles":["liquide"]},"eau":{"nom":"Eau","allergenes":[],"roles":["liquide"]},"noix_grenoble":{"nom":"Noix de Grenoble","allergenes":["noix"],"roles":["garniture"]},"crevette":{"nom":"Crevettes","allergenes":["crustaces_mollusques"],"roles":["proteine"]},"saumon":{"nom":"Saumon","allergenes":["poisson"],"roles":["proteine"]},"sauce_poisson":{"nom":"Sauce de poisson","allergenes":["poisson"],"roles":["assaisonnement"]},"sauce_soya":{"nom":"Sauce soya","allergenes":["soya","ble"],"roles":["assaisonnement"],"note":"La sauce soya ordinaire contient du blé"},"sauce_tamari":{"nom":"Sauce tamari","allergenes":["soya"],"roles":["assaisonnement"],"note":"Soya sans blé — vérifier la mention sans gluten"},"coco_aminos":{"nom":"Aminos de coco","allergenes":[],"roles":["assaisonnement"]},"abricots_seches":{"nom":"Abricots séchés","allergenes":["sulfites"],"roles":["fruit"],"note":"Les abricots séchés orange vif sont sulfités; version brune non sulfitée disponible"},"couscous":{"nom":"Couscous","allergenes":["ble"],"roles":["farine"]},"quinoa":{"nom":"Quinoa","allergenes":[],"roles":["farine"]},"tortillas_ble":{"nom":"Tortillas de blé","allergenes":["ble"],"roles":["farine"]},"tortillas_mais":{"nom":"Tortillas de maïs","allergenes":[],"roles":["farine"]},"fromage_mozzarella":{"nom":"Mozzarella","allergenes":["lait"],"roles":["lacte","proteine"]},"petits_pois":{"nom":"Petits pois","allergenes":[],"roles":["legume"]},"poivron":{"nom":"Poivron","allergenes":[],"roles":["legume"]},"brocoli":{"nom":"Brocoli","allergenes":[],"roles":["legume"]},"basilic":{"nom":"Basilic","allergenes":[],"roles":["assaisonnement"]},"gingembre":{"nom":"Gingembre","allergenes":[],"roles":["assaisonnement"]}},"substitutions":[{"cible":"oeuf","role":"liant","options":[{"id":"compote_pommes","ratio":"60 ml par œuf","ageMin":6,"note":"Le meilleur liant humide en pâtisserie"},{"id":"lin_moulu","ratio":"15 ml de lin + 45 ml d'eau par œuf, reposé 5 min","ageMin":6},{"id":"puree_banane","ratio":"60 ml par œuf","ageMin":6,"note":"Goût de banane perceptible"},{"id":"aquafaba","ratio":"45 ml par œuf","ageMin":12}]},{"cible":"oeuf","role":"proteine","options":[{"id":"farine_pois_chiches","ratio":"60 ml de farine + 60 ml d'eau par œuf","ageMin":6,"note":"Texture d'omelette une fois cuite"},{"id":"tofu_ferme","ratio":"80 g émietté pour 2 œufs","ageMin":6}]},{"cible":"lait_vache","role":"liquide","options":[{"id":"boisson_soya","ratio":"1 pour 1","ageMin":6,"note":"Le plus proche du lait en protéines"},{"id":"boisson_avoine","ratio":"1 pour 1","ageMin":6},{"id":"lait_coco","ratio":"1 pour 1","ageMin":6,"note":"Goût de coco perceptible"}]},{"cible":"creme_35","role":"lacte","options":[{"id":"lait_coco","ratio":"partie crémeuse de la conserve, 1 pour 1","ageMin":6},{"id":"boisson_avoine","ratio":"1 pour 1 — sauce plus légère","ageMin":6}]},{"cible":"beurre","role":"gras","options":[{"id":"margarine_sans_lait","ratio":"1 pour 1","ageMin":6},{"id":"huile_canola","ratio":"75 % du volume de beurre","ageMin":6},{"id":"puree_avocat","ratio":"1 pour 1","ageMin":6,"note":"Cuisson douce seulement"}]},{"cible":"yogourt_nature","role":"lacte","options":[{"id":"yogourt_soya","ratio":"1 pour 1","ageMin":6},{"id":"yogourt_coco","ratio":"1 pour 1","ageMin":6}]},{"cible":"yogourt_grec","role":"lacte","options":[{"id":"yogourt_soya","ratio":"1 pour 1, égoutté 30 min pour épaissir","ageMin":6},{"id":"yogourt_coco","ratio":"1 pour 1","ageMin":6}]},{"cible":"fromage_cheddar","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"30 ml par 250 ml de fromage, lié à une purée de courge","ageMin":6,"note":"Goût fromagé, mais ne fond pas"}]},{"cible":"fromage_parmesan","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"15 ml par 30 g","ageMin":6}]},{"cible":"farine_ble","role":"farine","options":[{"id":"melange_sans_gluten","ratio":"1 pour 1","ageMin":6},{"id":"farine_avoine","ratio":"1 pour 1 — texture plus dense","ageMin":6}]},{"cible":"farine_ble","role":"liant","options":[{"id":"fecule_mais","ratio":"moitié de la quantité de farine","ageMin":6},{"id":"farine_riz","ratio":"1 pour 1","ageMin":6}]},{"cible":"pates_ble","role":"farine","options":[{"id":"pates_riz","ratio":"1 pour 1","ageMin":6}]},{"cible":"chapelure","role":"liant","options":[{"id":"chapelure_sans_gluten","ratio":"1 pour 1","ageMin":6},{"id":"flocons_avoine","ratio":"1 pour 1, passés au mélangeur","ageMin":6}]},{"cible":"beurre_arachide","role":"gras","options":[{"id":"beurre_tournesol","ratio":"1 pour 1","ageMin":6},{"id":"beurre_soya","ratio":"1 pour 1","ageMin":6},{"id":"tahini","ratio":"1 pour 1 — goût plus amer","ageMin":6},{"id":"beurre_amande","ratio":"1 pour 1","ageMin":6}]},{"cible":"tahini","role":"gras","options":[{"id":"beurre_tournesol","ratio":"1 pour 1","ageMin":6},{"id":"huile_olive","ratio":"le tiers de la quantité — goût différent","ageMin":6}]},{"cible":"poisson_blanc","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, haché","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1, bien pressé","ageMin":6},{"id":"lentilles","ratio":"1 pour 1, bien égouttées","ageMin":6}]},{"cible":"moutarde_dijon","role":"assaisonnement","options":[{"id":"_omettre","ratio":"omettre — la recette fonctionne sans","ageMin":6}]},{"cible":"crevette","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, en dés","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1, en cubes","ageMin":6},{"id":"poisson_blanc","ratio":"1 pour 1","ageMin":6}]},{"cible":"saumon","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1","ageMin":6},{"id":"lentilles","ratio":"1 pour 1, bien égouttées","ageMin":6}]},{"cible":"sauce_soya","role":"assaisonnement","options":[{"id":"sauce_tamari","ratio":"1 pour 1","ageMin":6},{"id":"coco_aminos","ratio":"1 pour 1 — goût plus doux","ageMin":6}]},{"cible":"sauce_poisson","role":"assaisonnement","options":[{"id":"_omettre","ratio":"omettre — la recette fonctionne sans","ageMin":6}]},{"cible":"couscous","role":"farine","options":[{"id":"quinoa","ratio":"1 pour 1, cuit","ageMin":6},{"id":"riz","ratio":"1 pour 1, cuit","ageMin":6}]},{"cible":"tortillas_ble","role":"farine","options":[{"id":"tortillas_mais","ratio":"1 pour 1","ageMin":6}]},{"cible":"fromage_mozzarella","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"30 ml par 250 ml de fromage, lié à une purée","ageMin":6,"note":"Goût fromagé, mais ne fond pas"}]},{"cible":"abricots_seches","role":"fruit","options":[{"id":"raisins_secs","ratio":"1 pour 1","ageMin":6,"note":"Choisir des raisins bruns non sulfités"},{"id":"dattes","ratio":"1 pour 1, hachées","ageMin":6}]},{"cible":"tofu_ferme","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, en cubes","ageMin":6},{"id":"pois_chiches","ratio":"1 pour 1, bien rincés","ageMin":6}]}],"base":{"allergenes":[{"id":"lait","nom":"Lait"},{"id":"oeuf","nom":"Œufs"},{"id":"arachide","nom":"Arachides"},{"id":"noix","nom":"Noix"},{"id":"ble","nom":"Blé et triticale"},{"id":"soya","nom":"Soya"},{"id":"sesame","nom":"Sésame"},{"id":"poisson","nom":"Poisson"},{"id":"crustaces_mollusques","nom":"Crustacés et mollusques"},{"id":"moutarde","nom":"Moutarde"},{"id":"sulfites","nom":"Sulfites"}],"stades":[{"min":6,"max":8,"nom":"6–8 mois","texture":"Purée lisse à texture écrasée; gros bâtonnets fondants (format doigt) si l'enfant se nourrit seul.","note":"Prioriser les aliments riches en fer. Pas de sel ajouté, pas de miel."},{"min":9,"max":11,"nom":"9–11 mois","texture":"Écrasé grossier et petits morceaux fondants — un morceau qui s'écrase entre deux doigts.","note":"Pas de miel avant 12 mois. Sel toujours limité."},{"min":12,"max":23,"nom":"12–23 mois","texture":"Morceaux tendres coupés petits; la plupart des plats familiaux s'adaptent.","note":"Limiter le sucre ajouté avant 2 ans."},{"min":24,"max":47,"nom":"2–3 ans","texture":"Coupe normale prudente. Vigilance sur les aliments ronds, durs ou collants.","note":"Toujours assis pour manger, sous supervision."},{"min":48,"max":999,"nom":"4 ans et +","texture":"Texture libre; les noix entières s'introduisent graduellement.","note":""}],"interdits":[{"cible":"miel","avantMois":12,"raison":"Risque de botulisme infantile avant 12 mois","action":{"type":"swap","vers":"sirop_erable","ratio":"1 pour 1"}},{"cible":"noix_grenoble","avantMois":48,"raison":"Noix entières ou en morceaux : risque d'étouffement avant 4 ans","action":{"type":"preparation","note":"Moudre finement et incorporer au mélange"}},{"cible":"raisins_secs","avantMois":12,"raison":"Fruits séchés : texture collante et ferme avant 12 mois","action":{"type":"preparation","note":"Faire gonfler dans l'eau chaude, puis hacher"}},{"cible":"bleuets","avantMois":12,"raison":"Petits fruits ronds : risque d'étouffement avant 12 mois","action":{"type":"preparation","note":"Écraser chaque bleuet entre les doigts"}},{"cible":"carotte_crue","avantMois":12,"raison":"Légume dur cru : risque d'étouffement","action":{"type":"preparation","note":"Cuire à la vapeur jusqu'à tendreté, ou râper très finement"}},{"cible":"carotte_crue","avantMois":48,"raison":"Bâtonnets crus durs déconseillés avant 4 ans","action":{"type":"preparation","note":"Servir râpée finement plutôt qu'en bâtonnets"}},{"cible":"sel","avantMois":12,"raison":"Sodium à limiter strictement avant 12 mois","action":{"type":"preparation","note":"Omettre le sel; saler la portion des adultes à part"}},{"cible":"sucre","avantMois":24,"raison":"Sucre ajouté à limiter avant 2 ans","action":{"type":"preparation","note":"Réduire de moitié ou omettre — la recette fonctionne quand même"}},{"cible":"beurre_arachide","avantMois":48,"raison":"Texture collante : ne jamais servir à la cuillère ou en grosse quantité","action":{"type":"preparation","note":"Toujours délayer ou incorporer — jamais en cuillerée"}},{"cible":"crevette","avantMois":12,"raison":"Texture caoutchouteuse : risque d’étouffement avant 12 mois","action":{"type":"preparation","note":"Hacher très finement, bien cuit"}},{"cible":"abricots_seches","avantMois":12,"raison":"Fruits séchés : texture collante et ferme avant 12 mois","action":{"type":"preparation","note":"Faire gonfler dans l’eau chaude, puis hacher"}}]},"recettes":[{"id":"muffins-banane-avoine","nom":"Muffins banane et avoine","categorie":"Déjeuner","portions":"12 muffins","ageMinBase":6,"tempsMin":35,"ingredients":[{"id":"puree_banane","qte":250,"unite":"ml"},{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"flocons_avoine","qte":250,"unite":"ml"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"lait_vache","qte":125,"unite":"ml","role":"liquide"},{"id":"huile_canola","qte":60,"unite":"ml","role":"gras"},{"id":"levure_chimique","qte":10,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"}],"etapes":["Préchauffer le four à 180 °C et graisser 12 moules à muffins.","Mélanger la banane, l'œuf, le lait et l'huile.","Incorporer la farine, l'avoine, la poudre à pâte et la cannelle sans trop brasser.","Répartir dans les moules et cuire 20 à 22 minutes."]},{"id":"crepes-moelleuses","nom":"Crêpes moelleuses","categorie":"Déjeuner","portions":"8 crêpes","ageMinBase":6,"tempsMin":20,"ingredients":[{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"lait_vache","qte":300,"unite":"ml","role":"liquide"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"huile_canola","qte":15,"unite":"ml","role":"gras"},{"id":"levure_chimique","qte":5,"unite":"ml"}],"etapes":["Fouetter les œufs avec le lait et l'huile.","Incorporer la farine et la poudre à pâte jusqu'à texture lisse.","Cuire à feu moyen, environ 2 minutes par côté.","Servir en lanières de la largeur d'un doigt pour les plus petits."]},{"id":"galettes-lentilles-carotte","nom":"Galettes de lentilles et carotte","categorie":"Repas","portions":"10 galettes","ageMinBase":6,"tempsMin":30,"ingredients":[{"id":"lentilles","qte":250,"unite":"ml","role":"proteine"},{"id":"carotte","qte":1,"unite":"unité râpée"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":125,"unite":"ml","role":"liant"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Écraser grossièrement les lentilles à la fourchette.","Mélanger avec la carotte râpée, l'œuf, la chapelure et l'ail.","Former des galettes plates et bien tassées.","Dorer 3 à 4 minutes par côté dans l'huile."]},{"id":"puree-patate-douce-poulet","nom":"Purée patate douce et poulet","categorie":"Repas","portions":"4 portions","ageMinBase":6,"tempsMin":25,"ingredients":[{"id":"patate_douce","qte":1,"unite":"grosse"},{"id":"poulet","qte":100,"unite":"g","role":"proteine"},{"id":"bouillon_sans_sel","qte":125,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":5,"unite":"ml","role":"gras"}],"etapes":["Cuire la patate douce et le poulet dans le bouillon jusqu'à tendreté.","Réduire en purée avec le liquide de cuisson et l'huile.","Ajuster la texture selon l'âge : lisse, écrasée ou en morceaux."]},{"id":"gruau-pommes-cannelle","nom":"Gruau aux pommes et cannelle","categorie":"Déjeuner","portions":"2 portions","ageMinBase":6,"tempsMin":15,"ingredients":[{"id":"flocons_avoine","qte":125,"unite":"ml"},{"id":"lait_vache","qte":250,"unite":"ml","role":"liquide"},{"id":"pomme","qte":1,"unite":"unité râpée"},{"id":"cannelle","qte":1,"unite":"ml"}],"etapes":["Porter le lait à frémissement avec la pomme râpée.","Ajouter l'avoine et cuire 5 minutes en brassant.","Laisser tiédir — la texture épaissit en refroidissant."]},{"id":"boules-energie-dattes","nom":"Boules d'énergie aux dattes","categorie":"Collation","portions":"15 boules","ageMinBase":18,"tempsMin":15,"ingredients":[{"id":"dattes","qte":250,"unite":"ml"},{"id":"beurre_arachide","qte":125,"unite":"ml","role":"gras"},{"id":"flocons_avoine","qte":250,"unite":"ml"},{"id":"graines_chia","qte":30,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"}],"etapes":["Réduire les dattes en pâte au robot.","Ajouter le beurre d'arachide, l'avoine, le chia et la vanille; pulser.","Façonner en petites boules et réfrigérer 30 minutes."]},{"id":"sauce-rosee-poulet","nom":"Pâtes sauce rosée au poulet","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":30,"ingredients":[{"id":"pates_ble","qte":300,"unite":"g","role":"farine"},{"id":"poulet","qte":300,"unite":"g","role":"proteine"},{"id":"tomates_broyees","qte":400,"unite":"ml"},{"id":"creme_35","qte":125,"unite":"ml","role":"lacte"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"ail","qte":2,"unite":"gousses"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Faire revenir l'oignon et l'ail dans l'huile, puis le poulet en dés.","Ajouter les tomates et mijoter 15 minutes.","Incorporer la crème hors du feu.","Mélanger aux pâtes cuites, coupées court pour les petits."]},{"id":"croquettes-poisson","nom":"Croquettes de poisson au four","categorie":"Repas","portions":"12 croquettes","ageMinBase":9,"tempsMin":35,"ingredients":[{"id":"poisson_blanc","qte":300,"unite":"g","role":"proteine"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":180,"unite":"ml","role":"liant"},{"id":"oignon","qte":0.5,"unite":"unité"},{"id":"huile_canola","qte":30,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Hacher finement le poisson cru et l'oignon.","Mélanger avec l'œuf et la moitié de la chapelure.","Former des croquettes, les rouler dans le reste de chapelure.","Cuire au four à 200 °C, 15 minutes, en retournant à mi-cuisson."]},{"id":"houmous-veloute","nom":"Houmous velouté","categorie":"Collation","portions":"500 ml","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"pois_chiches","qte":540,"unite":"ml","role":"proteine"},{"id":"tahini","qte":45,"unite":"ml","role":"gras"},{"id":"huile_olive","qte":45,"unite":"ml"},{"id":"jus_citron","qte":30,"unite":"ml"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"eau","qte":60,"unite":"ml","role":"liquide"}],"etapes":["Rincer les pois chiches à l'eau chaude.","Mixer tous les ingrédients jusqu'à texture très lisse.","Détendre avec de l'eau au besoin — plus lisse pour les plus jeunes."]},{"id":"pain-bananes","nom":"Pain aux bananes","categorie":"Collation","portions":"1 pain","ageMinBase":9,"tempsMin":70,"ingredients":[{"id":"puree_banane","qte":375,"unite":"ml"},{"id":"farine_ble","qte":375,"unite":"ml","role":"farine"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"beurre","qte":80,"unite":"g","role":"gras"},{"id":"sucre","qte":60,"unite":"ml"},{"id":"levure_chimique","qte":5,"unite":"ml"},{"id":"bicarbonate","qte":2,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"}],"etapes":["Préchauffer le four à 180 °C.","Battre le beurre fondu, le sucre, les œufs et la vanille.","Incorporer les bananes, puis les ingrédients secs.","Cuire dans un moule à pain 55 à 60 minutes."]},{"id":"biscuits-avoine-raisins","nom":"Biscuits avoine et raisins","categorie":"Collation","portions":"20 biscuits","ageMinBase":12,"tempsMin":30,"ingredients":[{"id":"flocons_avoine","qte":375,"unite":"ml"},{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"beurre","qte":125,"unite":"g","role":"gras"},{"id":"sucre","qte":125,"unite":"ml"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"raisins_secs","qte":125,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"},{"id":"bicarbonate","qte":2,"unite":"ml"}],"etapes":["Crémer le beurre et le sucre, puis ajouter l'œuf.","Incorporer les secs, puis les raisins.","Déposer en boules aplaties sur une plaque.","Cuire à 180 °C, 10 à 12 minutes."]},{"id":"mini-frittatas-legumes","nom":"Mini-frittatas aux légumes","categorie":"Déjeuner","portions":"8 mini-frittatas","ageMinBase":6,"tempsMin":30,"ingredients":[{"id":"oeuf","qte":4,"unite":"unité","role":"proteine"},{"id":"courgette","qte":1,"unite":"unité râpée"},{"id":"epinards","qte":60,"unite":"ml hachés"},{"id":"fromage_cheddar","qte":80,"unite":"g","role":"lacte"},{"id":"lait_vache","qte":60,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":10,"unite":"ml","role":"gras"}],"etapes":["Préchauffer le four à 180 °C et huiler 8 moules à muffins.","Fouetter les œufs avec le lait.","Ajouter les légumes essorés et le fromage.","Cuire 18 à 20 minutes, jusqu'à ce que le centre soit pris."]},{"id":"potage-courge-coco","nom":"Potage courge et coco","categorie":"Repas","portions":"4 portions","ageMinBase":6,"tempsMin":35,"ingredients":[{"id":"courge_butternut","qte":1,"unite":"unité"},{"id":"lait_coco","qte":250,"unite":"ml","role":"liquide"},{"id":"bouillon_sans_sel","qte":500,"unite":"ml"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"}],"etapes":["Faire revenir l'oignon dans l'huile.","Ajouter la courge en cubes et le bouillon; mijoter 20 minutes.","Mixer avec le lait de coco jusqu'à texture veloutée."]},{"id":"macaroni-fromage-courge","nom":"Macaroni au fromage et courge cachée","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":30,"ingredients":[{"id":"pates_ble","qte":300,"unite":"g","role":"farine"},{"id":"fromage_cheddar","qte":250,"unite":"ml râpé","role":"lacte"},{"id":"lait_vache","qte":250,"unite":"ml","role":"liquide"},{"id":"courge_butternut","qte":250,"unite":"ml en purée"},{"id":"beurre","qte":30,"unite":"g","role":"gras"},{"id":"farine_ble","qte":30,"unite":"ml","role":"liant"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Cuire les pâtes; réserver.","Faire un roux avec le beurre et la farine, puis verser le lait.","Incorporer la purée de courge et le fromage hors du feu.","Mélanger aux pâtes."]},{"id":"boulettes-dinde-pomme","nom":"Boulettes de dinde à la pomme","categorie":"Repas","portions":"20 boulettes","ageMinBase":9,"tempsMin":35,"ingredients":[{"id":"dinde_hachee","qte":450,"unite":"g","role":"proteine"},{"id":"pomme","qte":1,"unite":"unité râpée"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":125,"unite":"ml","role":"liant"},{"id":"moutarde_dijon","qte":5,"unite":"ml","role":"assaisonnement"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Mélanger tous les ingrédients sans trop travailler la viande.","Former des boulettes de la taille d'une balle de ping-pong.","Cuire au four à 200 °C, 18 à 20 minutes.","Écraser ou couper en quartiers pour les plus jeunes."]},{"id":"riz-au-lait-vanille","nom":"Riz au lait à la vanille","categorie":"Dessert","portions":"4 portions","ageMinBase":6,"tempsMin":40,"ingredients":[{"id":"riz","qte":180,"unite":"ml"},{"id":"lait_vache","qte":750,"unite":"ml","role":"liquide"},{"id":"sirop_erable","qte":30,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"},{"id":"cannelle","qte":1,"unite":"ml"}],"etapes":["Cuire le riz dans le lait à feu doux, 30 minutes, en brassant souvent.","Ajouter le sirop d'érable et la vanille en fin de cuisson.","Servir tiède, saupoudré de cannelle."]},{"id":"smoothie-mangue-banane","nom":"Smoothie mangue et banane","categorie":"Collation","portions":"2 verres","ageMinBase":6,"tempsMin":5,"ingredients":[{"id":"mangue","qte":250,"unite":"ml en cubes"},{"id":"banane","qte":1,"unite":"unité"},{"id":"yogourt_nature","qte":175,"unite":"ml","role":"lacte"},{"id":"lait_vache","qte":125,"unite":"ml","role":"liquide"},{"id":"graines_chia","qte":15,"unite":"ml"}],"etapes":["Mixer tous les ingrédients jusqu'à texture lisse.","Servir à la cuillère ou au verre à bec selon l'âge."]},{"id":"barres-granola-tendres","nom":"Barres granola tendres","categorie":"Collation","portions":"12 barres","ageMinBase":12,"tempsMin":40,"ingredients":[{"id":"flocons_avoine","qte":500,"unite":"ml"},{"id":"beurre_arachide","qte":125,"unite":"ml","role":"gras"},{"id":"miel","qte":80,"unite":"ml","role":"sucrant"},{"id":"raisins_secs","qte":80,"unite":"ml"},{"id":"noix_grenoble","qte":60,"unite":"ml","role":"garniture"},{"id":"huile_canola","qte":30,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"}],"etapes":["Chauffer doucement le beurre d'arachide, le miel et l'huile.","Verser sur l'avoine, les raisins et les noix; bien mélanger.","Presser fermement dans un moule tapissé de papier parchemin.","Cuire à 160 °C, 20 minutes, puis laisser refroidir avant de couper."]},{"id":"pouding-chia-vanille","nom":"Pouding de chia à la vanille","categorie":"Dessert","portions":"4 portions","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"graines_chia","qte":60,"unite":"ml","role":"liant"},{"id":"lait_vache","qte":500,"unite":"ml","role":"liquide"},{"id":"sirop_erable","qte":15,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"},{"id":"bleuets","qte":125,"unite":"ml"}],"etapes":["Fouetter le chia, le lait, le sirop et la vanille.","Réfrigérer 4 heures en fouettant une fois après 30 minutes.","Garnir de bleuets au moment de servir."]},{"id":"trempette-yogourt-crudites","nom":"Trempette au yogourt et crudités","categorie":"Collation","portions":"4 portions","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"yogourt_grec","qte":250,"unite":"ml","role":"lacte"},{"id":"concombre","qte":0.5,"unite":"unité râpé"},{"id":"jus_citron","qte":15,"unite":"ml"},{"id":"ail","qte":0.5,"unite":"gousse"},{"id":"carotte_crue","qte":2,"unite":"unités"}],"etapes":["Essorer le concombre râpé dans un linge propre.","Mélanger au yogourt avec le citron et l'ail.","Servir avec les légumes préparés selon l'âge."]},{"id":"couscous-poulet","nom":"Couscous au poulet","categorie":"Repas","portions":"","ageMinBase":9,"tempsMin":null,"ingredients":[{"id":"couscous","qte":250,"unite":"ml"},{"id":"poulet","qte":2,"unite":"unité"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"ail","qte":2,"unite":"gousses"},{"id":"bouillon_sans_sel","qte":250,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"carotte","qte":1,"unite":"unité"}],"etapes":["Faire revenir l'oignon et l'ail dans l'huile.","Ajouter le poulet en dés et le dorer.","Verser le bouillon, ajouter la carotte, mijoter 15 minutes.","Incorporer le couscous, couvrir et laisser gonfler 5 minutes."],"provenance":{"source":"mealdb-demo","idExterne":"52850","url":"https://exemple.test/chicken-couscous","licence":"gabarit conforme au schéma TheMealDB — données de démonstration rédigées par l'équipe","confiance":"exacte"}},{"id":"risotto-crevettes-petits-pois","nom":"Risotto crémeux aux crevettes et petits pois","categorie":"Repas","portions":"4 portions","ageMinBase":12,"tempsMin":35,"ingredients":[{"id":"riz","qte":250,"unite":"ml"},{"id":"crevette","qte":300,"unite":"g"},{"id":"petits_pois","qte":250,"unite":"ml"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"ail","qte":2,"unite":"gousses"},{"id":"bouillon_sans_sel","qte":1000,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":45,"unite":"ml","role":"gras"},{"id":"fromage_parmesan","qte":125,"unite":"ml"}],"etapes":["Faire revenir l'oignon et l'ail dans l'huile jusqu'à transparence.","Ajouter le riz et remuer 1 minute, puis verser le bouillon une louche à la fois en brassant.","Aux 5 dernières minutes, ajouter les petits pois et les crevettes.","Retirer du feu et incorporer le parmesan."],"provenance":{"source":"partenaire-qc","idExterne":"risotto-crevettes-petits-pois","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"à revoir (correspondances partielles)"}},{"id":"granola-tendre-abricots","nom":"Granola tendre aux abricots","categorie":"Déjeuner","portions":"8 portions","ageMinBase":12,"tempsMin":30,"ingredients":[{"id":"flocons_avoine","qte":500,"unite":"ml"},{"id":"abricots_seches","qte":125,"unite":"ml"},{"id":"sirop_erable","qte":80,"unite":"ml"},{"id":"huile_canola","qte":60,"unite":"ml"},{"id":"lin_moulu","qte":30,"unite":"ml","role":"liant"},{"id":"cannelle","qte":5,"unite":"ml"}],"etapes":["Mélanger l'avoine, le lin et la cannelle.","Verser le sirop d'érable et l'huile; bien enrober.","Étaler sur une plaque et cuire à 150 °C, 20 minutes, en brassant à mi-cuisson.","Incorporer les abricots après refroidissement."],"provenance":{"source":"partenaire-qc","idExterne":"granola-tendre-abricots","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"exacte"}},{"id":"quesadillas-poulet-douces","nom":"Quesadillas au poulet toutes douces","categorie":"Repas","portions":"4 portions","ageMinBase":12,"tempsMin":20,"ingredients":[{"id":"tortillas_ble","qte":4,"unite":"unité"},{"id":"poulet","qte":250,"unite":"ml"},{"id":"fromage_cheddar","qte":250,"unite":"ml","role":"lacte"},{"id":"poivron","qte":1,"unite":"unité"},{"id":"huile_canola","qte":15,"unite":"ml","role":"gras"}],"etapes":["Répartir le poulet, le fromage et le poivron sur la moitié de chaque tortilla.","Replier et dorer à la poêle 2 à 3 minutes par côté.","Laisser tiédir, puis couper en pointes étroites."],"provenance":{"source":"partenaire-qc","idExterne":"quesadillas-poulet-douces","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"exacte"}},{"id":"soupe-alphabet-tomate","nom":"Soupe alphabet à la tomate","categorie":"Repas","portions":"6 portions","ageMinBase":9,"tempsMin":30,"ingredients":[{"id":"pates_ble","qte":250,"unite":"ml"},{"id":"tomates_broyees","qte":796,"unite":"ml"},{"id":"carotte","qte":1,"unite":"unité"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"bouillon_sans_sel","qte":1000,"unite":"ml"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"basilic","qte":5,"unite":"ml"}],"etapes":["Faire revenir l'oignon et la carotte dans l'huile 5 minutes.","Ajouter les tomates, le bouillon et le basilic; porter à ébullition.","Ajouter les pâtes et cuire selon l'emballage.","Écraser quelques légumes à la fourchette pour épaissir."],"provenance":{"source":"partenaire-qc","idExterne":"soupe-alphabet-tomate","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"à revoir (correspondances partielles)"}},{"id":"tofu-croustillant-sauce-douce","nom":"Tofu croustillant, sauce douce à l'érable","categorie":"Repas","portions":"4 portions","ageMinBase":12,"tempsMin":25,"ingredients":[{"id":"tofu_ferme","qte":450,"unite":"g"},{"id":"fecule_mais","qte":30,"unite":"ml","role":"liant"},{"id":"sauce_soya","qte":30,"unite":"ml"},{"id":"sirop_erable","qte":15,"unite":"ml"},{"id":"huile_canola","qte":15,"unite":"ml","role":"gras"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"gingembre","qte":5,"unite":"ml"}],"etapes":["Éponger le tofu et le couper en cubes; enrober de fécule.","Dorer les cubes dans l'huile sur toutes les faces.","Mélanger la sauce soya, le sirop, l'ail et le gingembre; verser et laisser napper 1 minute."],"provenance":{"source":"partenaire-qc","idExterne":"tofu-croustillant-sauce-douce","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"exacte"}},{"id":"muffins-carottes-erable","nom":"Muffins aux carottes et à l'érable","categorie":"Collation","portions":"12 muffins","ageMinBase":6,"tempsMin":35,"ingredients":[{"id":"farine_ble","qte":375,"unite":"ml"},{"id":"carotte","qte":250,"unite":"ml"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"compote_pommes","qte":125,"unite":"ml","role":"liant"},{"id":"huile_canola","qte":80,"unite":"ml","role":"gras"},{"id":"sirop_erable","qte":80,"unite":"ml"},{"id":"levure_chimique","qte":10,"unite":"ml"},{"id":"cannelle","qte":5,"unite":"ml"}],"etapes":["Préchauffer le four à 180 °C.","Mélanger les œufs, la compote, l'huile et le sirop.","Incorporer la farine, la poudre à pâte, la cannelle, puis les carottes.","Cuire dans des moules 18 à 20 minutes."],"provenance":{"source":"partenaire-qc","idExterne":"muffins-carottes-erable","url":null,"licence":"démonstration — contenu original de l'équipe, stockage permis","confiance":"exacte"}},{"id":"pates-cremeuses-saumon","nom":"Pâtes crémeuses au saumon","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":25,"ingredients":[{"id":"pates_ble","qte":224,"unite":"g"},{"id":"saumon","qte":2,"unite":"unité"},{"id":"creme_35","qte":250,"unite":"ml","role":"lacte"},{"id":"ail","qte":2,"unite":"gousses"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"fromage_parmesan","qte":62.5,"unite":"ml"}],"etapes":["Cuire les pâtes selon l'emballage.","Saisir le saumon dans l'huile, puis l'effeuiller à la fourchette.","Chauffer la crème avec l'ail, mélanger aux pâtes, au saumon et au parmesan.","Couper les pâtes court pour les plus petits."],"provenance":{"source":"spoonacular-demo","idExterne":"101","url":"https://exemple.test/creamy-salmon-pasta","licence":"gabarit conforme au schéma spoonacular — données de démonstration rédigées par l'équipe (les vraies réponses de l'API ne peuvent pas être stockées, voir LICENCES.md)","confiance":"exacte"}},{"id":"pancakes-banane-avoine","nom":"Pancakes banane et avoine","categorie":"Déjeuner","portions":"8 portions","ageMinBase":6,"tempsMin":20,"ingredients":[{"id":"banane","qte":2,"unite":"unité"},{"id":"flocons_avoine","qte":250,"unite":"ml"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"lait_vache","qte":125,"unite":"ml","role":"liquide"},{"id":"levure_chimique","qte":5,"unite":"ml"},{"id":"cannelle","qte":2.5,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"}],"etapes":["Mixer tous les ingrédients jusqu'à texture lisse.","Cuire de petits pancakes à feu moyen, 2 minutes par côté.","Servir en lanières de la largeur d'un doigt."],"provenance":{"source":"spoonacular-demo","idExterne":"102","url":"https://exemple.test/banana-oat-pancakes","licence":"gabarit conforme au schéma spoonacular — données de démonstration rédigées par l'équipe (les vraies réponses de l'API ne peuvent pas être stockées, voir LICENCES.md)","confiance":"à revoir (correspondances partielles)"}},{"id":"riz-frit-legumes","nom":"Riz frit aux légumes","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":20,"ingredients":[{"id":"riz","qte":750,"unite":"ml"},{"id":"oeuf","qte":2,"unite":"unité","role":"proteine"},{"id":"petits_pois","qte":250,"unite":"ml"},{"id":"carotte","qte":1,"unite":"unité"},{"id":"sauce_soya","qte":30,"unite":"ml"},{"id":"huile_canola","qte":15,"unite":"ml","role":"gras"},{"id":"ail","qte":1,"unite":"gousse"}],"etapes":["Brouiller les œufs dans l'huile, puis réserver.","Sauter la carotte et les petits pois 3 minutes.","Ajouter le riz et la sauce soya, remettre les œufs, bien réchauffer."],"provenance":{"source":"spoonacular-demo","idExterne":"103","url":"https://exemple.test/veggie-fried-rice","licence":"gabarit conforme au schéma spoonacular — données de démonstration rédigées par l'équipe (les vraies réponses de l'API ne peuvent pas être stockées, voir LICENCES.md)","confiance":"exacte"}}]};
+var PUBLICATION = {"_doc":"Quel lot mensuel publie quelle recette, et quel niveau d accès. Les tables de sécurité (moteur, substitutions, règles d âge) ne sont JAMAIS derrière le mur — seul le flux de nouvelles recettes l est.","lots":[{"id":"2026-06","titre":"Les bases","date":"2026-06-01","acces":"libre","note":"Le socle : de quoi manger toute une semaine, quel que soit le profil."},{"id":"2026-07","titre":"Premières textures","date":"2026-07-01","acces":"libre","note":"Pour la diversification — purées, écrasés, premiers morceaux."},{"id":"2026-08","titre":"Repas de famille","date":"2026-08-01","acces":"abonne","note":"Des plats que toute la maisonnée mange, adaptés pour le plus jeune."},{"id":"2026-09","titre":"Boîte à lunch","date":"2026-09-01","acces":"abonne","note":"Collations et lunchs qui voyagent — garderie et école."}],"attribution":{"muffins-banane-avoine":"2026-06","crepes-moelleuses":"2026-06","galettes-lentilles-carotte":"2026-06","puree-patate-douce-poulet":"2026-06","gruau-pommes-cannelle":"2026-06","boules-energie-dattes":"2026-06","sauce-rosee-poulet":"2026-06","croquettes-poisson":"2026-06","houmous-veloute":"2026-07","pain-bananes":"2026-07","biscuits-avoine-raisins":"2026-07","mini-frittatas-legumes":"2026-07","potage-courge-coco":"2026-07","macaroni-fromage-courge":"2026-07","boulettes-dinde-pomme":"2026-07","riz-au-lait-vanille":"2026-08","smoothie-mangue-banane":"2026-08","barres-granola-tendres":"2026-08","pouding-chia-vanille":"2026-08","trempette-yogourt-crudites":"2026-08","couscous-poulet":"2026-08","risotto-crevettes-petits-pois":"2026-08","granola-tendre-abricots":"2026-08","quesadillas-poulet-douces":"2026-09","soupe-alphabet-tomate":"2026-09","tofu-croustillant-sauce-douce":"2026-09","muffins-carottes-erable":"2026-09","pates-cremeuses-saumon":"2026-09","pancakes-banane-avoine":"2026-09","riz-frit-legumes":"2026-09"}};
+
+(function(){
+"use strict";
+var donnees = { catalogue: DONNEES.ingredients, substitutions: DONNEES.substitutions, base: DONNEES.base };
+var recettes = DONNEES.recettes;
+
+var STADES = [
+  { min:6,  nom:"6–8 mois",  txt:"Purées lisses et gros bâtonnets fondants" },
+  { min:9,  nom:"9–11 mois", txt:"Écrasé grossier et petits morceaux fondants" },
+  { min:12, nom:"1–2 ans",   txt:"Morceaux tendres, la plupart des plats familiaux" },
+  { min:24, nom:"2–3 ans",   txt:"Coupe normale prudente" },
+  { min:48, nom:"4 ans et +",txt:"Texture libre" }
+];
+var COURANTS = ["lait","oeuf","arachide","noix","ble","soya"];
+var TEINTES_AV = ["#7A3557","#43703A","#9C5809","#2F6480","#8A3A2A","#5A4A86"];
+var CATEGORIES = ["Tout","Déjeuner","Repas","Collation","Dessert"];
+
+var acces = {
+  mode: "fichier",        /* "serveur" quand une API répond, sinon démonstration locale */
+  jeton: null, courriel: null, abonne: false,
+  lots: [], verrouilles: [], message: null
+};
+
+var etat = {
+  profils: [], actif: null,
+  etape: 0, brouillon: null, autresOuverts: false,
+  recherche: "", categorie: "Tout", rapide: false,
+  feuille: null, ficheOuverte: null
+};
+
+var $ = function(id){ return document.getElementById(id); };
+function ech(t){ var d=document.createElement("div"); d.textContent=String(t); return d.innerHTML; }
+/* Photo seulement si la recette est servie TELLE QUELLE. Dès qu'un ingrédient
+ * change, la photo montrerait autre chose que ce qu'on demande de cuisiner —
+ * l'illustration, elle, est dérivée des ingrédients adaptés. */
+function visuel(r, res){
+  if(r.image && res.statut === "telle_quelle"){
+    return '<img src="' + ech(r.image) + '" alt="" loading="lazy" '
+      + 'style="width:100%;height:100%;object-fit:cover" '
+      + 'onerror="this.parentNode.innerHTML=this.getAttribute(\'data-repli\')" '
+      + 'data-repli="' + ech(Illustration.plat(res, donnees.catalogue, r.categorie)) + '">';
+  }
+  return Illustration.plat(res, donnees.catalogue, r.categorie);
+}
+function sansAcc(t){ return String(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
+function fqte(q){ return String(q).replace(".", ","); }
+function funite(u,q){ return (u==="unité" && q>1) ? "unités" : u; }
+function hachage(t){ var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return h; }
+function teinte(nom){ return TEINTES_AV[hachage(nom||"x") % TEINTES_AV.length]; }
+function initiale(nom){ return (nom||"?").trim().charAt(0).toUpperCase() || "?"; }
+function nomAll(id){ var a=DONNEES.base.allergenes.find(function(x){return x.id===id;}); return a?a.nom.toLowerCase():id; }
+function listeFr(t){ return t.length<2 ? t.join("") : t.slice(0,-1).join(", ") + " et " + t[t.length-1]; }
+
+function sauver(){
+  try{ if(window.storage && window.storage.set)
+    window.storage.set("bouchees:v3", JSON.stringify({profils:etat.profils, actif:etat.actif})).catch(function(){});
+  }catch(e){}
+}
+function charger(){
+  try{ if(window.storage && window.storage.get)
+    return window.storage.get("bouchees:v3").then(function(r){
+      if(r && r.value){ var d=JSON.parse(r.value);
+        if(d && d.profils && d.profils.length){ etat.profils=d.profils; etat.actif=d.actif||d.profils[0].id; } }
+    }).catch(function(){});
+  }catch(e){}
+  return Promise.resolve();
+}
+
+/* ================= ACCÈS ET ABONNEMENT ================= */
+/* En mode fichier, le verrouillage est une DÉMONSTRATION : les recettes sont
+ * dans la page, l'interface les cache. Ça ne protège rien — seul le serveur
+ * protège, en n'envoyant jamais un lot non autorisé. Le bandeau le dit. */
+function lotsLocaux(){
+  return PUBLICATION.lots.map(function(l){
+    var n = recettes.filter(function(r){ return PUBLICATION.attribution[r.id] === l.id; }).length;
+    return { id:l.id, titre:l.titre, date:l.date, acces:l.acces, note:l.note, nombre:n,
+             deverrouille: l.acces === "libre" || acces.abonne };
+  });
+}
+function rafraichirAcces(){
+  acces.lots = lotsLocaux();
+  acces.verrouilles = acces.lots.filter(function(l){ return !l.deverrouille; }).map(function(l){ return l.id; });
+}
+function api(chemin, options){
+  options = options || {};
+  var h = { "Content-Type": "application/json" };
+  if(acces.jeton) h.Authorization = "Bearer " + acces.jeton;
+  return fetch(chemin, { method: options.methode || "GET", headers: h,
+    body: options.corps ? JSON.stringify(options.corps) : undefined })
+    .then(function(r){ return r.json().then(function(j){ return { code:r.status, corps:j }; }); });
+}
+function tenterServeur(){
+  if(typeof fetch !== "function") return Promise.resolve(false);
+  return api("/api/manifeste").then(function(r){
+    if(r.code !== 200 || !r.corps.lots) return false;
+    acces.mode = "serveur";
+    acces.abonne = !!r.corps.abonne;
+    acces.lots = r.corps.lots;
+    acces.verrouilles = r.corps.lots.filter(function(l){ return !l.deverrouille; }).map(function(l){ return l.id; });
+    return api("/api/recettes").then(function(rr){
+      if(rr.code === 200 && rr.corps.recettes){
+        recettes = rr.corps.recettes;   /* le client ne voit QUE ce qui lui revient */
+        reindexer();
+      }
+      return true;
+    });
+  }).catch(function(){ return false; });
+}
+function recettesDuLot(id){
+  return recettes.filter(function(r){
+    return (r.lot || PUBLICATION.attribution[r.id]) === id;
+  });
+}
+function estVerrouillee(r){
+  var lot = r.lot || PUBLICATION.attribution[r.id];
+  return acces.verrouilles.indexOf(lot) !== -1;
+}
+function lotLePlusRecentDeverrouille(){
+  var d = acces.lots.filter(function(l){ return l.deverrouille; });
+  return d.length ? d[d.length - 1] : null;
+}
+
+function ouvrirPaywall(){
+  rendrePaywall();
+  $("paywall").classList.add("on"); $("voile").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function fermerPaywall(){
+  acces.message = null;
+  $("paywall").classList.remove("on"); $("voile").classList.remove("on");
+  document.body.style.overflow = "";
+}
+function rendrePaywall(){
+  var verrous = acces.lots.filter(function(l){ return !l.deverrouille; });
+  var h = '<div class="poignee"></div>'
+    + '<div class="grand">' + (acces.abonne ? "Votre abonnement est actif" : "De nouvelles recettes chaque mois") + '</div>'
+    + '<p class="corps">' + (acces.abonne
+        ? "Tous les lots sont déverrouillés. Le prochain arrive au début du mois prochain."
+        : "Chaque mois, un lot de recettes choisies là où votre profil manque de choix — pas au hasard.") + '</p>'
+    + '<div class="compare">'
+    + '<div class="col"><div class="tt">Toujours gratuit</div><ul>'
+    + '<li>Les échanges d\u2019ingrédients pour chaque allergène</li>'
+    + '<li>Les repères d\u2019âge et de texture</li>'
+    + '<li>Les profils de vos enfants et le mode famille</li>'
+    + '<li>' + acces.lots.filter(function(l){ return l.acces === "libre"; })
+        .reduce(function(n,l){ return n + l.nombre; }, 0) + ' recettes de départ</li>'
+    + '</ul></div>'
+    + '<div class="col paye"><div class="tt">Avec l\u2019abonnement</div><ul>'
+    + '<li>Un nouveau lot chaque mois</li>'
+    + '<li>Ciblé sur les profils que vous avez créés</li>'
+    + '<li>Tous les lots précédents</li>'
+    + '<li>Les photos des recettes servies telles quelles</li>'
+    + '</ul></div></div>';
+
+  if(verrous.length){
+    h += '<div class="f-titre">Lots verrouillés</div><div style="display:grid;gap:8px;margin-bottom:18px">'
+      + verrous.map(function(l){
+          return '<div class="col" style="background:var(--craie);border:1px solid var(--trait);border-radius:14px;padding:12px 14px">'
+            + '<div style="font-weight:600">' + ech(l.titre) + ' <span style="font-family:var(--mono);font-size:11.5px;color:var(--encre-3)">'
+            + l.nombre + ' recettes · ' + ech(l.id) + '</span></div>'
+            + (l.note ? '<div style="font-size:13.5px;color:var(--encre-2);margin-top:3px">' + ech(l.note) + '</div>' : '')
+            + '</div>';
+        }).join("") + '</div>';
+  }
+
+  if(!acces.courriel){
+    h += '<div class="f-bloc"><div class="f-titre">Votre courriel</div>'
+      + '<input class="champ-nom" id="pCourriel" type="email" placeholder="vous@exemple.ca" autocomplete="email"></div>'
+      + '<div class="f-actions"><button class="btn btn-principal" id="pConnexion">Continuer</button>'
+      + '<button class="btn-second" id="pFermer">Plus tard</button></div>';
+  } else if(!acces.abonne){
+    h += '<div class="f-actions"><button class="btn btn-principal" id="pAbonner">S\u2019abonner</button>'
+      + '<button class="btn-second" id="pFermer">Plus tard</button>'
+      + '<button class="f-suppr" id="pDeconnexion">Se déconnecter</button></div>';
+  } else {
+    h += '<div class="f-actions"><button class="btn btn-second" id="pFermer">Fermer</button>'
+      + '<button class="f-suppr" id="pDeconnexion">Se déconnecter</button></div>';
+  }
+
+  if(acces.message) h += '<div class="msg msg-' + acces.message.type + '">' + ech(acces.message.texte) + '</div>';
+  h += '<div class="etat-abo">' + (acces.mode === "serveur"
+      ? "connecté au serveur · " + (acces.courriel ? ech(acces.courriel) : "non identifié")
+      : "mode démonstration — sans serveur, le verrouillage n\u2019est qu\u2019affiché") + '</div>';
+
+  $("paywallCadre").innerHTML = h;
+  var f = $("pFermer"); if(f) f.addEventListener("click", fermerPaywall);
+  var co = $("pConnexion"); if(co) co.addEventListener("click", function(){
+    var v = ($("pCourriel").value || "").trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
+      acces.message = { type:"err", texte:"Ce courriel ne semble pas valide." }; rendrePaywall(); return;
+    }
+    if(acces.mode !== "serveur"){
+      acces.courriel = v;
+      acces.message = { type:"ok", texte:"En mode démonstration, aucun courriel n\u2019est envoyé nulle part." };
+      rendrePaywall(); return;
+    }
+    api("/api/connexion", { methode:"POST", corps:{ courriel:v } }).then(function(r){
+      if(r.code !== 200){ acces.message = { type:"err", texte:r.corps.erreur || "Connexion refusée." }; rendrePaywall(); return; }
+      acces.jeton = r.corps.jeton; acces.courriel = r.corps.courriel; acces.abonne = !!r.corps.abonne;
+      acces.message = { type:"ok", texte:"Connecté." };
+      return tenterServeur().then(function(){ rendrePaywall(); rendreTout(); });
+    }).catch(function(){ acces.message = { type:"err", texte:"Le serveur ne répond pas." }; rendrePaywall(); });
+  });
+  var ab = $("pAbonner"); if(ab) ab.addEventListener("click", function(){
+    /* Sur iOS, un achat de contenu numérique DOIT passer par l'achat intégré
+     * (règle 3.1.1). On délègue au natif; aucune caisse web ne s'ouvre. */
+    if(SOUS_IOS){ versNatif("abonnement"); return; }
+    if(acces.mode !== "serveur"){
+      acces.abonne = true; rafraichirAcces();
+      acces.message = { type:"ok", texte:"Démonstration : abonnement simulé, les lots sont déverrouillés." };
+      rendrePaywall(); rendreTout(); return;
+    }
+    acces.message = { type:"ok", texte:"Le paiement s\u2019ouvre chez Stripe. L\u2019accès se déverrouille dès que le webhook confirme." };
+    rendrePaywall();
+    api("/api/paiement", { methode:"POST", corps:{ courriel: acces.courriel } }).then(function(r){
+      if(r.code === 200 && r.corps.url) window.location.href = r.corps.url;
+    }).catch(function(){});
+  });
+  var de = $("pDeconnexion"); if(de) de.addEventListener("click", function(){
+    if(acces.mode === "serveur") api("/api/deconnexion", { methode:"POST" }).catch(function(){});
+    acces.jeton = null; acces.courriel = null; acces.abonne = false;
+    if(acces.mode === "serveur"){ tenterServeur().then(function(){ rendrePaywall(); rendreTout(); }); }
+    else { rafraichirAcces(); rendrePaywall(); rendreTout(); }
+  });
+}
+$("btnAbo").addEventListener("click", ouvrirPaywall);
+
+/* ================= ACCUEIL GUIDÉ ================= */
+function demarrerAccueil(){
+  etat.brouillon = { id:"p"+Date.now()+Math.floor(Math.random()*99), nom:"", ageMois:9, allergenes:[] };
+  etat.etape = 0; etat.autresOuverts = false;
+  $("accueil").hidden = false; $("app").hidden = true;
+  document.body.style.overflow = "";
+  rendreAccueil();
+}
+function rendreAccueil(){
+  var b = etat.brouillon, h = "";
+  h += '<div class="jauge">' + [0,1,2].map(function(i){ return '<span class="'+(i<=etat.etape?"on":"")+'"></span>'; }).join("") + '</div>';
+
+  if(etat.etape === 0){
+    h += '<div class="marque">Bouchées<i>.</i></div>'
+      + '<p class="accroche">La question de tous les jours : « est-ce qu\u2019il peut manger ça? » On y répond — et on montre exactement ce qu\u2019on change.</p>'
+      + '<h1>Pour qui on cuisine?</h1><p class="sous">Juste un prénom. Il sert à personnaliser chaque réponse.</p>'
+      + '<input class="champ-nom" id="aNom" type="text" maxlength="20" placeholder="Prénom" value="'+ech(b.nom)+'" autocomplete="off">'
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aSuiv">Continuer</button>'
+      + (etat.profils.length
+          ? '<button class="btn-fantome" id="aAbandon">Annuler</button>'
+          : '<button class="btn-fantome" id="aPasser">Passer pour l\u2019instant</button>') + '</div>';
+  }
+  else if(etat.etape === 1){
+    var prenom = b.nom.trim() || "votre enfant";
+    h += '<h1>Quel âge a '+ech(prenom)+'?</h1><p class="sous">Ça détermine les textures et les consignes de sécurité.</p>'
+      + '<div class="stades">' + STADES.map(function(s,i){
+          var suiv = STADES[i+1] ? STADES[i+1].min : 999;
+          return '<button class="stade" aria-pressed="'+(b.ageMois>=s.min && b.ageMois<suiv)+'" data-stade="'+s.min+'">'
+            + '<span class="st-age">'+s.nom+'</span><span class="st-txt">'+ech(s.txt)+'</span></button>';
+        }).join("") + '</div>'
+      + '<div class="reglage-fin"><button id="aM" aria-label="Un mois de moins">−</button>'
+      + '<span class="val"><b>'+b.ageMois+'</b>mois exactement</span>'
+      + '<button id="aP" aria-label="Un mois de plus">+</button></div>'
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aSuiv">Continuer</button>'
+      + '<button class="btn-fantome" id="aRetour">Retour</button></div>';
+  }
+  else{
+    var prenom2 = b.nom.trim() || "votre enfant";
+    var liste = etat.autresOuverts ? DONNEES.base.allergenes.map(function(a){return a.id;}) : COURANTS;
+    h += '<h1>Qu\u2019est-ce qu\u2019on évite pour '+ech(prenom2)+'?</h1>'
+      + '<p class="sous">On retire ces ingrédients de toutes les recettes et on propose un remplacement.</p>'
+      + '<div class="grille-all">' + liste.map(function(id){
+          var a = DONNEES.base.allergenes.find(function(x){return x.id===id;});
+          return '<button class="all-btn" aria-pressed="'+(b.allergenes.indexOf(id)!==-1)+'" data-all="'+id+'">'
+            + Illustration.glyphe(id) + '<span>'+ech(a.nom)+'</span></button>';
+        }).join("") + '</div>'
+      + (etat.autresOuverts ? '' : '<button class="lien-plus" id="aAutres">+ Voir les 5 autres allergènes</button>')
+      + (b.allergenes.length ? '' : '<p class="aucune-all">Aucun pour l\u2019instant — c\u2019est correct, ça se change en tout temps.</p>')
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aFini">Voir les recettes</button>'
+      + '<button class="btn-fantome" id="aRetour">Retour</button></div>';
+  }
+  $("accueilCadre").innerHTML = h;
+  brancherAccueil();
+}
+function brancherAccueil(){
+  var b = etat.brouillon;
+  var nom = $("aNom");
+  if(nom){
+    nom.addEventListener("input", function(e){ b.nom = e.target.value; });
+    nom.addEventListener("keydown", function(e){ if(e.key==="Enter"){ etat.etape=1; rendreAccueil(); } });
+    setTimeout(function(){ try{ nom.focus(); }catch(e){} }, 80);
+  }
+  var s = $("aSuiv"); if(s) s.addEventListener("click", function(){ etat.etape++; rendreAccueil(); });
+  var r = $("aRetour"); if(r) r.addEventListener("click", function(){ etat.etape--; rendreAccueil(); });
+  var pa = $("aPasser"); if(pa) pa.addEventListener("click", function(){ b.nom="Mon enfant"; etat.etape=1; rendreAccueil(); });
+  var ab = $("aAbandon"); if(ab) ab.addEventListener("click", function(){
+    etat.brouillon = null; $("accueil").hidden = true; $("app").hidden = false; rendreTout();
+  });
+  var m = $("aM"); if(m) m.addEventListener("click", function(){ b.ageMois=Math.max(6,b.ageMois-1); rendreAccueil(); });
+  var p = $("aP"); if(p) p.addEventListener("click", function(){ b.ageMois=Math.min(72,b.ageMois+1); rendreAccueil(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-stade]"), function(el){
+    el.addEventListener("click", function(){ b.ageMois = parseInt(el.dataset.stade,10); rendreAccueil(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#accueilCadre [data-all]"), function(el){
+    el.addEventListener("click", function(){
+      var id=el.dataset.all, i=b.allergenes.indexOf(id);
+      if(i===-1) b.allergenes.push(id); else b.allergenes.splice(i,1);
+      rendreAccueil();
+    });
+  });
+  var au = $("aAutres"); if(au) au.addEventListener("click", function(){ etat.autresOuverts=true; rendreAccueil(); });
+  var fi = $("aFini"); if(fi) fi.addEventListener("click", function(){
+    if(!b.nom.trim()) b.nom = "Mon enfant";
+    etat.profils.push(b); etat.actif = b.id; etat.brouillon = null;
+    $("accueil").hidden = true; $("app").hidden = false;
+    sauver(); rendreTout(); window.scrollTo(0,0);
+  });
+}
+
+/* ================= PROFIL ================= */
+function profilResolu(){
+  if(etat.actif === "famille" && etat.profils.length > 1){
+    var alls = {}, ageMin = 999;
+    etat.profils.forEach(function(p){
+      p.allergenes.forEach(function(a){ alls[a]=true; });
+      if(p.ageMois < ageMin) ageMin = p.ageMois;
+    });
+    return { nom:"tout le monde", prenoms:listeFr(etat.profils.map(function(p){return p.nom;})),
+             ageMois:ageMin, allergenes:Object.keys(alls).sort(), famille:true };
+  }
+  var p = etat.profils.find(function(x){ return x.id === etat.actif; }) || etat.profils[0];
+  return { nom:p.nom, prenoms:p.nom, ageMois:p.ageMois, allergenes:p.allergenes.slice().sort(), famille:false, id:p.id };
+}
+function rendreAvatars(){
+  var h = etat.profils.map(function(p){
+    return '<button class="av" aria-pressed="'+(etat.actif===p.id)+'" data-profil="'+p.id+'">'
+      + '<span class="pastille" style="background:'+teinte(p.nom)+'">'+ech(initiale(p.nom))+'</span>'
+      + ech(p.nom) + '</button>';
+  }).join("");
+  if(etat.profils.length > 1){
+    h += '<button class="av av-fam" aria-pressed="'+(etat.actif==="famille")+'" data-profil="famille">'
+      + '<span class="pastille">tous</span>Tout le monde</button>';
+  }
+  h += '<button class="av av-plus" data-nouveau="1">+ Enfant</button>';
+  $("avatars").innerHTML = h;
+}
+$("avatars").addEventListener("click", function(e){
+  if(e.target.closest("[data-nouveau]")){ demarrerAccueil(); return; }
+  var b = e.target.closest("[data-profil]"); if(!b) return;
+  var cible = b.dataset.profil;
+  if(etat.actif === cible && cible !== "famille"){ ouvrirFeuille(cible); return; }
+  etat.actif = cible; sauver(); rendreTout();
+});
+
+/* ================= FEUILLE ================= */
+function ouvrirFeuille(id){
+  var p = etat.profils.find(function(x){ return x.id===id; });
+  etat.feuille = { id:p.id, nom:p.nom, ageMois:p.ageMois, allergenes:p.allergenes.slice(), autres:false };
+  rendreFeuille();
+  $("feuille").classList.add("on"); $("voile").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function fermerFeuille(){
+  etat.feuille = null; $("feuille").classList.remove("on"); $("voile").classList.remove("on");
+  document.body.style.overflow = "";
+}
+function rendreFeuille(){
+  var f = etat.feuille; if(!f) return;
+  var liste = f.autres ? DONNEES.base.allergenes.map(function(a){return a.id;}) : COURANTS;
+  $("feuilleCadre").innerHTML =
+    '<div class="poignee"></div><h2>'+ech(f.nom)+'</h2>'
+    + '<div class="f-bloc"><div class="f-titre">Prénom</div>'
+    + '<input class="champ-nom" id="fNom" type="text" maxlength="20" value="'+ech(f.nom)+'"></div>'
+    + '<div class="f-bloc"><div class="f-titre">Âge</div><div class="stades">'
+    + STADES.map(function(s,i){
+        var suiv = STADES[i+1] ? STADES[i+1].min : 999;
+        return '<button class="stade" aria-pressed="'+(f.ageMois>=s.min&&f.ageMois<suiv)+'" data-fstade="'+s.min+'">'
+          + '<span class="st-age">'+s.nom+'</span><span class="st-txt">'+ech(s.txt)+'</span></button>';
+      }).join("")
+    + '</div><div class="reglage-fin"><button id="fM" aria-label="Un mois de moins">−</button>'
+    + '<span class="val"><b>'+f.ageMois+'</b>mois exactement</span>'
+    + '<button id="fP" aria-label="Un mois de plus">+</button></div></div>'
+    + '<div class="f-bloc"><div class="f-titre">Allergènes évités</div><div class="grille-all">'
+    + liste.map(function(id){
+        var a = DONNEES.base.allergenes.find(function(x){return x.id===id;});
+        return '<button class="all-btn" aria-pressed="'+(f.allergenes.indexOf(id)!==-1)+'" data-fall="'+id+'">'
+          + Illustration.glyphe(id) + '<span>'+ech(a.nom)+'</span></button>';
+      }).join("") + '</div>'
+    + (f.autres ? '' : '<button class="lien-plus" id="fAutres">+ Voir les 5 autres allergènes</button>') + '</div>'
+    + '<div class="f-actions"><button class="btn btn-principal" id="fOk">Enregistrer</button>'
+    + '<button class="btn-second" id="fAnnul">Annuler</button>'
+    + (etat.profils.length > 1 ? '<button class="f-suppr" id="fSuppr">Retirer</button>' : '') + '</div>';
+
+  $("fNom").addEventListener("input", function(e){ f.nom = e.target.value; });
+  $("fM").addEventListener("click", function(){ f.ageMois=Math.max(6,f.ageMois-1); rendreFeuille(); });
+  $("fP").addEventListener("click", function(){ f.ageMois=Math.min(72,f.ageMois+1); rendreFeuille(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-fstade]"), function(el){
+    el.addEventListener("click", function(){ f.ageMois=parseInt(el.dataset.fstade,10); rendreFeuille(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-fall]"), function(el){
+    el.addEventListener("click", function(){
+      var id=el.dataset.fall, i=f.allergenes.indexOf(id);
+      if(i===-1) f.allergenes.push(id); else f.allergenes.splice(i,1);
+      rendreFeuille();
+    });
+  });
+  var au = $("fAutres"); if(au) au.addEventListener("click", function(){ f.autres=true; rendreFeuille(); });
+  $("fOk").addEventListener("click", function(){
+    if(!f.nom.trim()) f.nom = "Mon enfant";
+    var i = etat.profils.findIndex(function(x){ return x.id===f.id; });
+    etat.profils[i] = { id:f.id, nom:f.nom, ageMois:f.ageMois, allergenes:f.allergenes };
+    fermerFeuille(); sauver(); rendreTout();
+  });
+  $("fAnnul").addEventListener("click", fermerFeuille);
+  var sup = $("fSuppr"); if(sup) sup.addEventListener("click", function(){
+    etat.profils = etat.profils.filter(function(x){ return x.id!==f.id; });
+    if(!etat.profils.length){ fermerFeuille(); demarrerAccueil(); return; }
+    if(etat.actif===f.id || etat.profils.length<2) etat.actif = etat.profils[0].id;
+    fermerFeuille(); sauver(); rendreTout();
+  });
+}
+$("voile").addEventListener("click", function(){ fermerFeuille(); fermerPaywall(); });
+
+/* ================= CALCUL ================= */
+var index = {};
+function reindexer(){
+  index = {};
+  recettes.forEach(function(r){
+    index[r.id] = sansAcc([r.nom, r.categorie].concat(r.ingredients.map(function(u){
+      var d = donnees.catalogue[u.id]; return d ? d.nom : u.id;
+    })).join(" "));
+  });
+}
+reindexer();
+function calculer(prof){
+  return recettes.filter(function(r){ return !estVerrouillee(r); }).map(function(r){
+    return { r:r, res:Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees) };
+  });
+}
+function passeFiltres(p){
+  if(etat.categorie !== "Tout" && p.r.categorie !== etat.categorie) return false;
+  if(etat.rapide && !(p.r.tempsMin && p.r.tempsMin <= 30)) return false;
+  var q = etat.recherche.trim();
+  if(q && index[p.r.id].indexOf(sansAcc(q)) === -1) return false;
+  return true;
+}
+function premierEchange(res){
+  var s = res.ingredients.find(function(i){ return i.statut==="substitue"; });
+  if(s) return { de:s.nom, vers:s.nomVers };
+  var o = res.ingredients.find(function(i){ return i.statut==="omis"; });
+  if(o) return { de:o.nom, vers:"on l\u2019enlève" };
+  return null;
+}
+function nbConsignes(res){ return res.alertes.filter(function(a){ return a.niveau==="securite"; }).length; }
+
+/* ================= RENDU ================= */
+function rendreEntete(prof){
+  var alls = prof.allergenes.map(nomAll);
+  var p2 = prof.famille
+    ? 'On prend l\u2019âge du plus jeune (' + prof.ageMois + ' mois) et on évite tout ce que chacun évite'
+      + (alls.length ? ' : ' + listeFr(alls) + '.' : '.')
+    : prof.ageMois + ' mois' + (alls.length ? ' — sans ' + listeFr(alls) + '.' : ' — aucun allergène évité pour l\u2019instant.');
+  $("enteteJour").innerHTML = '<div class="eyebrow">Aujourd\u2019hui</div>'
+    + '<h1>On cuisine pour <em>'+ech(prof.famille ? prof.prenoms : prof.nom)+'</em></h1>'
+    + '<p>'+ech(p2)+' Touchez son nom en haut pour ajuster.</p>';
+}
+function rendreHero(paires, prof){
+  var choix = paires.find(function(p){ return p.res.statut==="telle_quelle" && p.r.tempsMin && p.r.tempsMin<=30; })
+    || paires.find(function(p){ return p.res.statut==="telle_quelle"; })
+    || paires.find(function(p){ return p.res.statut==="adaptee"; });
+  if(!choix){ $("zoneHero").innerHTML = ""; return null; }
+  var res = choix.res, r = choix.r;
+  var pourquoi = res.statut === "telle_quelle"
+    ? "Rien à changer : telle quelle, elle convient à " + prof.nom + "."
+    : res.nbSubstitutions + " échange" + (res.nbSubstitutions>1?"s":"") + " et c\u2019est prêt pour " + prof.nom + ".";
+  $("zoneHero").innerHTML = '<button class="hero" data-id="'+r.id+'">'
+    + '<div class="hero-img">' + visuel(r, res) + '</div>'
+    + '<div class="hero-txt">'
+    + '<div class="meta">Notre choix · '+ech(r.categorie)+(r.tempsMin?' · '+r.tempsMin+' min':'')+'</div>'
+    + '<h2>'+ech(r.nom)+'</h2>'
+    + '<p class="pourquoi">'+ech(pourquoi)+'</p>'
+    + '<span class="cta">Voir la recette</span></div></button>';
+  return r.id;
+}
+function carte(p){
+  var r = p.r, res = p.res, cls="", jcls, jeton;
+  if(res.statut === "non_adaptable"){ cls="non"; jcls="j-non"; jeton="✕ Pas cette fois"; }
+  else if(res.statut === "adaptee"){ jcls="j-adapt"; jeton="⇄ "+res.nbSubstitutions+" échange"+(res.nbSubstitutions>1?"s":""); }
+  else { jcls="j-ok"; jeton="✓ Telle quelle"; }
+  var h = '<button class="carte '+cls+'" data-id="'+r.id+'">'
+    + '<div class="carte-img">' + visuel(r, res)
+    + '<span class="jeton '+jcls+'">'+jeton+'</span>';
+  var nc = nbConsignes(res);
+  if(nc && res.statut !== "non_adaptable") h += '<span class="jeton-age">'+nc+' consigne'+(nc>1?"s":"")+'</span>';
+  h += '</div><div class="carte-txt"><h4>'+ech(r.nom)+'</h4>'
+    + '<div class="meta">'+ech(r.categorie)+(r.tempsMin?' · '+r.tempsMin+' min':'')+'</div>';
+  if(res.statut === "non_adaptable"){
+    var bl = res.alertes.find(function(a){ return a.niveau==="bloquant"; });
+    if(bl) h += '<div class="echange">'+ech(bl.message)+'</div>';
+  } else {
+    var e = premierEchange(res);
+    if(e) h += '<div class="echange"><s>'+ech(e.de)+'</s> → <b>'+ech(e.vers)+'</b>'
+      + (res.nbSubstitutions>1 ? ' <span style="color:var(--encre-3)">+'+(res.nbSubstitutions-1)+' autre'+(res.nbSubstitutions>2?"s":"")+'</span>' : '') + '</div>';
+  }
+  return h + '</div></button>';
+}
+function section(titre, paires){
+  if(!paires.length) return "";
+  return '<div class="section"><div class="section-tete"><h3>'+ech(titre)+'</h3>'
+    + '<span class="compte">'+paires.length+'</span><span class="filet"></span></div>'
+    + '<div class="grille">' + paires.map(carte).join("") + '</div></div>';
+}
+function sectionVerrouillee(){
+  var verrous = acces.lots.filter(function(l){ return !l.deverrouille; });
+  if(!verrous.length) return "";
+  return verrous.map(function(l){
+    return '<div class="section section-verrou"><div class="section-tete">'
+      + '<h3>' + ech(l.titre) + '</h3><span class="compte">' + l.nombre + ' recettes · verrouillé</span>'
+      + '<span class="filet"></span></div>'
+      + (l.note ? '<p class="lot-note">' + ech(l.note) + '</p>' : '')
+      + '<div class="grille">' + carteVerrou(l) + '</div></div>';
+  }).join("");
+}
+function carteVerrou(l){
+  var n = Math.min(l.nombre, 4);
+  var out = "";
+  for(var i=0;i<n;i++){
+    out += '<button class="carte carte-verrou" data-paywall="1">'
+      + '<div class="carte-img"><span class="cadenas">'
+      + '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">'
+      + '<rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>'
+      + '</span></div><div class="carte-txt"><h4>Recette du lot « ' + ech(l.titre) + ' »</h4>'
+      + '<div class="meta">' + ech(l.id) + '</div>'
+      + '<div class="echange">Touchez pour voir ce que l\u2019abonnement ajoute.</div></div></button>';
+  }
+  return out;
+}
+function rendreSections(paires, heroId){
+  var verrou = sectionVerrouillee();
+  if(!paires.length){
+    $("sections").innerHTML = '<div class="section"><div class="grille"><div class="vide">'
+      + '<div class="t">Rien ne correspond</div><div class="s">Essayez un autre mot, ou enlevez un filtre.</div></div></div></div>'
+      + verrou;
+    return;
+  }
+  var v = paires.filter(function(p){ return p.r.id !== heroId; });
+  var recent = lotLePlusRecentDeverrouille();
+  var nouveautes = recent ? v.filter(function(p){
+    return (p.r.lot || PUBLICATION.attribution[p.r.id]) === recent.id && p.res.statut !== "non_adaptable";
+  }) : [];
+  var idsNouv = {}; nouveautes.forEach(function(p){ idsNouv[p.r.id] = 1; });
+  var reste = v.filter(function(p){ return !idsNouv[p.r.id]; });
+
+  $("sections").innerHTML =
+      (nouveautes.length ? section("Nouveautés — " + recent.titre, nouveautes) : "")
+    + section("Prêtes telles quelles", reste.filter(function(p){ return p.res.statut==="telle_quelle"; }))
+    + section("Avec quelques échanges", reste.filter(function(p){ return p.res.statut==="adaptee"; }))
+    + section("Pas cette fois", reste.filter(function(p){ return p.res.statut==="non_adaptable"; }))
+    + verrou;
+}
+function rendrePilules(){
+  var h = CATEGORIES.map(function(c){
+    return '<button class="pilule" aria-pressed="'+(etat.categorie===c)+'" data-cat="'+c+'">'+c+'</button>';
+  }).join("");
+  $("pilules").innerHTML = h + '<button class="pilule" aria-pressed="'+etat.rapide+'" data-rapide="1">30 min et moins</button>';
+}
+$("pilules").addEventListener("click", function(e){
+  var p = e.target.closest(".pilule"); if(!p) return;
+  if(p.dataset.rapide) etat.rapide = !etat.rapide; else etat.categorie = p.dataset.cat;
+  rendreListe();
+});
+$("recherche").addEventListener("input", function(e){ etat.recherche = e.target.value; rendreListe(); });
+
+function rendreListe(){
+  var prof = profilResolu();
+  rendreEntete(prof);
+  rendrePilules();
+  var paires = calculer(prof).filter(passeFiltres);
+  var vierge = !etat.recherche.trim() && etat.categorie==="Tout" && !etat.rapide;
+  var heroId = null;
+  if(vierge) heroId = rendreHero(paires, prof);
+  else $("zoneHero").innerHTML = "";
+  rendreSections(paires, heroId);
+}
+function rendreBandeau(){
+  var b = $("btnAbo");
+  b.textContent = acces.abonne ? "Abonné" : "Abonnement";
+  b.classList.toggle("actif", !!acces.abonne);
+  if(SOUS_IOS){ $("bandeau").innerHTML = ""; return; }
+  $("bandeau").innerHTML = acces.mode === "serveur" ? "" :
+    '<div class="bandeau-demo"><b>Mode démonstration.</b> Sans serveur, les lots verrouillés sont '
+    + 'quand même dans cette page — l\u2019interface les cache, c\u2019est tout. Le vrai verrou est côté '
+    + 'serveur : il n\u2019envoie jamais un lot non autorisé.</div>';
+}
+function rendreTout(){ rendreAvatars(); rendreBandeau(); rendreListe(); }
+
+document.addEventListener("click", function(e){
+  if(e.target.closest("[data-paywall]")){ ouvrirPaywall(); return; }
+  var c = e.target.closest("[data-id]"); if(!c) return;
+  ouvrirFiche(c.dataset.id);
+});
+
+/* ================= FICHE ================= */
+function ligne(i){
+  var h = '<div class="ligne"><div class="l-haut"><div class="l-nom">';
+  if(i.statut==="substitue") h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">'+ech(i.nomVers)+'</span>';
+  else if(i.statut==="omis") h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">on l\u2019enlève</span>';
+  else if(i.statut==="impossible") h += '<s>'+ech(i.nom)+'</s>';
+  else h += ech(i.nom);
+  h += '</div><div class="l-qte">'+fqte(i.qte)+' '+ech(funite(i.unite,i.qte))+'</div></div>';
+  var tags = [];
+  if(i.motif) tags.push('<span class="tag t-motif">'+ech(i.motif)+'</span>');
+  if((i.statut==="substitue"||i.statut==="omis") && i.ratio) tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.preparation) tags.push('<span class="tag t-prep">'+ech(i.preparation)+'</span>');
+  if(i.statut==="impossible") tags.push('<span class="tag t-non">aucun remplacement sûr</span>');
+  if(tags.length) h += '<div class="l-tags">'+tags.join("")+'</div>';
+  var n = i.noteSubstitut || i.noteIngredient;
+  if(n) h += '<div class="l-note">'+ech(n)+'</div>';
+  return h + '</div>';
+}
+function ouvrirFiche(id){
+  var r = recettes.find(function(x){ return x.id===id; });
+  if(!r) return;
+  var prof = profilResolu();
+  var res = Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees);
+  etat.ficheOuverte = id;
+
+  var vcls, vic, vtt, vss;
+  if(res.statut === "non_adaptable"){
+    vcls="v-non"; vic="✕"; vtt="Pas cette fois pour "+prof.nom;
+    var bl = res.alertes.find(function(a){ return a.niveau==="bloquant"; });
+    vss = bl ? bl.message : "Un ingrédient n\u2019a pas de remplacement sûr.";
+  } else if(res.statut === "adaptee"){
+    vcls="v-adapt"; vic="⇄"; vtt="Oui — avec "+res.nbSubstitutions+" échange"+(res.nbSubstitutions>1?"s":"");
+    vss = "Ce qu\u2019on remplace, par quoi et pourquoi : tout est détaillé plus bas.";
+  } else {
+    vcls="v-ok"; vic="✓"; vtt="Oui, telle quelle";
+    vss = "Aucun ingrédient à changer pour "+prof.nom+".";
+  }
+
+  var alls = prof.allergenes.map(nomAll);
+  var h = '<div class="fiche-heros">' + visuel(r, res)
+    + '<button class="fiche-retour" id="bRetour">← Recettes</button></div>'
+    + '<div class="fiche-cadre"><h2>'+ech(r.nom)+'</h2>'
+    + '<div class="meta">'+ech(r.categorie)+(r.portions?' · '+ech(r.portions):'')+(r.tempsMin?' · '+r.tempsMin+' min':'')
+    + ' · '+ech(prof.nom)+', '+prof.ageMois+' mois'+(alls.length?', sans '+ech(listeFr(alls)):'')+'</div>'
+    + '<div class="verdict '+vcls+'"><span class="ic">'+vic+'</span><div><div class="tt">'+ech(vtt)+'</div>'
+    + '<div class="ss">'+ech(vss)+'</div></div></div>'
+    + '<div class="bloc bloc-texture"><div class="stade-nom">Texture — '+ech(res.texture.nom)+'</div>'
+    + '<p>'+ech(res.texture.texture)+'</p>'
+    + (res.texture.note ? '<p class="n2">'+ech(res.texture.note)+'</p>' : '') + '</div>';
+
+  var autres = res.alertes.filter(function(a){ return a.niveau!=="bloquant"; });
+  if(autres.length) h += autres.map(function(a){
+    return '<div class="alerte a-'+a.niveau+'"><span>'+ech(a.message)+'</span></div>';
+  }).join("");
+
+  var change = res.ingredients.some(function(i){ return i.statut!=="conserve"; });
+  h += '<div class="bloc"><div class="etiquette">'+(change?"Ingrédients — ce qu\u2019on change et pourquoi":"Ingrédients")+'</div>'
+    + res.ingredients.map(ligne).join("") + '</div>'
+    + '<div class="bloc"><div class="etiquette">Préparation</div><div class="etapes">'
+    + res.etapes.map(function(e){ return '<p>'+ech(e)+'</p>'; }).join("") + '</div></div>';
+  if(r.provenance){
+    h += '<div class="bloc"><div class="etiquette">Source</div><div class="provenance">'
+      + ech(r.provenance.source) + (r.provenance.url ? '<br>'+ech(r.provenance.url) : '')
+      + '<br>Licence : ' + ech(r.provenance.licence) + '</div></div>';
+  }
+  h += '</div>';
+
+  $("ficheContenu").innerHTML = h;
+  $("fiche").classList.add("on"); $("fiche").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("bRetour").addEventListener("click", fermerFiche);
+  $("bRetour").focus();
+}
+function fermerFiche(){
+  etat.ficheOuverte = null; $("fiche").classList.remove("on");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if(etat.ficheOuverte) fermerFiche();
+  else if($("paywall").classList.contains("on")) fermerPaywall();
+  else if(etat.feuille) fermerFeuille();
+});
+
+/* ================= PONT NATIF (iOS) =================
+ * Fonctions appelées depuis Swift. Elles réutilisent le moteur déjà testé —
+ * aucune logique de sécurité n'est dupliquée côté natif. Deux moteurs, ce
+ * serait deux vérités : inacceptable sur des allergies. */
+var SOUS_IOS = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bouchees);
+
+function versNatif(action, charge){
+  if(!SOUS_IOS) return;
+  try{ window.webkit.messageHandlers.bouchees.postMessage(Object.assign({action:action}, charge||{})); }catch(e){}
+}
+
+/* Confronte une liste d'ingrédients d'étiquette au catalogue. Ce qui n'est pas
+ * reconnu est SIGNALÉ, jamais ignoré : sur une étiquette, le mot inconnu peut
+ * être précisément l'allergène. */
+window.evaluerProduitScanne = function(entree){
+  var evites = (entree && entree.evites) || [];
+  var texte = String((entree && entree.texte) || "");
+  var morceaux = texte.split(/[,;()\[\]\u2022\u00b7\n]+/)
+    .map(function(t){ return t.replace(/\d+([.,]\d+)?\s*%/g, " ")
+                              .replace(/^\s*(et|ou|dont|contient)\s+/i, "").trim(); })
+    .filter(function(t){ return t.length > 1; });
+
+  /* Les étiquettes écrivent « Flocons d'avoine », « Flocons d avoine »,
+   * « FLOCONS D\u2019AVOINE ». On aplatit tout de la même façon des deux côtés. */
+  function aplatir(t){ return sansAcc(t).replace(/['\u2019\u2013-]/g, " ").replace(/\s+/g, " ").trim(); }
+  var indexNoms = {};
+  Object.keys(donnees.catalogue).forEach(function(id){
+    indexNoms[aplatir(donnees.catalogue[id].nom)] = id;
+  });
+  var cles = Object.keys(indexNoms);
+
+  var trouves = {}, inconnus = [];
+  morceaux.forEach(function(m){
+    var n = aplatir(m);
+    var id = indexNoms[n];
+    if(!id){
+      var cle = cles.find(function(c){
+        return c.length > 3 && (n.indexOf(c) !== -1 || (n.length > 3 && c.indexOf(n) !== -1));
+      });
+      id = cle ? indexNoms[cle] : null;
+    }
+    if(!id){ if(n.length > 2) inconnus.push(m.trim()); return; }
+    donnees.catalogue[id].allergenes.forEach(function(a){
+      if(evites.indexOf(a) !== -1) trouves[a] = true;
+    });
+  });
+
+  var listeTrouves = Object.keys(trouves).map(nomAll);
+  var statut, message;
+  if(listeTrouves.length){
+    statut = "a_eviter";
+    message = "\u00c0 éviter — l\u2019étiquette contient : " + listeFr(listeTrouves) + ".";
+  } else if(inconnus.length){
+    statut = "incertain";
+    message = "Rien d\u2019interdit reconnu, mais des ingrédients n\u2019ont pas été identifiés. Lisez l\u2019étiquette.";
+  } else {
+    statut = "sur";
+    message = "Aucun allergène évité détecté dans la liste d\u2019ingrédients.";
+  }
+  return { statut: statut, allergenesTrouves: listeTrouves,
+           ingredientsInconnus: inconnus.slice(0, 6), message: message };
+};
+
+/* Le natif est propriétaire des profils : il les pousse ici. */
+window.appliquerProfilNatif = function(p){
+  if(!p) return;
+  etat.profils = [{ id:"natif", nom:p.nom || "Mon enfant", ageMois:p.ageMois || 9,
+                    allergenes:p.allergenes || [] }];
+  etat.actif = "natif";
+  $("accueil").hidden = true; $("app").hidden = false;
+  rendreTout();
+};
+
+/* L'abonnement est décidé par StoreKit puis par le serveur — jamais ici. */
+window.majAbonnementNatif = function(actif){
+  acces.abonne = !!actif;
+  if(acces.mode !== "serveur") rafraichirAcces();
+  rendreTout();
+};
+
+Promise.all([charger(), tenterServeur()]).then(function(){
+  if(acces.mode !== "serveur") rafraichirAcces();
+  if(!etat.profils.length) demarrerAccueil();
+  else { $("app").hidden = false; rendreTout(); }
+});
+})();
+</script>
+</body>
+</html>

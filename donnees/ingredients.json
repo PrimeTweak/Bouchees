@@ -1,0 +1,735 @@
+{
+  "farine_ble": {
+    "nom": "Farine de blé",
+    "allergenes": [
+      "ble"
+    ],
+    "roles": [
+      "farine",
+      "liant"
+    ]
+  },
+  "farine_avoine": {
+    "nom": "Farine d'avoine",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ],
+    "note": "Choisir une avoine certifiée sans gluten en cas de maladie cœliaque"
+  },
+  "farine_riz": {
+    "nom": "Farine de riz",
+    "allergenes": [],
+    "roles": [
+      "farine",
+      "liant"
+    ]
+  },
+  "farine_pois_chiches": {
+    "nom": "Farine de pois chiches",
+    "allergenes": [],
+    "roles": [
+      "farine",
+      "proteine"
+    ]
+  },
+  "melange_sans_gluten": {
+    "nom": "Mélange à pâtisserie sans gluten",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ],
+    "note": "Vérifier la composition — certains mélanges contiennent du soya"
+  },
+  "fecule_mais": {
+    "nom": "Fécule de maïs",
+    "allergenes": [],
+    "roles": [
+      "liant"
+    ]
+  },
+  "flocons_avoine": {
+    "nom": "Flocons d'avoine",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ],
+    "note": "Avoine pure certifiée sans gluten si cœliaquie"
+  },
+  "chapelure": {
+    "nom": "Chapelure",
+    "allergenes": [
+      "ble"
+    ],
+    "roles": [
+      "liant",
+      "farine"
+    ]
+  },
+  "chapelure_sans_gluten": {
+    "nom": "Chapelure sans gluten",
+    "allergenes": [],
+    "roles": [
+      "liant"
+    ]
+  },
+  "pates_ble": {
+    "nom": "Pâtes de blé",
+    "allergenes": [
+      "ble"
+    ],
+    "roles": [
+      "farine"
+    ]
+  },
+  "pates_riz": {
+    "nom": "Pâtes de riz",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ]
+  },
+  "riz": {
+    "nom": "Riz",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ]
+  },
+  "oeuf": {
+    "nom": "Œuf",
+    "allergenes": [
+      "oeuf"
+    ],
+    "roles": [
+      "liant",
+      "proteine"
+    ],
+    "unite": "unité"
+  },
+  "compote_pommes": {
+    "nom": "Compote de pommes non sucrée",
+    "allergenes": [],
+    "roles": [
+      "liant",
+      "sucrant"
+    ]
+  },
+  "puree_banane": {
+    "nom": "Banane écrasée",
+    "allergenes": [],
+    "roles": [
+      "liant",
+      "sucrant"
+    ]
+  },
+  "lin_moulu": {
+    "nom": "Graines de lin moulues",
+    "allergenes": [],
+    "roles": [
+      "liant"
+    ]
+  },
+  "graines_chia": {
+    "nom": "Graines de chia",
+    "allergenes": [],
+    "roles": [
+      "liant"
+    ]
+  },
+  "aquafaba": {
+    "nom": "Aquafaba (eau de pois chiches sans sel)",
+    "allergenes": [],
+    "roles": [
+      "liant"
+    ]
+  },
+  "lait_vache": {
+    "nom": "Lait de vache",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "liquide",
+      "lacte"
+    ]
+  },
+  "beurre": {
+    "nom": "Beurre",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "gras"
+    ]
+  },
+  "creme_35": {
+    "nom": "Crème 35 %",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "fromage_cheddar": {
+    "nom": "Cheddar",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte",
+      "proteine"
+    ]
+  },
+  "fromage_parmesan": {
+    "nom": "Parmesan",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "yogourt_nature": {
+    "nom": "Yogourt nature",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "yogourt_grec": {
+    "nom": "Yogourt grec nature",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "boisson_soya": {
+    "nom": "Boisson de soya enrichie",
+    "allergenes": [
+      "soya"
+    ],
+    "roles": [
+      "liquide",
+      "proteine"
+    ]
+  },
+  "boisson_avoine": {
+    "nom": "Boisson d'avoine enrichie",
+    "allergenes": [],
+    "roles": [
+      "liquide"
+    ],
+    "note": "Correct en cuisine dès 6 mois; pas comme boisson principale avant 2 ans"
+  },
+  "lait_coco": {
+    "nom": "Lait de coco",
+    "allergenes": [],
+    "roles": [
+      "liquide",
+      "lacte"
+    ],
+    "note": "La noix de coco n'est pas classée parmi les noix au Canada; allergie possible mais rare"
+  },
+  "yogourt_coco": {
+    "nom": "Yogourt de coco",
+    "allergenes": [],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "yogourt_soya": {
+    "nom": "Yogourt de soya",
+    "allergenes": [
+      "soya"
+    ],
+    "roles": [
+      "lacte"
+    ]
+  },
+  "margarine_sans_lait": {
+    "nom": "Margarine sans produits laitiers",
+    "allergenes": [],
+    "roles": [
+      "gras"
+    ],
+    "note": "Vérifier l'étiquette — certaines marques contiennent du soya"
+  },
+  "huile_olive": {
+    "nom": "Huile d'olive",
+    "allergenes": [],
+    "roles": [
+      "gras"
+    ]
+  },
+  "huile_canola": {
+    "nom": "Huile de canola",
+    "allergenes": [],
+    "roles": [
+      "gras"
+    ]
+  },
+  "puree_avocat": {
+    "nom": "Avocat écrasé",
+    "allergenes": [],
+    "roles": [
+      "gras"
+    ]
+  },
+  "levure_alimentaire": {
+    "nom": "Levure alimentaire",
+    "allergenes": [],
+    "roles": [
+      "lacte"
+    ],
+    "note": "Goût fromagé; ne fond pas — à lier avec une purée (courge, patate douce)"
+  },
+  "beurre_arachide": {
+    "nom": "Beurre d'arachide naturel",
+    "allergenes": [
+      "arachide"
+    ],
+    "roles": [
+      "gras",
+      "proteine"
+    ]
+  },
+  "beurre_tournesol": {
+    "nom": "Beurre de graines de tournesol",
+    "allergenes": [],
+    "roles": [
+      "gras",
+      "proteine"
+    ]
+  },
+  "beurre_soya": {
+    "nom": "Beurre de soya",
+    "allergenes": [
+      "soya"
+    ],
+    "roles": [
+      "gras",
+      "proteine"
+    ]
+  },
+  "tahini": {
+    "nom": "Tahini (beurre de sésame)",
+    "allergenes": [
+      "sesame"
+    ],
+    "roles": [
+      "gras"
+    ]
+  },
+  "beurre_amande": {
+    "nom": "Beurre d'amande",
+    "allergenes": [
+      "noix"
+    ],
+    "roles": [
+      "gras",
+      "proteine"
+    ]
+  },
+  "poulet": {
+    "nom": "Poulet",
+    "allergenes": [],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "dinde_hachee": {
+    "nom": "Dinde hachée",
+    "allergenes": [],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "poisson_blanc": {
+    "nom": "Poisson blanc (morue, aiglefin)",
+    "allergenes": [
+      "poisson"
+    ],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "tofu_ferme": {
+    "nom": "Tofu ferme",
+    "allergenes": [
+      "soya"
+    ],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "lentilles": {
+    "nom": "Lentilles cuites",
+    "allergenes": [],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "pois_chiches": {
+    "nom": "Pois chiches cuits",
+    "allergenes": [],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "miel": {
+    "nom": "Miel",
+    "allergenes": [],
+    "roles": [
+      "sucrant"
+    ]
+  },
+  "sirop_erable": {
+    "nom": "Sirop d'érable",
+    "allergenes": [],
+    "roles": [
+      "sucrant"
+    ]
+  },
+  "sucre": {
+    "nom": "Sucre",
+    "allergenes": [],
+    "roles": [
+      "sucrant"
+    ]
+  },
+  "dattes": {
+    "nom": "Dattes dénoyautées",
+    "allergenes": [],
+    "roles": [
+      "sucrant"
+    ]
+  },
+  "banane": {
+    "nom": "Banane",
+    "allergenes": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "pomme": {
+    "nom": "Pomme",
+    "allergenes": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "mangue": {
+    "nom": "Mangue",
+    "allergenes": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "bleuets": {
+    "nom": "Bleuets",
+    "allergenes": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "raisins_secs": {
+    "nom": "Raisins secs",
+    "allergenes": [],
+    "roles": [
+      "fruit"
+    ],
+    "note": "Les raisins dorés sont sulfités — choisir des raisins bruns si allergie aux sulfites"
+  },
+  "jus_citron": {
+    "nom": "Jus de citron",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "patate_douce": {
+    "nom": "Patate douce",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "courge_butternut": {
+    "nom": "Courge musquée",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "carotte": {
+    "nom": "Carotte (cuite)",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "carotte_crue": {
+    "nom": "Carotte crue",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "concombre": {
+    "nom": "Concombre",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "courgette": {
+    "nom": "Courgette",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "epinards": {
+    "nom": "Épinards",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "oignon": {
+    "nom": "Oignon",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "ail": {
+    "nom": "Ail",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "tomates_broyees": {
+    "nom": "Tomates broyées",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "moutarde_dijon": {
+    "nom": "Moutarde de Dijon",
+    "allergenes": [
+      "moutarde"
+    ],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "sel": {
+    "nom": "Sel",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "cannelle": {
+    "nom": "Cannelle",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "vanille": {
+    "nom": "Extrait de vanille",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "levure_chimique": {
+    "nom": "Poudre à pâte",
+    "allergenes": [],
+    "roles": [
+      "levant"
+    ]
+  },
+  "bicarbonate": {
+    "nom": "Bicarbonate de soude",
+    "allergenes": [],
+    "roles": [
+      "levant"
+    ]
+  },
+  "bouillon_sans_sel": {
+    "nom": "Bouillon de poulet sans sel",
+    "allergenes": [],
+    "roles": [
+      "liquide"
+    ]
+  },
+  "eau": {
+    "nom": "Eau",
+    "allergenes": [],
+    "roles": [
+      "liquide"
+    ]
+  },
+  "noix_grenoble": {
+    "nom": "Noix de Grenoble",
+    "allergenes": [
+      "noix"
+    ],
+    "roles": [
+      "garniture"
+    ]
+  },
+  "crevette": {
+    "nom": "Crevettes",
+    "allergenes": [
+      "crustaces_mollusques"
+    ],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "saumon": {
+    "nom": "Saumon",
+    "allergenes": [
+      "poisson"
+    ],
+    "roles": [
+      "proteine"
+    ]
+  },
+  "sauce_poisson": {
+    "nom": "Sauce de poisson",
+    "allergenes": [
+      "poisson"
+    ],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "sauce_soya": {
+    "nom": "Sauce soya",
+    "allergenes": [
+      "soya",
+      "ble"
+    ],
+    "roles": [
+      "assaisonnement"
+    ],
+    "note": "La sauce soya ordinaire contient du blé"
+  },
+  "sauce_tamari": {
+    "nom": "Sauce tamari",
+    "allergenes": [
+      "soya"
+    ],
+    "roles": [
+      "assaisonnement"
+    ],
+    "note": "Soya sans blé — vérifier la mention sans gluten"
+  },
+  "coco_aminos": {
+    "nom": "Aminos de coco",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "abricots_seches": {
+    "nom": "Abricots séchés",
+    "allergenes": [
+      "sulfites"
+    ],
+    "roles": [
+      "fruit"
+    ],
+    "note": "Les abricots séchés orange vif sont sulfités; version brune non sulfitée disponible"
+  },
+  "couscous": {
+    "nom": "Couscous",
+    "allergenes": [
+      "ble"
+    ],
+    "roles": [
+      "farine"
+    ]
+  },
+  "quinoa": {
+    "nom": "Quinoa",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ]
+  },
+  "tortillas_ble": {
+    "nom": "Tortillas de blé",
+    "allergenes": [
+      "ble"
+    ],
+    "roles": [
+      "farine"
+    ]
+  },
+  "tortillas_mais": {
+    "nom": "Tortillas de maïs",
+    "allergenes": [],
+    "roles": [
+      "farine"
+    ]
+  },
+  "fromage_mozzarella": {
+    "nom": "Mozzarella",
+    "allergenes": [
+      "lait"
+    ],
+    "roles": [
+      "lacte",
+      "proteine"
+    ]
+  },
+  "petits_pois": {
+    "nom": "Petits pois",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "poivron": {
+    "nom": "Poivron",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "brocoli": {
+    "nom": "Brocoli",
+    "allergenes": [],
+    "roles": [
+      "legume"
+    ]
+  },
+  "basilic": {
+    "nom": "Basilic",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  },
+  "gingembre": {
+    "nom": "Gingembre",
+    "allergenes": [],
+    "roles": [
+      "assaisonnement"
+    ]
+  }
+}

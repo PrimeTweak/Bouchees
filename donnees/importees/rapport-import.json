@@ -1,0 +1,29 @@
+[
+  {
+    "cle": "mealdb-demo:52831",
+    "nom": "Thai Green Curry",
+    "raison": "lignes non reconnues",
+    "detail": [
+      "2 tbsp Green Curry Paste",
+      "1 Aubergine",
+      "1 tbsp Galangal"
+    ]
+  },
+  {
+    "cle": "mealdb-demo:52928",
+    "nom": "Birthday Cake Pops",
+    "raison": "lignes non reconnues",
+    "detail": [
+      "200 g Candy Melts",
+      "300 g Sponge Cake"
+    ]
+  },
+  {
+    "cle": "spoonacular-demo:104",
+    "nom": "Apple Cinnamon Baked Oatmeal",
+    "raison": "curation manquante",
+    "detail": [
+      "Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR)."
+    ]
+  }
+]

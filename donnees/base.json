@@ -1,0 +1,187 @@
+{
+  "allergenes": [
+    {
+      "id": "lait",
+      "nom": "Lait"
+    },
+    {
+      "id": "oeuf",
+      "nom": "Œufs"
+    },
+    {
+      "id": "arachide",
+      "nom": "Arachides"
+    },
+    {
+      "id": "noix",
+      "nom": "Noix"
+    },
+    {
+      "id": "ble",
+      "nom": "Blé et triticale"
+    },
+    {
+      "id": "soya",
+      "nom": "Soya"
+    },
+    {
+      "id": "sesame",
+      "nom": "Sésame"
+    },
+    {
+      "id": "poisson",
+      "nom": "Poisson"
+    },
+    {
+      "id": "crustaces_mollusques",
+      "nom": "Crustacés et mollusques"
+    },
+    {
+      "id": "moutarde",
+      "nom": "Moutarde"
+    },
+    {
+      "id": "sulfites",
+      "nom": "Sulfites"
+    }
+  ],
+  "stades": [
+    {
+      "min": 6,
+      "max": 8,
+      "nom": "6–8 mois",
+      "texture": "Purée lisse à texture écrasée; gros bâtonnets fondants (format doigt) si l'enfant se nourrit seul.",
+      "note": "Prioriser les aliments riches en fer. Pas de sel ajouté, pas de miel."
+    },
+    {
+      "min": 9,
+      "max": 11,
+      "nom": "9–11 mois",
+      "texture": "Écrasé grossier et petits morceaux fondants — un morceau qui s'écrase entre deux doigts.",
+      "note": "Pas de miel avant 12 mois. Sel toujours limité."
+    },
+    {
+      "min": 12,
+      "max": 23,
+      "nom": "12–23 mois",
+      "texture": "Morceaux tendres coupés petits; la plupart des plats familiaux s'adaptent.",
+      "note": "Limiter le sucre ajouté avant 2 ans."
+    },
+    {
+      "min": 24,
+      "max": 47,
+      "nom": "2–3 ans",
+      "texture": "Coupe normale prudente. Vigilance sur les aliments ronds, durs ou collants.",
+      "note": "Toujours assis pour manger, sous supervision."
+    },
+    {
+      "min": 48,
+      "max": 999,
+      "nom": "4 ans et +",
+      "texture": "Texture libre; les noix entières s'introduisent graduellement.",
+      "note": ""
+    }
+  ],
+  "interdits": [
+    {
+      "cible": "miel",
+      "avantMois": 12,
+      "raison": "Risque de botulisme infantile avant 12 mois",
+      "action": {
+        "type": "swap",
+        "vers": "sirop_erable",
+        "ratio": "1 pour 1"
+      }
+    },
+    {
+      "cible": "noix_grenoble",
+      "avantMois": 48,
+      "raison": "Noix entières ou en morceaux : risque d'étouffement avant 4 ans",
+      "action": {
+        "type": "preparation",
+        "note": "Moudre finement et incorporer au mélange"
+      }
+    },
+    {
+      "cible": "raisins_secs",
+      "avantMois": 12,
+      "raison": "Fruits séchés : texture collante et ferme avant 12 mois",
+      "action": {
+        "type": "preparation",
+        "note": "Faire gonfler dans l'eau chaude, puis hacher"
+      }
+    },
+    {
+      "cible": "bleuets",
+      "avantMois": 12,
+      "raison": "Petits fruits ronds : risque d'étouffement avant 12 mois",
+      "action": {
+        "type": "preparation",
+        "note": "Écraser chaque bleuet entre les doigts"
+      }
+    },
+    {
+      "cible": "carotte_crue",
+      "avantMois": 12,
+      "raison": "Légume dur cru : risque d'étouffement",
+      "action": {
+        "type": "preparation",
+        "note": "Cuire à la vapeur jusqu'à tendreté, ou râper très finement"
+      }
+    },
+    {
+      "cible": "carotte_crue",
+      "avantMois": 48,
+      "raison": "Bâtonnets crus durs déconseillés avant 4 ans",
+      "action": {
+        "type": "preparation",
+        "note": "Servir râpée finement plutôt qu'en bâtonnets"
+      }
+    },
+    {
+      "cible": "sel",
+      "avantMois": 12,
+      "raison": "Sodium à limiter strictement avant 12 mois",
+      "action": {
+        "type": "preparation",
+        "note": "Omettre le sel; saler la portion des adultes à part"
+      }
+    },
+    {
+      "cible": "sucre",
+      "avantMois": 24,
+      "raison": "Sucre ajouté à limiter avant 2 ans",
+      "action": {
+        "type": "preparation",
+        "note": "Réduire de moitié ou omettre — la recette fonctionne quand même"
+      }
+    },
+    {
+      "cible": "beurre_arachide",
+      "avantMois": 48,
+      "raison": "Texture collante : ne jamais servir à la cuillère ou en grosse quantité",
+      "action": {
+        "type": "preparation",
+        "note": "Toujours délayer ou incorporer — jamais en cuillerée"
+      }
+    },
+    {
+      "cible": "crevette",
+      "avantMois": 12,
+      "raison": "Texture caoutchouteuse : risque d’étouffement avant 12 mois",
+      "action": {
+        "type": "preparation",
+        "note": "Hacher très finement, bien cuit"
+      }
+    },
+    {
+      "cible": "abricots_seches",
+      "avantMois": 12,
+      "raison": "Fruits séchés : texture collante et ferme avant 12 mois",
+      "action": {
+        "type": "preparation",
+        "note": "Faire gonfler dans l’eau chaude, puis hacher"
+      }
+    }
+  ]
+}

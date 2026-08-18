@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Banc d'essai — moteur de recettes v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --porcelaine:#F4F6F1;
+  --craie:#FFFFFF;
+  --encre:#212820;
+  --encre-2:#5A6355;
+  --trait:#DDE3D8;
+  --betterave:#7E3A5C;
+  --betterave-pale:#F6EBF1;
+  --pois:#4E7A44;
+  --pois-pale:#EBF2E7;
+  --courge:#A85F10;
+  --courge-pale:#FBF0E0;
+  --canneberge:#A83232;
+  --canneberge-pale:#F9EAEA;
+  --r:16px;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corps:"Instrument Sans",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--corps);color:var(--encre);background:var(--porcelaine);
+  font-size:16px;line-height:1.5;min-height:100dvh;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--betterave);outline-offset:2px;border-radius:8px}
+
+.cadre{max-width:1060px;margin:0 auto;padding:20px 18px calc(48px + env(safe-area-inset-bottom))}
+
+/* ---------- entête ---------- */
+header.entete{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:6px 2px 22px}
+.marque{font-family:var(--display);font-weight:800;font-size:clamp(22px,5vw,30px);letter-spacing:-.02em}
+.marque .point{color:var(--betterave)}
+.version{font-family:var(--mono);font-size:12px;color:var(--encre-2);white-space:nowrap}
+
+/* ---------- panneau de contrôle ---------- */
+.controles{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:18px;display:grid;gap:18px}
+@media(min-width:760px){.controles{grid-template-columns:auto 1px 1fr;align-items:start}}
+.sep-v{display:none;background:var(--trait)}
+@media(min-width:760px){.sep-v{display:block;height:100%}}
+
+.etiquette{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--encre-2);margin-bottom:10px}
+
+.age{display:flex;align-items:center;gap:14px}
+.age button{
+  width:46px;height:46px;border-radius:14px;border:1px solid var(--trait);background:var(--porcelaine);
+  font-family:var(--mono);font-size:22px;line-height:1;transition:background .15s;
+}
+.age button:active{background:var(--trait)}
+.age-val{min-width:120px;text-align:center}
+.age-num{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.age-unite{font-family:var(--mono);font-size:12px;color:var(--encre-2)}
+.age-stade{font-family:var(--mono);font-size:12px;color:var(--betterave);font-weight:600;margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--trait);background:var(--porcelaine);border-radius:999px;
+  padding:8px 14px;font-size:14px;font-weight:500;transition:all .15s;
+}
+.chip[aria-pressed="true"]{background:var(--encre);border-color:var(--encre);color:var(--porcelaine)}
+.chip[aria-pressed="true"]::before{content:"× ";font-family:var(--mono)}
+
+/* ---------- sommaire ---------- */
+.sommaire{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:24px 4px 14px;flex-wrap:wrap}
+.sommaire h2{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em}
+.profil{font-family:var(--mono);font-size:12px;color:var(--encre-2)}
+
+/* ---------- cartes ---------- */
+.grille{display:grid;gap:12px}
+@media(min-width:640px){.grille{grid-template-columns:1fr 1fr}}
+@media(min-width:980px){.grille{grid-template-columns:1fr 1fr 1fr}}
+.carte{
+  text-align:left;background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);
+  padding:16px;display:flex;flex-direction:column;gap:10px;transition:transform .15s, box-shadow .15s;
+}
+.carte:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(33,40,32,.07)}
+.carte.morte{opacity:.55}
+.carte .haut{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.carte .cat{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--encre-2)}
+.carte .temps{font-family:var(--mono);font-size:11px;color:var(--encre-2)}
+.carte h3{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em;line-height:1.25}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;border-radius:8px;padding:4px 8px}
+.b-pois{background:var(--pois-pale);color:var(--pois)}
+.b-bett{background:var(--betterave-pale);color:var(--betterave)}
+.b-courge{background:var(--courge-pale);color:var(--courge)}
+.b-cann{background:var(--canneberge-pale);color:var(--canneberge)}
+.apercu{font-family:var(--mono);font-size:12px;color:var(--encre-2);border-top:1px dashed var(--trait);padding-top:9px}
+.apercu s{color:var(--encre-2)}
+.apercu b{color:var(--betterave);font-weight:600}
+
+/* ---------- fiche détaillée ---------- */
+.fiche{
+  position:fixed;inset:0;background:var(--porcelaine);overflow-y:auto;z-index:20;
+  transform:translateY(14px);opacity:0;pointer-events:none;transition:transform .22s ease, opacity .22s ease;
+}
+.fiche.ouverte{transform:none;opacity:1;pointer-events:auto}
+.fiche-cadre{max-width:720px;margin:0 auto;padding:16px 18px calc(60px + env(safe-area-inset-bottom))}
+.retour{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;
+  color:var(--betterave);padding:10px 4px;margin-bottom:4px;
+}
+.fiche h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,6vw,34px);letter-spacing:-.02em;line-height:1.1;margin-bottom:6px}
+.fiche .meta{font-family:var(--mono);font-size:12px;color:var(--encre-2);margin-bottom:18px}
+
+.bloc{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.bloc-texture{border-left:4px solid var(--betterave)}
+.bloc-texture .stade{font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:4px}
+.bloc-texture p{font-size:14.5px}
+.bloc-texture .n2{font-size:13px;color:var(--encre-2);margin-top:6px}
+
+.alerte{display:flex;gap:10px;border-radius:12px;padding:11px 13px;font-size:14px;margin-bottom:8px;align-items:flex-start}
+.alerte::before{font-family:var(--mono);font-weight:600;font-size:12px;margin-top:1px}
+.a-bloquant{background:var(--canneberge-pale);color:var(--canneberge)}.a-bloquant::before{content:"STOP"}
+.a-securite{background:var(--courge-pale);color:var(--courge)}.a-securite::before{content:"ÂGE"}
+.a-attention{background:var(--courge-pale);color:var(--courge)}.a-attention::before{content:"NOTE"}
+.a-info{background:var(--betterave-pale);color:var(--betterave)}.a-info::before{content:"SWAP"}
+
+/* le journal des décisions — la signature */
+.journal .ligne{padding:13px 2px;border-bottom:1px dashed var(--trait)}
+.journal .ligne:last-child{border-bottom:none}
+.l-haut{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.l-nom{font-weight:600;font-size:15.5px}
+.l-nom s{color:var(--encre-2);font-weight:500;text-decoration-thickness:2px;text-decoration-color:var(--canneberge)}
+.l-vers{color:var(--betterave)}
+.l-fleche{font-family:var(--mono);color:var(--betterave);font-weight:600}
+.l-qte{font-family:var(--mono);font-size:12.5px;color:var(--encre-2);white-space:nowrap}
+.l-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;border-radius:7px;padding:3px 7px;background:var(--porcelaine);border:1px solid var(--trait);color:var(--encre-2)}
+.tag.t-motif{background:var(--betterave-pale);border-color:transparent;color:var(--betterave)}
+.tag.t-ratio{background:var(--pois-pale);border-color:transparent;color:var(--pois)}
+.tag.t-prep{background:var(--courge-pale);border-color:transparent;color:var(--courge)}
+.tag.t-mort{background:var(--canneberge-pale);border-color:transparent;color:var(--canneberge)}
+.l-note{font-size:13px;color:var(--encre-2);margin-top:6px}
+
+.etapes{counter-reset:etape}
+.etapes p{display:flex;gap:12px;padding:9px 0;font-size:15px}
+.etapes p::before{
+  counter-increment:etape;content:counter(etape);flex:none;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--betterave);
+  width:24px;height:24px;border:1.5px solid var(--betterave);border-radius:50%;
+  display:grid;place-items:center;margin-top:1px;
+}
+
+.pied{font-size:12.5px;color:var(--encre-2);padding:26px 6px 0;line-height:1.55}
+.pied b{color:var(--encre)}
+
+.vide{padding:40px 10px;text-align:center;color:var(--encre-2);font-size:15px}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="cadre" id="ecranListe">
+  <header class="entete">
+    <div class="marque">Banc d'essai<span class="point">.</span></div>
+    <div class="version">moteur v0.1 · lots 1+2</div>
+  </header>
+
+  <section class="controles" aria-label="Profil de l'enfant">
+    <div>
+      <div class="etiquette">Âge de l'enfant</div>
+      <div class="age">
+        <button id="ageMoins" aria-label="Réduire l'âge">−</button>
+        <div class="age-val">
+          <div class="age-num" id="ageNum">9</div>
+          <div class="age-unite">mois</div>
+        </div>
+        <button id="agePlus" aria-label="Augmenter l'âge">+</button>
+      </div>
+      <div class="age-stade" id="ageStade"></div>
+    </div>
+    <div class="sep-v"></div>
+    <div>
+      <div class="etiquette">Allergènes à éviter</div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <div class="sommaire">
+    <h2 id="titreListe">20 recettes témoins</h2>
+    <div class="profil" id="profil"></div>
+  </div>
+
+  <div class="grille" id="grille"></div>
+
+  <p class="pied">
+    <b>Banc d'essai technique — pas un avis médical.</b> Les substitutions et les repères d'âge
+    sortent de tables déterministes, pensées comme point de départ et à faire valider par un
+    professionnel (nutritionniste, allergologue) avant toute vraie mise en service. En cas
+    d'allergie diagnostiquée, le plan de votre allergologue a toujours préséance.
+  </p>
+</div>
+
+<div class="fiche" id="fiche" role="dialog" aria-modal="true" aria-label="Fiche de recette">
+  <div class="fiche-cadre" id="ficheContenu"></div>
+</div>
+
+<script>
+/*__MOTEUR__*/
+/*__DONNEES__*/
+
+(function(){
+"use strict";
+var donnees = { catalogue: DONNEES.ingredients, substitutions: DONNEES.substitutions, base: DONNEES.base };
+var recettes = DONNEES.recettes;
+var etat = { allergenes: [], ageMois: 9, ouverte: null };
+
+var $ = function(id){ return document.getElementById(id); };
+function ech(t){ var d=document.createElement("div"); d.textContent=String(t); return d.innerHTML; }
+
+/* ---------- contrôles ---------- */
+function rendreChips(){
+  $("chips").innerHTML = DONNEES.base.allergenes.map(function(a){
+    var actif = etat.allergenes.indexOf(a.id) !== -1;
+    return '<button class="chip" aria-pressed="'+actif+'" data-id="'+a.id+'">'+ech(a.nom)+'</button>';
+  }).join("");
+}
+$("chips").addEventListener("click", function(e){
+  var b = e.target.closest(".chip"); if(!b) return;
+  var id = b.dataset.id, i = etat.allergenes.indexOf(id);
+  if(i === -1) etat.allergenes.push(id); else etat.allergenes.splice(i,1);
+  rendreTout();
+});
+$("ageMoins").addEventListener("click", function(){ etat.ageMois = Math.max(6, etat.ageMois-1); rendreTout(); });
+$("agePlus").addEventListener("click", function(){ etat.ageMois = Math.min(72, etat.ageMois+1); rendreTout(); });
+
+/* ---------- liste ---------- */
+function calculerTout(){
+  return recettes.map(function(r){
+    return Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+  });
+}
+function badgesDe(res){
+  var b = [];
+  if(res.statut === "non_adaptable") b.push('<span class="badge b-cann">non adaptable</span>');
+  else if(res.statut === "adaptee") b.push('<span class="badge b-bett">adaptée · '+res.nbSubstitutions+' subst.</span>');
+  else b.push('<span class="badge b-pois">telle quelle</span>');
+  var nSec = res.alertes.filter(function(a){ return a.niveau==="securite"; }).length;
+  if(nSec) b.push('<span class="badge b-courge">'+nSec+' consigne'+(nSec>1?"s":"")+' d\u2019âge</span>');
+  return b.join("");
+}
+function apercuDe(res){
+  var s = res.ingredients.find(function(i){ return i.statut==="substitue"; });
+  if(s) return '<div class="apercu"><s>'+ech(s.nom)+'</s> → <b>'+ech(s.nomVers)+'</b></div>';
+  var o = res.ingredients.find(function(i){ return i.statut==="omis"; });
+  if(o) return '<div class="apercu"><s>'+ech(o.nom)+'</s> → <b>omis</b></div>';
+  return "";
+}
+function rendreListe(){
+  var tout = calculerTout();
+  var grille = $("grille");
+  grille.innerHTML = tout.map(function(res, idx){
+    var r = recettes[idx];
+    return '<button class="carte'+(res.statut==="non_adaptable"?" morte":"")+'" data-id="'+r.id+'">'
+      + '<div class="haut"><span class="cat">'+ech(r.categorie)+'</span><span class="temps">'+r.tempsMin+' min</span></div>'
+      + '<h3>'+ech(r.nom)+'</h3>'
+      + '<div class="badges">'+badgesDe(res)+'</div>'
+      + apercuDe(res)
+      + '</button>';
+  }).join("");
+  var noms = etat.allergenes.map(function(id){
+    var a = DONNEES.base.allergenes.find(function(x){ return x.id===id; });
+    return a ? a.nom.toLowerCase() : id;
+  });
+  $("profil").textContent = (noms.length ? "sans " + noms.join(", ") : "aucun allergène évité") + " · " + etat.ageMois + " mois";
+  var stade = Moteur.stadePour(etat.ageMois, DONNEES.base);
+  $("ageNum").textContent = etat.ageMois;
+  $("ageStade").textContent = stade.nom + " — " + (stade.nom==="4 ans et +" ? "texture libre" : "voir consigne par recette");
+}
+$("grille").addEventListener("click", function(e){
+  var c = e.target.closest(".carte"); if(!c) return;
+  ouvrirFiche(c.dataset.id);
+});
+
+/* ---------- fiche ---------- */
+function ligneJournal(i){
+  var h = '<div class="ligne"><div class="l-haut"><div class="l-nom">';
+  if(i.statut==="substitue"){
+    h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">'+ech(i.nomVers)+'</span>';
+  } else if(i.statut==="omis"){
+    h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">omis</span>';
+  } else if(i.statut==="impossible"){
+    h += '<s>'+ech(i.nom)+'</s>';
+  } else {
+    h += ech(i.nom);
+  }
+  h += '</div><div class="l-qte">'+i.qte+' '+ech(i.unite)+'</div></div>';
+  var tags = [];
+  if(i.motif) tags.push('<span class="tag t-motif">'+ech(i.motif)+'</span>');
+  if(i.statut==="substitue" && i.ratio) tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.statut==="omis") tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.preparation) tags.push('<span class="tag t-prep">'+ech(i.preparation)+'</span>');
+  if(i.statut==="impossible") tags.push('<span class="tag t-mort">aucun substitut sûr</span>');
+  tags.push('<span class="tag">'+ech(i.role)+'</span>');
+  h += '<div class="l-tags">'+tags.join("")+'</div>';
+  var note = i.noteSubstitut || i.noteIngredient;
+  if(note) h += '<div class="l-note">'+ech(note)+'</div>';
+  return h + '</div>';
+}
+function ouvrirFiche(id){
+  var r = recettes.find(function(x){ return x.id===id; });
+  var res = Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+  etat.ouverte = id;
+  var noms = etat.allergenes.map(function(aid){
+    var a = DONNEES.base.allergenes.find(function(x){ return x.id===aid; });
+    return a ? a.nom.toLowerCase() : aid;
+  });
+  var h = '<button class="retour" id="btnRetour">← Retour aux recettes</button>'
+    + '<h2>'+ech(r.nom)+'</h2>'
+    + '<div class="meta">'+ech(r.categorie)+' · '+ech(r.portions)+' · '+r.tempsMin+' min · profil : '
+    + (noms.length ? "sans "+ech(noms.join(", ")) : "aucun évitement") + ' · '+etat.ageMois+' mois</div>';
+
+  h += '<div class="bloc bloc-texture"><div class="stade">Texture — '+ech(res.texture.nom)+'</div>'
+    + '<p>'+ech(res.texture.texture)+'</p>'
+    + (res.texture.note ? '<p class="n2">'+ech(res.texture.note)+'</p>' : '') + '</div>';
+
+  if(res.alertes.length){
+    h += '<div>' + res.alertes.map(function(a){
+      return '<div class="alerte a-'+a.niveau+'"><span>'+ech(a.message)+'</span></div>';
+    }).join("") + '</div>';
+  }
+
+  h += '<div class="bloc journal"><div class="etiquette">Ingrédients — journal des décisions</div>'
+    + res.ingredients.map(ligneJournal).join("") + '</div>';
+
+  h += '<div class="bloc"><div class="etiquette">Préparation</div><div class="etapes">'
+    + res.etapes.map(function(e){ return '<p>'+ech(e)+'</p>'; }).join("") + '</div></div>';
+
+  $("ficheContenu").innerHTML = h;
+  $("fiche").classList.add("ouverte");
+  $("fiche").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("btnRetour").addEventListener("click", fermerFiche);
+  $("btnRetour").focus();
+}
+function fermerFiche(){
+  etat.ouverte = null;
+  $("fiche").classList.remove("ouverte");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", function(e){ if(e.key==="Escape" && etat.ouverte) fermerFiche(); });
+
+function rendreTout(){ rendreChips(); rendreListe(); }
+rendreTout();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Banc d'essai — moteur de recettes v0.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --porcelaine:#F4F6F1;
+  --craie:#FFFFFF;
+  --encre:#212820;
+  --encre-2:#5A6355;
+  --trait:#DDE3D8;
+  --betterave:#7E3A5C;
+  --betterave-pale:#F6EBF1;
+  --pois:#4E7A44;
+  --pois-pale:#EBF2E7;
+  --courge:#A85F10;
+  --courge-pale:#FBF0E0;
+  --canneberge:#A83232;
+  --canneberge-pale:#F9EAEA;
+  --r:16px;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corps:"Instrument Sans",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--corps);color:var(--encre);background:var(--porcelaine);
+  font-size:16px;line-height:1.5;min-height:100dvh;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--betterave);outline-offset:2px;border-radius:8px}
+
+.cadre{max-width:1060px;margin:0 auto;padding:20px 18px calc(48px + env(safe-area-inset-bottom))}
+
+/* ---------- entête ---------- */
+header.entete{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:6px 2px 22px}
+.marque{font-family:var(--display);font-weight:800;font-size:clamp(22px,5vw,30px);letter-spacing:-.02em}
+.marque .point{color:var(--betterave)}
+.version{font-family:var(--mono);font-size:12px;color:var(--encre-2);white-space:nowrap}
+
+/* ---------- panneau de contrôle ---------- */
+.controles{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:18px;display:grid;gap:18px}
+@media(min-width:760px){.controles{grid-template-columns:auto 1px 1fr;align-items:start}}
+.sep-v{display:none;background:var(--trait)}
+@media(min-width:760px){.sep-v{display:block;height:100%}}
+
+.etiquette{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--encre-2);margin-bottom:10px}
+
+.age{display:flex;align-items:center;gap:14px}
+.age button{
+  width:46px;height:46px;border-radius:14px;border:1px solid var(--trait);background:var(--porcelaine);
+  font-family:var(--mono);font-size:22px;line-height:1;transition:background .15s;
+}
+.age button:active{background:var(--trait)}
+.age-val{min-width:120px;text-align:center}
+.age-num{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.age-unite{font-family:var(--mono);font-size:12px;color:var(--encre-2)}
+.age-stade{font-family:var(--mono);font-size:12px;color:var(--betterave);font-weight:600;margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  border:1px solid var(--trait);background:var(--porcelaine);border-radius:999px;
+  padding:8px 14px;font-size:14px;font-weight:500;transition:all .15s;
+}
+.chip[aria-pressed="true"]{background:var(--encre);border-color:var(--encre);color:var(--porcelaine)}
+.chip[aria-pressed="true"]::before{content:"× ";font-family:var(--mono)}
+
+/* ---------- sommaire ---------- */
+.sommaire{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:24px 4px 14px;flex-wrap:wrap}
+.sommaire h2{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em}
+.profil{font-family:var(--mono);font-size:12px;color:var(--encre-2)}
+
+/* ---------- cartes ---------- */
+.grille{display:grid;gap:12px}
+@media(min-width:640px){.grille{grid-template-columns:1fr 1fr}}
+@media(min-width:980px){.grille{grid-template-columns:1fr 1fr 1fr}}
+.carte{
+  text-align:left;background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);
+  padding:16px;display:flex;flex-direction:column;gap:10px;transition:transform .15s, box-shadow .15s;
+}
+.carte:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(33,40,32,.07)}
+.carte.morte{opacity:.55}
+.carte .haut{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.carte .cat{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--encre-2)}
+.carte .temps{font-family:var(--mono);font-size:11px;color:var(--encre-2)}
+.carte h3{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.01em;line-height:1.25}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;border-radius:8px;padding:4px 8px}
+.b-pois{background:var(--pois-pale);color:var(--pois)}
+.b-bett{background:var(--betterave-pale);color:var(--betterave)}
+.b-courge{background:var(--courge-pale);color:var(--courge)}
+.b-cann{background:var(--canneberge-pale);color:var(--canneberge)}
+.apercu{font-family:var(--mono);font-size:12px;color:var(--encre-2);border-top:1px dashed var(--trait);padding-top:9px}
+.apercu s{color:var(--encre-2)}
+.apercu b{color:var(--betterave);font-weight:600}
+
+/* ---------- fiche détaillée ---------- */
+.fiche{
+  position:fixed;inset:0;background:var(--porcelaine);overflow-y:auto;z-index:20;
+  transform:translateY(14px);opacity:0;pointer-events:none;transition:transform .22s ease, opacity .22s ease;
+}
+.fiche.ouverte{transform:none;opacity:1;pointer-events:auto}
+.fiche-cadre{max-width:720px;margin:0 auto;padding:16px 18px calc(60px + env(safe-area-inset-bottom))}
+.retour{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:600;
+  color:var(--betterave);padding:10px 4px;margin-bottom:4px;
+}
+.fiche h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,6vw,34px);letter-spacing:-.02em;line-height:1.1;margin-bottom:6px}
+.fiche .meta{font-family:var(--mono);font-size:12px;color:var(--encre-2);margin-bottom:18px}
+
+.bloc{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.bloc-texture{border-left:4px solid var(--betterave)}
+.bloc-texture .stade{font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:4px}
+.bloc-texture p{font-size:14.5px}
+.bloc-texture .n2{font-size:13px;color:var(--encre-2);margin-top:6px}
+
+.alerte{display:flex;gap:10px;border-radius:12px;padding:11px 13px;font-size:14px;margin-bottom:8px;align-items:flex-start}
+.alerte::before{font-family:var(--mono);font-weight:600;font-size:12px;margin-top:1px}
+.a-bloquant{background:var(--canneberge-pale);color:var(--canneberge)}.a-bloquant::before{content:"STOP"}
+.a-securite{background:var(--courge-pale);color:var(--courge)}.a-securite::before{content:"ÂGE"}
+.a-attention{background:var(--courge-pale);color:var(--courge)}.a-attention::before{content:"NOTE"}
+.a-info{background:var(--betterave-pale);color:var(--betterave)}.a-info::before{content:"SWAP"}
+
+/* le journal des décisions — la signature */
+.journal .ligne{padding:13px 2px;border-bottom:1px dashed var(--trait)}
+.journal .ligne:last-child{border-bottom:none}
+.l-haut{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.l-nom{font-weight:600;font-size:15.5px}
+.l-nom s{color:var(--encre-2);font-weight:500;text-decoration-thickness:2px;text-decoration-color:var(--canneberge)}
+.l-vers{color:var(--betterave)}
+.l-fleche{font-family:var(--mono);color:var(--betterave);font-weight:600}
+.l-qte{font-family:var(--mono);font-size:12.5px;color:var(--encre-2);white-space:nowrap}
+.l-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;border-radius:7px;padding:3px 7px;background:var(--porcelaine);border:1px solid var(--trait);color:var(--encre-2)}
+.tag.t-motif{background:var(--betterave-pale);border-color:transparent;color:var(--betterave)}
+.tag.t-ratio{background:var(--pois-pale);border-color:transparent;color:var(--pois)}
+.tag.t-prep{background:var(--courge-pale);border-color:transparent;color:var(--courge)}
+.tag.t-mort{background:var(--canneberge-pale);border-color:transparent;color:var(--canneberge)}
+.l-note{font-size:13px;color:var(--encre-2);margin-top:6px}
+
+.etapes{counter-reset:etape}
+.etapes p{display:flex;gap:12px;padding:9px 0;font-size:15px}
+.etapes p::before{
+  counter-increment:etape;content:counter(etape);flex:none;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--betterave);
+  width:24px;height:24px;border:1.5px solid var(--betterave);border-radius:50%;
+  display:grid;place-items:center;margin-top:1px;
+}
+
+.pied{font-size:12.5px;color:var(--encre-2);padding:26px 6px 0;line-height:1.55}
+.pied b{color:var(--encre)}
+
+.vide{padding:40px 10px;text-align:center;color:var(--encre-2);font-size:15px}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="cadre" id="ecranListe">
+  <header class="entete">
+    <div class="marque">Banc d'essai<span class="point">.</span></div>
+    <div class="version">moteur v0.1 · lots 1+2</div>
+  </header>
+
+  <section class="controles" aria-label="Profil de l'enfant">
+    <div>
+      <div class="etiquette">Âge de l'enfant</div>
+      <div class="age">
+        <button id="ageMoins" aria-label="Réduire l'âge">−</button>
+        <div class="age-val">
+          <div class="age-num" id="ageNum">9</div>
+          <div class="age-unite">mois</div>
+        </div>
+        <button id="agePlus" aria-label="Augmenter l'âge">+</button>
+      </div>
+      <div class="age-stade" id="ageStade"></div>
+    </div>
+    <div class="sep-v"></div>
+    <div>
+      <div class="etiquette">Allergènes à éviter</div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <div class="sommaire">
+    <h2 id="titreListe">20 recettes témoins</h2>
+    <div class="profil" id="profil"></div>
+  </div>
+
+  <div class="grille" id="grille"></div>
+
+  <p class="pied">
+    <b>Banc d'essai technique — pas un avis médical.</b> Les substitutions et les repères d'âge
+    sortent de tables déterministes, pensées comme point de départ et à faire valider par un
+    professionnel (nutritionniste, allergologue) avant toute vraie mise en service. En cas
+    d'allergie diagnostiquée, le plan de votre allergologue a toujours préséance.
+  </p>
+</div>
+
+<div class="fiche" id="fiche" role="dialog" aria-modal="true" aria-label="Fiche de recette">
+  <div class="fiche-cadre" id="ficheContenu"></div>
+</div>
+
+<script>
+/* Moteur de recettes — lot 2, v0.1
+ * Fonctions pures, déterministes, sans dépendance.
+ * Règle d'or : l'IA rédige, les règles décident. Aucune décision de
+ * sécurité (allergène, âge) ne sort d'un modèle — tout vient des tables.
+ */
+(function (racine, fabrique) {
+  if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
+  else racine.Moteur = fabrique();
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  /* ---------- utilitaires ---------- */
+
+  function roleDe(usage, def) {
+    return usage.role || (def && def.roles && def.roles[0]) || "autre";
+  }
+
+  function intersection(a, b) {
+    return a.filter(function (x) { return b.indexOf(x) !== -1; });
+  }
+
+  /* Familles d'allergènes présentes dans une liste d'usages d'ingrédients,
+   * dérivées du catalogue — jamais lues depuis des étiquettes externes. */
+  function allergenesDe(usages, catalogue) {
+    var vus = {};
+    usages.forEach(function (u) {
+      if (u.statut === "omis" || u.statut === "impossible") return;
+      var id = u.vers || u.id;
+      var def = catalogue[id];
+      if (!def) return;
+      def.allergenes.forEach(function (a) { vus[a] = true; });
+    });
+    return Object.keys(vus).sort();
+  }
+
+  function analyserAllergenes(recette, catalogue) {
+    return allergenesDe(recette.ingredients, catalogue);
+  }
+
+  /* Stade de texture applicable à un âge donné. */
+  function stadePour(ageMois, base) {
+    for (var i = 0; i < base.stades.length; i++) {
+      var s = base.stades[i];
+      if (ageMois >= s.min && ageMois <= s.max) return s;
+    }
+    return base.stades[base.stades.length - 1];
+  }
+
+  /* Première règle d'interdit applicable à un ingrédient pour un âge.
+   * Les règles sont ordonnées de la tranche la plus jeune à la plus vieille
+   * dans base.interdits; on retourne la première qui s'applique. */
+  function interditPour(id, ageMois, base) {
+    for (var i = 0; i < base.interdits.length; i++) {
+      var r = base.interdits[i];
+      if (r.cible === id && ageMois < r.avantMois) return r;
+    }
+    return null;
+  }
+
+  /* Règle de substitution pour (ingrédient, rôle). */
+  function reglePour(id, role, tableSubst) {
+    for (var i = 0; i < tableSubst.length; i++) {
+      var r = tableSubst[i];
+      if (r.cible === id && r.role === role) return r;
+    }
+    return null;
+  }
+
+  /* Choix déterministe d'un substitut : première option de la table qui
+   * (1) n'introduit aucun allergène évité,
+   * (2) respecte son âge minimum,
+   * (3) n'est pas elle-même interdite à cet âge sans porte de sortie.
+   * Retourne null si aucune option ne passe. */
+  function choisirSubstitut(regle, allergenesEvites, ageMois, catalogue, base) {
+    if (!regle) return null;
+    for (var i = 0; i < regle.options.length; i++) {
+      var o = regle.options[i];
+      if (o.ageMin > ageMois) continue;
+      if (o.id === "_omettre") return o;
+      var def = catalogue[o.id];
+      if (!def) continue;
+      if (intersection(def.allergenes, allergenesEvites).length > 0) continue;
+      var interdit = interditPour(o.id, ageMois, base);
+      if (interdit && interdit.action.type === "bloquer") continue;
+      return o;
+    }
+    return null;
+  }
+
+  /* ---------- fonction principale ---------- */
+
+  /* adapterRecette(recette, { allergenes: [...], ageMois: n }, donnees)
+   * donnees = { catalogue, substitutions, base }
+   * Retourne un objet complet : ingrédients avec provenance de chaque
+   * décision, alertes graduées, consigne de texture, statut global. */
+  function adapterRecette(recette, options, donnees) {
+    var evites = (options.allergenes || []).slice().sort();
+    var ageMois = options.ageMois;
+    var catalogue = donnees.catalogue;
+    var base = donnees.base;
+
+    var resultat = {
+      id: recette.id,
+      nom: recette.nom,
+      statut: "telle_quelle",          /* telle_quelle | adaptee | non_adaptable */
+      nbSubstitutions: 0,
+      ingredients: [],
+      alertes: [],
+      texture: stadePour(ageMois, base),
+      etapes: recette.etapes
+    };
+
+    if (ageMois < recette.ageMinBase) {
+      resultat.alertes.push({
+        niveau: "attention",
+        message: "Recette pensée pour " + recette.ageMinBase + " mois et plus — texture et format à revoir avant cet âge."
+      });
+    }
+
+    recette.ingredients.forEach(function (usage) {
+      var def = catalogue[usage.id];
+      var role = roleDe(usage, def);
+      var item = {
+        id: usage.id,
+        nom: def ? def.nom : usage.id,
+        qte: usage.qte,
+        unite: usage.unite,
+        role: role,
+        statut: "conserve"
+      };
+      if (def && def.note) item.noteIngredient = def.note;
+
+      /* 1 — conflit d'allergène sur l'ingrédient d'origine */
+      var conflit = def ? intersection(def.allergenes, evites) : [];
+      if (conflit.length > 0) {
+        var regle = reglePour(usage.id, role, donnees.substitutions);
+        var choix = choisirSubstitut(regle, evites, ageMois, catalogue, base);
+        if (!choix) {
+          item.statut = "impossible";
+          item.motif = "Contient : " + conflit.join(", ");
+          resultat.statut = "non_adaptable";
+          resultat.alertes.push({
+            niveau: "bloquant",
+            message: "Aucun substitut sûr pour « " + item.nom + " » (" + conflit.join(", ") + ") à cet âge."
+          });
+        } else if (choix.id === "_omettre") {
+          item.statut = "omis";
+          item.motif = "Contient : " + conflit.join(", ");
+          item.ratio = choix.ratio;
+          resultat.nbSubstitutions++;
+        } else {
+          var defSub = catalogue[choix.id];
+          item.statut = "substitue";
+          item.vers = choix.id;
+          item.nomVers = defSub.nom;
+          item.ratio = choix.ratio;
+          item.motif = "Contient : " + conflit.join(", ");
+          if (choix.note) item.noteSubstitut = choix.note;
+          if (defSub.note) item.noteIngredient = defSub.note;
+          resultat.nbSubstitutions++;
+        }
+      }
+
+      /* 2 — règles d'âge sur l'ingrédient FINAL (origine ou substitut) */
+      if (item.statut !== "impossible") {
+        var idFinal = item.vers || item.id;
+        var interdit = (item.statut === "omis") ? null : interditPour(idFinal, ageMois, base);
+        if (interdit) {
+          if (interdit.action.type === "swap") {
+            var defSwap = catalogue[interdit.action.vers];
+            var conflitSwap = intersection(defSwap.allergenes, evites);
+            if (conflitSwap.length > 0) {
+              item.statut = "impossible";
+              resultat.statut = "non_adaptable";
+              resultat.alertes.push({
+                niveau: "bloquant",
+                message: "« " + item.nom + " » est à éviter avant " + interdit.avantMois +
+                  " mois et son remplacement (" + defSwap.nom + ") contient : " + conflitSwap.join(", ") + "."
+              });
+            } else {
+              item.statut = "substitue";
+              item.vers = interdit.action.vers;
+              item.nomVers = defSwap.nom;
+              item.ratio = interdit.action.ratio;
+              item.motif = interdit.raison;
+              resultat.nbSubstitutions++;
+              resultat.alertes.push({ niveau: "info", message: item.nom + " → " + defSwap.nom + " : " + interdit.raison + "." });
+            }
+          } else if (interdit.action.type === "preparation") {
+            item.preparation = interdit.action.note;
+            resultat.alertes.push({
+              niveau: "securite",
+              message: item.nom + " — " + interdit.raison + ". " + interdit.action.note + "."
+            });
+          } else {
+            item.statut = "impossible";
+            resultat.statut = "non_adaptable";
+            resultat.alertes.push({
+              niveau: "bloquant",
+              message: "« " + item.nom + " » est à éviter avant " + interdit.avantMois + " mois : " + interdit.raison + "."
+            });
+          }
+        }
+      }
+
+      resultat.ingredients.push(item);
+    });
+
+    if (resultat.statut !== "non_adaptable" && resultat.nbSubstitutions > 0) {
+      resultat.statut = "adaptee";
+    }
+
+    /* Invariant vérifiable : les allergènes dérivés du résultat ne
+     * croisent jamais la liste évitée, sauf statut non_adaptable. */
+    resultat.allergenesRestants = allergenesDe(resultat.ingredients, catalogue);
+    return resultat;
+  }
+
+  return {
+    analyserAllergenes: analyserAllergenes,
+    adapterRecette: adapterRecette,
+    stadePour: stadePour,
+    interditPour: interditPour,
+    choisirSubstitut: choisirSubstitut,
+    allergenesDe: allergenesDe
+  };
+});
+
+var DONNEES = {"ingredients":{"farine_ble":{"nom":"Farine de blé","allergenes":["ble"],"roles":["farine","liant"]},"farine_avoine":{"nom":"Farine d'avoine","allergenes":[],"roles":["farine"],"note":"Choisir une avoine certifiée sans gluten en cas de maladie cœliaque"},"farine_riz":{"nom":"Farine de riz","allergenes":[],"roles":["farine","liant"]},"farine_pois_chiches":{"nom":"Farine de pois chiches","allergenes":[],"roles":["farine","proteine"]},"melange_sans_gluten":{"nom":"Mélange à pâtisserie sans gluten","allergenes":[],"roles":["farine"],"note":"Vérifier la composition — certains mélanges contiennent du soya"},"fecule_mais":{"nom":"Fécule de maïs","allergenes":[],"roles":["liant"]},"flocons_avoine":{"nom":"Flocons d'avoine","allergenes":[],"roles":["farine"],"note":"Avoine pure certifiée sans gluten si cœliaquie"},"chapelure":{"nom":"Chapelure","allergenes":["ble"],"roles":["liant","farine"]},"chapelure_sans_gluten":{"nom":"Chapelure sans gluten","allergenes":[],"roles":["liant"]},"pates_ble":{"nom":"Pâtes de blé","allergenes":["ble"],"roles":["farine"]},"pates_riz":{"nom":"Pâtes de riz","allergenes":[],"roles":["farine"]},"riz":{"nom":"Riz","allergenes":[],"roles":["farine"]},"oeuf":{"nom":"Œuf","allergenes":["oeuf"],"roles":["liant","proteine"],"unite":"unité"},"compote_pommes":{"nom":"Compote de pommes non sucrée","allergenes":[],"roles":["liant","sucrant"]},"puree_banane":{"nom":"Banane écrasée","allergenes":[],"roles":["liant","sucrant"]},"lin_moulu":{"nom":"Graines de lin moulues","allergenes":[],"roles":["liant"]},"graines_chia":{"nom":"Graines de chia","allergenes":[],"roles":["liant"]},"aquafaba":{"nom":"Aquafaba (eau de pois chiches sans sel)","allergenes":[],"roles":["liant"]},"lait_vache":{"nom":"Lait de vache","allergenes":["lait"],"roles":["liquide","lacte"]},"beurre":{"nom":"Beurre","allergenes":["lait"],"roles":["gras"]},"creme_35":{"nom":"Crème 35 %","allergenes":["lait"],"roles":["lacte"]},"fromage_cheddar":{"nom":"Cheddar","allergenes":["lait"],"roles":["lacte","proteine"]},"fromage_parmesan":{"nom":"Parmesan","allergenes":["lait"],"roles":["lacte"]},"yogourt_nature":{"nom":"Yogourt nature","allergenes":["lait"],"roles":["lacte"]},"yogourt_grec":{"nom":"Yogourt grec nature","allergenes":["lait"],"roles":["lacte"]},"boisson_soya":{"nom":"Boisson de soya enrichie","allergenes":["soya"],"roles":["liquide","proteine"]},"boisson_avoine":{"nom":"Boisson d'avoine enrichie","allergenes":[],"roles":["liquide"],"note":"Correct en cuisine dès 6 mois; pas comme boisson principale avant 2 ans"},"lait_coco":{"nom":"Lait de coco","allergenes":[],"roles":["liquide","lacte"],"note":"La noix de coco n'est pas classée parmi les noix au Canada; allergie possible mais rare"},"yogourt_coco":{"nom":"Yogourt de coco","allergenes":[],"roles":["lacte"]},"yogourt_soya":{"nom":"Yogourt de soya","allergenes":["soya"],"roles":["lacte"]},"margarine_sans_lait":{"nom":"Margarine sans produits laitiers","allergenes":[],"roles":["gras"],"note":"Vérifier l'étiquette — certaines marques contiennent du soya"},"huile_olive":{"nom":"Huile d'olive","allergenes":[],"roles":["gras"]},"huile_canola":{"nom":"Huile de canola","allergenes":[],"roles":["gras"]},"puree_avocat":{"nom":"Avocat écrasé","allergenes":[],"roles":["gras"]},"levure_alimentaire":{"nom":"Levure alimentaire","allergenes":[],"roles":["lacte"],"note":"Goût fromagé; ne fond pas — à lier avec une purée (courge, patate douce)"},"beurre_arachide":{"nom":"Beurre d'arachide naturel","allergenes":["arachide"],"roles":["gras","proteine"]},"beurre_tournesol":{"nom":"Beurre de graines de tournesol","allergenes":[],"roles":["gras","proteine"]},"beurre_soya":{"nom":"Beurre de soya","allergenes":["soya"],"roles":["gras","proteine"]},"tahini":{"nom":"Tahini (beurre de sésame)","allergenes":["sesame"],"roles":["gras"]},"beurre_amande":{"nom":"Beurre d'amande","allergenes":["noix"],"roles":["gras","proteine"]},"poulet":{"nom":"Poulet","allergenes":[],"roles":["proteine"]},"dinde_hachee":{"nom":"Dinde hachée","allergenes":[],"roles":["proteine"]},"poisson_blanc":{"nom":"Poisson blanc (morue, aiglefin)","allergenes":["poisson"],"roles":["proteine"]},"tofu_ferme":{"nom":"Tofu ferme","allergenes":["soya"],"roles":["proteine"]},"lentilles":{"nom":"Lentilles cuites","allergenes":[],"roles":["proteine"]},"pois_chiches":{"nom":"Pois chiches cuits","allergenes":[],"roles":["proteine"]},"miel":{"nom":"Miel","allergenes":[],"roles":["sucrant"]},"sirop_erable":{"nom":"Sirop d'érable","allergenes":[],"roles":["sucrant"]},"sucre":{"nom":"Sucre","allergenes":[],"roles":["sucrant"]},"dattes":{"nom":"Dattes dénoyautées","allergenes":[],"roles":["sucrant"]},"banane":{"nom":"Banane","allergenes":[],"roles":["fruit"]},"pomme":{"nom":"Pomme","allergenes":[],"roles":["fruit"]},"mangue":{"nom":"Mangue","allergenes":[],"roles":["fruit"]},"bleuets":{"nom":"Bleuets","allergenes":[],"roles":["fruit"]},"raisins_secs":{"nom":"Raisins secs","allergenes":[],"roles":["fruit"],"note":"Les raisins dorés sont sulfités — choisir des raisins bruns si allergie aux sulfites"},"jus_citron":{"nom":"Jus de citron","allergenes":[],"roles":["assaisonnement"]},"patate_douce":{"nom":"Patate douce","allergenes":[],"roles":["legume"]},"courge_butternut":{"nom":"Courge musquée","allergenes":[],"roles":["legume"]},"carotte":{"nom":"Carotte (cuite)","allergenes":[],"roles":["legume"]},"carotte_crue":{"nom":"Carotte crue","allergenes":[],"roles":["legume"]},"concombre":{"nom":"Concombre","allergenes":[],"roles":["legume"]},"courgette":{"nom":"Courgette","allergenes":[],"roles":["legume"]},"epinards":{"nom":"Épinards","allergenes":[],"roles":["legume"]},"oignon":{"nom":"Oignon","allergenes":[],"roles":["legume"]},"ail":{"nom":"Ail","allergenes":[],"roles":["assaisonnement"]},"tomates_broyees":{"nom":"Tomates broyées","allergenes":[],"roles":["legume"]},"moutarde_dijon":{"nom":"Moutarde de Dijon","allergenes":["moutarde"],"roles":["assaisonnement"]},"sel":{"nom":"Sel","allergenes":[],"roles":["assaisonnement"]},"cannelle":{"nom":"Cannelle","allergenes":[],"roles":["assaisonnement"]},"vanille":{"nom":"Extrait de vanille","allergenes":[],"roles":["assaisonnement"]},"levure_chimique":{"nom":"Poudre à pâte","allergenes":[],"roles":["levant"]},"bicarbonate":{"nom":"Bicarbonate de soude","allergenes":[],"roles":["levant"]},"bouillon_sans_sel":{"nom":"Bouillon de poulet sans sel","allergenes":[],"roles":["liquide"]},"eau":{"nom":"Eau","allergenes":[],"roles":["liquide"]},"noix_grenoble":{"nom":"Noix de Grenoble","allergenes":["noix"],"roles":["garniture"]},"crevette":{"nom":"Crevettes","allergenes":["crustaces_mollusques"],"roles":["proteine"]},"saumon":{"nom":"Saumon","allergenes":["poisson"],"roles":["proteine"]},"sauce_poisson":{"nom":"Sauce de poisson","allergenes":["poisson"],"roles":["assaisonnement"]},"sauce_soya":{"nom":"Sauce soya","allergenes":["soya","ble"],"roles":["assaisonnement"],"note":"La sauce soya ordinaire contient du blé"},"sauce_tamari":{"nom":"Sauce tamari","allergenes":["soya"],"roles":["assaisonnement"],"note":"Soya sans blé — vérifier la mention sans gluten"},"coco_aminos":{"nom":"Aminos de coco","allergenes":[],"roles":["assaisonnement"]},"abricots_seches":{"nom":"Abricots séchés","allergenes":["sulfites"],"roles":["fruit"],"note":"Les abricots séchés orange vif sont sulfités; version brune non sulfitée disponible"},"couscous":{"nom":"Couscous","allergenes":["ble"],"roles":["farine"]},"quinoa":{"nom":"Quinoa","allergenes":[],"roles":["farine"]},"tortillas_ble":{"nom":"Tortillas de blé","allergenes":["ble"],"roles":["farine"]},"tortillas_mais":{"nom":"Tortillas de maïs","allergenes":[],"roles":["farine"]},"fromage_mozzarella":{"nom":"Mozzarella","allergenes":["lait"],"roles":["lacte","proteine"]},"petits_pois":{"nom":"Petits pois","allergenes":[],"roles":["legume"]},"poivron":{"nom":"Poivron","allergenes":[],"roles":["legume"]},"brocoli":{"nom":"Brocoli","allergenes":[],"roles":["legume"]},"basilic":{"nom":"Basilic","allergenes":[],"roles":["assaisonnement"]},"gingembre":{"nom":"Gingembre","allergenes":[],"roles":["assaisonnement"]}},"substitutions":[{"cible":"oeuf","role":"liant","options":[{"id":"compote_pommes","ratio":"60 ml par œuf","ageMin":6,"note":"Le meilleur liant humide en pâtisserie"},{"id":"lin_moulu","ratio":"15 ml de lin + 45 ml d'eau par œuf, reposé 5 min","ageMin":6},{"id":"puree_banane","ratio":"60 ml par œuf","ageMin":6,"note":"Goût de banane perceptible"},{"id":"aquafaba","ratio":"45 ml par œuf","ageMin":12}]},{"cible":"oeuf","role":"proteine","options":[{"id":"farine_pois_chiches","ratio":"60 ml de farine + 60 ml d'eau par œuf","ageMin":6,"note":"Texture d'omelette une fois cuite"},{"id":"tofu_ferme","ratio":"80 g émietté pour 2 œufs","ageMin":6}]},{"cible":"lait_vache","role":"liquide","options":[{"id":"boisson_soya","ratio":"1 pour 1","ageMin":6,"note":"Le plus proche du lait en protéines"},{"id":"boisson_avoine","ratio":"1 pour 1","ageMin":6},{"id":"lait_coco","ratio":"1 pour 1","ageMin":6,"note":"Goût de coco perceptible"}]},{"cible":"creme_35","role":"lacte","options":[{"id":"lait_coco","ratio":"partie crémeuse de la conserve, 1 pour 1","ageMin":6},{"id":"boisson_avoine","ratio":"1 pour 1 — sauce plus légère","ageMin":6}]},{"cible":"beurre","role":"gras","options":[{"id":"margarine_sans_lait","ratio":"1 pour 1","ageMin":6},{"id":"huile_canola","ratio":"75 % du volume de beurre","ageMin":6},{"id":"puree_avocat","ratio":"1 pour 1","ageMin":6,"note":"Cuisson douce seulement"}]},{"cible":"yogourt_nature","role":"lacte","options":[{"id":"yogourt_soya","ratio":"1 pour 1","ageMin":6},{"id":"yogourt_coco","ratio":"1 pour 1","ageMin":6}]},{"cible":"yogourt_grec","role":"lacte","options":[{"id":"yogourt_soya","ratio":"1 pour 1, égoutté 30 min pour épaissir","ageMin":6},{"id":"yogourt_coco","ratio":"1 pour 1","ageMin":6}]},{"cible":"fromage_cheddar","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"30 ml par 250 ml de fromage, lié à une purée de courge","ageMin":6,"note":"Goût fromagé, mais ne fond pas"}]},{"cible":"fromage_parmesan","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"15 ml par 30 g","ageMin":6}]},{"cible":"farine_ble","role":"farine","options":[{"id":"melange_sans_gluten","ratio":"1 pour 1","ageMin":6},{"id":"farine_avoine","ratio":"1 pour 1 — texture plus dense","ageMin":6}]},{"cible":"farine_ble","role":"liant","options":[{"id":"fecule_mais","ratio":"moitié de la quantité de farine","ageMin":6},{"id":"farine_riz","ratio":"1 pour 1","ageMin":6}]},{"cible":"pates_ble","role":"farine","options":[{"id":"pates_riz","ratio":"1 pour 1","ageMin":6}]},{"cible":"chapelure","role":"liant","options":[{"id":"chapelure_sans_gluten","ratio":"1 pour 1","ageMin":6},{"id":"flocons_avoine","ratio":"1 pour 1, passés au mélangeur","ageMin":6}]},{"cible":"beurre_arachide","role":"gras","options":[{"id":"beurre_tournesol","ratio":"1 pour 1","ageMin":6},{"id":"beurre_soya","ratio":"1 pour 1","ageMin":6},{"id":"tahini","ratio":"1 pour 1 — goût plus amer","ageMin":6},{"id":"beurre_amande","ratio":"1 pour 1","ageMin":6}]},{"cible":"tahini","role":"gras","options":[{"id":"beurre_tournesol","ratio":"1 pour 1","ageMin":6},{"id":"huile_olive","ratio":"le tiers de la quantité — goût différent","ageMin":6}]},{"cible":"poisson_blanc","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, haché","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1, bien pressé","ageMin":6},{"id":"lentilles","ratio":"1 pour 1, bien égouttées","ageMin":6}]},{"cible":"moutarde_dijon","role":"assaisonnement","options":[{"id":"_omettre","ratio":"omettre — la recette fonctionne sans","ageMin":6}]},{"cible":"crevette","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, en dés","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1, en cubes","ageMin":6},{"id":"poisson_blanc","ratio":"1 pour 1","ageMin":6}]},{"cible":"saumon","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1","ageMin":6},{"id":"tofu_ferme","ratio":"1 pour 1","ageMin":6},{"id":"lentilles","ratio":"1 pour 1, bien égouttées","ageMin":6}]},{"cible":"sauce_soya","role":"assaisonnement","options":[{"id":"sauce_tamari","ratio":"1 pour 1","ageMin":6},{"id":"coco_aminos","ratio":"1 pour 1 — goût plus doux","ageMin":6}]},{"cible":"sauce_poisson","role":"assaisonnement","options":[{"id":"_omettre","ratio":"omettre — la recette fonctionne sans","ageMin":6}]},{"cible":"couscous","role":"farine","options":[{"id":"quinoa","ratio":"1 pour 1, cuit","ageMin":6},{"id":"riz","ratio":"1 pour 1, cuit","ageMin":6}]},{"cible":"tortillas_ble","role":"farine","options":[{"id":"tortillas_mais","ratio":"1 pour 1","ageMin":6}]},{"cible":"fromage_mozzarella","role":"lacte","options":[{"id":"levure_alimentaire","ratio":"30 ml par 250 ml de fromage, lié à une purée","ageMin":6,"note":"Goût fromagé, mais ne fond pas"}]},{"cible":"abricots_seches","role":"fruit","options":[{"id":"raisins_secs","ratio":"1 pour 1","ageMin":6,"note":"Choisir des raisins bruns non sulfités"},{"id":"dattes","ratio":"1 pour 1, hachées","ageMin":6}]},{"cible":"tofu_ferme","role":"proteine","options":[{"id":"poulet","ratio":"1 pour 1, en cubes","ageMin":6},{"id":"pois_chiches","ratio":"1 pour 1, bien rincés","ageMin":6}]}],"base":{"allergenes":[{"id":"lait","nom":"Lait"},{"id":"oeuf","nom":"Œufs"},{"id":"arachide","nom":"Arachides"},{"id":"noix","nom":"Noix"},{"id":"ble","nom":"Blé et triticale"},{"id":"soya","nom":"Soya"},{"id":"sesame","nom":"Sésame"},{"id":"poisson","nom":"Poisson"},{"id":"crustaces_mollusques","nom":"Crustacés et mollusques"},{"id":"moutarde","nom":"Moutarde"},{"id":"sulfites","nom":"Sulfites"}],"stades":[{"min":6,"max":8,"nom":"6–8 mois","texture":"Purée lisse à texture écrasée; gros bâtonnets fondants (format doigt) si l'enfant se nourrit seul.","note":"Prioriser les aliments riches en fer. Pas de sel ajouté, pas de miel."},{"min":9,"max":11,"nom":"9–11 mois","texture":"Écrasé grossier et petits morceaux fondants — un morceau qui s'écrase entre deux doigts.","note":"Pas de miel avant 12 mois. Sel toujours limité."},{"min":12,"max":23,"nom":"12–23 mois","texture":"Morceaux tendres coupés petits; la plupart des plats familiaux s'adaptent.","note":"Limiter le sucre ajouté avant 2 ans."},{"min":24,"max":47,"nom":"2–3 ans","texture":"Coupe normale prudente. Vigilance sur les aliments ronds, durs ou collants.","note":"Toujours assis pour manger, sous supervision."},{"min":48,"max":999,"nom":"4 ans et +","texture":"Texture libre; les noix entières s'introduisent graduellement.","note":""}],"interdits":[{"cible":"miel","avantMois":12,"raison":"Risque de botulisme infantile avant 12 mois","action":{"type":"swap","vers":"sirop_erable","ratio":"1 pour 1"}},{"cible":"noix_grenoble","avantMois":48,"raison":"Noix entières ou en morceaux : risque d'étouffement avant 4 ans","action":{"type":"preparation","note":"Moudre finement et incorporer au mélange"}},{"cible":"raisins_secs","avantMois":12,"raison":"Fruits séchés : texture collante et ferme avant 12 mois","action":{"type":"preparation","note":"Faire gonfler dans l'eau chaude, puis hacher"}},{"cible":"bleuets","avantMois":12,"raison":"Petits fruits ronds : risque d'étouffement avant 12 mois","action":{"type":"preparation","note":"Écraser chaque bleuet entre les doigts"}},{"cible":"carotte_crue","avantMois":12,"raison":"Légume dur cru : risque d'étouffement","action":{"type":"preparation","note":"Cuire à la vapeur jusqu'à tendreté, ou râper très finement"}},{"cible":"carotte_crue","avantMois":48,"raison":"Bâtonnets crus durs déconseillés avant 4 ans","action":{"type":"preparation","note":"Servir râpée finement plutôt qu'en bâtonnets"}},{"cible":"sel","avantMois":12,"raison":"Sodium à limiter strictement avant 12 mois","action":{"type":"preparation","note":"Omettre le sel; saler la portion des adultes à part"}},{"cible":"sucre","avantMois":24,"raison":"Sucre ajouté à limiter avant 2 ans","action":{"type":"preparation","note":"Réduire de moitié ou omettre — la recette fonctionne quand même"}},{"cible":"beurre_arachide","avantMois":48,"raison":"Texture collante : ne jamais servir à la cuillère ou en grosse quantité","action":{"type":"preparation","note":"Toujours délayer ou incorporer — jamais en cuillerée"}},{"cible":"crevette","avantMois":12,"raison":"Texture caoutchouteuse : risque d’étouffement avant 12 mois","action":{"type":"preparation","note":"Hacher très finement, bien cuit"}},{"cible":"abricots_seches","avantMois":12,"raison":"Fruits séchés : texture collante et ferme avant 12 mois","action":{"type":"preparation","note":"Faire gonfler dans l’eau chaude, puis hacher"}}]},"recettes":[{"id":"muffins-banane-avoine","nom":"Muffins banane et avoine","categorie":"Déjeuner","portions":"12 muffins","ageMinBase":6,"tempsMin":35,"ingredients":[{"id":"puree_banane","qte":250,"unite":"ml"},{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"flocons_avoine","qte":250,"unite":"ml"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"lait_vache","qte":125,"unite":"ml","role":"liquide"},{"id":"huile_canola","qte":60,"unite":"ml","role":"gras"},{"id":"levure_chimique","qte":10,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"}],"etapes":["Préchauffer le four à 180 °C et graisser 12 moules à muffins.","Mélanger la banane, l'œuf, le lait et l'huile.","Incorporer la farine, l'avoine, la poudre à pâte et la cannelle sans trop brasser.","Répartir dans les moules et cuire 20 à 22 minutes."]},{"id":"crepes-moelleuses","nom":"Crêpes moelleuses","categorie":"Déjeuner","portions":"8 crêpes","ageMinBase":6,"tempsMin":20,"ingredients":[{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"lait_vache","qte":300,"unite":"ml","role":"liquide"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"huile_canola","qte":15,"unite":"ml","role":"gras"},{"id":"levure_chimique","qte":5,"unite":"ml"}],"etapes":["Fouetter les œufs avec le lait et l'huile.","Incorporer la farine et la poudre à pâte jusqu'à texture lisse.","Cuire à feu moyen, environ 2 minutes par côté.","Servir en lanières de la largeur d'un doigt pour les plus petits."]},{"id":"galettes-lentilles-carotte","nom":"Galettes de lentilles et carotte","categorie":"Repas","portions":"10 galettes","ageMinBase":6,"tempsMin":30,"ingredients":[{"id":"lentilles","qte":250,"unite":"ml","role":"proteine"},{"id":"carotte","qte":1,"unite":"unité râpée"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":125,"unite":"ml","role":"liant"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Écraser grossièrement les lentilles à la fourchette.","Mélanger avec la carotte râpée, l'œuf, la chapelure et l'ail.","Former des galettes plates et bien tassées.","Dorer 3 à 4 minutes par côté dans l'huile."]},{"id":"puree-patate-douce-poulet","nom":"Purée patate douce et poulet","categorie":"Repas","portions":"4 portions","ageMinBase":6,"tempsMin":25,"ingredients":[{"id":"patate_douce","qte":1,"unite":"grosse"},{"id":"poulet","qte":100,"unite":"g","role":"proteine"},{"id":"bouillon_sans_sel","qte":125,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":5,"unite":"ml","role":"gras"}],"etapes":["Cuire la patate douce et le poulet dans le bouillon jusqu'à tendreté.","Réduire en purée avec le liquide de cuisson et l'huile.","Ajuster la texture selon l'âge : lisse, écrasée ou en morceaux."]},{"id":"gruau-pommes-cannelle","nom":"Gruau aux pommes et cannelle","categorie":"Déjeuner","portions":"2 portions","ageMinBase":6,"tempsMin":15,"ingredients":[{"id":"flocons_avoine","qte":125,"unite":"ml"},{"id":"lait_vache","qte":250,"unite":"ml","role":"liquide"},{"id":"pomme","qte":1,"unite":"unité râpée"},{"id":"cannelle","qte":1,"unite":"ml"}],"etapes":["Porter le lait à frémissement avec la pomme râpée.","Ajouter l'avoine et cuire 5 minutes en brassant.","Laisser tiédir — la texture épaissit en refroidissant."]},{"id":"boules-energie-dattes","nom":"Boules d'énergie aux dattes","categorie":"Collation","portions":"15 boules","ageMinBase":18,"tempsMin":15,"ingredients":[{"id":"dattes","qte":250,"unite":"ml"},{"id":"beurre_arachide","qte":125,"unite":"ml","role":"gras"},{"id":"flocons_avoine","qte":250,"unite":"ml"},{"id":"graines_chia","qte":30,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"}],"etapes":["Réduire les dattes en pâte au robot.","Ajouter le beurre d'arachide, l'avoine, le chia et la vanille; pulser.","Façonner en petites boules et réfrigérer 30 minutes."]},{"id":"sauce-rosee-poulet","nom":"Pâtes sauce rosée au poulet","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":30,"ingredients":[{"id":"pates_ble","qte":300,"unite":"g","role":"farine"},{"id":"poulet","qte":300,"unite":"g","role":"proteine"},{"id":"tomates_broyees","qte":400,"unite":"ml"},{"id":"creme_35","qte":125,"unite":"ml","role":"lacte"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"ail","qte":2,"unite":"gousses"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Faire revenir l'oignon et l'ail dans l'huile, puis le poulet en dés.","Ajouter les tomates et mijoter 15 minutes.","Incorporer la crème hors du feu.","Mélanger aux pâtes cuites, coupées court pour les petits."]},{"id":"croquettes-poisson","nom":"Croquettes de poisson au four","categorie":"Repas","portions":"12 croquettes","ageMinBase":9,"tempsMin":35,"ingredients":[{"id":"poisson_blanc","qte":300,"unite":"g","role":"proteine"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":180,"unite":"ml","role":"liant"},{"id":"oignon","qte":0.5,"unite":"unité"},{"id":"huile_canola","qte":30,"unite":"ml","role":"gras"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Hacher finement le poisson cru et l'oignon.","Mélanger avec l'œuf et la moitié de la chapelure.","Former des croquettes, les rouler dans le reste de chapelure.","Cuire au four à 200 °C, 15 minutes, en retournant à mi-cuisson."]},{"id":"houmous-veloute","nom":"Houmous velouté","categorie":"Collation","portions":"500 ml","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"pois_chiches","qte":540,"unite":"ml","role":"proteine"},{"id":"tahini","qte":45,"unite":"ml","role":"gras"},{"id":"huile_olive","qte":45,"unite":"ml"},{"id":"jus_citron","qte":30,"unite":"ml"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"eau","qte":60,"unite":"ml","role":"liquide"}],"etapes":["Rincer les pois chiches à l'eau chaude.","Mixer tous les ingrédients jusqu'à texture très lisse.","Détendre avec de l'eau au besoin — plus lisse pour les plus jeunes."]},{"id":"pain-bananes","nom":"Pain aux bananes","categorie":"Collation","portions":"1 pain","ageMinBase":9,"tempsMin":70,"ingredients":[{"id":"puree_banane","qte":375,"unite":"ml"},{"id":"farine_ble","qte":375,"unite":"ml","role":"farine"},{"id":"oeuf","qte":2,"unite":"unité","role":"liant"},{"id":"beurre","qte":80,"unite":"g","role":"gras"},{"id":"sucre","qte":60,"unite":"ml"},{"id":"levure_chimique","qte":5,"unite":"ml"},{"id":"bicarbonate","qte":2,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"}],"etapes":["Préchauffer le four à 180 °C.","Battre le beurre fondu, le sucre, les œufs et la vanille.","Incorporer les bananes, puis les ingrédients secs.","Cuire dans un moule à pain 55 à 60 minutes."]},{"id":"biscuits-avoine-raisins","nom":"Biscuits avoine et raisins","categorie":"Collation","portions":"20 biscuits","ageMinBase":12,"tempsMin":30,"ingredients":[{"id":"flocons_avoine","qte":375,"unite":"ml"},{"id":"farine_ble","qte":250,"unite":"ml","role":"farine"},{"id":"beurre","qte":125,"unite":"g","role":"gras"},{"id":"sucre","qte":125,"unite":"ml"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"raisins_secs","qte":125,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"},{"id":"bicarbonate","qte":2,"unite":"ml"}],"etapes":["Crémer le beurre et le sucre, puis ajouter l'œuf.","Incorporer les secs, puis les raisins.","Déposer en boules aplaties sur une plaque.","Cuire à 180 °C, 10 à 12 minutes."]},{"id":"mini-frittatas-legumes","nom":"Mini-frittatas aux légumes","categorie":"Déjeuner","portions":"8 mini-frittatas","ageMinBase":6,"tempsMin":30,"ingredients":[{"id":"oeuf","qte":4,"unite":"unité","role":"proteine"},{"id":"courgette","qte":1,"unite":"unité râpée"},{"id":"epinards","qte":60,"unite":"ml hachés"},{"id":"fromage_cheddar","qte":80,"unite":"g","role":"lacte"},{"id":"lait_vache","qte":60,"unite":"ml","role":"liquide"},{"id":"huile_olive","qte":10,"unite":"ml","role":"gras"}],"etapes":["Préchauffer le four à 180 °C et huiler 8 moules à muffins.","Fouetter les œufs avec le lait.","Ajouter les légumes essorés et le fromage.","Cuire 18 à 20 minutes, jusqu'à ce que le centre soit pris."]},{"id":"potage-courge-coco","nom":"Potage courge et coco","categorie":"Repas","portions":"4 portions","ageMinBase":6,"tempsMin":35,"ingredients":[{"id":"courge_butternut","qte":1,"unite":"unité"},{"id":"lait_coco","qte":250,"unite":"ml","role":"liquide"},{"id":"bouillon_sans_sel","qte":500,"unite":"ml"},{"id":"oignon","qte":1,"unite":"unité"},{"id":"huile_olive","qte":15,"unite":"ml","role":"gras"}],"etapes":["Faire revenir l'oignon dans l'huile.","Ajouter la courge en cubes et le bouillon; mijoter 20 minutes.","Mixer avec le lait de coco jusqu'à texture veloutée."]},{"id":"macaroni-fromage-courge","nom":"Macaroni au fromage et courge cachée","categorie":"Repas","portions":"4 portions","ageMinBase":9,"tempsMin":30,"ingredients":[{"id":"pates_ble","qte":300,"unite":"g","role":"farine"},{"id":"fromage_cheddar","qte":250,"unite":"ml râpé","role":"lacte"},{"id":"lait_vache","qte":250,"unite":"ml","role":"liquide"},{"id":"courge_butternut","qte":250,"unite":"ml en purée"},{"id":"beurre","qte":30,"unite":"g","role":"gras"},{"id":"farine_ble","qte":30,"unite":"ml","role":"liant"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Cuire les pâtes; réserver.","Faire un roux avec le beurre et la farine, puis verser le lait.","Incorporer la purée de courge et le fromage hors du feu.","Mélanger aux pâtes."]},{"id":"boulettes-dinde-pomme","nom":"Boulettes de dinde à la pomme","categorie":"Repas","portions":"20 boulettes","ageMinBase":9,"tempsMin":35,"ingredients":[{"id":"dinde_hachee","qte":450,"unite":"g","role":"proteine"},{"id":"pomme","qte":1,"unite":"unité râpée"},{"id":"oeuf","qte":1,"unite":"unité","role":"liant"},{"id":"chapelure","qte":125,"unite":"ml","role":"liant"},{"id":"moutarde_dijon","qte":5,"unite":"ml","role":"assaisonnement"},{"id":"ail","qte":1,"unite":"gousse"},{"id":"sel","qte":1,"unite":"ml"}],"etapes":["Mélanger tous les ingrédients sans trop travailler la viande.","Former des boulettes de la taille d'une balle de ping-pong.","Cuire au four à 200 °C, 18 à 20 minutes.","Écraser ou couper en quartiers pour les plus jeunes."]},{"id":"riz-au-lait-vanille","nom":"Riz au lait à la vanille","categorie":"Dessert","portions":"4 portions","ageMinBase":6,"tempsMin":40,"ingredients":[{"id":"riz","qte":180,"unite":"ml"},{"id":"lait_vache","qte":750,"unite":"ml","role":"liquide"},{"id":"sirop_erable","qte":30,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"},{"id":"cannelle","qte":1,"unite":"ml"}],"etapes":["Cuire le riz dans le lait à feu doux, 30 minutes, en brassant souvent.","Ajouter le sirop d'érable et la vanille en fin de cuisson.","Servir tiède, saupoudré de cannelle."]},{"id":"smoothie-mangue-banane","nom":"Smoothie mangue et banane","categorie":"Collation","portions":"2 verres","ageMinBase":6,"tempsMin":5,"ingredients":[{"id":"mangue","qte":250,"unite":"ml en cubes"},{"id":"banane","qte":1,"unite":"unité"},{"id":"yogourt_nature","qte":175,"unite":"ml","role":"lacte"},{"id":"lait_vache","qte":125,"unite":"ml","role":"liquide"},{"id":"graines_chia","qte":15,"unite":"ml"}],"etapes":["Mixer tous les ingrédients jusqu'à texture lisse.","Servir à la cuillère ou au verre à bec selon l'âge."]},{"id":"barres-granola-tendres","nom":"Barres granola tendres","categorie":"Collation","portions":"12 barres","ageMinBase":12,"tempsMin":40,"ingredients":[{"id":"flocons_avoine","qte":500,"unite":"ml"},{"id":"beurre_arachide","qte":125,"unite":"ml","role":"gras"},{"id":"miel","qte":80,"unite":"ml","role":"sucrant"},{"id":"raisins_secs","qte":80,"unite":"ml"},{"id":"noix_grenoble","qte":60,"unite":"ml","role":"garniture"},{"id":"huile_canola","qte":30,"unite":"ml"},{"id":"cannelle","qte":2,"unite":"ml"}],"etapes":["Chauffer doucement le beurre d'arachide, le miel et l'huile.","Verser sur l'avoine, les raisins et les noix; bien mélanger.","Presser fermement dans un moule tapissé de papier parchemin.","Cuire à 160 °C, 20 minutes, puis laisser refroidir avant de couper."]},{"id":"pouding-chia-vanille","nom":"Pouding de chia à la vanille","categorie":"Dessert","portions":"4 portions","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"graines_chia","qte":60,"unite":"ml","role":"liant"},{"id":"lait_vache","qte":500,"unite":"ml","role":"liquide"},{"id":"sirop_erable","qte":15,"unite":"ml"},{"id":"vanille","qte":5,"unite":"ml"},{"id":"bleuets","qte":125,"unite":"ml"}],"etapes":["Fouetter le chia, le lait, le sirop et la vanille.","Réfrigérer 4 heures en fouettant une fois après 30 minutes.","Garnir de bleuets au moment de servir."]},{"id":"trempette-yogourt-crudites","nom":"Trempette au yogourt et crudités","categorie":"Collation","portions":"4 portions","ageMinBase":6,"tempsMin":10,"ingredients":[{"id":"yogourt_grec","qte":250,"unite":"ml","role":"lacte"},{"id":"concombre","qte":0.5,"unite":"unité râpé"},{"id":"jus_citron","qte":15,"unite":"ml"},{"id":"ail","qte":0.5,"unite":"gousse"},{"id":"carotte_crue","qte":2,"unite":"unités"}],"etapes":["Essorer le concombre râpé dans un linge propre.","Mélanger au yogourt avec le citron et l'ail.","Servir avec les légumes préparés selon l'âge."]}]};
+
+(function(){
+"use strict";
+var donnees = { catalogue: DONNEES.ingredients, substitutions: DONNEES.substitutions, base: DONNEES.base };
+var recettes = DONNEES.recettes;
+var etat = { allergenes: [], ageMois: 9, ouverte: null };
+
+var $ = function(id){ return document.getElementById(id); };
+function ech(t){ var d=document.createElement("div"); d.textContent=String(t); return d.innerHTML; }
+
+/* ---------- contrôles ---------- */
+function rendreChips(){
+  $("chips").innerHTML = DONNEES.base.allergenes.map(function(a){
+    var actif = etat.allergenes.indexOf(a.id) !== -1;
+    return '<button class="chip" aria-pressed="'+actif+'" data-id="'+a.id+'">'+ech(a.nom)+'</button>';
+  }).join("");
+}
+$("chips").addEventListener("click", function(e){
+  var b = e.target.closest(".chip"); if(!b) return;
+  var id = b.dataset.id, i = etat.allergenes.indexOf(id);
+  if(i === -1) etat.allergenes.push(id); else etat.allergenes.splice(i,1);
+  rendreTout();
+});
+$("ageMoins").addEventListener("click", function(){ etat.ageMois = Math.max(6, etat.ageMois-1); rendreTout(); });
+$("agePlus").addEventListener("click", function(){ etat.ageMois = Math.min(72, etat.ageMois+1); rendreTout(); });
+
+/* ---------- liste ---------- */
+function calculerTout(){
+  return recettes.map(function(r){
+    return Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+  });
+}
+function badgesDe(res){
+  var b = [];
+  if(res.statut === "non_adaptable") b.push('<span class="badge b-cann">non adaptable</span>');
+  else if(res.statut === "adaptee") b.push('<span class="badge b-bett">adaptée · '+res.nbSubstitutions+' subst.</span>');
+  else b.push('<span class="badge b-pois">telle quelle</span>');
+  var nSec = res.alertes.filter(function(a){ return a.niveau==="securite"; }).length;
+  if(nSec) b.push('<span class="badge b-courge">'+nSec+' consigne'+(nSec>1?"s":"")+' d\u2019âge</span>');
+  return b.join("");
+}
+function apercuDe(res){
+  var s = res.ingredients.find(function(i){ return i.statut==="substitue"; });
+  if(s) return '<div class="apercu"><s>'+ech(s.nom)+'</s> → <b>'+ech(s.nomVers)+'</b></div>';
+  var o = res.ingredients.find(function(i){ return i.statut==="omis"; });
+  if(o) return '<div class="apercu"><s>'+ech(o.nom)+'</s> → <b>omis</b></div>';
+  return "";
+}
+function rendreListe(){
+  var tout = calculerTout();
+  var grille = $("grille");
+  grille.innerHTML = tout.map(function(res, idx){
+    var r = recettes[idx];
+    return '<button class="carte'+(res.statut==="non_adaptable"?" morte":"")+'" data-id="'+r.id+'">'
+      + '<div class="haut"><span class="cat">'+ech(r.categorie)+'</span><span class="temps">'+r.tempsMin+' min</span></div>'
+      + '<h3>'+ech(r.nom)+'</h3>'
+      + '<div class="badges">'+badgesDe(res)+'</div>'
+      + apercuDe(res)
+      + '</button>';
+  }).join("");
+  var noms = etat.allergenes.map(function(id){
+    var a = DONNEES.base.allergenes.find(function(x){ return x.id===id; });
+    return a ? a.nom.toLowerCase() : id;
+  });
+  $("profil").textContent = (noms.length ? "sans " + noms.join(", ") : "aucun allergène évité") + " · " + etat.ageMois + " mois";
+  var stade = Moteur.stadePour(etat.ageMois, DONNEES.base);
+  $("ageNum").textContent = etat.ageMois;
+  $("ageStade").textContent = stade.nom + " — " + (stade.nom==="4 ans et +" ? "texture libre" : "voir consigne par recette");
+}
+$("grille").addEventListener("click", function(e){
+  var c = e.target.closest(".carte"); if(!c) return;
+  ouvrirFiche(c.dataset.id);
+});
+
+/* ---------- fiche ---------- */
+function ligneJournal(i){
+  var h = '<div class="ligne"><div class="l-haut"><div class="l-nom">';
+  if(i.statut==="substitue"){
+    h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">'+ech(i.nomVers)+'</span>';
+  } else if(i.statut==="omis"){
+    h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">omis</span>';
+  } else if(i.statut==="impossible"){
+    h += '<s>'+ech(i.nom)+'</s>';
+  } else {
+    h += ech(i.nom);
+  }
+  h += '</div><div class="l-qte">'+i.qte+' '+ech(i.unite)+'</div></div>';
+  var tags = [];
+  if(i.motif) tags.push('<span class="tag t-motif">'+ech(i.motif)+'</span>');
+  if(i.statut==="substitue" && i.ratio) tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.statut==="omis") tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.preparation) tags.push('<span class="tag t-prep">'+ech(i.preparation)+'</span>');
+  if(i.statut==="impossible") tags.push('<span class="tag t-mort">aucun substitut sûr</span>');
+  tags.push('<span class="tag">'+ech(i.role)+'</span>');
+  h += '<div class="l-tags">'+tags.join("")+'</div>';
+  var note = i.noteSubstitut || i.noteIngredient;
+  if(note) h += '<div class="l-note">'+ech(note)+'</div>';
+  return h + '</div>';
+}
+function ouvrirFiche(id){
+  var r = recettes.find(function(x){ return x.id===id; });
+  var res = Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+  etat.ouverte = id;
+  var noms = etat.allergenes.map(function(aid){
+    var a = DONNEES.base.allergenes.find(function(x){ return x.id===aid; });
+    return a ? a.nom.toLowerCase() : aid;
+  });
+  var h = '<button class="retour" id="btnRetour">← Retour aux recettes</button>'
+    + '<h2>'+ech(r.nom)+'</h2>'
+    + '<div class="meta">'+ech(r.categorie)+' · '+ech(r.portions)+' · '+r.tempsMin+' min · profil : '
+    + (noms.length ? "sans "+ech(noms.join(", ")) : "aucun évitement") + ' · '+etat.ageMois+' mois</div>';
+
+  h += '<div class="bloc bloc-texture"><div class="stade">Texture — '+ech(res.texture.nom)+'</div>'
+    + '<p>'+ech(res.texture.texture)+'</p>'
+    + (res.texture.note ? '<p class="n2">'+ech(res.texture.note)+'</p>' : '') + '</div>';
+
+  if(res.alertes.length){
+    h += '<div>' + res.alertes.map(function(a){
+      return '<div class="alerte a-'+a.niveau+'"><span>'+ech(a.message)+'</span></div>';
+    }).join("") + '</div>';
+  }
+
+  h += '<div class="bloc journal"><div class="etiquette">Ingrédients — journal des décisions</div>'
+    + res.ingredients.map(ligneJournal).join("") + '</div>';
+
+  h += '<div class="bloc"><div class="etiquette">Préparation</div><div class="etapes">'
+    + res.etapes.map(function(e){ return '<p>'+ech(e)+'</p>'; }).join("") + '</div></div>';
+
+  $("ficheContenu").innerHTML = h;
+  $("fiche").classList.add("ouverte");
+  $("fiche").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("btnRetour").addEventListener("click", fermerFiche);
+  $("btnRetour").focus();
+}
+function fermerFiche(){
+  etat.ouverte = null;
+  $("fiche").classList.remove("ouverte");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", function(e){ if(e.key==="Escape" && etat.ouverte) fermerFiche(); });
+
+function rendreTout(){ rendreChips(); rendreListe(); }
+rendreTout();
+})();
+</script>
+</body>
+</html>

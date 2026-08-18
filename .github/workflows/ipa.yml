@@ -1,0 +1,116 @@
+name: IPA non signé (sideload)
+
+# Produit un .ipa NON SIGNÉ. Feather le signe ensuite avec ton certificat.
+# Aucun compte développeur Apple requis : le runner macOS de GitHub a déjà
+# Xcode, et XcodeGen fabrique le projet à partir de ios/project.yml.
+# Aucun certificat ni clé ne transite par GitHub.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: "Identifiant de bundle (vide = ca.bouchees.app)"
+        required: false
+        default: ""
+
+jobs:
+  construire:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Vérifier le moteur avant de bâtir
+        # Si les tests tombent, aucun IPA n'est produit. Un moteur cassé qui
+        # part sur un téléphone, c'est exactement ce qu'on empêche.
+        run: node tests/test.js
+
+      - name: Publier le contenu et bâtir la page
+        run: |
+          node outils/publier.js
+          node app/build.js
+
+      - name: Embarquer la page dans le bundle iOS
+        # Seuls les lots LIBRES sont embarqués. Les lots payants restent
+        # derrière le serveur : un fichier dans l'IPA se lit avec un éditeur
+        # de texte, ce ne serait pas un mur.
+        run: |
+          mkdir -p ios/App/App/web
+          cp app/index.html ios/App/App/web/index.html
+          if [ -d app/images ]; then cp -R app/images ios/App/App/web/; fi
+          cp dist/securite.json ios/App/App/web/ || true
+          python3 - <<'PY'
+          import json, shutil, pathlib
+          m = json.load(open('dist/manifeste.json'))
+          libres = set(m['libres'])
+          dest = pathlib.Path('ios/App/App/web/lots'); dest.mkdir(parents=True, exist_ok=True)
+          for lot in sorted(libres):
+              src = pathlib.Path('dist/lots') / (lot + '.json')
+              if src.exists():
+                  shutil.copy(src, dest / src.name)
+                  print('embarque :', lot)
+          for l in m['lots']:
+              if l['id'] not in libres:
+                  print('laisse au serveur :', l['id'])
+          PY
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Identifiant de bundle personnalisé
+        # Si ton profil Feather n'est pas en wildcard, lance le workflow à la
+        # main (Actions -> Run workflow) en donnant ton identifiant.
+        if: ${{ github.event.inputs.bundle_id != '' }}
+        run: |
+          BID="${{ github.event.inputs.bundle_id }}"
+          sed -i '' "s|PRODUCT_BUNDLE_IDENTIFIER: .*|PRODUCT_BUNDLE_IDENTIFIER: ${BID}|" ios/project.yml
+          echo "Bundle identifier : ${BID}"
+
+      - name: Générer le projet Xcode
+        run: |
+          cd ios
+          xcodegen generate --spec project.yml
+          ls -la App.xcodeproj
+
+      - name: Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Bâtir sans signature
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            clean build 2>&1 | tail -60
+
+      - name: Empaqueter en .ipa
+        run: |
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          if [ -z "$APP" ]; then echo "Aucun .app produit — voir l'étape précédente"; exit 1; fi
+          mkdir -p sortie/Payload
+          cp -R "$APP" sortie/Payload/
+          cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
+          ls -lh sortie/Bouchees-unsigned.ipa
+
+      - name: Déposer l'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bouchees-unsigned-ipa
+          path: sortie/Bouchees-unsigned.ipa
+          retention-days: 30
