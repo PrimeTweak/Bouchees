@@ -10,7 +10,6 @@ ios/*.xcworkspace/
 build/
 sortie/
 
-# Contenu embarqué au moment du build, pas à la main
-ios/App/App/web/index.html
-ios/App/App/web/lots/
-ios/App/App/web/securite.json
+# Contenu embarqué au moment du build, pas à la main.
+# Le dossier est créé par le workflow avant XcodeGen — rien à suivre ici.
+ios/App/App/web/
