@@ -35,17 +35,17 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: App
+      - path: App/App
         excludes:
           - "web/**"        # ajouté juste après en ressource-dossier
       # « folder » (et non « group ») préserve l'arborescence dans le bundle.
       # Sans ça, index.html et ses fichiers sont aplatis et le chargement
       # local échoue silencieusement.
-      - path: App/web
+      - path: App/App/web
         type: folder
         buildPhase: resources
     info:
-      path: App/Info.plist
+      path: App/App/Info.plist
       properties:
         CFBundleDisplayName: Bouchées
         CFBundleShortVersionString: $(MARKETING_VERSION)
@@ -72,6 +72,18 @@ targets:
     # avec un certificat resigné, la liste de produits reviendra simplement
     # vide, et l'app le dit à l'écran.
     entitlements:
-      path: App/App.entitlements
+      path: App/App/App.entitlements
       properties:
         com.apple.developer.in-app-payments: []
+
+# Sans cette section, XcodeGen ne génère aucun scheme et xcodebuild ne trouve
+# pas « -scheme App ».
+schemes:
+  App:
+    build:
+      targets:
+        App: all
+    run:
+      config: Debug
+    archive:
+      config: Release
