@@ -71,8 +71,10 @@ enum Reglages {
         return URL(string: "https://bouchees.onrender.com")!
     }
 
-    static let conditions = URL(string: "https://bouchees.example/conditions")!
-    static let confidentialite = URL(string: "https://bouchees.example/confidentialite")!
+    /// Servies par le serveur lui-même — pas de site séparé à maintenir,
+    /// et pas de lien mort au moment de la révision App Store.
+    static var conditions: URL { baseServeur.appendingPathComponent("conditions") }
+    static var confidentialite: URL { baseServeur.appendingPathComponent("confidentialite") }
 
     static let avertissementMedical = """
     Bouchées ne remplace pas un avis médical. Les échanges d’ingrédients et les repères d’âge \

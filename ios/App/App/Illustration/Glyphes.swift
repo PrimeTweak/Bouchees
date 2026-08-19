@@ -151,7 +151,7 @@ struct BoutonAllergene: View {
             HStack(spacing: 9) {
                 GlypheAllergene(identifiant: allergene.id, taille: 20)
                     .foregroundStyle(actif ? Color.white : Color.primary)
-                Text(allergene.nom)
+                Text(LocalizedStringKey(allergene.nom))
                     .font(.subheadline.weight(.medium))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)

@@ -14,6 +14,9 @@ struct RecettesVue: View {
     @State private var ficheOuverte: String?
     @State private var paywallOuvert = false
 
+    /// Les catégories arrivent en français depuis les données; on traduit à
+    /// l'affichage seulement, pour que la comparaison avec recette.categorie
+    /// reste exacte.
     private static let categories = ["Tout", "Déjeuner", "Repas", "Collation", "Dessert"]
 
     private var profil: Profil { etat.profilActif }
@@ -75,9 +78,9 @@ struct RecettesVue: View {
                                  titre: "Rien ne correspond",
                                  message: "Essayez un autre mot, ou enlevez un filtre.")
                     } else {
-                        section("Prêtes telles quelles", reste.filter { $0.resultat.statut == .telleQuelle })
-                        section("Avec quelques échanges", reste.filter { $0.resultat.statut == .adaptee })
-                        section("Pas cette fois", reste.filter { $0.resultat.statut == .nonAdaptable })
+                        section(String(localized: "Prêtes telles quelles"), reste.filter { $0.resultat.statut == .telleQuelle })
+                        section(String(localized: "Avec quelques échanges"), reste.filter { $0.resultat.statut == .adaptee })
+                        section(String(localized: "Pas cette fois"), reste.filter { $0.resultat.statut == .nonAdaptable })
                     }
 
                     lotsVerrouilles
@@ -140,9 +143,10 @@ struct RecettesVue: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(Self.categories, id: \.self) { c in
-                    PiluleFiltre(titre: c, actif: categorie == c) { categorie = c }
+                    PiluleFiltre(titre: String(localized: String.LocalizationValue(c)),
+                                 actif: categorie == c) { categorie = c }
                 }
-                PiluleFiltre(titre: "30 min et moins", actif: rapideSeulement) {
+                PiluleFiltre(titre: String(localized: "30 min et moins"), actif: rapideSeulement) {
                     rapideSeulement.toggle()
                 }
             }

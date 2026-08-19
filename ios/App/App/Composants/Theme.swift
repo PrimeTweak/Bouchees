@@ -58,30 +58,37 @@ struct Verdict {
         symbole = resultat.statut.symbole
         switch resultat.statut {
         case .telleQuelle:
-            titre = "Oui, telle quelle"
-            detail = "Aucun ingrédient à changer pour \(prenom)."
+            titre = String(localized: "Oui, telle quelle")
+            detail = String(format: String(localized: "Aucun ingrédient à changer pour %@."), prenom)
         case .adaptee:
             let n = resultat.nbSubstitutions
-            titre = "Oui — avec \(n) échange\(n > 1 ? "s" : "")"
-            detail = "Ce qu’on remplace, par quoi et pourquoi : tout est détaillé plus bas."
+            let modele = n > 1
+                ? String(localized: "Oui — avec %lld échanges")
+                : String(localized: "Oui — avec %lld échange")
+            titre = String(format: modele, n)
+            detail = String(localized: "Ce qu’on remplace, par quoi et pourquoi : tout est détaillé plus bas.")
         case .nonAdaptable:
-            titre = "Pas cette fois pour \(prenom)"
-            detail = resultat.alerteBloquante?.message ?? "Un ingrédient n’a pas de remplacement sûr."
+            titre = String(format: String(localized: "Pas cette fois pour %@"), prenom)
+            detail = resultat.alerteBloquante?.message
+                ?? String(localized: "Un ingrédient n’a pas de remplacement sûr.")
         case .inconnu:
-            titre = "On ne peut pas se prononcer"
-            detail = "Cette recette n’a pas pu être analysée. Ne la servez pas sans vérifier vous-même."
+            titre = String(localized: "On ne peut pas se prononcer")
+            detail = String(localized: "Cette recette n’a pas pu être analysée. Ne la servez pas sans vérifier vous-même.")
         }
     }
 
     /// Version courte pour une carte.
     static func jeton(_ resultat: RecetteAdaptee) -> String {
         switch resultat.statut {
-        case .telleQuelle: return "Telle quelle"
+        case .telleQuelle: return String(localized: "Telle quelle")
         case .adaptee:
             let n = resultat.nbSubstitutions
-            return "\(n) échange\(n > 1 ? "s" : "")"
-        case .nonAdaptable: return "Pas cette fois"
-        case .inconnu: return "À vérifier"
+            let modele = n > 1
+                ? String(localized: "Oui — avec %lld échanges")
+                : String(localized: "Oui — avec %lld échange")
+            return String(format: modele, n)
+        case .nonAdaptable: return String(localized: "Pas cette fois")
+        case .inconnu: return String(localized: "À vérifier")
         }
     }
 }

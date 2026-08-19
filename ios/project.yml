@@ -31,6 +31,8 @@ targets:
     - path: App/App/Services
     - path: App/App/Assets.xcassets
     - path: App/App/Bouchees.storekit
+    - path: App/App/Traductions
+      type: group
     - path: App/App/Ressources
       type: folder
       buildPhase: resources
@@ -41,13 +43,20 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
-        UILaunchScreen: {}
+        UILaunchScreen:
+          UIColorName: Fond
+          UIImageName: MarqueLancement
+          UIImageRespectsSafeAreaInsets: true
         UISupportedInterfaceOrientations:
         - UIInterfaceOrientationPortrait
         - UIInterfaceOrientationLandscapeLeft
         - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: Bouchées utilise la caméra pour lire le code-barres d'un produit et
           vérifier sa liste d'ingrédients. Aucune photo n'est enregistrée ni envoyée.
+        CFBundleDevelopmentRegion: fr-CA
+        CFBundleLocalizations:
+        - fr
+        - en
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ca.bouchees.app

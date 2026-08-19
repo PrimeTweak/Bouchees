@@ -273,10 +273,10 @@ struct SelecteurAge: View {
                     ageMois = stade.min
                 } label: {
                     HStack(spacing: 14) {
-                        Text(stade.nom)
+                        Text(LocalizedStringKey(stade.nom))
                             .font(.headline)
                             .frame(width: 82, alignment: .leading)
-                        Text(stade.texte)
+                        Text(LocalizedStringKey(stade.texte))
                             .font(.footnote)
                             .foregroundStyle(actif ? Teinte.betterave : .secondary)
                             .multilineTextAlignment(.leading)
@@ -357,7 +357,8 @@ struct GrilleAllergenes: View {
                 Button {
                     autresOuverts = true
                 } label: {
-                    Label("Voir les \(nombreAutres) autres allergènes", systemImage: "plus.circle")
+                    Label(String(format: String(localized: "Voir les %lld autres allergènes"),
+                                 nombreAutres), systemImage: "plus.circle")
                         .font(.subheadline.weight(.semibold))
                 }
                 .tint(Teinte.betterave)
