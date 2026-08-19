@@ -10,6 +10,6 @@ ios/*.xcworkspace/
 build/
 sortie/
 
-# Contenu embarqué au moment du build, pas à la main.
-# Le dossier est créé par le workflow avant XcodeGen — rien à suivre ici.
-ios/App/App/web/
+# Ressources embarquées au moment du build (moteur JS, tables, lots libres).
+# Le workflow les copie avant XcodeGen — rien à suivre ici.
+ios/App/App/Ressources/
