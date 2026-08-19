@@ -180,6 +180,28 @@ enum Palette {
     }
 }
 
+// MARK: - Trigonométrie sans ambiguïté
+
+// CoreGraphics expose cos(CGFloat) et la bibliothèque standard cos(Double).
+// Dès qu'on mêle les deux dans une expression CGPoint, le compilateur refuse
+// de choisir. Ces enveloppes tranchent : entrée Double, sortie CGFloat.
+
+@inline(__always)
+private func cosinus(_ angleRadians: Double) -> CGFloat {
+    let v: Double = Foundation.cos(angleRadians)
+    return CGFloat(v)
+}
+
+@inline(__always)
+private func sinus(_ angleRadians: Double) -> CGFloat {
+    let v: Double = Foundation.sin(angleRadians)
+    return CGFloat(v)
+}
+
+/// Degrés vers radians, en Double, pour éviter la même ambiguïté.
+@inline(__always)
+private func radians(_ degres: Double) -> Double { degres * Double.pi / 180 }
+
 // MARK: - Aléa déterministe
 
 /// Même recette et même profil donnent toujours la même image. Un dessin qui
@@ -205,6 +227,11 @@ struct AleaSeme {
     }
 
     mutating func entre(_ a: Double, _ b: Double) -> Double { a + (b - a) * suivant() }
+
+    /// Même chose, mais typée CGFloat : le dessin travaille en CGFloat et les
+    /// conversions implicites sont exactement ce qui rend les expressions
+    /// ambiguës pour le compilateur.
+    mutating func entreCG(_ a: Double, _ b: Double) -> CGFloat { CGFloat(entre(a, b)) }
 }
 
 // MARK: - La vue
@@ -259,10 +286,10 @@ struct PlatVue: View {
 
         // Miettes sur la nappe : asymétrie volontaire.
         for (i, a) in accents.prefix(3).enumerated() {
-            let angle = alea.entre(0, 2 * .pi) + Double(i) * 2.1
-            let distance = rayonBol * alea.entre(1.22, 1.45)
-            let p = CGPoint(x: centre.x + cos(angle) * distance,
-                            y: centre.y + sin(angle) * distance * 0.78)
+            let angle: Double = alea.entre(0, 2 * Double.pi) + Double(i) * 2.1
+            let distance = rayonBol * alea.entreCG(1.22, 1.45)
+            let p = CGPoint(x: centre.x + cosinus(angle) * distance,
+                            y: centre.y + sinus(angle) * distance * 0.78)
             guard p.x > 12, p.x < taille.width - 12, p.y > 12, p.y < taille.height - 12 else { continue }
             var sousContexte = contexte
             sousContexte.opacity = 0.6
@@ -328,12 +355,12 @@ struct PlatVue: View {
                                        width: rayon * 1.9, height: rayon * 1.9)),
                 with: .color(base.couleur.opacity(0.3)))
             for i in 0..<5 {
-                let angle = Double(i) * 72 + alea.entre(0, 26)
-                let d = rayon * alea.entre(0.2, 0.55)
-                let p = CGPoint(x: centre.x + cos(angle * .pi / 180) * d,
-                                y: centre.y + sin(angle * .pi / 180) * d)
+                let angle: Double = Double(i) * 72 + alea.entre(0, 26)
+                let d = rayon * alea.entreCG(0.2, 0.55)
+                let p = CGPoint(x: centre.x + cosinus(radians(angle)) * d,
+                                y: centre.y + sinus(radians(angle)) * d)
                 forme(.chunk, dans: &contexte, centre: p,
-                      taille: rayon * alea.entre(0.19, 0.27), couleur: base.couleur, alea: &alea)
+                      taille: rayon * alea.entreCG(0.19, 0.27), couleur: base.couleur, alea: &alea)
             }
 
         default:
@@ -346,10 +373,10 @@ struct PlatVue: View {
 
             if base.forme == .brin || base.forme == .grain {
                 for i in 0..<8 {
-                    let angle = Double(i) * 45 + alea.entre(0, 22)
-                    let d = rayon * alea.entre(0.24, 0.56)
-                    let p = CGPoint(x: centre.x + cos(angle * .pi / 180) * d,
-                                    y: centre.y + sin(angle * .pi / 180) * d)
+                    let angle: Double = Double(i) * 45 + alea.entre(0, 22)
+                    let d = rayon * alea.entreCG(0.24, 0.56)
+                    let p = CGPoint(x: centre.x + cosinus(radians(angle)) * d,
+                                    y: centre.y + sinus(radians(angle)) * d)
                     forme(base.forme, dans: &contexte, centre: p, taille: rayon * 0.15,
                           couleur: foncer(base.couleur, 0.84), alea: &alea)
                 }
@@ -362,12 +389,14 @@ struct PlatVue: View {
             let repetitions = n <= 2 ? 3 : (n <= 4 ? 2 : 1)
             for j in 0..<repetitions {
                 let index = Double(i + j * n)
-                let angle = index * 137.508 + decalageStable(a.cle)
-                let r = rayon * (0.17 + 0.55 * (index + 0.55).squareRoot() / Double(n * repetitions).squareRoot())
-                let p = CGPoint(x: centre.x + cos(angle * .pi / 180) * r,
-                                y: centre.y + sin(angle * .pi / 180) * r * 0.93)
+                let angle: Double = index * 137.508 + decalageStable(a.cle)
+                let proportion: Double = 0.17 + 0.55 * (index + 0.55).squareRoot()
+                    / Double(n * repetitions).squareRoot()
+                let r = rayon * CGFloat(proportion)
+                let p = CGPoint(x: centre.x + cosinus(radians(angle)) * r,
+                                y: centre.y + sinus(radians(angle)) * r * 0.93)
                 forme(a.forme, dans: &contexte, centre: p,
-                      taille: rayon * alea.entre(0.15, 0.22), couleur: a.couleur, alea: &alea)
+                      taille: rayon * alea.entreCG(0.15, 0.22), couleur: a.couleur, alea: &alea)
             }
         }
     }
@@ -378,9 +407,9 @@ struct PlatVue: View {
         var p = Path()
         let points = 11
         for i in 0..<points {
-            let angle = Double(i) / Double(points) * 2 * .pi
-            let r = rayon * alea.entre(0.9, 1.1)
-            let point = CGPoint(x: centre.x + cos(angle) * r, y: centre.y + sin(angle) * r * 0.94)
+            let angle: Double = Double(i) / Double(points) * 2 * Double.pi
+            let r = rayon * alea.entreCG(0.9, 1.1)
+            let point = CGPoint(x: centre.x + cosinus(angle) * r, y: centre.y + sinus(angle) * r * 0.94)
             if i == 0 { p.move(to: point) } else { p.addLine(to: point) }
         }
         p.closeSubpath()
@@ -399,9 +428,9 @@ struct PlatVue: View {
         case .rond:
             let depart = alea.entre(0, 360)
             for i in 0..<3 {
-                let angle = (depart + Double(i) * 118) * .pi / 180
+                let angle: Double = radians(depart + Double(i) * 118)
                 let d = t * 0.72
-                let c = CGPoint(x: centre.x + cos(angle) * d, y: centre.y + sin(angle) * d * 0.9)
+                let c = CGPoint(x: centre.x + cosinus(angle) * d, y: centre.y + sinus(angle) * d * 0.9)
                 contexte.fill(
                     Path(ellipseIn: CGRect(x: c.x - t * 0.6, y: c.y - t * 0.6, width: t * 1.2, height: t * 1.2)),
                     with: .color(couleur))
@@ -410,8 +439,8 @@ struct PlatVue: View {
         case .grain:
             let depart = alea.entre(0, 360)
             for i in 0..<5 {
-                let angle = (depart + Double(i) * 72) * .pi / 180
-                let c = CGPoint(x: centre.x + cos(angle) * t * 0.8, y: centre.y + sin(angle) * t * 0.7)
+                let angle: Double = radians(depart + Double(i) * 72)
+                let c = CGPoint(x: centre.x + cosinus(angle) * t * 0.8, y: centre.y + sinus(angle) * t * 0.7)
                 var chemin = Path(ellipseIn: CGRect(x: c.x - t * 0.46, y: c.y - t * 0.26,
                                                     width: t * 0.92, height: t * 0.52))
                 chemin = chemin.applying(rotation(Double(i) * 40, autour: c))
@@ -463,9 +492,9 @@ struct PlatVue: View {
 
         case .poudre:
             for _ in 0..<7 {
-                let p = CGPoint(x: centre.x + alea.entre(-t * 1.3, t * 1.3),
-                                y: centre.y + alea.entre(-t * 1.1, t * 1.1))
-                let r = t * alea.entre(0.19, 0.29)
+                let p = CGPoint(x: centre.x + t * alea.entreCG(-1.3, 1.3),
+                                y: centre.y + t * alea.entreCG(-1.1, 1.1))
+                let r = t * alea.entreCG(0.19, 0.29)
                 contexte.fill(
                     Path(ellipseIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)),
                     with: .color(couleur))
@@ -482,7 +511,7 @@ struct PlatVue: View {
 
     private func rotation(_ degres: Double, autour p: CGPoint) -> CGAffineTransform {
         CGAffineTransform(translationX: p.x, y: p.y)
-            .rotated(by: degres * .pi / 180)
+            .rotated(by: CGFloat(radians(degres)))
             .translatedBy(x: -p.x, y: -p.y)
     }
 
