@@ -1,0 +1,62 @@
+v0.7 — l'app devient 100 % native
+=================================
+
+Zéro WKWebView. Toute l'interface est SwiftUI : onglets, listes, fiche,
+scanner, profils, réglages, paywall. Les illustrations sont dessinées en
+Canvas, les glyphes d'allergènes en Path.
+
+Le moteur de substitution, lui, reste en JavaScript — dans JavaScriptCore,
+sans HTML ni DOM. C'est un interpréteur de calcul appelé depuis Swift. Le
+porter en Swift créerait une DEUXIÈME vérité, et un écart entre les deux sur
+des allergies alimentaires n'est pas un bogue d'affichage. Les 90 tests
+restent la seule référence.
+
+
+A. SUPPRIMER ces fichiers de l'ancienne coquille hybride
+--------------------------------------------------------
+Dans ios/App/App/, efface :
+
+    BoucheesApp.swift
+    PontMoteur.swift
+    Scanner.swift
+    ContenuLocal.swift
+    EcransSecondaires.swift
+    Abonnement.swift
+    le dossier web/  (s'il existe)
+
+GitHub Desktop les montrera comme supprimés, c'est voulu.
+
+
+B. AJOUTER le contenu de ce zip
+-------------------------------
+    ios/App/App/Modeles/        (1 fichier)
+    ios/App/App/Moteur/         (3 fichiers)
+    ios/App/App/Illustration/   (2 fichiers)
+    ios/App/App/Composants/     (1 fichier)
+    ios/App/App/Ecrans/         (5 fichiers)
+    ios/App/App/Services/       (1 fichier)
+    ios/project.yml             (remplace)
+    .github/workflows/ipa.yml   (remplace)
+    moteur/pont-natif.js        (nouveau)
+    outils/verifier-swift.py    (nouveau)
+    LISEZMOI.md                 (remplace)
+    gitignore.txt  ->  renomme .gitignore  (facultatif)
+
+Garde Assets.xcassets, Info.plist, App.entitlements et Bouchees.storekit :
+ils ne changent pas.
+
+
+C. POUSSER
+----------
+GitHub Desktop -> « Rewrite app in native SwiftUI » -> Commit -> Push
+
+
+CE QUE JE NE PEUX PAS PROMETTRE
+-------------------------------
+3 757 lignes de Swift qu'aucun compilateur n'a vues. J'ai écrit un
+vérificateur statique (outils/verifier-swift.py, lancé par le workflow) qui
+attrape les symboles manquants, les types en double et les assets absents.
+Il n'attrape PAS les erreurs de type ni d'isolation d'acteur.
+
+Attends-toi à quelques allers-retours au premier build. Envoie-moi les
+dernières lignes du journal et je corrige.

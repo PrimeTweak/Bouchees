@@ -39,20 +39,21 @@ jobs:
           node outils/publier.js
           node app/build.js
 
-      - name: Embarquer la page dans le bundle iOS
-        # Seuls les lots LIBRES sont embarqués. Les lots payants restent
-        # derrière le serveur : un fichier dans l'IPA se lit avec un éditeur
+      - name: Embarquer les ressources dans le bundle iOS
+        # Le moteur JavaScript et les tables de sécurité voyagent avec l'app :
+        # tout fonctionne hors ligne dès la première ouverture. Seuls les lots
+        # LIBRES sont embarqués — un fichier dans un IPA se lit avec un éditeur
         # de texte, ce ne serait pas un mur.
         run: |
-          mkdir -p ios/App/App/web
-          cp app/index.html ios/App/App/web/index.html
-          if [ -d app/images ]; then cp -R app/images ios/App/App/web/; fi
-          cp dist/securite.json ios/App/App/web/ || true
+          R=ios/App/App/Ressources
+          rm -rf "$R"; mkdir -p "$R/lots"
+          cp moteur/moteur.js moteur/pont-natif.js "$R/"
+          cp donnees/ingredients.json donnees/substitutions.json donnees/base.json "$R/"
           python3 - <<'PY'
           import json, shutil, pathlib
           m = json.load(open('dist/manifeste.json'))
           libres = set(m['libres'])
-          dest = pathlib.Path('ios/App/App/web/lots'); dest.mkdir(parents=True, exist_ok=True)
+          dest = pathlib.Path('ios/App/App/Ressources/lots')
           for lot in sorted(libres):
               src = pathlib.Path('dist/lots') / (lot + '.json')
               if src.exists():
@@ -62,6 +63,13 @@ jobs:
               if l['id'] not in libres:
                   print('laisse au serveur :', l['id'])
           PY
+          ls -R "$R"
+
+      - name: Vérifier le code Swift
+        # Pas un compilateur : attrape les symboles manquants, les types en
+        # double, les assets absents. Deux secondes ici évitent quinze minutes
+        # de build pour une faute qu'on peut voir sans Xcode.
+        run: python3 outils/verifier-swift.py
 
       - name: XcodeGen
         run: brew install xcodegen

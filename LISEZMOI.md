@@ -1,4 +1,4 @@
-# Bouchées (nom de travail) — v0.6 : app iOS, StoreKit, scanner
+# Bouchées (nom de travail) — v0.7 : app iOS 100 % native
 
 Application de recettes pour bébés et enfants avec allergies.
 Position d'architecture : **l'IA rédige, les règles décident.** Toute décision
@@ -53,7 +53,14 @@ et testées — jamais d'un modèle.
     generation/vision.js        Vérification des images — remplace la révision humaine
     generation/coherence.js     Contrôle culinaire — remplace une partie de la cuisson
     serveur/apple.js            Bloc I — vérification StoreKit 2 (JWS, chaîne x5c)
-    ios/App/App/*.swift         Bloc H — coquille SwiftUI, scanner, StoreKit
+    moteur/pont-natif.js        Surface JSON appelée par JavaScriptCore
+    ios/App/App/Modeles/        Modèles Codable, miroirs exacts des JSON
+    ios/App/App/Moteur/         Enveloppe JavaScriptCore, dépôt, état de l'app
+    ios/App/App/Illustration/   Générateur SwiftUI Canvas + glyphes d'allergènes
+    ios/App/App/Ecrans/         Accueil, recettes, fiche, scanner, profils, réglages
+    ios/App/App/Composants/     Thème, cartes, états vides
+    ios/App/App/Services/       StoreKit 2
+    outils/verifier-swift.py    Vérificateur statique — à défaut de compilateur
     ios/DOSSIER-REVISION.md     Bloc J — tout pour la soumission App Store
     ios/project.yml             Bloc G — XcodeGen : le .xcodeproj est généré
     ios/App/App/Bouchees.storekit  Achats simulés pour tester sans compte Apple
@@ -185,7 +192,28 @@ temps incohérent, protéine crue jamais cuite, rendement invraisemblable.
 Pas attrapé : le goût, la levée, la texture. Une recette non cuisinée peut être
 ratée — jamais dangereuse, la sécurité vivant dans les tables déterministes.
 
-## L'app iOS (v0.6)
+## L'app native (v0.7)
+
+**Zéro WKWebView.** Toute l'interface est SwiftUI : onglets, listes, fiche,
+scanner, profils, réglages, paywall. Les illustrations sont dessinées en
+`Canvas`, les glyphes d'allergènes en `Path`.
+
+**Le moteur reste en JavaScript, dans JavaScriptCore.** Ce n'est pas une vue
+web — aucun HTML, aucun DOM. C'est un interpréteur de calcul appelé depuis
+Swift, dont la sortie JSON est décodée en types Swift. Le porter en Swift
+créerait une deuxième vérité, et un écart entre les deux sur des allergies
+alimentaires n'est pas un bogue d'affichage. Les 90 tests restent la seule
+référence. Mesuré : 30 recettes adaptées en 11 ms.
+
+**Les illustrations, elles, sont portées en natif** — un écart de dessin est
+cosmétique, pas dangereux. La palette suit l'ingrédient APRÈS adaptation :
+quand le beurre d'arachide devient du beurre de tournesol, la tuile change.
+
+**Aléa déterministe** : même recette et même profil donnent toujours la même
+image. Pas de `hashValue` (instable entre lancements) — une graine dérivée
+des identifiants.
+
+## L'app iOS hybride (v0.6, remplacée)
 
 **Un seul moteur.** Le moteur de substitution reste en JavaScript, dans un
 WKWebView chargé depuis le bundle. On ne le réécrit pas en Swift : deux
@@ -204,6 +232,42 @@ déverrouiller du contenu dans une app iOS). La transaction signée part au
 serveur, qui vérifie la chaîne de certificats jusqu'à la racine Apple
 épinglée. Sans cette racine sur le serveur : refus de tout. Stripe reste en
 place pour le web; le serveur accepte les deux sources.
+
+## Delta v0.7 (depuis v0.6)
+
+NOUVEAUX (`git add`) :
+
+    moteur/pont-natif.js              outils/verifier-swift.py
+    ios/App/App/Modeles/Modeles.swift
+    ios/App/App/Moteur/MoteurJS.swift ios/App/App/Moteur/Depot.swift
+    ios/App/App/Moteur/EtatApp.swift
+    ios/App/App/Illustration/Illustration.swift
+    ios/App/App/Illustration/Glyphes.swift
+    ios/App/App/Composants/Theme.swift
+    ios/App/App/Ecrans/BoucheesApp.swift
+    ios/App/App/Ecrans/RecettesVue.swift
+    ios/App/App/Ecrans/FicheVue.swift
+    ios/App/App/Ecrans/ScannerVue.swift
+    ios/App/App/Ecrans/ProfilsEtReglages.swift
+    ios/App/App/Services/Abonnement.swift
+
+SUPPRIMÉS (`git rm`) — la coquille hybride :
+
+    ios/App/App/BoucheesApp.swift     ios/App/App/PontMoteur.swift
+    ios/App/App/Scanner.swift         ios/App/App/ContenuLocal.swift
+    ios/App/App/EcransSecondaires.swift  ios/App/App/Abonnement.swift
+    ios/App/App/web/
+
+MODIFIÉS :
+
+    ios/project.yml        (nouvelle arborescence de sources)
+    .github/workflows/ipa.yml  (embarque le moteur JS + les tables, vérifie le Swift)
+    .gitignore             LISEZMOI.md
+
+**Non compilé.** 3 757 lignes de Swift qu'aucun compilateur n'a vues. Le
+vérificateur statique (`outils/verifier-swift.py`) attrape les symboles
+manquants, les types en double et les assets absents — pas les erreurs de type
+ni d'isolation. Attends-toi à des allers-retours.
 
 ## Delta v0.6 (depuis v0.5)
 
