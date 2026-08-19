@@ -25,6 +25,9 @@ function publier(options) {
   if (!corpus) {
     corpus = lire("donnees/recettes.json");
     try { corpus = corpus.concat(lire("donnees/importees/recettes-importees.json")); } catch (e) {}
+    /* Les recettes générées comptent comme les autres — les oublier ici les
+     * rendait invisibles au manifeste alors qu'elles étaient bien publiées. */
+    try { corpus = corpus.concat(lire("donnees/generees/recettes-generees.json")); } catch (e) {}
   }
   let manifesteImages = options.images || {};
   if (!options.images) { try { manifesteImages = lire("generation/images/manifeste.json"); } catch (e) {} }

@@ -217,6 +217,7 @@ function rapport(corpus) {
 if (require.main === module) {
   let corpus = lire("donnees/recettes.json");
   try { corpus = corpus.concat(lire("donnees/importees/recettes-importees.json")); } catch (e) {}
+  try { corpus = corpus.concat(lire("donnees/generees/recettes-generees.json")); } catch (e) {}
   const r = rapport(corpus);
   fs.writeFileSync(path.join(racine, "outils", "rapport-trous.md"),
     markdown(r.classement, r.bloquants, r.commande, corpus.length) + "\n");

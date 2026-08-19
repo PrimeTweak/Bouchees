@@ -7,9 +7,19 @@
  */
 "use strict";
 
-/* Schéma « générique » — notre propre format d'échange (partenaires, exports). */
+/* Schéma « générique » — notre propre format d'échange (partenaires, exports).
+ *
+ * Accepte DEUX formes, parce que le prompt du mois demande au modèle un
+ * tableau nu et qu'il serait absurde d'exiger un emballage manuel ensuite :
+ *   [ {...}, {...} ]                      (tableau direct)
+ *   { source, licence, recettes: [...] }  (avec métadonnées)
+ */
 function generique(doc) {
-  return (doc.recettes || []).map(function (r) {
+  var enveloppe = Array.isArray(doc)
+    ? { source: "maison", licence: "contenu original — rédigé pour Bouchées", recettes: doc }
+    : doc;
+  return (enveloppe.recettes || []).map(function (r) {
+    var doc = enveloppe;
     return {
       source: doc.source || "generique",
       idExterne: r.id,
@@ -72,6 +82,7 @@ function mealdb(doc) {
 }
 
 function detecter(doc) {
+  if (Array.isArray(doc)) return generique;
   if (doc.meals) return mealdb;
   if (doc.recipes && doc.recipes[0] && doc.recipes[0].extendedIngredients) return spoonacular;
   return generique;

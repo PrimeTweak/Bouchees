@@ -1,5 +1,5 @@
 ════════════════════════════════════════════════════════════════════════
-PROMPT 1 / 1
+PROMPT 1 / 4
 ════════════════════════════════════════════════════════════════════════
 
 Tu rédiges des recettes pour Bouchées, une application destinée aux parents
@@ -10,7 +10,7 @@ COMMANDE
   2 recette(s) de catégorie « Dessert »
   Âge minimal visé : 6 mois
   Doit être exempte de : Arachides, Blé et triticale, Crustacés et mollusques, Lait, Moutarde, Noix, Œufs, Poisson, Sésame, Soya, Sulfites
-  Pourquoi : 14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 1 dessert. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous.
+  Pourquoi : 14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 4 dessert. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous.
 
 RÈGLE ABSOLUE
   Tu ne peux utiliser QUE les identifiants d'ingrédients de la liste ci-dessous.
@@ -101,6 +101,390 @@ FORMAT DE SORTIE
     "id": "identifiant-en-minuscules-avec-tirets",
     "nom": "Nom en français, appétissant, sans superlatif",
     "categorie": "Dessert",
+    "portions": "4 portions",
+    "ageMinBase": 6,
+    "tempsMin": 30,
+    "ingredients": [
+      { "id": "identifiant_du_catalogue", "qte": 250, "unite": "ml", "role": "farine" }
+    ],
+    "etapes": ["Phrase à l'impératif.", "..."]
+  }
+
+CONSIGNES DE RÉDACTION
+  - Le champ role est obligatoire dès qu'un ingrédient joue un rôle structurel
+    (liant, gras, farine, liquide, lacte, proteine). C'est lui qui pilote les
+    substitutions : un œuf liant et un œuf protéine ne se remplacent pas pareil.
+  - Unités métriques : ml, g, ou une unité naturelle (unité, gousse, tranche).
+  - Étapes courtes, à l'impératif, sans jargon. 3 à 6 étapes.
+  - Pas de sel ajouté avant 12 mois, pas de sucre ajouté avant 24 mois.
+  - Pas de superlatif marketing dans le nom ni les étapes.
+  - Une recette qu'un parent pressé peut faire un mardi soir.
+
+RAPPEL
+  Ta sortie passe ensuite par un validateur automatique, puis par une personne
+  qui cuisine la recette pour vrai avant publication. Écris pour être cuisiné,
+  pas pour impressionner.
+
+
+════════════════════════════════════════════════════════════════════════
+PROMPT 2 / 4
+════════════════════════════════════════════════════════════════════════
+
+Tu rédiges des recettes pour Bouchées, une application destinée aux parents
+d'enfants avec des allergies alimentaires. La sécurité est gérée ailleurs, par
+des tables déterministes : ton rôle est la rédaction culinaire, pas la décision.
+
+COMMANDE
+  2 recette(s) de catégorie « Repas »
+  Âge minimal visé : 6 mois
+  Doit être exempte de : Arachides, Blé et triticale, Crustacés et mollusques, Lait, Moutarde, Noix, Œufs, Poisson, Sésame, Soya, Sulfites
+  Pourquoi : 14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 3 repas. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous.
+
+RÈGLE ABSOLUE
+  Tu ne peux utiliser QUE les identifiants d'ingrédients de la liste ci-dessous.
+  Aucun ingrédient inventé, aucun nom libre, aucune variante orthographique.
+  Une recette contenant un identifiant hors liste est rejetée automatiquement.
+
+INGRÉDIENTS AUTORISÉS (62)
+  farine_avoine  —  Farine d'avoine  [rôles : farine]
+  farine_riz  —  Farine de riz  [rôles : farine, liant]
+  farine_pois_chiches  —  Farine de pois chiches  [rôles : farine, proteine]
+  melange_sans_gluten  —  Mélange à pâtisserie sans gluten  [rôles : farine]
+  fecule_mais  —  Fécule de maïs  [rôles : liant]
+  flocons_avoine  —  Flocons d'avoine  [rôles : farine]
+  chapelure_sans_gluten  —  Chapelure sans gluten  [rôles : liant]
+  pates_riz  —  Pâtes de riz  [rôles : farine]
+  riz  —  Riz  [rôles : farine]
+  compote_pommes  —  Compote de pommes non sucrée  [rôles : liant, sucrant]
+  puree_banane  —  Banane écrasée  [rôles : liant, sucrant]
+  lin_moulu  —  Graines de lin moulues  [rôles : liant]
+  graines_chia  —  Graines de chia  [rôles : liant]
+  aquafaba  —  Aquafaba (eau de pois chiches sans sel)  [rôles : liant]
+  boisson_avoine  —  Boisson d'avoine enrichie  [rôles : liquide]
+  lait_coco  —  Lait de coco  [rôles : liquide, lacte]
+  yogourt_coco  —  Yogourt de coco  [rôles : lacte]
+  margarine_sans_lait  —  Margarine sans produits laitiers  [rôles : gras]
+  huile_olive  —  Huile d'olive  [rôles : gras]
+  huile_canola  —  Huile de canola  [rôles : gras]
+  puree_avocat  —  Avocat écrasé  [rôles : gras]
+  levure_alimentaire  —  Levure alimentaire  [rôles : lacte]
+  beurre_tournesol  —  Beurre de graines de tournesol  [rôles : gras, proteine]
+  poulet  —  Poulet  [rôles : proteine]
+  dinde_hachee  —  Dinde hachée  [rôles : proteine]
+  lentilles  —  Lentilles cuites  [rôles : proteine]
+  pois_chiches  —  Pois chiches cuits  [rôles : proteine]
+  miel  —  Miel  [rôles : sucrant]
+  sirop_erable  —  Sirop d'érable  [rôles : sucrant]
+  sucre  —  Sucre  [rôles : sucrant]
+  dattes  —  Dattes dénoyautées  [rôles : sucrant]
+  banane  —  Banane  [rôles : fruit]
+  pomme  —  Pomme  [rôles : fruit]
+  mangue  —  Mangue  [rôles : fruit]
+  bleuets  —  Bleuets  [rôles : fruit]
+  raisins_secs  —  Raisins secs  [rôles : fruit]
+  jus_citron  —  Jus de citron  [rôles : assaisonnement]
+  patate_douce  —  Patate douce  [rôles : legume]
+  courge_butternut  —  Courge musquée  [rôles : legume]
+  carotte  —  Carotte (cuite)  [rôles : legume]
+  carotte_crue  —  Carotte crue  [rôles : legume]
+  concombre  —  Concombre  [rôles : legume]
+  courgette  —  Courgette  [rôles : legume]
+  epinards  —  Épinards  [rôles : legume]
+  oignon  —  Oignon  [rôles : legume]
+  ail  —  Ail  [rôles : assaisonnement]
+  tomates_broyees  —  Tomates broyées  [rôles : legume]
+  sel  —  Sel  [rôles : assaisonnement]
+  cannelle  —  Cannelle  [rôles : assaisonnement]
+  vanille  —  Extrait de vanille  [rôles : assaisonnement]
+  levure_chimique  —  Poudre à pâte  [rôles : levant]
+  bicarbonate  —  Bicarbonate de soude  [rôles : levant]
+  bouillon_sans_sel  —  Bouillon de poulet sans sel  [rôles : liquide]
+  eau  —  Eau  [rôles : liquide]
+  coco_aminos  —  Aminos de coco  [rôles : assaisonnement]
+  quinoa  —  Quinoa  [rôles : farine]
+  tortillas_mais  —  Tortillas de maïs  [rôles : farine]
+  petits_pois  —  Petits pois  [rôles : legume]
+  poivron  —  Poivron  [rôles : legume]
+  brocoli  —  Brocoli  [rôles : legume]
+  basilic  —  Basilic  [rôles : assaisonnement]
+  gingembre  —  Gingembre  [rôles : assaisonnement]
+
+À ÉVITER À CET ÂGE (utilisables plus tard, pas ici)
+  miel (Miel) — Risque de botulisme infantile avant 12 mois
+  noix_grenoble (Noix de Grenoble) — Noix entières ou en morceaux : risque d'étouffement avant 4 ans
+  raisins_secs (Raisins secs) — Fruits séchés : texture collante et ferme avant 12 mois
+  bleuets (Bleuets) — Petits fruits ronds : risque d'étouffement avant 12 mois
+  carotte_crue (Carotte crue) — Légume dur cru : risque d'étouffement
+  carotte_crue (Carotte crue) — Bâtonnets crus durs déconseillés avant 4 ans
+  sel (Sel) — Sodium à limiter strictement avant 12 mois
+  sucre (Sucre) — Sucre ajouté à limiter avant 2 ans
+  beurre_arachide (Beurre d'arachide naturel) — Texture collante : ne jamais servir à la cuillère ou en grosse quantité
+  crevette (Crevettes) — Texture caoutchouteuse : risque d’étouffement avant 12 mois
+  abricots_seches (Abricots séchés) — Fruits séchés : texture collante et ferme avant 12 mois
+
+FORMAT DE SORTIE
+  Un tableau JSON, rien d'autre — pas de texte avant ni après, pas de balises.
+  Chaque objet :
+  {
+    "id": "identifiant-en-minuscules-avec-tirets",
+    "nom": "Nom en français, appétissant, sans superlatif",
+    "categorie": "Repas",
+    "portions": "4 portions",
+    "ageMinBase": 6,
+    "tempsMin": 30,
+    "ingredients": [
+      { "id": "identifiant_du_catalogue", "qte": 250, "unite": "ml", "role": "farine" }
+    ],
+    "etapes": ["Phrase à l'impératif.", "..."]
+  }
+
+CONSIGNES DE RÉDACTION
+  - Le champ role est obligatoire dès qu'un ingrédient joue un rôle structurel
+    (liant, gras, farine, liquide, lacte, proteine). C'est lui qui pilote les
+    substitutions : un œuf liant et un œuf protéine ne se remplacent pas pareil.
+  - Unités métriques : ml, g, ou une unité naturelle (unité, gousse, tranche).
+  - Étapes courtes, à l'impératif, sans jargon. 3 à 6 étapes.
+  - Pas de sel ajouté avant 12 mois, pas de sucre ajouté avant 24 mois.
+  - Pas de superlatif marketing dans le nom ni les étapes.
+  - Une recette qu'un parent pressé peut faire un mardi soir.
+
+RAPPEL
+  Ta sortie passe ensuite par un validateur automatique, puis par une personne
+  qui cuisine la recette pour vrai avant publication. Écris pour être cuisiné,
+  pas pour impressionner.
+
+
+════════════════════════════════════════════════════════════════════════
+PROMPT 3 / 4
+════════════════════════════════════════════════════════════════════════
+
+Tu rédiges des recettes pour Bouchées, une application destinée aux parents
+d'enfants avec des allergies alimentaires. La sécurité est gérée ailleurs, par
+des tables déterministes : ton rôle est la rédaction culinaire, pas la décision.
+
+COMMANDE
+  2 recette(s) de catégorie « Collation »
+  Âge minimal visé : 6 mois
+  Doit être exempte de : Arachides, Blé et triticale, Crustacés et mollusques, Lait, Moutarde, Noix, Œufs, Poisson, Sésame, Soya, Sulfites
+  Pourquoi : 14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 2 collation. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous.
+
+RÈGLE ABSOLUE
+  Tu ne peux utiliser QUE les identifiants d'ingrédients de la liste ci-dessous.
+  Aucun ingrédient inventé, aucun nom libre, aucune variante orthographique.
+  Une recette contenant un identifiant hors liste est rejetée automatiquement.
+
+INGRÉDIENTS AUTORISÉS (62)
+  farine_avoine  —  Farine d'avoine  [rôles : farine]
+  farine_riz  —  Farine de riz  [rôles : farine, liant]
+  farine_pois_chiches  —  Farine de pois chiches  [rôles : farine, proteine]
+  melange_sans_gluten  —  Mélange à pâtisserie sans gluten  [rôles : farine]
+  fecule_mais  —  Fécule de maïs  [rôles : liant]
+  flocons_avoine  —  Flocons d'avoine  [rôles : farine]
+  chapelure_sans_gluten  —  Chapelure sans gluten  [rôles : liant]
+  pates_riz  —  Pâtes de riz  [rôles : farine]
+  riz  —  Riz  [rôles : farine]
+  compote_pommes  —  Compote de pommes non sucrée  [rôles : liant, sucrant]
+  puree_banane  —  Banane écrasée  [rôles : liant, sucrant]
+  lin_moulu  —  Graines de lin moulues  [rôles : liant]
+  graines_chia  —  Graines de chia  [rôles : liant]
+  aquafaba  —  Aquafaba (eau de pois chiches sans sel)  [rôles : liant]
+  boisson_avoine  —  Boisson d'avoine enrichie  [rôles : liquide]
+  lait_coco  —  Lait de coco  [rôles : liquide, lacte]
+  yogourt_coco  —  Yogourt de coco  [rôles : lacte]
+  margarine_sans_lait  —  Margarine sans produits laitiers  [rôles : gras]
+  huile_olive  —  Huile d'olive  [rôles : gras]
+  huile_canola  —  Huile de canola  [rôles : gras]
+  puree_avocat  —  Avocat écrasé  [rôles : gras]
+  levure_alimentaire  —  Levure alimentaire  [rôles : lacte]
+  beurre_tournesol  —  Beurre de graines de tournesol  [rôles : gras, proteine]
+  poulet  —  Poulet  [rôles : proteine]
+  dinde_hachee  —  Dinde hachée  [rôles : proteine]
+  lentilles  —  Lentilles cuites  [rôles : proteine]
+  pois_chiches  —  Pois chiches cuits  [rôles : proteine]
+  miel  —  Miel  [rôles : sucrant]
+  sirop_erable  —  Sirop d'érable  [rôles : sucrant]
+  sucre  —  Sucre  [rôles : sucrant]
+  dattes  —  Dattes dénoyautées  [rôles : sucrant]
+  banane  —  Banane  [rôles : fruit]
+  pomme  —  Pomme  [rôles : fruit]
+  mangue  —  Mangue  [rôles : fruit]
+  bleuets  —  Bleuets  [rôles : fruit]
+  raisins_secs  —  Raisins secs  [rôles : fruit]
+  jus_citron  —  Jus de citron  [rôles : assaisonnement]
+  patate_douce  —  Patate douce  [rôles : legume]
+  courge_butternut  —  Courge musquée  [rôles : legume]
+  carotte  —  Carotte (cuite)  [rôles : legume]
+  carotte_crue  —  Carotte crue  [rôles : legume]
+  concombre  —  Concombre  [rôles : legume]
+  courgette  —  Courgette  [rôles : legume]
+  epinards  —  Épinards  [rôles : legume]
+  oignon  —  Oignon  [rôles : legume]
+  ail  —  Ail  [rôles : assaisonnement]
+  tomates_broyees  —  Tomates broyées  [rôles : legume]
+  sel  —  Sel  [rôles : assaisonnement]
+  cannelle  —  Cannelle  [rôles : assaisonnement]
+  vanille  —  Extrait de vanille  [rôles : assaisonnement]
+  levure_chimique  —  Poudre à pâte  [rôles : levant]
+  bicarbonate  —  Bicarbonate de soude  [rôles : levant]
+  bouillon_sans_sel  —  Bouillon de poulet sans sel  [rôles : liquide]
+  eau  —  Eau  [rôles : liquide]
+  coco_aminos  —  Aminos de coco  [rôles : assaisonnement]
+  quinoa  —  Quinoa  [rôles : farine]
+  tortillas_mais  —  Tortillas de maïs  [rôles : farine]
+  petits_pois  —  Petits pois  [rôles : legume]
+  poivron  —  Poivron  [rôles : legume]
+  brocoli  —  Brocoli  [rôles : legume]
+  basilic  —  Basilic  [rôles : assaisonnement]
+  gingembre  —  Gingembre  [rôles : assaisonnement]
+
+À ÉVITER À CET ÂGE (utilisables plus tard, pas ici)
+  miel (Miel) — Risque de botulisme infantile avant 12 mois
+  noix_grenoble (Noix de Grenoble) — Noix entières ou en morceaux : risque d'étouffement avant 4 ans
+  raisins_secs (Raisins secs) — Fruits séchés : texture collante et ferme avant 12 mois
+  bleuets (Bleuets) — Petits fruits ronds : risque d'étouffement avant 12 mois
+  carotte_crue (Carotte crue) — Légume dur cru : risque d'étouffement
+  carotte_crue (Carotte crue) — Bâtonnets crus durs déconseillés avant 4 ans
+  sel (Sel) — Sodium à limiter strictement avant 12 mois
+  sucre (Sucre) — Sucre ajouté à limiter avant 2 ans
+  beurre_arachide (Beurre d'arachide naturel) — Texture collante : ne jamais servir à la cuillère ou en grosse quantité
+  crevette (Crevettes) — Texture caoutchouteuse : risque d’étouffement avant 12 mois
+  abricots_seches (Abricots séchés) — Fruits séchés : texture collante et ferme avant 12 mois
+
+FORMAT DE SORTIE
+  Un tableau JSON, rien d'autre — pas de texte avant ni après, pas de balises.
+  Chaque objet :
+  {
+    "id": "identifiant-en-minuscules-avec-tirets",
+    "nom": "Nom en français, appétissant, sans superlatif",
+    "categorie": "Collation",
+    "portions": "4 portions",
+    "ageMinBase": 6,
+    "tempsMin": 30,
+    "ingredients": [
+      { "id": "identifiant_du_catalogue", "qte": 250, "unite": "ml", "role": "farine" }
+    ],
+    "etapes": ["Phrase à l'impératif.", "..."]
+  }
+
+CONSIGNES DE RÉDACTION
+  - Le champ role est obligatoire dès qu'un ingrédient joue un rôle structurel
+    (liant, gras, farine, liquide, lacte, proteine). C'est lui qui pilote les
+    substitutions : un œuf liant et un œuf protéine ne se remplacent pas pareil.
+  - Unités métriques : ml, g, ou une unité naturelle (unité, gousse, tranche).
+  - Étapes courtes, à l'impératif, sans jargon. 3 à 6 étapes.
+  - Pas de sel ajouté avant 12 mois, pas de sucre ajouté avant 24 mois.
+  - Pas de superlatif marketing dans le nom ni les étapes.
+  - Une recette qu'un parent pressé peut faire un mardi soir.
+
+RAPPEL
+  Ta sortie passe ensuite par un validateur automatique, puis par une personne
+  qui cuisine la recette pour vrai avant publication. Écris pour être cuisiné,
+  pas pour impressionner.
+
+
+════════════════════════════════════════════════════════════════════════
+PROMPT 4 / 4
+════════════════════════════════════════════════════════════════════════
+
+Tu rédiges des recettes pour Bouchées, une application destinée aux parents
+d'enfants avec des allergies alimentaires. La sécurité est gérée ailleurs, par
+des tables déterministes : ton rôle est la rédaction culinaire, pas la décision.
+
+COMMANDE
+  2 recette(s) de catégorie « Déjeuner »
+  Âge minimal visé : 6 mois
+  Doit être exempte de : Arachides, Blé et triticale, Crustacés et mollusques, Lait, Moutarde, Noix, Œufs, Poisson, Sésame, Soya, Sulfites
+  Pourquoi : 14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 1 déjeuner. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous.
+
+RÈGLE ABSOLUE
+  Tu ne peux utiliser QUE les identifiants d'ingrédients de la liste ci-dessous.
+  Aucun ingrédient inventé, aucun nom libre, aucune variante orthographique.
+  Une recette contenant un identifiant hors liste est rejetée automatiquement.
+
+INGRÉDIENTS AUTORISÉS (62)
+  farine_avoine  —  Farine d'avoine  [rôles : farine]
+  farine_riz  —  Farine de riz  [rôles : farine, liant]
+  farine_pois_chiches  —  Farine de pois chiches  [rôles : farine, proteine]
+  melange_sans_gluten  —  Mélange à pâtisserie sans gluten  [rôles : farine]
+  fecule_mais  —  Fécule de maïs  [rôles : liant]
+  flocons_avoine  —  Flocons d'avoine  [rôles : farine]
+  chapelure_sans_gluten  —  Chapelure sans gluten  [rôles : liant]
+  pates_riz  —  Pâtes de riz  [rôles : farine]
+  riz  —  Riz  [rôles : farine]
+  compote_pommes  —  Compote de pommes non sucrée  [rôles : liant, sucrant]
+  puree_banane  —  Banane écrasée  [rôles : liant, sucrant]
+  lin_moulu  —  Graines de lin moulues  [rôles : liant]
+  graines_chia  —  Graines de chia  [rôles : liant]
+  aquafaba  —  Aquafaba (eau de pois chiches sans sel)  [rôles : liant]
+  boisson_avoine  —  Boisson d'avoine enrichie  [rôles : liquide]
+  lait_coco  —  Lait de coco  [rôles : liquide, lacte]
+  yogourt_coco  —  Yogourt de coco  [rôles : lacte]
+  margarine_sans_lait  —  Margarine sans produits laitiers  [rôles : gras]
+  huile_olive  —  Huile d'olive  [rôles : gras]
+  huile_canola  —  Huile de canola  [rôles : gras]
+  puree_avocat  —  Avocat écrasé  [rôles : gras]
+  levure_alimentaire  —  Levure alimentaire  [rôles : lacte]
+  beurre_tournesol  —  Beurre de graines de tournesol  [rôles : gras, proteine]
+  poulet  —  Poulet  [rôles : proteine]
+  dinde_hachee  —  Dinde hachée  [rôles : proteine]
+  lentilles  —  Lentilles cuites  [rôles : proteine]
+  pois_chiches  —  Pois chiches cuits  [rôles : proteine]
+  miel  —  Miel  [rôles : sucrant]
+  sirop_erable  —  Sirop d'érable  [rôles : sucrant]
+  sucre  —  Sucre  [rôles : sucrant]
+  dattes  —  Dattes dénoyautées  [rôles : sucrant]
+  banane  —  Banane  [rôles : fruit]
+  pomme  —  Pomme  [rôles : fruit]
+  mangue  —  Mangue  [rôles : fruit]
+  bleuets  —  Bleuets  [rôles : fruit]
+  raisins_secs  —  Raisins secs  [rôles : fruit]
+  jus_citron  —  Jus de citron  [rôles : assaisonnement]
+  patate_douce  —  Patate douce  [rôles : legume]
+  courge_butternut  —  Courge musquée  [rôles : legume]
+  carotte  —  Carotte (cuite)  [rôles : legume]
+  carotte_crue  —  Carotte crue  [rôles : legume]
+  concombre  —  Concombre  [rôles : legume]
+  courgette  —  Courgette  [rôles : legume]
+  epinards  —  Épinards  [rôles : legume]
+  oignon  —  Oignon  [rôles : legume]
+  ail  —  Ail  [rôles : assaisonnement]
+  tomates_broyees  —  Tomates broyées  [rôles : legume]
+  sel  —  Sel  [rôles : assaisonnement]
+  cannelle  —  Cannelle  [rôles : assaisonnement]
+  vanille  —  Extrait de vanille  [rôles : assaisonnement]
+  levure_chimique  —  Poudre à pâte  [rôles : levant]
+  bicarbonate  —  Bicarbonate de soude  [rôles : levant]
+  bouillon_sans_sel  —  Bouillon de poulet sans sel  [rôles : liquide]
+  eau  —  Eau  [rôles : liquide]
+  coco_aminos  —  Aminos de coco  [rôles : assaisonnement]
+  quinoa  —  Quinoa  [rôles : farine]
+  tortillas_mais  —  Tortillas de maïs  [rôles : farine]
+  petits_pois  —  Petits pois  [rôles : legume]
+  poivron  —  Poivron  [rôles : legume]
+  brocoli  —  Brocoli  [rôles : legume]
+  basilic  —  Basilic  [rôles : assaisonnement]
+  gingembre  —  Gingembre  [rôles : assaisonnement]
+
+À ÉVITER À CET ÂGE (utilisables plus tard, pas ici)
+  miel (Miel) — Risque de botulisme infantile avant 12 mois
+  noix_grenoble (Noix de Grenoble) — Noix entières ou en morceaux : risque d'étouffement avant 4 ans
+  raisins_secs (Raisins secs) — Fruits séchés : texture collante et ferme avant 12 mois
+  bleuets (Bleuets) — Petits fruits ronds : risque d'étouffement avant 12 mois
+  carotte_crue (Carotte crue) — Légume dur cru : risque d'étouffement
+  carotte_crue (Carotte crue) — Bâtonnets crus durs déconseillés avant 4 ans
+  sel (Sel) — Sodium à limiter strictement avant 12 mois
+  sucre (Sucre) — Sucre ajouté à limiter avant 2 ans
+  beurre_arachide (Beurre d'arachide naturel) — Texture collante : ne jamais servir à la cuillère ou en grosse quantité
+  crevette (Crevettes) — Texture caoutchouteuse : risque d’étouffement avant 12 mois
+  abricots_seches (Abricots séchés) — Fruits séchés : texture collante et ferme avant 12 mois
+
+FORMAT DE SORTIE
+  Un tableau JSON, rien d'autre — pas de texte avant ni après, pas de balises.
+  Chaque objet :
+  {
+    "id": "identifiant-en-minuscules-avec-tirets",
+    "nom": "Nom en français, appétissant, sans superlatif",
+    "categorie": "Déjeuner",
     "portions": "4 portions",
     "ageMinBase": 6,
     "tempsMin": 30,

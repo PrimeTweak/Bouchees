@@ -5,242 +5,220 @@
         "lait"
       ],
       "ageMois": 6,
-      "telle_quelle": 5,
+      "telle_quelle": 13,
       "adaptee": 9,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "oeuf"
       ],
       "ageMois": 6,
-      "telle_quelle": 8,
+      "telle_quelle": 16,
       "adaptee": 6,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "arachide"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "noix"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "ble"
       ],
       "ageMois": 6,
-      "telle_quelle": 10,
+      "telle_quelle": 18,
       "adaptee": 4,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "soya"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "sesame"
       ],
       "ageMois": 6,
-      "telle_quelle": 13,
+      "telle_quelle": 21,
       "adaptee": 1,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "poisson"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "crustaces_mollusques"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "moutarde"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "sulfites"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -248,22 +226,20 @@
         "oeuf"
       ],
       "ageMois": 6,
-      "telle_quelle": 3,
+      "telle_quelle": 11,
       "adaptee": 11,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -271,22 +247,20 @@
         "soya"
       ],
       "ageMois": 6,
-      "telle_quelle": 5,
+      "telle_quelle": 13,
       "adaptee": 9,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -294,22 +268,20 @@
         "ble"
       ],
       "ageMois": 6,
-      "telle_quelle": 3,
+      "telle_quelle": 11,
       "adaptee": 11,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -317,22 +289,20 @@
         "ble"
       ],
       "ageMois": 6,
-      "telle_quelle": 8,
+      "telle_quelle": 16,
       "adaptee": 6,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -340,22 +310,20 @@
         "noix"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -364,22 +332,20 @@
         "sesame"
       ],
       "ageMois": 6,
-      "telle_quelle": 13,
+      "telle_quelle": 21,
       "adaptee": 1,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -388,22 +354,20 @@
         "ble"
       ],
       "ageMois": 6,
-      "telle_quelle": 3,
+      "telle_quelle": 11,
       "adaptee": 11,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -413,22 +377,20 @@
         "noix"
       ],
       "ageMois": 6,
-      "telle_quelle": 3,
+      "telle_quelle": 11,
       "adaptee": 11,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
@@ -436,132 +398,120 @@
         "crustaces_mollusques"
       ],
       "ageMois": 6,
-      "telle_quelle": 14,
+      "telle_quelle": 22,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 16,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 3,
-        "Collation": 4,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 5,
+        "Collation": 6,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 14,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 22,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "lait"
       ],
       "ageMois": 9,
-      "telle_quelle": 10,
+      "telle_quelle": 18,
       "adaptee": 13,
       "non_adaptable": 0,
       "hors_age": 7,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 11,
-        "Collation": 5,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 13,
+        "Collation": 7,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 23,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 31,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "oeuf"
       ],
       "ageMois": 9,
-      "telle_quelle": 13,
+      "telle_quelle": 21,
       "adaptee": 10,
       "non_adaptable": 0,
       "hors_age": 7,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 11,
-        "Collation": 5,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 13,
+        "Collation": 7,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 23,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 31,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "arachide"
       ],
       "ageMois": 9,
-      "telle_quelle": 23,
+      "telle_quelle": 31,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 7,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 11,
-        "Collation": 5,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 13,
+        "Collation": 7,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 23,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 31,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "noix"
       ],
       "ageMois": 9,
-      "telle_quelle": 23,
+      "telle_quelle": 31,
       "adaptee": 0,
       "non_adaptable": 0,
       "hors_age": 7,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 11,
-        "Collation": 5,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 13,
+        "Collation": 7,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 23,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 31,
+      "manqueCategories": {},
+      "manque": 0
     },
     {
       "profil": [
         "ble"
       ],
       "ageMois": 9,
-      "telle_quelle": 10,
+      "telle_quelle": 18,
       "adaptee": 13,
       "non_adaptable": 0,
       "hors_age": 7,
       "parCategorie": {
-        "Déjeuner": 5,
-        "Repas": 11,
-        "Collation": 5,
-        "Dessert": 2
+        "Déjeuner": 7,
+        "Repas": 13,
+        "Collation": 7,
+        "Dessert": 4
       },
       "bloquants": {},
-      "utilisables": 23,
-      "manqueCategories": {
-        "Dessert": 1
-      },
-      "manque": 1
+      "utilisables": 31,
+      "manqueCategories": {},
+      "manque": 0
     }
   ],
   "bloquants": [
@@ -571,28 +521,5 @@
       "n": 12
     }
   ],
-  "commande": [
-    {
-      "n": 2,
-      "ageMois": 6,
-      "categories": [
-        "Dessert"
-      ],
-      "evite": [
-        "arachide",
-        "ble",
-        "crustaces_mollusques",
-        "lait",
-        "moutarde",
-        "noix",
-        "oeuf",
-        "poisson",
-        "sesame",
-        "soya",
-        "sulfites"
-      ],
-      "passePartout": true,
-      "raison": "14 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 1 dessert. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous."
-    }
-  ]
+  "commande": []
 }

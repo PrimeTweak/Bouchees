@@ -28,6 +28,13 @@
       "date": "2026-09-01",
       "acces": "abonne",
       "note": "Collations et lunchs qui voyagent — garderie et école."
+    },
+    {
+      "id": "2026-10",
+      "titre": "Lot 2026-10",
+      "date": "2026-10-01",
+      "acces": "abonne",
+      "note": "Recettes visant les profils les moins servis."
     }
   ],
   "attribution": {
@@ -60,6 +67,14 @@
     "muffins-carottes-erable": "2026-09",
     "pates-cremeuses-saumon": "2026-09",
     "pancakes-banane-avoine": "2026-09",
-    "riz-frit-legumes": "2026-09"
+    "riz-frit-legumes": "2026-09",
+    "pouding-riz-coco-mangue": "2026-10",
+    "compote-pommes-dattes-cannelle": "2026-10",
+    "puree-lentilles-courge-carotte": "2026-10",
+    "poulet-patate-douce-petits-pois": "2026-10",
+    "batonnets-patate-douce-rotis": "2026-10",
+    "galettes-avoine-banane": "2026-10",
+    "gruau-cremeux-mangue": "2026-10",
+    "crepes-riz-compote": "2026-10"
   }
 }

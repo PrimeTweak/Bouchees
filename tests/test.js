@@ -404,7 +404,8 @@ const Images = require(path.join(__dirname, "..", "generation", "images.js"));
 const Stripe = require(path.join(__dirname, "..", "serveur", "stripe.js"));
 const Serveur = require(path.join(__dirname, "..", "serveur", "serveur.js"));
 const crypto2 = require("crypto");
-const corpusComplet = recettes.concat(importation.importees);
+let corpusComplet = recettes.concat(importation.importees);
+try { corpusComplet = corpusComplet.concat(lire2("donnees/generees/recettes-generees.json")); } catch (e) {}
 
 /* --- B : rapport de trous --- */
 
