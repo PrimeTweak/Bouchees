@@ -132,12 +132,23 @@ def verifier():
             problemes.append(f"identifiants StoreKit divergents — .storekit {sorted(ids_sk)} "
                              f"vs Swift {sorted(ids_swift)}")
 
-    # 7. un seul @main
+    # 7. trigonométrie ambiguë — CoreGraphics et la bibliothèque standard
+    #    exposent chacune cos/sin/tan. Mêlées à CGPoint, elles font échouer
+    #    le build. C'est l'erreur qui a coûté un build complet.
+    for chemin, (_, code) in sources.items():
+        nom_fichier = os.path.basename(chemin)
+        for m in re.finditer(r'(?<![\w.])(cos|sin|tan|atan2)\s*\(', code):
+            ligne = code[:m.start()].count("\n") + 1
+            problemes.append(f"{nom_fichier}:{ligne} : « {m.group(1)}( » nu — "
+                             f"ambigu entre CoreGraphics et la bibliothèque standard, "
+                             f"utilise une enveloppe typée")
+
+    # 8. un seul @main
     mains = [os.path.basename(c) for c, (_, code) in sources.items() if re.search(r'^@main', code, re.M)]
     if len(mains) != 1:
         problemes.append(f"il faut exactement un @main, trouvé {len(mains)} : {mains}")
 
-    # 8. imports manquants pour les frameworks utilisés
+    # 9. imports manquants pour les frameworks utilisés
     besoins = {
         "SwiftUI": r'\b(View|Color|Text|VStack|Canvas)\b',
         "AVFoundation": r'\bAVCapture',
