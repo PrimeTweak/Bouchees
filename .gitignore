@@ -1,8 +1,14 @@
-serveur/comptes.json
-serveur/notes.json
+server/accounts.json
+server/ratings.json
 
-# Les photos générées : produites par le cycle, servies par le serveur.
-# Retire cette ligne si tu veux les versionner avec le code.
+# Les photos générées SONT versionnées : c'est ce qui les fait monter sur
+# GitHub, puis sur le serveur, puis dans l'app. Sans ça, elles restent sur
+# ton Mac et l'app ne les voit jamais.
+#
+# Le dépôt grossira — compte 15 à 20 Mo pour quarante photos. Quand ça
+# deviendra lourd, on passera à un stockage d'images séparé et cette ligne
+# reviendra :
+#   images/
 node_modules/
 .DS_Store
 
@@ -16,4 +22,4 @@ sortie/
 
 # Ressources embarquées au moment du build (moteur JS, tables, lots libres).
 # Le workflow les copie avant XcodeGen — rien à suivre ici.
-ios/App/App/Ressources/
+ios/App/App/Resources/

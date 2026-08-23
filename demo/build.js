@@ -8,14 +8,14 @@ const racine = path.join(__dirname, "..");
 const lire = (p) => fs.readFileSync(path.join(racine, p), "utf8");
 
 const donnees = {
-  ingredients: JSON.parse(lire("donnees/ingredients.json")),
-  substitutions: JSON.parse(lire("donnees/substitutions.json")),
-  base: JSON.parse(lire("donnees/base.json")),
-  recettes: JSON.parse(lire("donnees/recettes.json"))
+  ingredients: JSON.parse(lire("data/ingredients.json")),
+  substitutions: JSON.parse(lire("data/substitutions.json")),
+  base: JSON.parse(lire("data/base.json")),
+  recettes: JSON.parse(lire("data/recipes.json"))
 };
 
-let html = lire("demo/gabarit.html");
-html = html.replace("/*__MOTEUR__*/", lire("moteur/moteur.js"));
+let html = lire("demo/template.html");
+html = html.replace("/*__MOTEUR__*/", lire("engine/engine.js"));
 html = html.replace("/*__DONNEES__*/", "var DONNEES = " + JSON.stringify(donnees) + ";");
 
 const sortie = path.join(racine, "demo", "index.html");

@@ -1,0 +1,400 @@
+[
+  {
+    "id": "coconut-rice-pudding-with-mango",
+    "name": "Coconut rice pudding with mango",
+    "category": "Dessert",
+    "servings": "4 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 180,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 500,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "water",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "mango",
+        "qty": 250,
+        "unit": "ml"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Rinse the rice in cold water, then drain it.",
+      "Pour the coconut milk and water into a saucepan, add the rice and cook over low heat for 25 minutes, stirring often.",
+      "Remove from the heat and stir in the vanilla.",
+      "Purée the mango until smooth and spoon it over the warm pudding.",
+      "Serve warm. Before 9 months, blend everything for a perfectly smooth texture."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "apple-and-date-cinnamon-sauce",
+    "name": "Apple and date cinnamon sauce",
+    "category": "Dessert",
+    "servings": "4 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "apple",
+        "qty": 4,
+        "unit": "unités"
+      },
+      {
+        "id": "dates",
+        "qty": 60,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "water",
+        "qty": 125,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 1,
+        "unit": "ml"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 5,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Peel the apples, core them and cut into cubes.",
+      "Finely chop the dates.",
+      "Put the apples, dates and water in a saucepan, cover and simmer over low heat for 15 minutes.",
+      "Add the cinnamon and lemon juice, then purée until very smooth.",
+      "Serve warm or cold. Before 9 months, pass the sauce through a sieve."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-squash-and-carrot-puree",
+    "name": "Lentil, squash and carrot purée",
+    "category": "Meal",
+    "servings": "4 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "lentils",
+        "qty": 250,
+        "unit": "ml",
+        "role": "protein"
+      },
+      {
+        "id": "butternut_squash",
+        "qty": 300,
+        "unit": "ml"
+      },
+      {
+        "id": "carrot",
+        "qty": 2,
+        "unit": "unités"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 375,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Cut the butternut squash and the carrot into cubes.",
+      "Pour the broth into a saucepan, add the squash and carrot, then simmer covered for 20 minutes.",
+      "Add the lentils and olive oil, then continue for 5 minutes.",
+      "Purée until smooth using the cooking liquid.",
+      "Adjust the texture to the child's age: smooth at 6 months, mashed around 9 months."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chicken-sweet-potato-and-green-peas",
+    "name": "Chicken, sweet potato and green peas",
+    "category": "Meal",
+    "servings": "4 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "chicken",
+        "qty": 200,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 2,
+        "unit": "unités"
+      },
+      {
+        "id": "green_peas",
+        "qty": 175,
+        "unit": "ml"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 375,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Peel the sweet potato and cut it into cubes.",
+      "Pour the broth into a saucepan, add the chicken pieces and the sweet potato, then cook over medium heat for 15 minutes.",
+      "Add the peas and continue cooking for 5 minutes.",
+      "Check that the chicken is cooked through, then add the canola oil.",
+      "Purée or mash with a fork, depending on the child's age."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "roasted-sweet-potato-sticks",
+    "name": "Roasted sweet potato sticks",
+    "category": "Snack",
+    "servings": "2 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 3,
+        "unit": "unités"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C.",
+      "Peel the sweet potato and cut it into thick sticks, about the width of an adult finger.",
+      "Coat with olive oil and sprinkle with cinnamon.",
+      "Bake for 25 minutes, until a stick crushes between two fingers.",
+      "Let cool slightly before serving. A stick should give under light pressure."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "soft-banana-oat-patties",
+    "name": "Soft banana oat patties",
+    "category": "Snack",
+    "servings": "8 patties",
+    "minAgeMonths": 6,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 250,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 175,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "applesauce",
+        "qty": 80,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Mash the banana with a fork.",
+      "Mix the rolled oats, banana, applesauce and cinnamon.",
+      "Let rest for 5 minutes so the oats absorb the moisture.",
+      "Shape into flat patties and brown them in canola oil in a pan, 3 minutes per side.",
+      "Let cool slightly. Cut into strips for a child aged 6 to 8 months."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "creamy-mango-oatmeal",
+    "name": "Creamy mango oatmeal",
+    "category": "Breakfast",
+    "servings": "4 servings",
+    "minAgeMonths": 6,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 250,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "oat_beverage",
+        "qty": 375,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "mango",
+        "qty": 250,
+        "unit": "ml"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 15,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 1,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Bring the oat beverage to a simmer in a saucepan.",
+      "Add the rolled oats and chia seeds, then cook for 5 minutes, stirring.",
+      "Purée the mango and stir it in off the heat with the cinnamon.",
+      "Let cool slightly — the oatmeal thickens as it cools.",
+      "Blend before 9 months for a smooth texture."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "tender-rice-flour-crepes",
+    "name": "Tender rice flour crêpes",
+    "category": "Breakfast",
+    "servings": "8 crêpes",
+    "minAgeMonths": 6,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "rice_flour",
+        "qty": 250,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "applesauce",
+        "qty": 125,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "oat_beverage",
+        "qty": 300,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "ground_flaxseed",
+        "qty": 30,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Mix the ground flaxseed with 60 ml of oat beverage and let rest for 5 minutes.",
+      "Whisk the rice flour, the remaining oat beverage and the applesauce.",
+      "Stir in the flax mixture until the batter is smooth.",
+      "Cook in a pan with canola oil, 2 minutes per side.",
+      "Serve in finger-width strips."
+    ],
+    "source": {
+      "name": "génération assistée, import manuel",
+      "url": null,
+      "license": "contenu original — rédigé pour Bouchées",
+      "cookedByAHuman": false
+    }
+  }
+]

@@ -1,4 +1,4 @@
-name: IPA non signé (sideload)
+name: Unsigned IPA (sideload)
 
 # Produit un .ipa NON SIGNÉ. Feather le signe ensuite avec ton certificat.
 # Aucun compte développeur Apple requis : le runner macOS de GitHub a déjà
@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Récupérer le dépôt
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Node
@@ -29,31 +29,31 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Vérifier le moteur avant de bâtir
+      - name: Run engine tests before building
         # Si les tests tombent, aucun IPA n'est produit. Un moteur cassé qui
         # part sur un téléphone, c'est exactement ce qu'on empêche.
         run: node tests/test.js
 
-      - name: Publier le contenu et bâtir la page
+      - name: Publish content and build web page
         run: |
-          node outils/publier.js
-          node app/build.js
+          node tools/publish.js
+          node web/build.js
 
-      - name: Embarquer les ressources dans le bundle iOS
+      - name: Bundle resources into the iOS app
         # Le moteur JavaScript et les tables de sécurité voyagent avec l'app :
         # tout fonctionne hors ligne dès la première ouverture. Seuls les lots
         # LIBRES sont embarqués — un fichier dans un IPA se lit avec un éditeur
         # de texte, ce ne serait pas un mur.
         run: |
-          R=ios/App/App/Ressources
+          R=ios/App/App/Resources
           rm -rf "$R"; mkdir -p "$R/lots"
-          cp moteur/moteur.js moteur/pont-natif.js "$R/"
-          cp donnees/ingredients.json donnees/substitutions.json donnees/base.json "$R/"
+          cp engine/engine.js engine/native-bridge.js "$R/"
+          cp data/ingredients.json data/substitutions.json data/base.json "$R/"
           python3 - <<'PY'
           import json, shutil, pathlib
           m = json.load(open('dist/manifeste.json'))
           libres = set(m['libres'])
-          dest = pathlib.Path('ios/App/App/Ressources/lots')
+          dest = pathlib.Path('ios/App/App/Resources/lots')
           for lot in sorted(libres):
               src = pathlib.Path('dist/lots') / (lot + '.json')
               if src.exists():
@@ -65,16 +65,16 @@ jobs:
           PY
           ls -R "$R"
 
-      - name: Vérifier le code Swift
+      - name: Check Swift sources
         # Pas un compilateur : attrape les symboles manquants, les types en
         # double, les assets absents. Deux secondes ici évitent quinze minutes
         # de build pour une faute qu'on peut voir sans Xcode.
-        run: python3 outils/verifier-swift.py
+        run: python3 tools/check-swift.py
 
       - name: XcodeGen
         run: brew install xcodegen
 
-      - name: Identifiant de bundle personnalisé
+      - name: Custom bundle identifier
         # Si ton profil Feather n'est pas en wildcard, lance le workflow à la
         # main (Actions -> Run workflow) en donnant ton identifiant.
         if: ${{ github.event.inputs.bundle_id != '' }}
@@ -83,7 +83,7 @@ jobs:
           sed -i '' "s|PRODUCT_BUNDLE_IDENTIFIER: .*|PRODUCT_BUNDLE_IDENTIFIER: ${BID}|" ios/project.yml
           echo "Bundle identifier : ${BID}"
 
-      - name: Générer le projet Xcode
+      - name: Generate the Xcode project
         run: |
           cd ios
           xcodegen generate --spec project.yml
@@ -92,7 +92,7 @@ jobs:
       - name: Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Bâtir sans signature
+      - name: Build unsigned
         run: |
           set -o pipefail
           xcodebuild \
@@ -107,7 +107,7 @@ jobs:
             ONLY_ACTIVE_ARCH=NO \
             clean build 2>&1 | tail -60
 
-      - name: Empaqueter en .ipa
+      - name: Package as .ipa
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
           if [ -z "$APP" ]; then echo "Aucun .app produit — voir l'étape précédente"; exit 1; fi
@@ -116,7 +116,7 @@ jobs:
           cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
           ls -lh sortie/Bouchees-unsigned.ipa
 
-      - name: Déposer l'artefact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Bouchees-unsigned-ipa

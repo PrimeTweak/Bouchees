@@ -1,0 +1,174 @@
+{
+  "source": "spoonacular-demo",
+  "licence": "gabarit conforme au schéma spoonacular — données de démonstration rédigées par l'équipe (les vraies réponses de l'API ne peuvent pas être stockées, voir LICENCES.md)",
+  "recipes": [
+    {
+      "id": 101,
+      "title": "Creamy Salmon Pasta",
+      "servings": 4,
+      "readyInMinutes": 25,
+      "sourceUrl": "https://exemple.test/creamy-salmon-pasta",
+      "extendedIngredients": [
+        {
+          "original": "8 oz spaghetti"
+        },
+        {
+          "original": "2 salmon fillets"
+        },
+        {
+          "original": "1 cup heavy cream"
+        },
+        {
+          "original": "2 cloves garlic, minced"
+        },
+        {
+          "original": "1 tablespoon olive oil"
+        },
+        {
+          "original": "1/4 cup grated parmesan"
+        }
+      ],
+      "analyzedInstructions": [
+        {
+          "steps": [
+            {
+              "step": "Cook the spaghetti according to package directions."
+            },
+            {
+              "step": "Sear the salmon in olive oil, then flake into pieces."
+            },
+            {
+              "step": "Warm the cream with garlic, toss with pasta, salmon and parmesan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "title": "Banana Oat Pancakes",
+      "servings": 8,
+      "readyInMinutes": 20,
+      "sourceUrl": "https://exemple.test/banana-oat-pancakes",
+      "extendedIngredients": [
+        {
+          "original": "2 ripe bananas, mashed"
+        },
+        {
+          "original": "1 cup rolled oats"
+        },
+        {
+          "original": "2 eggs"
+        },
+        {
+          "original": "1/2 cup milk"
+        },
+        {
+          "original": "1 teaspoon baking powder"
+        },
+        {
+          "original": "1/2 teaspoon cinnamon"
+        },
+        {
+          "original": "1 teaspoon vanilla extract"
+        }
+      ],
+      "analyzedInstructions": [
+        {
+          "steps": [
+            {
+              "step": "Blend all ingredients until smooth."
+            },
+            {
+              "step": "Cook small pancakes on a griddle, 2 minutes per side."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "title": "Veggie Fried Rice",
+      "servings": 4,
+      "readyInMinutes": 20,
+      "sourceUrl": "https://exemple.test/veggie-fried-rice",
+      "extendedIngredients": [
+        {
+          "original": "3 cups cooked rice"
+        },
+        {
+          "original": "2 eggs, lightly beaten"
+        },
+        {
+          "original": "1 cup frozen peas"
+        },
+        {
+          "original": "1 carrot, diced"
+        },
+        {
+          "original": "2 tablespoons soy sauce"
+        },
+        {
+          "original": "1 tablespoon canola oil"
+        },
+        {
+          "original": "1 clove garlic"
+        }
+      ],
+      "analyzedInstructions": [
+        {
+          "steps": [
+            {
+              "step": "Scramble the eggs in oil, then set aside."
+            },
+            {
+              "step": "Stir-fry the vegetables, add rice and soy sauce, return the eggs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "title": "Apple Cinnamon Baked Oatmeal",
+      "servings": 6,
+      "readyInMinutes": 45,
+      "sourceUrl": "https://exemple.test/apple-cinnamon-baked-oatmeal",
+      "extendedIngredients": [
+        {
+          "original": "2 cups rolled oats"
+        },
+        {
+          "original": "1 apple, diced"
+        },
+        {
+          "original": "2 cups milk"
+        },
+        {
+          "original": "1 egg"
+        },
+        {
+          "original": "1/4 cup maple syrup"
+        },
+        {
+          "original": "1 teaspoon baking powder"
+        },
+        {
+          "original": "1 teaspoon cinnamon"
+        }
+      ],
+      "analyzedInstructions": [
+        {
+          "steps": [
+            {
+              "step": "Mix everything and pour into a baking dish."
+            },
+            {
+              "step": "Bake at 375F for 35 minutes."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,437 @@
+[
+  {
+    "role": "binder",
+    "target": "egg",
+    "options": [
+      {
+        "id": "applesauce",
+        "ratio": "60 ml per egg",
+        "note": "The best moist binder in baking",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "ground_flaxseed",
+        "ratio": "15 ml flax + 45 ml water per egg, rested 5 min",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "mashed_banana",
+        "ratio": "60 ml per egg",
+        "note": "Banana flavour is noticeable",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "aquafaba",
+        "ratio": "45 ml per egg",
+        "minAgeMonths": 12
+      }
+    ]
+  },
+  {
+    "role": "protein",
+    "target": "egg",
+    "options": [
+      {
+        "id": "chickpea_flour",
+        "ratio": "60 ml flour + 60 ml water per egg",
+        "note": "Omelette-like texture once cooked",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "firm_tofu",
+        "ratio": "80 g crumbled per 2 eggs",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "liquid",
+    "target": "cow_milk",
+    "options": [
+      {
+        "id": "soy_beverage",
+        "ratio": "1 for 1",
+        "note": "Closest to milk in protein content",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "oat_beverage",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "coconut_milk",
+        "ratio": "1 for 1",
+        "note": "Coconut flavour is noticeable",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "heavy_cream",
+    "options": [
+      {
+        "id": "coconut_milk",
+        "ratio": "the creamy part of the can, 1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "oat_beverage",
+        "ratio": "1 for 1 — lighter sauce",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "fat",
+    "target": "butter",
+    "options": [
+      {
+        "id": "dairy_free_margarine",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "canola_oil",
+        "ratio": "75% of the butter volume",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "mashed_avocado",
+        "ratio": "1 for 1",
+        "note": "Gentle cooking only",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "plain_yogurt",
+    "options": [
+      {
+        "id": "soy_yogurt",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "coconut_yogurt",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "greek_yogurt",
+    "options": [
+      {
+        "id": "soy_yogurt",
+        "ratio": "1 for 1, drained 30 min to thicken",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "coconut_yogurt",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "cheddar",
+    "options": [
+      {
+        "id": "nutritional_yeast",
+        "ratio": "30 ml per 250 ml of cheese, bound with squash purée",
+        "note": "Cheesy flavour, but it does not melt",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "parmesan",
+    "options": [
+      {
+        "id": "nutritional_yeast",
+        "ratio": "15 ml per 30 g",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "flour",
+    "target": "wheat_flour",
+    "options": [
+      {
+        "id": "gf_flour_blend",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "oat_flour",
+        "ratio": "1 for 1 — denser texture",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "binder",
+    "target": "wheat_flour",
+    "options": [
+      {
+        "id": "cornstarch",
+        "ratio": "half the amount of flour",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "rice_flour",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "flour",
+    "target": "wheat_pasta",
+    "options": [
+      {
+        "id": "rice_pasta",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "binder",
+    "target": "breadcrumbs",
+    "options": [
+      {
+        "id": "gf_breadcrumbs",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "rolled_oats",
+        "ratio": "1 for 1, blended",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "fat",
+    "target": "peanut_butter",
+    "options": [
+      {
+        "id": "sunflower_seed_butter",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "soy_butter",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "tahini",
+        "ratio": "1 for 1 — more bitter",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "almond_butter",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "fat",
+    "target": "tahini",
+    "options": [
+      {
+        "id": "sunflower_seed_butter",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "olive_oil",
+        "ratio": "one third of the amount — different flavour",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "protein",
+    "target": "white_fish",
+    "options": [
+      {
+        "id": "chicken",
+        "ratio": "1 for 1, chopped",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "firm_tofu",
+        "ratio": "1 for 1, pressed dry",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "lentils",
+        "ratio": "1 for 1, well drained",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "seasoning",
+    "target": "dijon_mustard",
+    "options": [
+      {
+        "id": "_omettre",
+        "ratio": "leave it out — the recipe works without it",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "protein",
+    "target": "shrimp",
+    "options": [
+      {
+        "id": "chicken",
+        "ratio": "1 for 1, diced",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "firm_tofu",
+        "ratio": "1 for 1, cubed",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "white_fish",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "protein",
+    "target": "salmon",
+    "options": [
+      {
+        "id": "chicken",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "firm_tofu",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "lentils",
+        "ratio": "1 for 1, well drained",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "seasoning",
+    "target": "soy_sauce",
+    "options": [
+      {
+        "id": "tamari",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "coconut_aminos",
+        "ratio": "1 for 1 — milder",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "seasoning",
+    "target": "fish_sauce",
+    "options": [
+      {
+        "id": "_omettre",
+        "ratio": "leave it out — the recipe works without it",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "flour",
+    "target": "couscous",
+    "options": [
+      {
+        "id": "quinoa",
+        "ratio": "1 for 1, cooked",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "rice",
+        "ratio": "1 for 1, cooked",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "flour",
+    "target": "flour_tortillas",
+    "options": [
+      {
+        "id": "corn_tortillas",
+        "ratio": "1 for 1",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "dairy",
+    "target": "mozzarella",
+    "options": [
+      {
+        "id": "nutritional_yeast",
+        "ratio": "30 ml per 250 ml of cheese, bound with a purée",
+        "note": "Cheesy flavour, but it does not melt",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "fruit",
+    "target": "dried_apricots",
+    "options": [
+      {
+        "id": "raisins",
+        "ratio": "1 for 1",
+        "note": "Choose unsulphited brown raisins",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "dates",
+        "ratio": "1 for 1, chopped",
+        "minAgeMonths": 6
+      }
+    ]
+  },
+  {
+    "role": "protein",
+    "target": "firm_tofu",
+    "options": [
+      {
+        "id": "chicken",
+        "ratio": "1 for 1, cubed",
+        "minAgeMonths": 6
+      },
+      {
+        "id": "chickpeas",
+        "ratio": "1 for 1, well rinsed",
+        "minAgeMonths": 6
+      }
+    ]
+  }
+]

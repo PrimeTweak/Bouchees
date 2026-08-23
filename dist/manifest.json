@@ -1,0 +1,79 @@
+{
+  "version": "2026-08-23",
+  "safetyChecksum": "6209d2ee1b7c",
+  "batches": [
+    {
+      "id": "2026-06",
+      "title": "The basics",
+      "date": "2026-06-01",
+      "access": "free",
+      "note": "The foundation: a full week of eating, whatever the profile.",
+      "count": 8,
+      "checksum": "44699c698a6a",
+      "weekly": false,
+      "inWindow": true
+    },
+    {
+      "id": "2026-07",
+      "title": "First textures",
+      "date": "2026-07-01",
+      "access": "free",
+      "note": "For starting solids — purées, coarse mash, first finger foods.",
+      "count": 7,
+      "checksum": "74e2ef970c31",
+      "weekly": false,
+      "inWindow": true
+    },
+    {
+      "id": "2026-S31",
+      "title": "Week of 2026-S31",
+      "access": "subscriber",
+      "note": "Seven recipes aimed at the least-served profiles.",
+      "count": 7,
+      "checksum": "c1052c9e90cf",
+      "weekly": true,
+      "inWindow": false
+    },
+    {
+      "id": "2026-S32",
+      "title": "Week of 2026-S32",
+      "access": "subscriber",
+      "note": "Seven recipes aimed at the least-served profiles.",
+      "count": 7,
+      "checksum": "92a503fb6bcd",
+      "weekly": true,
+      "inWindow": true
+    },
+    {
+      "id": "2026-S33",
+      "title": "Week of 2026-S33",
+      "access": "subscriber",
+      "note": "Seven recipes aimed at the least-served profiles.",
+      "count": 7,
+      "checksum": "ad426ec4fce4",
+      "weekly": true,
+      "inWindow": true
+    },
+    {
+      "id": "2026-S34",
+      "title": "Week of 2026-S34",
+      "access": "subscriber",
+      "note": "Seven recipes aimed at the least-served profiles.",
+      "count": 2,
+      "checksum": "d2d0ce6eefc3",
+      "weekly": true,
+      "inWindow": true
+    }
+  ],
+  "free": [
+    "2026-06",
+    "2026-07"
+  ],
+  "window": [
+    "2026-S34",
+    "2026-S33",
+    "2026-S32"
+  ],
+  "currentWeek": "2026-S34",
+  "windowSize": 3
+}

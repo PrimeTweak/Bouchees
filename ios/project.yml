@@ -23,17 +23,17 @@ targets:
     type: application
     platform: iOS
     sources:
-    - path: App/App/Modeles
-    - path: App/App/Moteur
+    - path: App/App/Models
+    - path: App/App/Core
     - path: App/App/Illustration
-    - path: App/App/Composants
-    - path: App/App/Ecrans
+    - path: App/App/Components
+    - path: App/App/Screens
     - path: App/App/Services
     - path: App/App/Assets.xcassets
     - path: App/App/Bouchees.storekit
-    - path: App/App/Traductions
+    - path: App/App/Localization
       type: group
-    - path: App/App/Ressources
+    - path: App/App/Resources
       type: folder
       buildPhase: resources
     info:
@@ -44,19 +44,19 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
         UILaunchScreen:
-          UIColorName: Fond
-          UIImageName: MarqueLancement
+          UIColorName: Canvas
+          UIImageName: LaunchWordmark
           UIImageRespectsSafeAreaInsets: true
         UISupportedInterfaceOrientations:
         - UIInterfaceOrientationPortrait
         - UIInterfaceOrientationLandscapeLeft
         - UIInterfaceOrientationLandscapeRight
-        NSCameraUsageDescription: Bouchées utilise la caméra pour lire le code-barres d'un produit et
-          vérifier sa liste d'ingrédients. Aucune photo n'est enregistrée ni envoyée.
-        CFBundleDevelopmentRegion: fr-CA
+        NSCameraUsageDescription: Bouchées uses the camera to read a product barcode and check its ingredient
+          list. No photo is stored or sent anywhere.
+        CFBundleDevelopmentRegion: en
         CFBundleLocalizations:
-        - fr
         - en
+        - fr
         BoucheesServeur: https://bouchees.onrender.com
     settings:
       base:

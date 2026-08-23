@@ -1,26 +1,26 @@
-/* Cohérence culinaire
+/* Culinary coherence check.
  *
- * Remplace une PARTIE de ce que la cuisson d'essai attrapait. Soyons exacts sur
- * ce que ça couvre et ce que ça ne couvre pas :
+ * Replaces PART of what a test bake would catch. Let us be exact about which
+ * part: this finds recipes that cannot work as written — impossible liquid to
+ * flour ratios, an ingredient listed but never used, oven baking with no
+ * temperature, a cooking time that does not match the method, a raw protein
+ * that is never cooked.
  *
- *   ATTRAPÉ  — proportions aberrantes, ingrédient jamais mentionné dans les
- *              étapes, cuisson au four sans température, temps incohérent avec
- *              la méthode, portions invraisemblables, liquide sans absorbant.
- *   PAS ATTRAPÉ — « ça ne lève pas », « c'est fade », « la texture est
- *              caoutchouteuse ». Seule une vraie cuisson le dit.
+ * What it cannot find: taste, rise, and real texture. "Dry", "bland",
+ * "rubbery" — only cooking the dish tells you that.
  *
- * Rien ici ne touche à la sécurité : les allergènes et les règles d'âge sont
- * déjà déterministes ailleurs. C'est un contrôle de QUALITÉ.
+ * A recipe that has not been cooked can be BAD. It must never be UNSAFE:
+ * safety lives in the deterministic tables, not in the kitchen test.
  */
 "use strict";
 
 /* Volumes de référence, en ml, pour ramener tout à une échelle comparable. */
 function enMl(u, catalogue) {
-  const q = Number(u.qte);
+  const q = Number(u.qty);
   if (!Number.isFinite(q) || q <= 0) return 0;
-  if (u.unite === "ml") return q;
-  if (u.unite === "g") return q;                       /* approximation assumée */
-  const un = String(u.unite || "").toLowerCase();
+  if (u.unit === "ml") return q;
+  if (u.unit === "g") return q;                       /* approximation assumée */
+  const un = String(u.unit || "").toLowerCase();
   if (/gousse/.test(un)) return q * 5;
   if (/tranche/.test(un)) return q * 30;
   if (/bo[îi]te|conserve/.test(un)) return q * 400;
@@ -44,26 +44,34 @@ function totalPourRole(recette, catalogue, roles) {
   }, 0);
 }
 
-/* Frontières de mots obligatoires : « fourchette » contient « four ».
- * Un vérificateur qui crie au loup se fait ignorer, donc il doit être exact.
+/* Word boundaries are mandatory : “fourchette” contains “four”.
+ * A checker that cries wolf gets ignored, so it has to be exact.
  * Les entrées se terminant par « ~ » acceptent une conjugaison (mijot~ →
  * mijoter, mijotez, mijote). */
-const MOTS_FOUR = ["four", "fours", "enfourn~", "gratin~", "plaque", "plaques", "moule", "moules"];
-const MOTS_MIJOTAGE = ["mijot~", "frémi~", "fremi~", "bouill~", "réduir~", "reduir~", "ébullition"];
-const MOTS_REPOS = ["réfrigér~", "refriger~", "repos~", "fig~", "au froid", "toute la nuit", "au frais"];
+/* Recipe steps are English now, but partner feeds and older content may still
+ * be French. Both vocabularies are kept: a checker that only understands one
+ * language would silently stop catching anything in the other. */
+const OVEN_WORDS = ["oven", "bake~", "baking sheet", "roast~", "broil~",
+                    "four", "fours", "enfourn~", "gratin~", "plaque", "plaques", "moule", "moules"];
+const SIMMER_WORDS = ["simmer~", "boil~", "reduce~", "poach~",
+                      "mijot~", "frémi~", "fremi~", "bouill~", "réduir~", "reduir~", "ébullition"];
+const REST_WORDS = ["refrigerat~", "chill~", "rest~", "set~", "overnight", "in the fridge",
+                    "réfrigér~", "refriger~", "repos~", "fig~", "au froid", "toute la nuit", "au frais"];
+const COOK_WORDS = ["cook~", "sear~", "brown~", "sauté~", "saute~", "fry~", "steam~", "grill~", "stir-fry",
+                    "cuire", "cuis~", "saisir", "dorer", "rissol~", "sauter", "poêl~", "poel~", "vapeur"];
 
 function contient(txt, mots) {
   return mots.some(function (m) {
     const brut = m.replace(/~$/, "");
-    const motif = m.endsWith("~")
+    const reason = m.endsWith("~")
       ? "(^|[^a-zà-ÿ])" + brut
       : "(^|[^a-zà-ÿ])" + brut + "([^a-zà-ÿ]|$)";
-    return new RegExp(motif, "i").test(txt);
+    return new RegExp(reason, "i").test(txt);
   });
 }
 
 function texteEtapes(r) {
-  return (r.etapes || []).join(" ").toLowerCase();
+  return (r.steps || []).join(" ").toLowerCase();
 }
 function normalise(t) {
   return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -87,15 +95,29 @@ function verifier(recette, donnees) {
     recette.ingredients.forEach(function (u) {
       const d = catalogue[u.id];
       if (!d) return;
-      const nom = normalise(d.nom.replace(/\(.*?\)/g, " "));
-      const mots = nom.split(/[\s,]+/).filter(function (w) { return w.length > 3; });
+      const name = normalise(d.name.replace(/\(.*?\)/g, " "));
+      const mots = name.split(/[\s,]+/).filter(function (w) { return w.length > 3; });
       /* Les noms courts (œuf, ail, sel, riz) n'ont aucun mot long : on cherche
-       * le nom entier avec frontières, pluriel toléré. */
+       * le name entier avec frontières, pluriel toléré. */
       /* Un cuisinier écrit « ajouter les légumes », pas « ajouter la courgette,
        * les épinards et le cheddar ». Un terme de famille couvre son rôle. */
-      const familles = { legume: ["legume"], fruit: ["fruit"], lacte: ["fromage", "laitier"],
-                         proteine: ["viande", "proteine"], farine: ["sec", "farine"],
-                         assaisonnement: ["assaisonn", "epice"] };
+      /* Les rôles portent maintenant des identifiants anglais, et les termes
+       * de famille couvrent les deux langues : un flux partenaire francophone
+       * doit continuer d'être compris. */
+      const familles = {
+        vegetable: ["vegetable", "veggie", "legume"],
+        fruit: ["fruit"],
+        dairy: ["cheese", "dairy", "fromage", "laitier"],
+        protein: ["meat", "protein", "viande"],
+        flour: ["dry", "flour", "sec", "farine"],
+        fat: ["oil", "fat", "huile", "gras"],
+        seasoning: ["season", "spice", "assaisonn", "epice"],
+        liquid: ["liquid", "liquide"],
+        binder: ["binder", "liant"],
+        sweetener: ["sweeten", "sucr"],
+        topping: ["topping", "garnitur"],
+        leavening: ["leaven", "levant"]
+      };
       const roles = rolesDe(u, catalogue);
       const couvertParFamille = roles.some(function (r) {
         return (familles[r] || []).some(function (f) {
@@ -103,13 +125,16 @@ function verifier(recette, donnees) {
         });
       });
       if (couvertParFamille) return;
-      const cibles = mots.length ? mots : [nom];
+      const cibles = mots.length ? mots : [name];
       const nomme = cibles.some(function (w) {
+        /* Racine + suffixe toléré. Le suffixe était calibré sur le français
+         * (chapelure = chapel + ure) : les composés anglais sont plus longs
+         * (breadcrumbs = breadc + rumbs) et passaient à côté. */
         const racineMot = w.length > 6 ? w.slice(0, 6) : w;
-        return new RegExp("(^|[^a-z])" + racineMot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-z]{0,4}([^a-z]|$)")
+        return new RegExp("(^|[^a-z])" + racineMot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-z]{0,8}([^a-z]|$)")
           .test(txtNorm);
       });
-      if (!nomme) jamaisNommes.push(d.nom);
+      if (!nomme) jamaisNommes.push(d.name);
     });
   }
   if (jamaisNommes.length > 2)
@@ -119,9 +144,9 @@ function verifier(recette, donnees) {
 
   /* 2. Proportions liquide / absorbant. Une pâte à 3 fois plus de liquide que
    *    de farine ne tient pas — ça se voit sans allumer le four. */
-  const liquide = totalPourRole(recette, catalogue, ["liquide", "lacte"]);
-  const absorbant = totalPourRole(recette, catalogue, ["farine", "liant"]);
-  const cuisson = contient(txt, MOTS_FOUR);
+  const liquide = totalPourRole(recette, catalogue, ["liquid", "dairy"]);
+  const absorbant = totalPourRole(recette, catalogue, ["flour", "binder"]);
+  const cuisson = contient(txt, OVEN_WORDS);
   if (liquide > 0 && absorbant > 0 && cuisson) {
     const ratio = liquide / absorbant;
     if (ratio > 2.5) erreurs.push("beaucoup trop de liquide pour la farine (" + ratio.toFixed(1) +
@@ -142,12 +167,12 @@ function verifier(recette, donnees) {
   while ((m = re.exec(txt))) minutes.push(Number(m[2] || m[1]));
   const heures = /(\d{1,2})\s*heures?/.exec(txt);
   const sommeEtapes = minutes.reduce(function (a, b) { return a + b; }, 0) + (heures ? Number(heures[1]) * 60 : 0);
-  const repos = contient(txt, MOTS_REPOS);
-  if (recette.tempsMin && sommeEtapes > recette.tempsMin + 10 && !repos)
+  const repos = contient(txt, REST_WORDS);
+  if (recette.timeMinutes && sommeEtapes > recette.timeMinutes + 10 && !repos)
     erreurs.push("les étapes totalisent au moins " + sommeEtapes + " minutes mais tempsMin annonce " +
-      recette.tempsMin);
-  if (recette.tempsMin && recette.tempsMin > 20 && sommeEtapes === 0 &&
-      (cuisson || contient(txt, MOTS_MIJOTAGE)))
+      recette.timeMinutes);
+  if (recette.timeMinutes && recette.timeMinutes > 20 && sommeEtapes === 0 &&
+      (cuisson || contient(txt, SIMMER_WORDS)))
     avertissements.push("cuisson décrite sans aucune durée dans les étapes");
 
   /* 5. Le volume total doit être plausible pour le nombre de portions. */
@@ -155,7 +180,7 @@ function verifier(recette, donnees) {
   /* « 500 ml » n'est pas 500 portions. On n'accepte un nombre que s'il est
    * suivi d'un mot de portion, pas d'une unité de volume. */
   const mp = /(\d+)\s*(portions?|muffins?|galettes?|croquettes?|boulettes?|barres?|biscuits?|cr[eê]pes?|verres?|pains?|parts?|boules?|mini)/i
-    .exec(recette.portions || "");
+    .exec(recette.servings || "");
   const nPortions = mp ? Number(mp[1]) : null;
   /* Une boulette n'est pas une portion : les rendements en pièces ont leur
    * propre échelle, sinon le contrôle crie au loup sur toutes les recettes. */
@@ -170,19 +195,20 @@ function verifier(recette, donnees) {
     else if (parUnite > max) avertissements.push("volume élevé : " + Math.round(parUnite) + " ml/" + mot);
   }
 
-  /* 6. Une protéine crue doit être cuite quelque part. */
+  /* 6. A raw protein has to be cooked somewhere. */
   const crus = recette.ingredients.filter(function (u) {
-    return rolesDe(u, catalogue).indexOf("proteine") !== -1 &&
-      ["poulet", "dinde_hachee", "poisson_blanc", "saumon", "crevette"].indexOf(u.id) !== -1;
+    return rolesDe(u, catalogue).indexOf("protein") !== -1 &&
+      ["chicken", "ground_turkey", "white_fish", "salmon", "shrimp"].indexOf(u.id) !== -1;
   });
-  const CUISSON = /cui[ts]?|cuire|cuisson|dor[ei]|saisi|mijot|enfourn|au four|po[êe]l|grill|r[ôo]tir|vapeur|revenir|revenu|rissol|chauff|bouill|fr[ée]mi|[ée]bullition|braiser|sauter/;
-  if (crus.length && !CUISSON.test(txtNorm))
-    erreurs.push("protéine crue sans aucune étape de cuisson");
+  /* Bilingual on purpose: partner feeds still arrive in French. */
+  const COOKING = /cook|bak|roast|broil|sear|brown|saut|fry|steam|grill|simmer|boil|poach|stir-fry|heat|warm|oven|cui[ts]?|cuire|cuisson|dor[ei]|saisi|mijot|enfourn|au four|po[êe]l|r[ôo]tir|vapeur|revenir|revenu|rissol|chauff|bouill|fr[ée]mi|[ée]bullition|braiser|sauter/;
+  if (crus.length && !COOKING.test(txtNorm))
+    erreurs.push("raw protein with no cooking step");
 
-  /* 7. Quelques étapes, et pas des bouts de phrase. */
-  if ((recette.etapes || []).length < 3)
+  /* 7. A few steps, and not sentence fragments. */
+  if ((recette.steps || []).length < 3)
     avertissements.push("moins de 3 étapes — souvent trop peu pour être suivi");
-  (recette.etapes || []).forEach(function (e, i) {
+  (recette.steps || []).forEach(function (e, i) {
     if (!/[.!?]$/.test(String(e).trim())) avertissements.push("étape " + (i + 1) + " sans ponctuation finale");
   });
 
@@ -191,4 +217,4 @@ function verifier(recette, donnees) {
 }
 
 module.exports = { verifier: verifier, enMl: enMl, contient: contient,
-                   MOTS_FOUR: MOTS_FOUR, MOTS_REPOS: MOTS_REPOS };
+                   OVEN_WORDS: OVEN_WORDS, REST_WORDS: REST_WORDS };

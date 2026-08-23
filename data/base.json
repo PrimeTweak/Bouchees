@@ -1,0 +1,197 @@
+{
+  "allergens": [
+    {
+      "id": "milk",
+      "nameFr": "Lait",
+      "name": "Milk"
+    },
+    {
+      "id": "egg",
+      "nameFr": "Œufs",
+      "name": "Eggs"
+    },
+    {
+      "id": "peanut",
+      "nameFr": "Arachides",
+      "name": "Peanuts"
+    },
+    {
+      "id": "tree_nut",
+      "nameFr": "Noix",
+      "name": "Tree nuts"
+    },
+    {
+      "id": "wheat",
+      "nameFr": "Blé et triticale",
+      "name": "Wheat and triticale"
+    },
+    {
+      "id": "soy",
+      "nameFr": "Soya",
+      "name": "Soy"
+    },
+    {
+      "id": "sesame",
+      "nameFr": "Sésame",
+      "name": "Sesame"
+    },
+    {
+      "id": "fish",
+      "nameFr": "Poisson",
+      "name": "Fish"
+    },
+    {
+      "id": "shellfish",
+      "nameFr": "Crustacés et mollusques",
+      "name": "Crustaceans and molluscs"
+    },
+    {
+      "id": "mustard",
+      "nameFr": "Moutarde",
+      "name": "Mustard"
+    },
+    {
+      "id": "sulphites",
+      "nameFr": "Sulfites",
+      "name": "Sulphites"
+    }
+  ],
+  "stages": [
+    {
+      "min": 6,
+      "max": 8,
+      "texture": "Smooth purées, and large soft sticks the child can hold",
+      "note": "A stick should crush between two fingers. Nothing hard, round or slippery.",
+      "name": "6-8 months"
+    },
+    {
+      "min": 9,
+      "max": 11,
+      "texture": "Coarsely mashed, small soft pieces, finger foods",
+      "note": "Pieces the size of a pea, soft enough to crush on the palate.",
+      "name": "9-11 months"
+    },
+    {
+      "min": 12,
+      "max": 23,
+      "texture": "Soft pieces; most family dishes work",
+      "note": "Still cut grapes and cherry tomatoes lengthwise into quarters.",
+      "name": "1-2 years"
+    },
+    {
+      "min": 24,
+      "max": 47,
+      "texture": "Normal cutting, with care",
+      "note": "Whole nuts, popcorn and hard candy stay out until 4 years.",
+      "name": "2-3 years"
+    },
+    {
+      "min": 48,
+      "max": 999,
+      "texture": "Any texture",
+      "name": "4 years and up"
+    }
+  ],
+  "ageRules": [
+    {
+      "target": "honey",
+      "beforeMonths": 12,
+      "reason": "Infant botulism risk before 12 months",
+      "action": {
+        "type": "swap",
+        "ratio": "1 for 1",
+        "to": "maple_syrup"
+      }
+    },
+    {
+      "target": "walnuts",
+      "beforeMonths": 48,
+      "reason": "Whole or chopped nuts: choking risk before 4 years",
+      "action": {
+        "type": "prep",
+        "note": "Grind finely and stir into the mixture"
+      }
+    },
+    {
+      "target": "raisins",
+      "beforeMonths": 12,
+      "reason": "Dried fruit: sticky and firm before 12 months",
+      "action": {
+        "type": "prep",
+        "note": "Soak in hot water until plump, then chop"
+      }
+    },
+    {
+      "target": "blueberries",
+      "beforeMonths": 12,
+      "reason": "Small round berries: choking risk before 12 months",
+      "action": {
+        "type": "prep",
+        "note": "Crush each berry between your fingers"
+      }
+    },
+    {
+      "target": "raw_carrot",
+      "beforeMonths": 12,
+      "reason": "Hard raw vegetable: choking risk",
+      "action": {
+        "type": "prep",
+        "note": "Steam until tender, or grate very finely"
+      }
+    },
+    {
+      "target": "raw_carrot",
+      "beforeMonths": 48,
+      "reason": "Hard raw sticks are not advised before 4 years",
+      "action": {
+        "type": "prep",
+        "note": "Serve finely grated rather than in sticks"
+      }
+    },
+    {
+      "target": "salt",
+      "beforeMonths": 12,
+      "reason": "Sodium must be strictly limited before 12 months",
+      "action": {
+        "type": "prep",
+        "note": "Leave out the salt; season the adult portion separately"
+      }
+    },
+    {
+      "target": "sugar",
+      "beforeMonths": 24,
+      "reason": "Added sugar should be limited before 2 years",
+      "action": {
+        "type": "prep",
+        "note": "Halve it or leave it out — the recipe still works"
+      }
+    },
+    {
+      "target": "peanut_butter",
+      "beforeMonths": 48,
+      "reason": "Sticky texture: never serve by the spoonful or in quantity",
+      "action": {
+        "type": "prep",
+        "note": "Always thin it or stir it in — never by the spoonful"
+      }
+    },
+    {
+      "target": "shrimp",
+      "beforeMonths": 12,
+      "reason": "Rubbery texture: choking risk before 12 months",
+      "action": {
+        "type": "prep",
+        "note": "Chop very finely, cook thoroughly"
+      }
+    },
+    {
+      "target": "dried_apricots",
+      "beforeMonths": 12,
+      "reason": "Dried fruit: sticky and firm before 12 months",
+      "action": {
+        "type": "prep",
+        "note": "Soak in hot water until plump, then chop"
+      }
+    }
+  ]
+}

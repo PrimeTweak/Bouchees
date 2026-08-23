@@ -1,13 +1,17 @@
-/* Vérification des images par vision
+/* Vision check on generated images.
  *
- * Remplace la paire d'yeux humaine. Un modèle de vision décrit ce qu'il voit,
- * et le CODE compare cette description à la liste d'ingrédients réelle. Le
- * modèle n'a pas le droit de conclure : il décrit, on décide.
+ * THE MODEL DESCRIBES; THE CODE DECIDES. A vision model is asked what it sees,
+ * in plain words. It is never asked whether the image is acceptable — that
+ * judgement stays here, in code we can read and test.
  *
- * Règle de prudence, non négociable : au moindre doute — vision indisponible,
- * réponse illisible, aliment non identifié — l'image est REJETÉE et l'app
- * retombe sur son illustration générée. Le repli est toujours sûr, donc le
- * coût d'un faux rejet est nul et celui d'un faux accord est un incident.
+ * An image is REJECTED when:
+ *   - a food appears that the recipe does not contain;
+ *   - a choking hazard is visible for the target age;
+ *   - the picture is clearly a different dish;
+ *   - the model fails, answers unreadably, or is missing entirely.
+ *
+ * That last case matters most. A failure never means acceptance: no verdict,
+ * no photo, and the app falls back to its illustration.
  */
 "use strict";
 const path = require("path");
@@ -15,24 +19,24 @@ const path = require("path");
 /* Vocabulaire visuel : ce qu'un modèle de vision est susceptible de nommer,
  * relié aux familles d'allergènes. C'est la table qui décide, pas le modèle. */
 const VOCABULAIRE = {
-  lait: ["fromage", "cheddar", "mozzarella", "parmesan", "crème", "creme", "beurre", "yogourt", "yaourt",
+  milk: ["fromage", "cheddar", "mozzarella", "parmesan", "crème", "creme", "beurre", "yogourt", "yaourt",
          "lait", "cheese", "butter", "cream", "yogurt", "milk", "gratin", "béchamel"],
-  oeuf: ["œuf", "oeuf", "jaune d'œuf", "blanc d'œuf", "omelette", "egg", "frittata", "meringue"],
-  arachide: ["arachide", "cacahuète", "cacahuete", "peanut", "beurre d'arachide"],
-  noix: ["noix", "amande", "pacane", "noisette", "pistache", "cajou", "walnut", "almond", "pecan",
+  egg: ["œuf", "oeuf", "jaune d'œuf", "blanc d'œuf", "omelette", "egg", "frittata", "meringue"],
+  peanut: ["arachide", "cacahuète", "cacahuete", "peanut", "beurre d'arachide"],
+  tree_nut: ["noix", "amande", "pacane", "noisette", "pistache", "cajou", "walnut", "almond", "pecan",
          "hazelnut", "cashew", "pistachio"],
   /* « pâte » tout court est trop large : la poudre à pâte n'est pas du blé.
    * On nomme les formes réelles. */
-  ble: ["pain", "croûton", "crouton", "chapelure", "biscuit", "bread", "breadcrumb",
+  wheat: ["pain", "croûton", "crouton", "chapelure", "biscuit", "bread", "breadcrumb",
         "pasta", "cracker", "tortilla de blé", "pâtes", "pâte à pizza", "pâte brisée", "pâte feuilletée",
         "pâte à tarte", "farine de blé", "couscous", "spaghetti", "macaroni", "penne", "baguette"],
-  soya: ["sauce soya", "sauce soja", "tofu", "edamame", "soy sauce", "soybean"],
+  soy: ["sauce soya", "sauce soja", "tofu", "edamame", "soy sauce", "soybean"],
   sesame: ["sésame", "sesame", "tahini", "graines de sésame"],
-  poisson: ["poisson", "saumon", "thon", "morue", "fish", "salmon", "tuna", "cod", "anchois"],
-  crustaces_mollusques: ["crevette", "crabe", "homard", "moule", "palourde", "shrimp", "crab",
+  fish: ["poisson", "saumon", "thon", "morue", "fish", "salmon", "tuna", "cod", "anchois"],
+  shellfish: ["crevette", "crabe", "homard", "moule", "palourde", "shrimp", "crab",
                          "lobster", "mussel", "clam", "calmar"],
-  moutarde: ["moutarde", "mustard", "dijon"],
-  sulfites: ["abricot séché", "raisin doré", "fruits séchés orange", "dried apricot"]
+  mustard: ["moutarde", "mustard", "dijon"],
+  sulphites: ["abricot séché", "raisin doré", "fruits séchés orange", "dried apricot"]
 };
 
 /* Aliments à risque d'étouffement qu'une image ne doit pas montrer pour un
@@ -50,35 +54,48 @@ function normaliser(t) {
     .replace(/['\u2019]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* Le piège des végétaux : « lait de coco » contient le mot lait sans être un
+/* The plant-based trap : « lait de coco » contient le mot lait sans être un
  * produit laitier, « beurre de tournesol » n'est pas du beurre. Ces formes
  * sont reconnues AVANT le vocabulaire, et elles neutralisent la famille. */
 const INNOCENTS = [
-  { motif: /\blait (de|d ) ?(coco|riz|avoine|amande|soya|soja|noisette)\b/, sauf: null },
-  { motif: /\bboisson (de|d ) ?(coco|riz|avoine|amande|soya|soja)\b/, sauf: null },
-  { motif: /\bcreme (de|d ) ?(coco|riz|avoine|soya|soja)\b/, sauf: null },
-  { motif: /\byogourt (de|d ) ?(coco|soya|soja|avoine)\b/, sauf: null },
-  { motif: /\bbeurre (de|d ) ?(tournesol|coco|cacao)\b/, sauf: null },
-  { motif: /\bbeurre (de|d ) ?(arachide|cacahuete)\b/, sauf: "arachide" },
-  { motif: /\bbeurre (de|d ) ?(amande|noisette|cajou)\b/, sauf: "noix" },
-  { motif: /\bfromage (vegetal|vegetalien|vegan)\b/, sauf: null },
-  { motif: /\bmargarine\b/, sauf: null },
-  { motif: /\bfarine (de|d ) ?(riz|pois chiches|avoine|mais|sarrasin)\b/, sauf: null },
-  { motif: /\bpates (de|d ) ?riz\b/, sauf: null },
-  { motif: /\btortillas? (de|d ) ?mais\b/, sauf: null },
-  { motif: /\bsauce tamari\b/, sauf: "soya" },
-  { motif: /\bnoix (de|d ) ?coco\b/, sauf: null },
-  { motif: /\blait maternel\b/, sauf: null },
-  { motif: /\bpoudre a pate\b/, sauf: null },
-  { motif: /\bbicarbonate\b/, sauf: null },
-  { motif: /\blevure\b/, sauf: null }
+  /* Formes anglaises — les descriptions de vision sont maintenant en anglais,
+   * et « coconut milk » contient le mot milk sans être un produit laitier. */
+  { reason: /\b(coconut|rice|oat|almond|soy|hazelnut) milk\b/, except: null },
+  { reason: /\b(coconut|rice|oat|soy) (beverage|drink|cream)\b/, except: null },
+  { reason: /\b(coconut|soy|oat) yogh?urt\b/, except: null },
+  { reason: /\b(sunflower seed|coconut|cocoa) butter\b/, except: null },
+  { reason: /\bpeanut butter\b/, except: "peanut" },
+  { reason: /\b(almond|hazelnut|cashew) butter\b/, except: "tree_nut" },
+  { reason: /\b(vegan|plant-based|dairy-free) cheese\b/, except: null },
+  { reason: /\bmargarine\b/, except: null },
+  { reason: /\b(rice|chickpea|oat|corn|buckwheat) flour\b/, except: null },
+  { reason: /\bbaking (powder|soda)\b/, except: null },
+  { reason: /\bnutritional yeast\b/, except: null },
+  { reason: /\blait (de|d ) ?(coco|riz|avoine|amande|soya|soja|noisette)\b/, except: null },
+  { reason: /\bboisson (de|d ) ?(coco|riz|avoine|amande|soya|soja)\b/, except: null },
+  { reason: /\bcreme (de|d ) ?(coco|riz|avoine|soya|soja)\b/, except: null },
+  { reason: /\byogourt (de|d ) ?(coco|soya|soja|avoine)\b/, except: null },
+  { reason: /\bbeurre (de|d ) ?(tournesol|coco|cacao)\b/, except: null },
+  { reason: /\bbeurre (de|d ) ?(arachide|cacahuete)\b/, except: "peanut" },
+  { reason: /\bbeurre (de|d ) ?(amande|noisette|cajou)\b/, except: "tree_nut" },
+  { reason: /\bfromage (vegetal|vegetalien|vegan)\b/, except: null },
+  { reason: /\bmargarine\b/, except: null },
+  { reason: /\bfarine (de|d ) ?(riz|pois chiches|avoine|mais|sarrasin)\b/, except: null },
+  { reason: /\bpates (de|d ) ?riz\b/, except: null },
+  { reason: /\btortillas? (de|d ) ?mais\b/, except: null },
+  { reason: /\bsauce tamari\b/, except: "soy" },
+  { reason: /\bnoix (de|d ) ?coco\b/, except: null },
+  { reason: /\blait maternel\b/, except: null },
+  { reason: /\bpoudre a pate\b/, except: null },
+  { reason: /\bbicarbonate\b/, except: null },
+  { reason: /\blevure\b/, except: null }
 ];
 
 /* Familles impliquées par un aliment nommé — le code décide, pas le modèle. */
 function famillesDe(alimentNormalise) {
   for (let i = 0; i < INNOCENTS.length; i++) {
-    if (INNOCENTS[i].motif.test(alimentNormalise)) {
-      return INNOCENTS[i].sauf ? [INNOCENTS[i].sauf] : [];
+    if (INNOCENTS[i].reason.test(alimentNormalise)) {
+      return INNOCENTS[i].except ? [INNOCENTS[i].except] : [];
     }
   }
   const out = [];
@@ -112,7 +129,7 @@ const CONSIGNE = [
 ].join("\n");
 
 const anthropic = {
-  nom: "anthropic",
+  name: "anthropic",
   disponible: function () { return !!process.env.ANTHROPIC_API_KEY; },
   decrire: async function (octets, typeMime) {
     const rep = await fetch("https://api.anthropic.com/v1/messages", {
@@ -136,7 +153,7 @@ const anthropic = {
 };
 
 const openai = {
-  nom: "openai",
+  name: "openai",
   disponible: function () { return !!process.env.OPENAI_API_KEY; },
   decrire: async function (octets, typeMime) {
     const rep = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -160,7 +177,7 @@ const openai = {
 /* Sans vision configurée, on ne devine pas : on déclare l'image illisible,
  * ce qui la fait rejeter. L'app garde son illustration. */
 const absent = {
-  nom: "absent",
+  name: "absent",
   disponible: function () { return true; },
   decrire: async function () {
     return JSON.stringify({ aliments: [], lisible: false,
@@ -170,9 +187,9 @@ const absent = {
 
 const MOTEURS = { anthropic: anthropic, openai: openai, absent: absent };
 
-function choisir(nom) {
-  const cible = nom || process.env.MOTEUR_VISION || "";
-  if (cible && MOTEURS[cible]) return MOTEURS[cible];
+function choisir(name) {
+  const target = name || process.env.MOTEUR_VISION || "";
+  if (target && MOTEURS[target]) return MOTEURS[target];
   if (anthropic.disponible()) return anthropic;
   if (openai.disponible()) return openai;
   return absent;
@@ -196,7 +213,7 @@ function lireDescription(texte) {
  * Le verdict sort du code, pas du modèle. */
 function comparer(description, recette, donnees) {
   const catalogue = donnees.catalogue;
-  const Moteur = require(path.join(__dirname, "..", "moteur", "moteur.js"));
+  const Moteur = require(path.join(__dirname, "..", "engine", "engine.js"));
   const erreurs = [], avertissements = [];
 
   if (!description.lisible) {
@@ -215,9 +232,9 @@ function comparer(description, recette, donnees) {
   vus.forEach(function (aliment, i) {
     famillesDe(aliment).forEach(function (famille) {
       if (presentes.indexOf(famille) !== -1) return;
-      const nom = donnees.base.allergenes.find(function (a) { return a.id === famille; });
+      const name = donnees.base.allergens.find(function (a) { return a.id === famille; });
       const msg = "l'image montre « " + description.aliments[i] + " » alors que la recette ne contient pas de " +
-        (nom ? nom.nom.toLowerCase() : famille);
+        (name ? name.name.toLowerCase() : famille);
       if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
     });
   });
@@ -235,7 +252,7 @@ function comparer(description, recette, donnees) {
    *    reconnu, sinon c'est peut-être une image d'un autre plat. */
   const principaux = recette.ingredients.map(function (u) {
     const d = catalogue[u.id];
-    return d ? normaliser(d.nom.split("(")[0].trim()) : null;
+    return d ? normaliser(d.name.split("(")[0].trim()) : null;
   }).filter(Boolean);
   const reconnus = principaux.filter(function (p) {
     const mots = p.split(/\s+/).filter(function (w) { return w.length > 3; });
@@ -244,7 +261,20 @@ function comparer(description, recette, donnees) {
   if (!reconnus.length) {
     erreurs.push("aucun ingrédient de la recette n'est reconnaissable dans l'image");
   } else if (reconnus.length < 2 && principaux.length >= 4) {
-    avertissements.push("un seul ingrédient reconnu sur " + principaux.length + " — ressemblance faible");
+    /* Un seul ingrédient reconnu, c'est parfois légitime : sur une photo de
+     * muffins on voit « muffin », pas la banane ni l'avoine. Mais si la
+     * vision hésite EN PLUS, c'est le profil d'une image ratée — celle qui
+     * « pourrait être du couscous, de la polenta ou du curcuma ». Mesuré :
+     * une bouillie orange est passée avec reconnus=1 et des hésitations.
+     *
+     * Un ingrédient reconnu ET aucune hésitation : on accepte.
+     * Un ingrédient reconnu ET des hésitations : on rejette. */
+    if (description.incertitudes.length) {
+      erreurs.push("un seul ingrédient reconnu sur " + principaux.length +
+        ", et la vision hésite — l'image ne ressemble pas assez à la recette");
+    } else {
+      avertissements.push("un seul ingrédient reconnu sur " + principaux.length + " — ressemblance faible");
+    }
   }
 
   if (description.incertitudes.length)
@@ -260,12 +290,12 @@ async function verifier(octets, recette, donnees, options) {
   let brut;
   try { brut = await moteur.decrire(octets, options.typeMime || "image/png"); }
   catch (e) {
-    return { ok: false, moteur: moteur.nom, erreurs: ["la vision a échoué : " + e.message],
+    return { ok: false, moteur: moteur.name, erreurs: ["la vision a échoué : " + e.message],
              avertissements: [], detectes: [] };
   }
   const description = lireDescription(brut);
   const verdict = comparer(description, recette, donnees);
-  verdict.moteur = moteur.nom;
+  verdict.moteur = moteur.name;
   verdict.le = new Date().toISOString();
   return verdict;
 }

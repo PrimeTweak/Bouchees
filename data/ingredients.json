@@ -1,0 +1,827 @@
+{
+  "wheat_flour": {
+    "name": "Wheat flour",
+    "nameFr": "Farine de blé",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour",
+      "binder"
+    ]
+  },
+  "oat_flour": {
+    "name": "Oat flour",
+    "nameFr": "Farine d'avoine",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ],
+    "note": "Choose certified gluten-free oats if celiac disease is a concern"
+  },
+  "rice_flour": {
+    "name": "Rice flour",
+    "nameFr": "Farine de riz",
+    "allergens": [],
+    "roles": [
+      "flour",
+      "binder"
+    ]
+  },
+  "chickpea_flour": {
+    "name": "Chickpea flour",
+    "nameFr": "Farine de pois chiches",
+    "allergens": [],
+    "roles": [
+      "flour",
+      "protein"
+    ]
+  },
+  "gf_flour_blend": {
+    "name": "Gluten-free baking blend",
+    "nameFr": "Mélange à pâtisserie sans gluten",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ],
+    "note": "Check the blend — some contain soy"
+  },
+  "cornstarch": {
+    "name": "Cornstarch",
+    "nameFr": "Fécule de maïs",
+    "allergens": [],
+    "roles": [
+      "binder"
+    ]
+  },
+  "rolled_oats": {
+    "name": "Rolled oats",
+    "nameFr": "Flocons d'avoine",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ],
+    "note": "Certified pure oats if celiac disease is a concern"
+  },
+  "breadcrumbs": {
+    "name": "Breadcrumbs",
+    "nameFr": "Chapelure",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "binder",
+      "flour"
+    ]
+  },
+  "gf_breadcrumbs": {
+    "name": "Gluten-free breadcrumbs",
+    "nameFr": "Chapelure sans gluten",
+    "allergens": [],
+    "roles": [
+      "binder"
+    ]
+  },
+  "wheat_pasta": {
+    "name": "Wheat pasta",
+    "nameFr": "Pâtes de blé",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "rice_pasta": {
+    "name": "Rice pasta",
+    "nameFr": "Pâtes de riz",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "rice": {
+    "name": "Rice",
+    "nameFr": "Riz",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "egg": {
+    "name": "Egg",
+    "nameFr": "Œuf",
+    "allergens": [
+      "egg"
+    ],
+    "roles": [
+      "binder",
+      "protein"
+    ],
+    "unit": "unit"
+  },
+  "applesauce": {
+    "name": "Unsweetened applesauce",
+    "nameFr": "Compote de pommes non sucrée",
+    "allergens": [],
+    "roles": [
+      "binder",
+      "sweetener"
+    ]
+  },
+  "mashed_banana": {
+    "name": "Mashed banana",
+    "nameFr": "Banane écrasée",
+    "allergens": [],
+    "roles": [
+      "binder",
+      "sweetener"
+    ]
+  },
+  "ground_flaxseed": {
+    "name": "Ground flaxseed",
+    "nameFr": "Graines de lin moulues",
+    "allergens": [],
+    "roles": [
+      "binder"
+    ]
+  },
+  "chia_seeds": {
+    "name": "Chia seeds",
+    "nameFr": "Graines de chia",
+    "allergens": [],
+    "roles": [
+      "binder"
+    ]
+  },
+  "aquafaba": {
+    "name": "Aquafaba (unsalted chickpea water)",
+    "nameFr": "Aquafaba (eau de pois chiches sans sel)",
+    "allergens": [],
+    "roles": [
+      "binder"
+    ]
+  },
+  "cow_milk": {
+    "name": "Cow's milk",
+    "nameFr": "Lait de vache",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "liquid",
+      "dairy"
+    ]
+  },
+  "butter": {
+    "name": "Butter",
+    "nameFr": "Beurre",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "fat"
+    ]
+  },
+  "heavy_cream": {
+    "name": "Heavy cream (35%)",
+    "nameFr": "Crème 35 %",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "cheddar": {
+    "name": "Cheddar",
+    "nameFr": "Cheddar",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy",
+      "protein"
+    ]
+  },
+  "parmesan": {
+    "name": "Parmesan",
+    "nameFr": "Parmesan",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "plain_yogurt": {
+    "name": "Plain yogurt",
+    "nameFr": "Yogourt nature",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "greek_yogurt": {
+    "name": "Plain Greek yogurt",
+    "nameFr": "Yogourt grec nature",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "soy_beverage": {
+    "name": "Fortified soy beverage",
+    "nameFr": "Boisson de soya enrichie",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "liquid",
+      "protein"
+    ]
+  },
+  "oat_beverage": {
+    "name": "Fortified oat beverage",
+    "nameFr": "Boisson d'avoine enrichie",
+    "allergens": [],
+    "roles": [
+      "liquid"
+    ],
+    "note": "Fine for cooking from 6 months; not as a main drink before 2 years"
+  },
+  "coconut_milk": {
+    "name": "Coconut milk",
+    "nameFr": "Lait de coco",
+    "allergens": [],
+    "roles": [
+      "liquid",
+      "dairy"
+    ],
+    "note": "Coconut is not classified as a tree nut in Canada; allergy is possible but rare"
+  },
+  "coconut_yogurt": {
+    "name": "Coconut yogurt",
+    "nameFr": "Yogourt de coco",
+    "allergens": [],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "soy_yogurt": {
+    "name": "Soy yogurt",
+    "nameFr": "Yogourt de soya",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "dairy"
+    ]
+  },
+  "dairy_free_margarine": {
+    "name": "Dairy-free margarine",
+    "nameFr": "Margarine sans produits laitiers",
+    "allergens": [],
+    "roles": [
+      "fat"
+    ],
+    "note": "Check the label — some brands contain soy"
+  },
+  "olive_oil": {
+    "name": "Olive oil",
+    "nameFr": "Huile d'olive",
+    "allergens": [],
+    "roles": [
+      "fat"
+    ]
+  },
+  "canola_oil": {
+    "name": "Canola oil",
+    "nameFr": "Huile de canola",
+    "allergens": [],
+    "roles": [
+      "fat"
+    ]
+  },
+  "mashed_avocado": {
+    "name": "Mashed avocado",
+    "nameFr": "Avocat écrasé",
+    "allergens": [],
+    "roles": [
+      "fat"
+    ]
+  },
+  "nutritional_yeast": {
+    "name": "Nutritional yeast",
+    "nameFr": "Levure alimentaire",
+    "allergens": [],
+    "roles": [
+      "dairy"
+    ],
+    "note": "Cheesy flavour; does not melt — bind it with a purée (squash, sweet potato)"
+  },
+  "peanut_butter": {
+    "name": "Natural peanut butter",
+    "nameFr": "Beurre d'arachide naturel",
+    "allergens": [
+      "peanut"
+    ],
+    "roles": [
+      "fat",
+      "protein"
+    ]
+  },
+  "sunflower_seed_butter": {
+    "name": "Sunflower seed butter",
+    "nameFr": "Beurre de graines de tournesol",
+    "allergens": [],
+    "roles": [
+      "fat",
+      "protein"
+    ]
+  },
+  "soy_butter": {
+    "name": "Soy butter",
+    "nameFr": "Beurre de soya",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "fat",
+      "protein"
+    ]
+  },
+  "tahini": {
+    "name": "Tahini (sesame paste)",
+    "nameFr": "Tahini (beurre de sésame)",
+    "allergens": [
+      "sesame"
+    ],
+    "roles": [
+      "fat"
+    ]
+  },
+  "almond_butter": {
+    "name": "Almond butter",
+    "nameFr": "Beurre d'amande",
+    "allergens": [
+      "tree_nut"
+    ],
+    "roles": [
+      "fat",
+      "protein"
+    ]
+  },
+  "chicken": {
+    "name": "Chicken",
+    "nameFr": "Poulet",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "ground_turkey": {
+    "name": "Ground turkey",
+    "nameFr": "Dinde hachée",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "white_fish": {
+    "name": "White fish (cod, haddock)",
+    "nameFr": "Poisson blanc (morue, aiglefin)",
+    "allergens": [
+      "fish"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "firm_tofu": {
+    "name": "Firm tofu",
+    "nameFr": "Tofu ferme",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "lentils": {
+    "name": "Cooked lentils",
+    "nameFr": "Lentilles cuites",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "chickpeas": {
+    "name": "Cooked chickpeas",
+    "nameFr": "Pois chiches cuits",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "honey": {
+    "name": "Honey",
+    "nameFr": "Miel",
+    "allergens": [],
+    "roles": [
+      "sweetener"
+    ]
+  },
+  "maple_syrup": {
+    "name": "Maple syrup",
+    "nameFr": "Sirop d'érable",
+    "allergens": [],
+    "roles": [
+      "sweetener"
+    ]
+  },
+  "sugar": {
+    "name": "Sugar",
+    "nameFr": "Sucre",
+    "allergens": [],
+    "roles": [
+      "sweetener"
+    ]
+  },
+  "dates": {
+    "name": "Pitted dates",
+    "nameFr": "Dattes dénoyautées",
+    "allergens": [],
+    "roles": [
+      "sweetener"
+    ]
+  },
+  "banana": {
+    "name": "Banana",
+    "nameFr": "Banane",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "apple": {
+    "name": "Apple",
+    "nameFr": "Pomme",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "mango": {
+    "name": "Mango",
+    "nameFr": "Mangue",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "blueberries": {
+    "name": "Blueberries",
+    "nameFr": "Bleuets",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "raisins": {
+    "name": "Raisins",
+    "nameFr": "Raisins secs",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ],
+    "note": "Golden raisins are sulphited — choose brown raisins if sulphite-sensitive"
+  },
+  "lemon_juice": {
+    "name": "Lemon juice",
+    "nameFr": "Jus de citron",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "sweet_potato": {
+    "name": "Sweet potato",
+    "nameFr": "Patate douce",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "butternut_squash": {
+    "name": "Butternut squash",
+    "nameFr": "Courge musquée",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "carrot": {
+    "name": "Carrot (cooked)",
+    "nameFr": "Carotte (cuite)",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "raw_carrot": {
+    "name": "Raw carrot",
+    "nameFr": "Carotte crue",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "cucumber": {
+    "name": "Cucumber",
+    "nameFr": "Concombre",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "zucchini": {
+    "name": "Zucchini",
+    "nameFr": "Courgette",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "spinach": {
+    "name": "Spinach",
+    "nameFr": "Épinards",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "onion": {
+    "name": "Onion",
+    "nameFr": "Oignon",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "garlic": {
+    "name": "Garlic",
+    "nameFr": "Ail",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "crushed_tomatoes": {
+    "name": "Crushed tomatoes",
+    "nameFr": "Tomates broyées",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "dijon_mustard": {
+    "name": "Dijon mustard",
+    "nameFr": "Moutarde de Dijon",
+    "allergens": [
+      "mustard"
+    ],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "salt": {
+    "name": "Salt",
+    "nameFr": "Sel",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "cinnamon": {
+    "name": "Cinnamon",
+    "nameFr": "Cannelle",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "vanilla": {
+    "name": "Vanilla extract",
+    "nameFr": "Extrait de vanille",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "baking_powder": {
+    "name": "Baking powder",
+    "nameFr": "Poudre à pâte",
+    "allergens": [],
+    "roles": [
+      "leavening"
+    ]
+  },
+  "baking_soda": {
+    "name": "Baking soda",
+    "nameFr": "Bicarbonate de soude",
+    "allergens": [],
+    "roles": [
+      "leavening"
+    ]
+  },
+  "unsalted_broth": {
+    "name": "Unsalted chicken broth",
+    "nameFr": "Bouillon de poulet sans sel",
+    "allergens": [],
+    "roles": [
+      "liquid"
+    ]
+  },
+  "water": {
+    "name": "Water",
+    "nameFr": "Eau",
+    "allergens": [],
+    "roles": [
+      "liquid"
+    ]
+  },
+  "walnuts": {
+    "name": "Walnuts",
+    "nameFr": "Noix de Grenoble",
+    "allergens": [
+      "tree_nut"
+    ],
+    "roles": [
+      "topping"
+    ]
+  },
+  "shrimp": {
+    "name": "Shrimp",
+    "nameFr": "Crevettes",
+    "allergens": [
+      "shellfish"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "salmon": {
+    "name": "Salmon",
+    "nameFr": "Saumon",
+    "allergens": [
+      "fish"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "fish_sauce": {
+    "name": "Fish sauce",
+    "nameFr": "Sauce de poisson",
+    "allergens": [
+      "fish"
+    ],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "soy_sauce": {
+    "name": "Soy sauce",
+    "nameFr": "Sauce soya",
+    "allergens": [
+      "soy",
+      "wheat"
+    ],
+    "roles": [
+      "seasoning"
+    ],
+    "note": "Regular soy sauce contains wheat"
+  },
+  "tamari": {
+    "name": "Tamari sauce",
+    "nameFr": "Sauce tamari",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "seasoning"
+    ],
+    "note": "Soy without wheat — check for a gluten-free statement"
+  },
+  "coconut_aminos": {
+    "name": "Coconut aminos",
+    "nameFr": "Aminos de coco",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "dried_apricots": {
+    "name": "Dried apricots",
+    "nameFr": "Abricots séchés",
+    "allergens": [
+      "sulphites"
+    ],
+    "roles": [
+      "fruit"
+    ],
+    "note": "Bright orange dried apricots are sulphited; unsulphited brown ones exist"
+  },
+  "couscous": {
+    "name": "Couscous",
+    "nameFr": "Couscous",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "quinoa": {
+    "name": "Quinoa",
+    "nameFr": "Quinoa",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "flour_tortillas": {
+    "name": "Flour tortillas",
+    "nameFr": "Tortillas de blé",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "corn_tortillas": {
+    "name": "Corn tortillas",
+    "nameFr": "Tortillas de maïs",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "mozzarella": {
+    "name": "Mozzarella",
+    "nameFr": "Mozzarella",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy",
+      "protein"
+    ]
+  },
+  "green_peas": {
+    "name": "Green peas",
+    "nameFr": "Petits pois",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "bell_pepper": {
+    "name": "Bell pepper",
+    "nameFr": "Poivron",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "broccoli": {
+    "name": "Broccoli",
+    "nameFr": "Brocoli",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "basil": {
+    "name": "Basil",
+    "nameFr": "Basilic",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "ginger": {
+    "name": "Ginger",
+    "nameFr": "Gingembre",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  }
+}

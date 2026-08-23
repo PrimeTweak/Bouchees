@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bouchées — peut-il manger ça?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#F1F3EC;
+  --craie:#FFFFFF;
+  --encre:#1B211B;
+  --encre-2:#59634F;
+  --encre-3:#8A9182;
+  --trait:#DCE2D5;
+  --trait-fort:#C6CFBD;
+  --betterave:#7A3557;
+  --betterave-fonce:#5E2642;
+  --betterave-pale:#F7EAF1;
+  --pois:#43703A;
+  --pois-pale:#E7F0E2;
+  --courge:#9C5809;
+  --courge-pale:#FAEEDC;
+  --canneberge:#9E2B2B;
+  --canneberge-pale:#F9E7E7;
+  --r:20px;
+  --r-s:14px;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corps:"Instrument Sans",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --ombre:0 1px 2px rgba(27,33,27,.04), 0 8px 24px rgba(27,33,27,.05);
+  --ombre-forte:0 2px 4px rgba(27,33,27,.05), 0 16px 40px rgba(27,33,27,.11);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--corps);color:var(--encre);background:var(--fond);
+  font-size:16px;line-height:1.5;min-height:100dvh;overflow-x:hidden;
+}
+button,input{font:inherit;color:inherit;background:none;border:none}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--betterave);outline-offset:2px;border-radius:10px}
+::placeholder{color:var(--encre-3)}
+svg{display:block}
+
+.cadre{max-width:1120px;margin:0 auto;padding:0 18px calc(56px + env(safe-area-inset-bottom))}
+
+/* ======================= ACCUEIL GUIDÉ ======================= */
+.accueil{position:fixed;inset:0;z-index:50;background:var(--fond);overflow-y:auto;display:flex;flex-direction:column}
+.accueil[hidden]{display:none}
+.accueil-cadre{width:100%;max-width:520px;margin:auto;padding:32px 22px calc(40px + env(safe-area-inset-bottom))}
+.jauge{display:flex;gap:6px;margin-bottom:30px}
+.jauge span{height:4px;flex:1;border-radius:99px;background:var(--trait)}
+.jauge span.on{background:var(--betterave)}
+.accueil .marque{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:-.035em;line-height:1;margin-bottom:8px}
+.accueil .marque i{font-style:normal;color:var(--betterave)}
+.accueil .accroche{color:var(--encre-2);font-size:16px;margin-bottom:34px;max-width:34ch}
+.accueil h1{font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:-.025em;line-height:1.14;margin-bottom:8px}
+.accueil .sous{color:var(--encre-2);font-size:15px;margin-bottom:22px}
+.accueil-pied{display:flex;gap:12px;align-items:center;margin-top:30px;flex-wrap:wrap}
+
+.champ-nom{
+  width:100%;background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);
+  padding:15px 18px;font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;
+}
+.champ-nom:focus{border-color:var(--betterave);outline:none}
+
+.stades{display:grid;gap:9px}
+.stade{
+  display:flex;align-items:center;gap:14px;text-align:left;width:100%;
+  background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);padding:13px 15px;
+  transition:border-color .14s, background .14s;
+}
+.stade:hover{border-color:var(--trait-fort)}
+.stade[aria-pressed="true"]{border-color:var(--betterave);background:var(--betterave-pale)}
+.stade .st-age{font-family:var(--display);font-weight:700;font-size:16px;flex:none;width:78px}
+.stade .st-txt{font-size:13.5px;color:var(--encre-2);line-height:1.35}
+.stade[aria-pressed="true"] .st-txt{color:var(--betterave-fonce)}
+
+.reglage-fin{display:flex;align-items:center;gap:12px;margin-top:16px;justify-content:center}
+.reglage-fin button{width:42px;height:42px;border-radius:12px;border:2px solid var(--trait);background:var(--craie);font-family:var(--mono);font-size:19px;line-height:1}
+.reglage-fin button:active{background:var(--trait)}
+.reglage-fin .val{font-family:var(--mono);font-size:13px;color:var(--encre-2);min-width:74px;text-align:center}
+.reglage-fin .val b{font-family:var(--display);font-size:20px;color:var(--encre);display:block;line-height:1.1}
+
+.grille-all{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(min-width:440px){.grille-all{grid-template-columns:1fr 1fr 1fr}}
+.all-btn{
+  display:flex;align-items:center;gap:9px;text-align:left;
+  background:var(--craie);border:2px solid var(--trait);border-radius:var(--r-s);
+  padding:12px 13px;font-size:14.5px;font-weight:500;transition:all .14s;color:var(--encre-2);
+}
+.all-btn:hover{border-color:var(--trait-fort)}
+.all-btn[aria-pressed="true"]{border-color:var(--encre);background:var(--encre);color:#fff}
+.all-btn svg{flex:none;opacity:.85}
+.lien-plus{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:14.5px;font-weight:600;color:var(--betterave);padding:6px 2px}
+.aucune-all{font-size:13.5px;color:var(--encre-3);margin-top:14px}
+
+.btn{border-radius:99px;padding:13px 24px;font-weight:600;font-size:16px;border:2px solid transparent;transition:all .15s}
+.btn-principal{background:var(--betterave);color:#fff}
+.btn-principal:hover{background:var(--betterave-fonce)}
+.btn-fantome{color:var(--encre-2);font-weight:600;font-size:15px;padding:12px 6px}
+.btn-second{border:2px solid var(--trait);background:var(--craie);border-radius:99px;padding:12px 20px;font-weight:600;font-size:15px}
+
+/* ======================= BARRE ======================= */
+.barre{
+  position:sticky;top:0;z-index:20;
+  background:color-mix(in srgb, var(--fond) 86%, transparent);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  border-bottom:1px solid color-mix(in srgb, var(--trait) 70%, transparent);
+}
+.barre-cadre{max-width:1120px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.03em;flex:none}
+.logo i{font-style:normal;color:var(--betterave)}
+.avatars{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;flex:1;padding:2px 0}
+.avatars::-webkit-scrollbar{display:none}
+.av{
+  display:inline-flex;align-items:center;gap:8px;flex:none;
+  border:1.5px solid var(--trait);background:var(--craie);border-radius:99px;
+  padding:5px 13px 5px 5px;font-weight:600;font-size:14px;transition:all .14s;white-space:nowrap;
+}
+.av .pastille{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;flex:none;font-family:var(--display);font-weight:700;font-size:13px;color:#fff}
+.av[aria-pressed="true"]{border-color:var(--encre);background:var(--encre);color:#fff}
+.av-fam .pastille{background:var(--encre-2);font-size:10.5px;letter-spacing:-.02em}
+.av-plus{padding:5px 14px;border-style:dashed;color:var(--encre-2);font-weight:500}
+
+/* ======================= HÉRO ======================= */
+.entete-jour{padding:26px 2px 14px}
+.entete-jour .eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--encre-3)}
+.entete-jour h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);letter-spacing:-.035em;line-height:1.04;margin-top:7px}
+.entete-jour h1 em{font-style:normal;color:var(--betterave)}
+.entete-jour p{color:var(--encre-2);font-size:15px;margin-top:9px;max-width:52ch}
+
+.hero{
+  display:block;width:100%;text-align:left;background:var(--craie);border:1px solid var(--trait);
+  border-radius:var(--r);overflow:hidden;box-shadow:var(--ombre);transition:transform .18s, box-shadow .18s;
+}
+.hero:hover{transform:translateY(-3px);box-shadow:var(--ombre-forte)}
+@media(min-width:720px){.hero{display:grid;grid-template-columns:1.02fr 1fr;align-items:stretch}}
+.hero-img{position:relative;aspect-ratio:4/3;overflow:hidden}
+@media(min-width:720px){.hero-img{aspect-ratio:auto;min-height:290px}}
+.hero-img svg{width:100%;height:100%}
+.hero-txt{padding:22px 22px 24px;display:flex;flex-direction:column;gap:11px;justify-content:center}
+.hero-txt h2{font-family:var(--display);font-weight:800;font-size:clamp(23px,5.2vw,30px);letter-spacing:-.028em;line-height:1.1}
+.hero-txt .meta{font-family:var(--mono);font-size:12px;color:var(--encre-3)}
+.hero-txt .pourquoi{font-size:15px;color:var(--encre-2)}
+.cta{align-self:flex-start;margin-top:5px;background:var(--encre);color:#fff;border-radius:99px;padding:11px 21px;font-weight:600;font-size:15px}
+
+/* ======================= FILTRES ======================= */
+.outils{margin-top:30px;display:grid;gap:11px}
+.recherche{position:relative}
+.recherche input{width:100%;background:var(--craie);border:1.5px solid var(--trait);border-radius:99px;padding:13px 20px 13px 46px;font-size:15.5px}
+.recherche input:focus{border-color:var(--trait-fort);outline:none}
+.recherche .ic{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--encre-3)}
+.pilules{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.pilules::-webkit-scrollbar{display:none}
+.pilule{flex:none;border:1.5px solid var(--trait);background:var(--craie);border-radius:99px;padding:9px 16px;font-size:14.5px;font-weight:500;white-space:nowrap;transition:all .14s}
+.pilule[aria-pressed="true"]{background:var(--encre);border-color:var(--encre);color:#fff}
+
+/* ======================= SECTIONS ======================= */
+.section{margin-top:34px}
+.section-tete{display:flex;align-items:baseline;gap:11px;margin-bottom:14px;padding:0 2px}
+.section-tete h3{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.02em}
+.section-tete .account{font-family:var(--mono);font-size:12px;color:var(--encre-3)}
+.section-tete .filet{flex:1;height:1px;background:var(--trait)}
+
+.grille{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+@media(min-width:700px){.grille{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:980px){.grille{grid-template-columns:repeat(4,1fr)}}
+.carte{
+  text-align:left;background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;transition:transform .16s, box-shadow .16s;
+  box-shadow:0 1px 2px rgba(27,33,27,.03);
+}
+.carte:hover{transform:translateY(-3px);box-shadow:var(--ombre)}
+.carte-img{position:relative;aspect-ratio:4/3;overflow:hidden}
+.carte-img svg{width:100%;height:100%}
+.token{
+  position:absolute;left:9px;top:9px;display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:99px;padding:5px 9px;
+  background:color-mix(in srgb, var(--craie) 92%, transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.j-ok{color:var(--pois)}
+.j-adapt{color:var(--betterave)}
+.j-non{color:var(--canneberge)}
+.token-age{
+  position:absolute;right:9px;top:9px;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  border-radius:99px;padding:5px 9px;color:var(--courge);
+  background:color-mix(in srgb, var(--craie) 92%, transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.carte-txt{padding:13px 14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
+.carte-txt h4{font-family:var(--display);font-weight:700;font-size:16.5px;letter-spacing:-.015em;line-height:1.2}
+.carte-txt .meta{font-family:var(--mono);font-size:11px;color:var(--encre-3)}
+.echange{margin-top:auto;padding-top:9px;border-top:1px dashed var(--trait);font-size:12.5px;color:var(--encre-2);line-height:1.4}
+.echange s{color:var(--encre-3);text-decoration-thickness:1.5px;text-decoration-color:var(--canneberge)}
+.echange b{color:var(--betterave);font-weight:600}
+.carte.non .carte-img{filter:saturate(.35) opacity(.75)}
+.carte.non{border-style:dashed}
+
+.vide{grid-column:1/-1;background:var(--craie);border:1px dashed var(--trait-fort);border-radius:var(--r);padding:40px 24px;text-align:center}
+.vide .t{font-family:var(--display);font-weight:700;font-size:18px;margin-bottom:6px}
+.vide .s{color:var(--encre-2);font-size:14.5px}
+
+.pied{font-size:12.5px;color:var(--encre-3);padding:44px 4px 0;line-height:1.6;max-width:70ch}
+.pied b{color:var(--encre-2)}
+
+/* ======================= FEUILLE PROFIL ======================= */
+.voile{position:fixed;inset:0;z-index:38;background:rgba(27,33,27,.35);opacity:0;pointer-events:none;transition:opacity .2s}
+.voile.on{opacity:1;pointer-events:auto}
+.feuille{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--fond);
+  border-radius:26px 26px 0 0;box-shadow:0 -8px 40px rgba(27,33,27,.2);
+  transform:translateY(102%);transition:transform .26s cubic-bezier(.22,.85,.3,1);
+  max-height:88dvh;overflow-y:auto;
+}
+.feuille.on{transform:none}
+.feuille-cadre{max-width:560px;margin:0 auto;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
+.poignee{width:38px;height:4px;border-radius:99px;background:var(--trait-fort);margin:0 auto 16px}
+.feuille h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin-bottom:16px}
+.f-bloc{margin-bottom:20px}
+.f-title{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--encre-3);margin-bottom:10px}
+.f-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:4px}
+.f-suppr{margin-left:auto;color:var(--canneberge);font-weight:600;font-size:14px;padding:8px 4px}
+
+/* ======================= FICHE ======================= */
+.fiche{position:fixed;inset:0;background:var(--fond);overflow-y:auto;z-index:45;transform:translateY(18px);opacity:0;pointer-events:none;transition:transform .22s ease, opacity .22s ease}
+.fiche.on{transform:none;opacity:1;pointer-events:auto}
+.fiche-heros{position:relative;width:100%;aspect-ratio:16/10;max-height:44dvh;overflow:hidden;background:var(--trait)}
+.fiche-heros svg{width:100%;height:100%}
+.fiche-retour{
+  position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));
+  display:inline-flex;align-items:center;gap:7px;background:color-mix(in srgb, var(--craie) 90%, transparent);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-radius:99px;padding:9px 16px;font-size:14px;font-weight:600;box-shadow:var(--ombre);
+}
+.fiche-cadre{max-width:740px;margin:0 auto;padding:22px 18px calc(64px + env(safe-area-inset-bottom))}
+.fiche h2{font-family:var(--display);font-weight:800;font-size:clamp(27px,6.6vw,38px);letter-spacing:-.03em;line-height:1.06}
+.fiche .meta{font-family:var(--mono);font-size:12px;color:var(--encre-3);margin:9px 0 18px}
+.verdict{border-radius:16px;padding:15px 17px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start}
+.verdict .ic{font-family:var(--mono);font-weight:600;font-size:16px;line-height:1.35}
+.verdict .tt{font-family:var(--display);font-weight:700;font-size:17.5px;letter-spacing:-.015em}
+.verdict .ss{font-size:14.5px;margin-top:3px;opacity:.92}
+.v-ok{background:var(--pois-pale);color:var(--pois)}
+.v-adapt{background:var(--betterave-pale);color:var(--betterave-fonce)}
+.v-non{background:var(--canneberge-pale);color:var(--canneberge)}
+
+.bloc{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r);padding:18px;margin-bottom:13px}
+.bloc .etiquette{font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--encre-3);margin-bottom:12px}
+.bloc-texture{border-left:4px solid var(--betterave)}
+.bloc-texture .stade-nom{font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:5px}
+.bloc-texture p{font-size:14.5px}
+.bloc-texture .n2{font-size:13px;color:var(--encre-2);margin-top:7px}
+.alerte{display:flex;gap:11px;border-radius:13px;padding:12px 14px;font-size:14.5px;margin-bottom:9px;align-items:flex-start}
+.alerte::before{font-family:var(--mono);font-weight:600;font-size:10.5px;margin-top:3px;flex:none;letter-spacing:.06em}
+.a-bloquant{background:var(--canneberge-pale);color:var(--canneberge)}.a-bloquant::before{content:"STOP"}
+.a-securite{background:var(--courge-pale);color:var(--courge)}.a-securite::before{content:"ÂGE"}
+.a-attention{background:var(--courge-pale);color:var(--courge)}.a-attention::before{content:"NOTE"}
+.a-info{background:var(--betterave-pale);color:var(--betterave-fonce)}.a-info::before{content:"ÉCH."}
+
+.ligne{padding:13px 2px;border-bottom:1px dashed var(--trait)}
+.ligne:last-child{border-bottom:none}
+.l-haut{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.l-nom{font-weight:600;font-size:15.5px}
+.l-nom s{color:var(--encre-3);font-weight:500;text-decoration-thickness:2px;text-decoration-color:var(--canneberge)}
+.l-vers{color:var(--betterave)}
+.l-fleche{font-family:var(--mono);color:var(--betterave);font-weight:600}
+.l-qte{font-family:var(--mono);font-size:12.5px;color:var(--encre-3);white-space:nowrap}
+.l-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-family:var(--mono);font-size:11px;border-radius:8px;padding:4px 8px;background:var(--fond);border:1px solid var(--trait);color:var(--encre-2)}
+.tag.t-motif{background:var(--betterave-pale);border-color:transparent;color:var(--betterave)}
+.tag.t-ratio{background:var(--pois-pale);border-color:transparent;color:var(--pois)}
+.tag.t-prep{background:var(--courge-pale);border-color:transparent;color:var(--courge)}
+.tag.t-non{background:var(--canneberge-pale);border-color:transparent;color:var(--canneberge)}
+.l-note{font-size:13px;color:var(--encre-2);margin-top:7px}
+.etapes{counter-reset:etape}
+.etapes p{display:flex;gap:13px;padding:10px 0;font-size:15.5px}
+.etapes p::before{
+  counter-increment:etape;content:counter(etape);flex:none;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--betterave);
+  width:25px;height:25px;border:1.5px solid var(--betterave);border-radius:50%;
+  display:grid;place-items:center;margin-top:1px;
+}
+.provenance{font-family:var(--mono);font-size:11.5px;color:var(--encre-3);line-height:1.65;word-break:break-word}
+
+/* ======================= ABONNEMENT ======================= */
+.btn-abo{
+  flex:none;display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--betterave);
+  color:var(--betterave);border-radius:99px;padding:6px 14px;font-size:13.5px;font-weight:600;white-space:nowrap;
+}
+.btn-abo.actif{background:var(--betterave);color:#fff}
+.bandeau-demo{
+  background:var(--courge-pale);color:var(--courge);border-radius:14px;padding:11px 15px;
+  font-size:13.5px;margin-top:18px;line-height:1.45;
+}
+.carte-verrou .carte-img{
+  display:grid;place-items:center;
+  background:repeating-linear-gradient(135deg,var(--betterave-pale) 0 14px,#F2E2EC 14px 28px);
+}
+.carte-verrou .cadenas{color:var(--betterave);opacity:.75}
+.carte-verrou h4{color:var(--encre-2)}
+.section-verrou .section-tete h3{color:var(--betterave)}
+.lot-note{font-size:13.5px;color:var(--encre-2);margin:-4px 2px 12px;max-width:60ch}
+.paywall .grand{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.025em;line-height:1.12;margin-bottom:10px}
+.paywall .corps{font-size:15px;color:var(--encre-2);margin-bottom:18px}
+.compare{display:grid;gap:10px;margin-bottom:20px}
+@media(min-width:520px){.compare{grid-template-columns:1fr 1fr}}
+.compare .col{background:var(--craie);border:1px solid var(--trait);border-radius:var(--r-s);padding:15px}
+.compare .col.paye{border-color:var(--betterave)}
+.compare .tt{font-family:var(--display);font-weight:700;font-size:15.5px;margin-bottom:9px}
+.compare .col.paye .tt{color:var(--betterave)}
+.compare ul{list-style:none;display:grid;gap:7px}
+.compare li{font-size:14px;color:var(--encre-2);display:flex;gap:8px;align-items:flex-start}
+.compare li::before{content:"✓";color:var(--pois);font-family:var(--mono);font-size:12px;margin-top:2px}
+.etat-abo{font-family:var(--mono);font-size:12px;color:var(--encre-3);margin-top:14px;line-height:1.6}
+.msg{font-size:13.5px;border-radius:12px;padding:10px 13px;margin-top:12px}
+.msg-ok{background:var(--pois-pale);color:var(--pois)}
+.msg-err{background:var(--canneberge-pale);color:var(--canneberge)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="accueil" id="accueil" hidden><div class="accueil-cadre" id="accueilCadre"></div></div>
+
+<div id="app" hidden>
+  <div class="barre">
+    <div class="barre-cadre">
+      <div class="logo">Bouchées<i>.</i></div>
+      <div class="avatars" id="avatars"></div>
+      <button class="btn-abo" id="btnAbo">Abonnement</button>
+    </div>
+  </div>
+
+  <div class="cadre">
+    <div class="entete-jour" id="enteteJour"></div>
+    <div id="zoneHero"></div>
+
+    <div class="tools">
+      <div class="recherche">
+        <span class="ic"><svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13.2 13.2 17 17"/></svg></span>
+        <input id="recherche" type="text" placeholder="Chercher — poulet, muffins, courge…" aria-label="Chercher une recette ou un ingrédient">
+      </div>
+      <div class="pilules" id="pilules"></div>
+    </div>
+
+    <div id="bandeau"></div>
+    <div id="sections"></div>
+
+    <p class="pied">
+      <b>Bouchées ne remplace pas un avis médical.</b> Les échanges d'ingrédients et les repères d'âge
+      viennent de tables déterministes, à faire valider par un professionnel (nutritionniste, allergologue)
+      avant toute vraie mise en service. En cas d'allergie diagnostiquée, le plan de votre allergologue a
+      toujours préséance. Les illustrations sont générées à partir de la liste d'ingrédients réelle —
+      elles changent quand la recette change. « Bouchées » est un nom de travail.
+    </p>
+  </div>
+</div>
+
+<div class="voile" id="voile"></div>
+<div class="feuille" id="feuille" role="dialog" aria-modal="true" aria-label="Profil"><div class="feuille-cadre" id="feuilleCadre"></div></div>
+<div class="feuille paywall" id="paywall" role="dialog" aria-modal="true" aria-label="Abonnement"><div class="feuille-cadre" id="paywallCadre"></div></div>
+<div class="fiche" id="fiche" role="dialog" aria-modal="true" aria-label="Recette"><div id="ficheContenu"></div></div>
+
+<script>
+/*__MOTEUR__*/
+/*__ILLUSTRATION__*/
+/*__DONNEES__*/
+/*__PUBLICATION__*/
+
+(function(){
+"use strict";
+var donnees = { catalogue: DONNEES.ingredients, substitutions: DONNEES.substitutions, base: DONNEES.base };
+var recettes = DONNEES.recettes;
+
+var STADES = [
+  { min:6,  nom:"6–8 mois",  txt:"Purées lisses et gros bâtonnets fondants" },
+  { min:9,  nom:"9–11 mois", txt:"Écrasé grossier et petits morceaux fondants" },
+  { min:12, nom:"1–2 ans",   txt:"Morceaux tendres, la plupart des plats familiaux" },
+  { min:24, nom:"2–3 ans",   txt:"Coupe normale prudente" },
+  { min:48, nom:"4 ans et +",txt:"Texture libre" }
+];
+var COURANTS = ["lait","oeuf","arachide","noix","ble","soya"];
+var TEINTES_AV = ["#7A3557","#43703A","#9C5809","#2F6480","#8A3A2A","#5A4A86"];
+var CATEGORIES = ["Tout","Déjeuner","Repas","Collation","Dessert"];
+
+var acces = {
+  mode: "fichier",        /* "server" quand une API répond, sinon démonstration locale */
+  token: null, email: null, subscribed: false,
+  lots: [], verrouilles: [], message: null
+};
+
+var etat = {
+  profils: [], actif: null,
+  etape: 0, brouillon: null, autresOuverts: false,
+  recherche: "", categorie: "Tout", rapide: false,
+  feuille: null, ficheOuverte: null
+};
+
+var $ = function(id){ return document.getElementById(id); };
+function ech(t){ var d=document.createElement("div"); d.textContent=String(t); return d.innerHTML; }
+/* Photo seulement si la recette est servie TELLE QUELLE. Dès qu'un ingrédient
+ * change, la photo montrerait autre chose que ce qu'on demande de cuisiner —
+ * l'illustration, elle, est dérivée des ingrédients adaptés. */
+function visuel(r, res){
+  if(r.image && res.status === "telle_quelle"){
+    return '<img src="' + ech(r.image) + '" alt="" loading="lazy" '
+      + 'style="width:100%;height:100%;object-fit:cover" '
+      + 'onerror="this.parentNode.innerHTML=this.getAttribute(\'data-repli\')" '
+      + 'data-repli="' + ech(Illustration.plat(res, donnees.catalogue, r.categorie)) + '">';
+  }
+  return Illustration.plat(res, donnees.catalogue, r.categorie);
+}
+function sansAcc(t){ return String(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
+function fqte(q){ return String(q).replace(".", ","); }
+function funite(u,q){ return (u==="unité" && q>1) ? "unités" : u; }
+function hachage(t){ var h=0; for(var i=0;i<t.length;i++) h=(h*31+t.charCodeAt(i))>>>0; return h; }
+function teinte(nom){ return TEINTES_AV[hachage(nom||"x") % TEINTES_AV.length]; }
+function initiale(nom){ return (nom||"?").trim().charAt(0).toUpperCase() || "?"; }
+function nomAll(id){ var a=DONNEES.base.allergenes.find(function(x){return x.id===id;}); return a?a.nom.toLowerCase():id; }
+function listeFr(t){ return t.length<2 ? t.join("") : t.slice(0,-1).join(", ") + " et " + t[t.length-1]; }
+
+function sauver(){
+  try{ if(window.storage && window.storage.set)
+    window.storage.set("bouchees:v3", JSON.stringify({profils:etat.profils, actif:etat.actif})).catch(function(){});
+  }catch(e){}
+}
+function charger(){
+  try{ if(window.storage && window.storage.get)
+    return window.storage.get("bouchees:v3").then(function(r){
+      if(r && r.value){ var d=JSON.parse(r.value);
+        if(d && d.profils && d.profils.length){ etat.profils=d.profils; etat.actif=d.actif||d.profils[0].id; } }
+    }).catch(function(){});
+  }catch(e){}
+  return Promise.resolve();
+}
+
+/* ================= ACCÈS ET ABONNEMENT ================= */
+/* En mode fichier, le verrouillage est une DÉMONSTRATION : les recettes sont
+ * dans la page, l'interface les cache. Ça ne protège rien — seul le serveur
+ * protège, en n'envoyant jamais un lot non autorisé. Le bandeau le dit. */
+function lotsLocaux(){
+  return PUBLICATION.lots.map(function(l){
+    var n = recettes.filter(function(r){ return PUBLICATION.attribution[r.id] === l.id; }).length;
+    return { id:l.id, title:l.title, date:l.date, acces:l.acces, note:l.note, count:n,
+             unlocked: l.acces === "libre" || acces.subscribed };
+  });
+}
+function rafraichirAcces(){
+  acces.lots = lotsLocaux();
+  acces.verrouilles = acces.lots.filter(function(l){ return !l.unlocked; }).map(function(l){ return l.id; });
+}
+function api(chemin, options){
+  options = options || {};
+  var h = { "Content-Type": "application/json" };
+  if(acces.token) h.Authorization = "Bearer " + acces.token;
+  return fetch(chemin, { method: options.methode || "GET", headers: h,
+    body: options.corps ? JSON.stringify(options.corps) : undefined })
+    .then(function(r){ return r.json().then(function(j){ return { code:r.status, corps:j }; }); });
+}
+function tenterServeur(){
+  if(typeof fetch !== "function") return Promise.resolve(false);
+  return api("/api/manifeste").then(function(r){
+    if(r.code !== 200 || !r.corps.lots) return false;
+    acces.mode = "server";
+    acces.subscribed = !!r.corps.subscribed;
+    acces.lots = r.corps.lots;
+    acces.verrouilles = r.corps.lots.filter(function(l){ return !l.unlocked; }).map(function(l){ return l.id; });
+    return api("/api/recettes").then(function(rr){
+      if(rr.code === 200 && rr.corps.recettes){
+        recettes = rr.corps.recettes;   /* le client ne voit QUE ce qui lui revient */
+        reindexer();
+      }
+      return true;
+    });
+  }).catch(function(){ return false; });
+}
+function recettesDuLot(id){
+  return recettes.filter(function(r){
+    return (r.lot || PUBLICATION.attribution[r.id]) === id;
+  });
+}
+function estVerrouillee(r){
+  var lot = r.lot || PUBLICATION.attribution[r.id];
+  return acces.verrouilles.indexOf(lot) !== -1;
+}
+function lotLePlusRecentDeverrouille(){
+  var d = acces.lots.filter(function(l){ return l.unlocked; });
+  return d.length ? d[d.length - 1] : null;
+}
+
+function ouvrirPaywall(){
+  rendrePaywall();
+  $("paywall").classList.add("on"); $("voile").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function fermerPaywall(){
+  acces.message = null;
+  $("paywall").classList.remove("on"); $("voile").classList.remove("on");
+  document.body.style.overflow = "";
+}
+function rendrePaywall(){
+  var verrous = acces.lots.filter(function(l){ return !l.unlocked; });
+  var h = '<div class="poignee"></div>'
+    + '<div class="grand">' + (acces.subscribed ? "Votre subscription est actif" : "De nouvelles recettes chaque mois") + '</div>'
+    + '<p class="corps">' + (acces.subscribed
+        ? "Tous les lots sont déverrouillés. Le prochain arrive au début du mois prochain."
+        : "Chaque mois, un lot de recettes choisies là où votre profil manque de choix — pas au hasard.") + '</p>'
+    + '<div class="compare">'
+    + '<div class="col"><div class="tt">Toujours gratuit</div><ul>'
+    + '<li>Les échanges d\u2019ingrédients pour chaque allergène</li>'
+    + '<li>Les repères d\u2019âge et de texture</li>'
+    + '<li>Les profils de vos enfants et le mode famille</li>'
+    + '<li>' + acces.lots.filter(function(l){ return l.acces === "libre"; })
+        .reduce(function(n,l){ return n + l.count; }, 0) + ' recettes de départ</li>'
+    + '</ul></div>'
+    + '<div class="col paye"><div class="tt">Avec l\u2019abonnement</div><ul>'
+    + '<li>Un nouveau lot chaque mois</li>'
+    + '<li>Ciblé sur les profils que vous avez créés</li>'
+    + '<li>Tous les lots précédents</li>'
+    + '<li>Les photos des recettes servies telles quelles</li>'
+    + '</ul></div></div>';
+
+  if(verrous.length){
+    h += '<div class="f-title">Lots verrouillés</div><div style="display:grid;gap:8px;margin-bottom:18px">'
+      + verrous.map(function(l){
+          return '<div class="col" style="background:var(--craie);border:1px solid var(--trait);border-radius:14px;padding:12px 14px">'
+            + '<div style="font-weight:600">' + ech(l.title) + ' <span style="font-family:var(--mono);font-size:11.5px;color:var(--encre-3)">'
+            + l.count + ' recettes · ' + ech(l.id) + '</span></div>'
+            + (l.note ? '<div style="font-size:13.5px;color:var(--encre-2);margin-top:3px">' + ech(l.note) + '</div>' : '')
+            + '</div>';
+        }).join("") + '</div>';
+  }
+
+  if(!acces.email){
+    h += '<div class="f-bloc"><div class="f-title">Votre email</div>'
+      + '<input class="champ-nom" id="pCourriel" type="email" placeholder="vous@exemple.ca" autocomplete="email"></div>'
+      + '<div class="f-actions"><button class="btn btn-principal" id="pConnexion">Continuer</button>'
+      + '<button class="btn-second" id="pFermer">Plus tard</button></div>';
+  } else if(!acces.subscribed){
+    h += '<div class="f-actions"><button class="btn btn-principal" id="pAbonner">S\u2019abonner</button>'
+      + '<button class="btn-second" id="pFermer">Plus tard</button>'
+      + '<button class="f-suppr" id="pDeconnexion">Se déconnecter</button></div>';
+  } else {
+    h += '<div class="f-actions"><button class="btn btn-second" id="pFermer">Fermer</button>'
+      + '<button class="f-suppr" id="pDeconnexion">Se déconnecter</button></div>';
+  }
+
+  if(acces.message) h += '<div class="msg msg-' + acces.message.type + '">' + ech(acces.message.texte) + '</div>';
+  h += '<div class="etat-abo">' + (acces.mode === "server"
+      ? "connecté au serveur · " + (acces.email ? ech(acces.email) : "non identifié")
+      : "mode démonstration — sans serveur, le verrouillage n\u2019est qu\u2019affiché") + '</div>';
+
+  $("paywallCadre").innerHTML = h;
+  var f = $("pFermer"); if(f) f.addEventListener("click", fermerPaywall);
+  var co = $("pConnexion"); if(co) co.addEventListener("click", function(){
+    var v = ($("pCourriel").value || "").trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
+      acces.message = { type:"err", texte:"Ce email ne semble pas valide." }; rendrePaywall(); return;
+    }
+    if(acces.mode !== "server"){
+      acces.email = v;
+      acces.message = { type:"ok", texte:"En mode démonstration, aucun email n\u2019est envoyé nulle part." };
+      rendrePaywall(); return;
+    }
+    api("/api/connexion", { methode:"POST", corps:{ email:v } }).then(function(r){
+      if(r.code !== 200){ acces.message = { type:"err", texte:r.corps.erreur || "Connexion refusée." }; rendrePaywall(); return; }
+      acces.token = r.corps.token; acces.email = r.corps.email; acces.subscribed = !!r.corps.subscribed;
+      acces.message = { type:"ok", texte:"Connecté." };
+      return tenterServeur().then(function(){ rendrePaywall(); rendreTout(); });
+    }).catch(function(){ acces.message = { type:"err", texte:"Le serveur ne répond pas." }; rendrePaywall(); });
+  });
+  var ab = $("pAbonner"); if(ab) ab.addEventListener("click", function(){
+    /* Sur iOS, un achat de content numérique DOIT passer par l'achat intégré
+     * (règle 3.1.1). On délègue au natif; aucune caisse web ne s'ouvre. */
+    if(SOUS_IOS){ versNatif("subscription"); return; }
+    if(acces.mode !== "server"){
+      acces.subscribed = true; rafraichirAcces();
+      acces.message = { type:"ok", texte:"Démonstration : subscription simulé, les lots sont déverrouillés." };
+      rendrePaywall(); rendreTout(); return;
+    }
+    acces.message = { type:"ok", texte:"Le paiement s\u2019ouvre chez Stripe. L\u2019accès se déverrouille dès que le webhook confirme." };
+    rendrePaywall();
+    api("/api/paiement", { methode:"POST", corps:{ email: acces.email } }).then(function(r){
+      if(r.code === 200 && r.corps.url) window.location.href = r.corps.url;
+    }).catch(function(){});
+  });
+  var de = $("pDeconnexion"); if(de) de.addEventListener("click", function(){
+    if(acces.mode === "server") api("/api/deconnexion", { methode:"POST" }).catch(function(){});
+    acces.token = null; acces.email = null; acces.subscribed = false;
+    if(acces.mode === "server"){ tenterServeur().then(function(){ rendrePaywall(); rendreTout(); }); }
+    else { rafraichirAcces(); rendrePaywall(); rendreTout(); }
+  });
+}
+$("btnAbo").addEventListener("click", ouvrirPaywall);
+
+/* ================= ACCUEIL GUIDÉ ================= */
+function demarrerAccueil(){
+  etat.brouillon = { id:"p"+Date.now()+Math.floor(Math.random()*99), nom:"", ageMois:9, allergenes:[] };
+  etat.etape = 0; etat.autresOuverts = false;
+  $("accueil").hidden = false; $("app").hidden = true;
+  document.body.style.overflow = "";
+  rendreAccueil();
+}
+function rendreAccueil(){
+  var b = etat.brouillon, h = "";
+  h += '<div class="jauge">' + [0,1,2].map(function(i){ return '<span class="'+(i<=etat.etape?"on":"")+'"></span>'; }).join("") + '</div>';
+
+  if(etat.etape === 0){
+    h += '<div class="marque">Bouchées<i>.</i></div>'
+      + '<p class="accroche">La question de tous les jours : « est-ce qu\u2019il peut manger ça? » On y répond — et on montre exactement ce qu\u2019on change.</p>'
+      + '<h1>Pour qui on cuisine?</h1><p class="sous">Juste un prénom. Il sert à personnaliser chaque réponse.</p>'
+      + '<input class="champ-nom" id="aNom" type="text" maxlength="20" placeholder="Prénom" value="'+ech(b.nom)+'" autocomplete="off">'
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aSuiv">Continuer</button>'
+      + (etat.profils.length
+          ? '<button class="btn-fantome" id="aAbandon">Annuler</button>'
+          : '<button class="btn-fantome" id="aPasser">Passer pour l\u2019instant</button>') + '</div>';
+  }
+  else if(etat.etape === 1){
+    var prenom = b.nom.trim() || "votre enfant";
+    h += '<h1>Quel âge a '+ech(prenom)+'?</h1><p class="sous">Ça détermine les textures et les consignes de sécurité.</p>'
+      + '<div class="stades">' + STADES.map(function(s,i){
+          var suiv = STADES[i+1] ? STADES[i+1].min : 999;
+          return '<button class="stade" aria-pressed="'+(b.ageMois>=s.min && b.ageMois<suiv)+'" data-stade="'+s.min+'">'
+            + '<span class="st-age">'+s.nom+'</span><span class="st-txt">'+ech(s.txt)+'</span></button>';
+        }).join("") + '</div>'
+      + '<div class="reglage-fin"><button id="aM" aria-label="Un mois de moins">−</button>'
+      + '<span class="val"><b>'+b.ageMois+'</b>mois exactement</span>'
+      + '<button id="aP" aria-label="Un mois de plus">+</button></div>'
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aSuiv">Continuer</button>'
+      + '<button class="btn-fantome" id="aRetour">Retour</button></div>';
+  }
+  else{
+    var prenom2 = b.nom.trim() || "votre enfant";
+    var liste = etat.autresOuverts ? DONNEES.base.allergenes.map(function(a){return a.id;}) : COURANTS;
+    h += '<h1>Qu\u2019est-ce qu\u2019on évite pour '+ech(prenom2)+'?</h1>'
+      + '<p class="sous">On retire ces ingrédients de toutes les recettes et on propose un remplacement.</p>'
+      + '<div class="grille-all">' + liste.map(function(id){
+          var a = DONNEES.base.allergenes.find(function(x){return x.id===id;});
+          return '<button class="all-btn" aria-pressed="'+(b.allergenes.indexOf(id)!==-1)+'" data-all="'+id+'">'
+            + Illustration.glyphe(id) + '<span>'+ech(a.nom)+'</span></button>';
+        }).join("") + '</div>'
+      + (etat.autresOuverts ? '' : '<button class="lien-plus" id="aAutres">+ Voir les 5 autres allergènes</button>')
+      + (b.allergenes.length ? '' : '<p class="aucune-all">Aucun pour l\u2019instant — c\u2019est correct, ça se change en tout temps.</p>')
+      + '<div class="accueil-pied"><button class="btn btn-principal" id="aFini">Voir les recettes</button>'
+      + '<button class="btn-fantome" id="aRetour">Retour</button></div>';
+  }
+  $("accueilCadre").innerHTML = h;
+  brancherAccueil();
+}
+function brancherAccueil(){
+  var b = etat.brouillon;
+  var nom = $("aNom");
+  if(nom){
+    nom.addEventListener("input", function(e){ b.nom = e.target.value; });
+    nom.addEventListener("keydown", function(e){ if(e.key==="Enter"){ etat.etape=1; rendreAccueil(); } });
+    setTimeout(function(){ try{ nom.focus(); }catch(e){} }, 80);
+  }
+  var s = $("aSuiv"); if(s) s.addEventListener("click", function(){ etat.etape++; rendreAccueil(); });
+  var r = $("aRetour"); if(r) r.addEventListener("click", function(){ etat.etape--; rendreAccueil(); });
+  var pa = $("aPasser"); if(pa) pa.addEventListener("click", function(){ b.nom="Mon enfant"; etat.etape=1; rendreAccueil(); });
+  var ab = $("aAbandon"); if(ab) ab.addEventListener("click", function(){
+    etat.brouillon = null; $("accueil").hidden = true; $("app").hidden = false; rendreTout();
+  });
+  var m = $("aM"); if(m) m.addEventListener("click", function(){ b.ageMois=Math.max(6,b.ageMois-1); rendreAccueil(); });
+  var p = $("aP"); if(p) p.addEventListener("click", function(){ b.ageMois=Math.min(72,b.ageMois+1); rendreAccueil(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-stade]"), function(el){
+    el.addEventListener("click", function(){ b.ageMois = parseInt(el.dataset.stade,10); rendreAccueil(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("#accueilCadre [data-all]"), function(el){
+    el.addEventListener("click", function(){
+      var id=el.dataset.all, i=b.allergenes.indexOf(id);
+      if(i===-1) b.allergenes.push(id); else b.allergenes.splice(i,1);
+      rendreAccueil();
+    });
+  });
+  var au = $("aAutres"); if(au) au.addEventListener("click", function(){ etat.autresOuverts=true; rendreAccueil(); });
+  var fi = $("aFini"); if(fi) fi.addEventListener("click", function(){
+    if(!b.nom.trim()) b.nom = "Mon enfant";
+    etat.profils.push(b); etat.actif = b.id; etat.brouillon = null;
+    $("accueil").hidden = true; $("app").hidden = false;
+    sauver(); rendreTout(); window.scrollTo(0,0);
+  });
+}
+
+/* ================= PROFIL ================= */
+function profilResolu(){
+  if(etat.actif === "famille" && etat.profils.length > 1){
+    var alls = {}, ageMin = 999;
+    etat.profils.forEach(function(p){
+      p.allergenes.forEach(function(a){ alls[a]=true; });
+      if(p.ageMois < ageMin) ageMin = p.ageMois;
+    });
+    return { nom:"tout le monde", prenoms:listeFr(etat.profils.map(function(p){return p.nom;})),
+             ageMois:ageMin, allergenes:Object.keys(alls).sort(), famille:true };
+  }
+  var p = etat.profils.find(function(x){ return x.id === etat.actif; }) || etat.profils[0];
+  return { nom:p.nom, prenoms:p.nom, ageMois:p.ageMois, allergenes:p.allergenes.slice().sort(), famille:false, id:p.id };
+}
+function rendreAvatars(){
+  var h = etat.profils.map(function(p){
+    return '<button class="av" aria-pressed="'+(etat.actif===p.id)+'" data-profil="'+p.id+'">'
+      + '<span class="pastille" style="background:'+teinte(p.nom)+'">'+ech(initiale(p.nom))+'</span>'
+      + ech(p.nom) + '</button>';
+  }).join("");
+  if(etat.profils.length > 1){
+    h += '<button class="av av-fam" aria-pressed="'+(etat.actif==="famille")+'" data-profil="famille">'
+      + '<span class="pastille">tous</span>Tout le monde</button>';
+  }
+  h += '<button class="av av-plus" data-nouveau="1">+ Enfant</button>';
+  $("avatars").innerHTML = h;
+}
+$("avatars").addEventListener("click", function(e){
+  if(e.target.closest("[data-nouveau]")){ demarrerAccueil(); return; }
+  var b = e.target.closest("[data-profil]"); if(!b) return;
+  var cible = b.dataset.profil;
+  if(etat.actif === cible && cible !== "famille"){ ouvrirFeuille(cible); return; }
+  etat.actif = cible; sauver(); rendreTout();
+});
+
+/* ================= FEUILLE ================= */
+function ouvrirFeuille(id){
+  var p = etat.profils.find(function(x){ return x.id===id; });
+  etat.feuille = { id:p.id, nom:p.nom, ageMois:p.ageMois, allergenes:p.allergenes.slice(), autres:false };
+  rendreFeuille();
+  $("feuille").classList.add("on"); $("voile").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function fermerFeuille(){
+  etat.feuille = null; $("feuille").classList.remove("on"); $("voile").classList.remove("on");
+  document.body.style.overflow = "";
+}
+function rendreFeuille(){
+  var f = etat.feuille; if(!f) return;
+  var liste = f.autres ? DONNEES.base.allergenes.map(function(a){return a.id;}) : COURANTS;
+  $("feuilleCadre").innerHTML =
+    '<div class="poignee"></div><h2>'+ech(f.nom)+'</h2>'
+    + '<div class="f-bloc"><div class="f-title">Prénom</div>'
+    + '<input class="champ-nom" id="fNom" type="text" maxlength="20" value="'+ech(f.nom)+'"></div>'
+    + '<div class="f-bloc"><div class="f-title">Âge</div><div class="stades">'
+    + STADES.map(function(s,i){
+        var suiv = STADES[i+1] ? STADES[i+1].min : 999;
+        return '<button class="stade" aria-pressed="'+(f.ageMois>=s.min&&f.ageMois<suiv)+'" data-fstade="'+s.min+'">'
+          + '<span class="st-age">'+s.nom+'</span><span class="st-txt">'+ech(s.txt)+'</span></button>';
+      }).join("")
+    + '</div><div class="reglage-fin"><button id="fM" aria-label="Un mois de moins">−</button>'
+    + '<span class="val"><b>'+f.ageMois+'</b>mois exactement</span>'
+    + '<button id="fP" aria-label="Un mois de plus">+</button></div></div>'
+    + '<div class="f-bloc"><div class="f-title">Allergènes évités</div><div class="grille-all">'
+    + liste.map(function(id){
+        var a = DONNEES.base.allergenes.find(function(x){return x.id===id;});
+        return '<button class="all-btn" aria-pressed="'+(f.allergenes.indexOf(id)!==-1)+'" data-fall="'+id+'">'
+          + Illustration.glyphe(id) + '<span>'+ech(a.nom)+'</span></button>';
+      }).join("") + '</div>'
+    + (f.autres ? '' : '<button class="lien-plus" id="fAutres">+ Voir les 5 autres allergènes</button>') + '</div>'
+    + '<div class="f-actions"><button class="btn btn-principal" id="fOk">Enregistrer</button>'
+    + '<button class="btn-second" id="fAnnul">Annuler</button>'
+    + (etat.profils.length > 1 ? '<button class="f-suppr" id="fSuppr">Retirer</button>' : '') + '</div>';
+
+  $("fNom").addEventListener("input", function(e){ f.nom = e.target.value; });
+  $("fM").addEventListener("click", function(){ f.ageMois=Math.max(6,f.ageMois-1); rendreFeuille(); });
+  $("fP").addEventListener("click", function(){ f.ageMois=Math.min(72,f.ageMois+1); rendreFeuille(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-fstade]"), function(el){
+    el.addEventListener("click", function(){ f.ageMois=parseInt(el.dataset.fstade,10); rendreFeuille(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-fall]"), function(el){
+    el.addEventListener("click", function(){
+      var id=el.dataset.fall, i=f.allergenes.indexOf(id);
+      if(i===-1) f.allergenes.push(id); else f.allergenes.splice(i,1);
+      rendreFeuille();
+    });
+  });
+  var au = $("fAutres"); if(au) au.addEventListener("click", function(){ f.autres=true; rendreFeuille(); });
+  $("fOk").addEventListener("click", function(){
+    if(!f.nom.trim()) f.nom = "Mon enfant";
+    var i = etat.profils.findIndex(function(x){ return x.id===f.id; });
+    etat.profils[i] = { id:f.id, nom:f.nom, ageMois:f.ageMois, allergenes:f.allergenes };
+    fermerFeuille(); sauver(); rendreTout();
+  });
+  $("fAnnul").addEventListener("click", fermerFeuille);
+  var sup = $("fSuppr"); if(sup) sup.addEventListener("click", function(){
+    etat.profils = etat.profils.filter(function(x){ return x.id!==f.id; });
+    if(!etat.profils.length){ fermerFeuille(); demarrerAccueil(); return; }
+    if(etat.actif===f.id || etat.profils.length<2) etat.actif = etat.profils[0].id;
+    fermerFeuille(); sauver(); rendreTout();
+  });
+}
+$("voile").addEventListener("click", function(){ fermerFeuille(); fermerPaywall(); });
+
+/* ================= CALCUL ================= */
+var index = {};
+function reindexer(){
+  index = {};
+  recettes.forEach(function(r){
+    index[r.id] = sansAcc([r.nom, r.categorie].concat(r.ingredients.map(function(u){
+      var d = donnees.catalogue[u.id]; return d ? d.nom : u.id;
+    })).join(" "));
+  });
+}
+reindexer();
+function calculer(prof){
+  return recettes.filter(function(r){ return !estVerrouillee(r); }).map(function(r){
+    return { r:r, res:Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees) };
+  });
+}
+function passeFiltres(p){
+  if(etat.categorie !== "Tout" && p.r.categorie !== etat.categorie) return false;
+  if(etat.rapide && !(p.r.tempsMin && p.r.tempsMin <= 30)) return false;
+  var q = etat.recherche.trim();
+  if(q && index[p.r.id].indexOf(sansAcc(q)) === -1) return false;
+  return true;
+}
+function premierEchange(res){
+  var s = res.ingredients.find(function(i){ return i.status==="substitue"; });
+  if(s) return { de:s.nom, vers:s.nomVers };
+  var o = res.ingredients.find(function(i){ return i.status==="omis"; });
+  if(o) return { de:o.nom, vers:"on l\u2019enlève" };
+  return null;
+}
+function nbConsignes(res){ return res.alertes.filter(function(a){ return a.niveau==="securite"; }).length; }
+
+/* ================= RENDU ================= */
+function rendreEntete(prof){
+  var alls = prof.allergenes.map(nomAll);
+  var p2 = prof.famille
+    ? 'On prend l\u2019âge du plus jeune (' + prof.ageMois + ' mois) et on évite tout ce que chacun évite'
+      + (alls.length ? ' : ' + listeFr(alls) + '.' : '.')
+    : prof.ageMois + ' mois' + (alls.length ? ' — sans ' + listeFr(alls) + '.' : ' — aucun allergène évité pour l\u2019instant.');
+  $("enteteJour").innerHTML = '<div class="eyebrow">Aujourd\u2019hui</div>'
+    + '<h1>On cuisine pour <em>'+ech(prof.famille ? prof.prenoms : prof.nom)+'</em></h1>'
+    + '<p>'+ech(p2)+' Touchez son nom en haut pour ajuster.</p>';
+}
+function rendreHero(paires, prof){
+  var choix = paires.find(function(p){ return p.res.status==="telle_quelle" && p.r.tempsMin && p.r.tempsMin<=30; })
+    || paires.find(function(p){ return p.res.status==="telle_quelle"; })
+    || paires.find(function(p){ return p.res.status==="adaptee"; });
+  if(!choix){ $("zoneHero").innerHTML = ""; return null; }
+  var res = choix.res, r = choix.r;
+  var pourquoi = res.status === "telle_quelle"
+    ? "Rien à changer : telle quelle, elle convient à " + prof.nom + "."
+    : res.nbSubstitutions + " échange" + (res.nbSubstitutions>1?"s":"") + " et c\u2019est prêt pour " + prof.nom + ".";
+  $("zoneHero").innerHTML = '<button class="hero" data-id="'+r.id+'">'
+    + '<div class="hero-img">' + visuel(r, res) + '</div>'
+    + '<div class="hero-txt">'
+    + '<div class="meta">Notre choix · '+ech(r.categorie)+(r.tempsMin?' · '+r.tempsMin+' min':'')+'</div>'
+    + '<h2>'+ech(r.nom)+'</h2>'
+    + '<p class="pourquoi">'+ech(pourquoi)+'</p>'
+    + '<span class="cta">Voir la recette</span></div></button>';
+  return r.id;
+}
+function carte(p){
+  var r = p.r, res = p.res, cls="", jcls, token;
+  if(res.status === "non_adaptable"){ cls="non"; jcls="j-non"; token="✕ Pas cette fois"; }
+  else if(res.status === "adaptee"){ jcls="j-adapt"; token="⇄ "+res.nbSubstitutions+" échange"+(res.nbSubstitutions>1?"s":""); }
+  else { jcls="j-ok"; token="✓ Telle quelle"; }
+  var h = '<button class="carte '+cls+'" data-id="'+r.id+'">'
+    + '<div class="carte-img">' + visuel(r, res)
+    + '<span class="token '+jcls+'">'+token+'</span>';
+  var nc = nbConsignes(res);
+  if(nc && res.status !== "non_adaptable") h += '<span class="token-age">'+nc+' consigne'+(nc>1?"s":"")+'</span>';
+  h += '</div><div class="carte-txt"><h4>'+ech(r.nom)+'</h4>'
+    + '<div class="meta">'+ech(r.categorie)+(r.tempsMin?' · '+r.tempsMin+' min':'')+'</div>';
+  if(res.status === "non_adaptable"){
+    var bl = res.alertes.find(function(a){ return a.niveau==="bloquant"; });
+    if(bl) h += '<div class="echange">'+ech(bl.message)+'</div>';
+  } else {
+    var e = premierEchange(res);
+    if(e) h += '<div class="echange"><s>'+ech(e.de)+'</s> → <b>'+ech(e.vers)+'</b>'
+      + (res.nbSubstitutions>1 ? ' <span style="color:var(--encre-3)">+'+(res.nbSubstitutions-1)+' autre'+(res.nbSubstitutions>2?"s":"")+'</span>' : '') + '</div>';
+  }
+  return h + '</div></button>';
+}
+function section(title, paires){
+  if(!paires.length) return "";
+  return '<div class="section"><div class="section-tete"><h3>'+ech(title)+'</h3>'
+    + '<span class="account">'+paires.length+'</span><span class="filet"></span></div>'
+    + '<div class="grille">' + paires.map(carte).join("") + '</div></div>';
+}
+function sectionVerrouillee(){
+  var verrous = acces.lots.filter(function(l){ return !l.unlocked; });
+  if(!verrous.length) return "";
+  return verrous.map(function(l){
+    return '<div class="section section-verrou"><div class="section-tete">'
+      + '<h3>' + ech(l.title) + '</h3><span class="account">' + l.count + ' recettes · verrouillé</span>'
+      + '<span class="filet"></span></div>'
+      + (l.note ? '<p class="lot-note">' + ech(l.note) + '</p>' : '')
+      + '<div class="grille">' + carteVerrou(l) + '</div></div>';
+  }).join("");
+}
+function carteVerrou(l){
+  var n = Math.min(l.count, 4);
+  var out = "";
+  for(var i=0;i<n;i++){
+    out += '<button class="carte carte-verrou" data-paywall="1">'
+      + '<div class="carte-img"><span class="cadenas">'
+      + '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">'
+      + '<rect x="4.5" y="10.5" width="15" height="9.5" rx="2.5"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>'
+      + '</span></div><div class="carte-txt"><h4>Recette du lot « ' + ech(l.title) + ' »</h4>'
+      + '<div class="meta">' + ech(l.id) + '</div>'
+      + '<div class="echange">Touchez pour voir ce que l\u2019abonnement ajoute.</div></div></button>';
+  }
+  return out;
+}
+function rendreSections(paires, heroId){
+  var verrou = sectionVerrouillee();
+  if(!paires.length){
+    $("sections").innerHTML = '<div class="section"><div class="grille"><div class="vide">'
+      + '<div class="t">Rien ne correspond</div><div class="s">Essayez un autre mot, ou enlevez un filtre.</div></div></div></div>'
+      + verrou;
+    return;
+  }
+  var v = paires.filter(function(p){ return p.r.id !== heroId; });
+  var recent = lotLePlusRecentDeverrouille();
+  var nouveautes = recent ? v.filter(function(p){
+    return (p.r.lot || PUBLICATION.attribution[p.r.id]) === recent.id && p.res.status !== "non_adaptable";
+  }) : [];
+  var idsNouv = {}; nouveautes.forEach(function(p){ idsNouv[p.r.id] = 1; });
+  var reste = v.filter(function(p){ return !idsNouv[p.r.id]; });
+
+  $("sections").innerHTML =
+      (nouveautes.length ? section("Nouveautés — " + recent.title, nouveautes) : "")
+    + section("Prêtes telles quelles", reste.filter(function(p){ return p.res.status==="telle_quelle"; }))
+    + section("Avec quelques échanges", reste.filter(function(p){ return p.res.status==="adaptee"; }))
+    + section("Pas cette fois", reste.filter(function(p){ return p.res.status==="non_adaptable"; }))
+    + verrou;
+}
+function rendrePilules(){
+  var h = CATEGORIES.map(function(c){
+    return '<button class="pilule" aria-pressed="'+(etat.categorie===c)+'" data-cat="'+c+'">'+c+'</button>';
+  }).join("");
+  $("pilules").innerHTML = h + '<button class="pilule" aria-pressed="'+etat.rapide+'" data-rapide="1">30 min et moins</button>';
+}
+$("pilules").addEventListener("click", function(e){
+  var p = e.target.closest(".pilule"); if(!p) return;
+  if(p.dataset.rapide) etat.rapide = !etat.rapide; else etat.categorie = p.dataset.cat;
+  rendreListe();
+});
+$("recherche").addEventListener("input", function(e){ etat.recherche = e.target.value; rendreListe(); });
+
+function rendreListe(){
+  var prof = profilResolu();
+  rendreEntete(prof);
+  rendrePilules();
+  var paires = calculer(prof).filter(passeFiltres);
+  var vierge = !etat.recherche.trim() && etat.categorie==="Tout" && !etat.rapide;
+  var heroId = null;
+  if(vierge) heroId = rendreHero(paires, prof);
+  else $("zoneHero").innerHTML = "";
+  rendreSections(paires, heroId);
+}
+function rendreBandeau(){
+  var b = $("btnAbo");
+  b.textContent = acces.subscribed ? "Abonné" : "Abonnement";
+  b.classList.toggle("actif", !!acces.subscribed);
+  if(SOUS_IOS){ $("bandeau").innerHTML = ""; return; }
+  $("bandeau").innerHTML = acces.mode === "server" ? "" :
+    '<div class="bandeau-demo"><b>Mode démonstration.</b> Sans serveur, les lots verrouillés sont '
+    + 'quand même dans cette page — l\u2019interface les cache, c\u2019est tout. Le vrai verrou est côté '
+    + 'serveur : il n\u2019envoie jamais un lot non autorisé.</div>';
+}
+function rendreTout(){ rendreAvatars(); rendreBandeau(); rendreListe(); }
+
+document.addEventListener("click", function(e){
+  if(e.target.closest("[data-paywall]")){ ouvrirPaywall(); return; }
+  var c = e.target.closest("[data-id]"); if(!c) return;
+  ouvrirFiche(c.dataset.id);
+});
+
+/* ================= FICHE ================= */
+function ligne(i){
+  var h = '<div class="ligne"><div class="l-haut"><div class="l-nom">';
+  if(i.status==="substitue") h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">'+ech(i.nomVers)+'</span>';
+  else if(i.status==="omis") h += '<s>'+ech(i.nom)+'</s> <span class="l-fleche">→</span> <span class="l-vers">on l\u2019enlève</span>';
+  else if(i.status==="impossible") h += '<s>'+ech(i.nom)+'</s>';
+  else h += ech(i.nom);
+  h += '</div><div class="l-qte">'+fqte(i.qte)+' '+ech(funite(i.unite,i.qte))+'</div></div>';
+  var tags = [];
+  if(i.motif) tags.push('<span class="tag t-motif">'+ech(i.motif)+'</span>');
+  if((i.status==="substitue"||i.status==="omis") && i.ratio) tags.push('<span class="tag t-ratio">'+ech(i.ratio)+'</span>');
+  if(i.preparation) tags.push('<span class="tag t-prep">'+ech(i.preparation)+'</span>');
+  if(i.status==="impossible") tags.push('<span class="tag t-non">aucun remplacement sûr</span>');
+  if(tags.length) h += '<div class="l-tags">'+tags.join("")+'</div>';
+  var n = i.noteSubstitut || i.noteIngredient;
+  if(n) h += '<div class="l-note">'+ech(n)+'</div>';
+  return h + '</div>';
+}
+function ouvrirFiche(id){
+  var r = recettes.find(function(x){ return x.id===id; });
+  if(!r) return;
+  var prof = profilResolu();
+  var res = Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees);
+  etat.ficheOuverte = id;
+
+  var vcls, vic, vtt, vss;
+  if(res.status === "non_adaptable"){
+    vcls="v-non"; vic="✕"; vtt="Pas cette fois pour "+prof.nom;
+    var bl = res.alertes.find(function(a){ return a.niveau==="bloquant"; });
+    vss = bl ? bl.message : "Un ingrédient n\u2019a pas de remplacement sûr.";
+  } else if(res.status === "adaptee"){
+    vcls="v-adapt"; vic="⇄"; vtt="Oui — avec "+res.nbSubstitutions+" échange"+(res.nbSubstitutions>1?"s":"");
+    vss = "Ce qu\u2019on remplace, par quoi et pourquoi : tout est détaillé plus bas.";
+  } else {
+    vcls="v-ok"; vic="✓"; vtt="Oui, telle quelle";
+    vss = "Aucun ingrédient à changer pour "+prof.nom+".";
+  }
+
+  var alls = prof.allergenes.map(nomAll);
+  var h = '<div class="fiche-heros">' + visuel(r, res)
+    + '<button class="fiche-retour" id="bRetour">← Recettes</button></div>'
+    + '<div class="fiche-cadre"><h2>'+ech(r.nom)+'</h2>'
+    + '<div class="meta">'+ech(r.categorie)+(r.portions?' · '+ech(r.portions):'')+(r.tempsMin?' · '+r.tempsMin+' min':'')
+    + ' · '+ech(prof.nom)+', '+prof.ageMois+' mois'+(alls.length?', sans '+ech(listeFr(alls)):'')+'</div>'
+    + '<div class="verdict '+vcls+'"><span class="ic">'+vic+'</span><div><div class="tt">'+ech(vtt)+'</div>'
+    + '<div class="ss">'+ech(vss)+'</div></div></div>'
+    + '<div class="bloc bloc-texture"><div class="stade-nom">Texture — '+ech(res.texture.nom)+'</div>'
+    + '<p>'+ech(res.texture.texture)+'</p>'
+    + (res.texture.note ? '<p class="n2">'+ech(res.texture.note)+'</p>' : '') + '</div>';
+
+  var autres = res.alertes.filter(function(a){ return a.niveau!=="bloquant"; });
+  if(autres.length) h += autres.map(function(a){
+    return '<div class="alerte a-'+a.niveau+'"><span>'+ech(a.message)+'</span></div>';
+  }).join("");
+
+  var change = res.ingredients.some(function(i){ return i.status!=="conserve"; });
+  h += '<div class="bloc"><div class="etiquette">'+(change?"Ingrédients — ce qu\u2019on change et pourquoi":"Ingrédients")+'</div>'
+    + res.ingredients.map(ligne).join("") + '</div>'
+    + '<div class="bloc"><div class="etiquette">Préparation</div><div class="etapes">'
+    + res.etapes.map(function(e){ return '<p>'+ech(e)+'</p>'; }).join("") + '</div></div>';
+  if(r.provenance){
+    h += '<div class="bloc"><div class="etiquette">Source</div><div class="provenance">'
+      + ech(r.provenance.source) + (r.provenance.url ? '<br>'+ech(r.provenance.url) : '')
+      + '<br>Licence : ' + ech(r.provenance.licence) + '</div></div>';
+  }
+  h += '</div>';
+
+  $("ficheContenu").innerHTML = h;
+  $("fiche").classList.add("on"); $("fiche").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("bRetour").addEventListener("click", fermerFiche);
+  $("bRetour").focus();
+}
+function fermerFiche(){
+  etat.ficheOuverte = null; $("fiche").classList.remove("on");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if(etat.ficheOuverte) fermerFiche();
+  else if($("paywall").classList.contains("on")) fermerPaywall();
+  else if(etat.feuille) fermerFeuille();
+});
+
+/* ================= PONT NATIF (iOS) =================
+ * Fonctions appelées depuis Swift. Elles réutilisent le moteur déjà testé —
+ * aucune logique de sécurité n'est dupliquée côté natif. Deux moteurs, ce
+ * serait deux vérités : inacceptable sur des allergies. */
+var SOUS_IOS = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.bouchees);
+
+function versNatif(action, charge){
+  if(!SOUS_IOS) return;
+  try{ window.webkit.messageHandlers.bouchees.postMessage(Object.assign({action:action}, charge||{})); }catch(e){}
+}
+
+/* Confronte une liste d'ingrédients d'étiquette au catalogue. Ce qui n'est pas
+ * reconnu est SIGNALÉ, jamais ignoré : sur une étiquette, le mot inconnu peut
+ * être précisément l'allergène. */
+window.evaluerProduitScanne = function(entree){
+  var evites = (entree && entree.evites) || [];
+  var texte = String((entree && entree.texte) || "");
+  var morceaux = texte.split(/[,;()\[\]\u2022\u00b7\n]+/)
+    .map(function(t){ return t.replace(/\d+([.,]\d+)?\s*%/g, " ")
+                              .replace(/^\s*(et|ou|dont|contient)\s+/i, "").trim(); })
+    .filter(function(t){ return t.length > 1; });
+
+  /* Les étiquettes écrivent « Flocons d'avoine », « Flocons d avoine »,
+   * « FLOCONS D\u2019AVOINE ». On aplatit tout de la même façon des deux côtés. */
+  function aplatir(t){ return sansAcc(t).replace(/['\u2019\u2013-]/g, " ").replace(/\s+/g, " ").trim(); }
+  /* On indexe les DEUX noms. Une étiquette québécoise dit « farine de blé »,
+   * pas « wheat flour » : sans le nom français, le scanner cesserait de
+   * reconnaître les produits d'ici. */
+  var indexNoms = {};
+  Object.keys(donnees.catalogue).forEach(function(id){
+    var d = donnees.catalogue[id];
+    if(d.name) indexNoms[aplatir(d.name)] = id;
+    if(d.nameFr) indexNoms[aplatir(d.nameFr)] = id;
+  });
+  var cles = Object.keys(indexNoms);
+
+  var trouves = {}, inconnus = [];
+  morceaux.forEach(function(m){
+    var n = aplatir(m);
+    var id = indexNoms[n];
+    if(!id){
+      var cle = cles.find(function(c){
+        return c.length > 3 && (n.indexOf(c) !== -1 || (n.length > 3 && c.indexOf(n) !== -1));
+      });
+      id = cle ? indexNoms[cle] : null;
+    }
+    if(!id){ if(n.length > 2) inconnus.push(m.trim()); return; }
+    donnees.catalogue[id].allergens.forEach(function(a){
+      if(evites.indexOf(a) !== -1) trouves[a] = true;
+    });
+  });
+
+  var listeTrouves = Object.keys(trouves).map(nomAll);
+  var status, message;
+  if(listeTrouves.length){
+    status = "avoid";
+    message = "\u00c0 éviter — l\u2019étiquette contient : " + listeFr(listeTrouves) + ".";
+  } else if(inconnus.length){
+    status = "uncertain";
+    message = "Rien d\u2019interdit reconnu, mais des ingrédients n\u2019ont pas été identifiés. Lisez l\u2019étiquette.";
+  } else {
+    status = "safe";
+    message = "Aucun allergène évité détecté dans la liste d\u2019ingrédients.";
+  }
+  return { status: status, allergensFound: listeTrouves,
+           unknownIngredients: inconnus.slice(0, 6), message: message };
+};
+
+/* Le natif est propriétaire des profils : il les pousse ici. */
+window.appliquerProfilNatif = function(p){
+  if(!p) return;
+  etat.profils = [{ id:"natif", nom:p.nom || "Mon enfant", ageMois:p.ageMois || 9,
+                    allergenes:p.allergenes || [] }];
+  etat.actif = "natif";
+  $("accueil").hidden = true; $("app").hidden = false;
+  rendreTout();
+};
+
+/* L'subscription est décidé par StoreKit puis par le serveur — jamais ici. */
+window.majAbonnementNatif = function(actif){
+  acces.subscribed = !!actif;
+  if(acces.mode !== "server") rafraichirAcces();
+  rendreTout();
+};
+
+Promise.all([charger(), tenterServeur()]).then(function(){
+  if(acces.mode !== "server") rafraichirAcces();
+  if(!etat.profils.length) demarrerAccueil();
+  else { $("app").hidden = false; rendreTout(); }
+});
+})();
+</script>
+</body>
+</html>
