@@ -3,7 +3,6 @@ serveur/notes.json
 
 # Les photos générées : produites par le cycle, servies par le serveur.
 # Retire cette ligne si tu veux les versionner avec le code.
-images/
 node_modules/
 .DS_Store
 
