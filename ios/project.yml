@@ -58,24 +58,13 @@ targets:
         - en
         - fr
         BoucheesServeur: https://bouchees.onrender.com
-        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
-        CFBundleName: $(PRODUCT_NAME)
-        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIdentifier: ca.bouchees.app
+        CFBundleName: Bouchees
+        CFBundleExecutable: Bouchees
         CFBundlePackageType: APPL
         CFBundleInfoDictionaryVersion: '6.0'
         UIRequiredDeviceCapabilities:
         - arm64
-        CFBundleIcons:
-          CFBundlePrimaryIcon:
-            CFBundleIconName: AppIcon
-            CFBundleIconFiles:
-            - AppIcon60x60
-        CFBundleIcons~ipad:
-          CFBundlePrimaryIcon:
-            CFBundleIconName: AppIcon
-            CFBundleIconFiles:
-            - AppIcon60x60
-            - AppIcon76x76
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ca.bouchees.app
