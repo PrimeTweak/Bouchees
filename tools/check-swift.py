@@ -14,8 +14,8 @@ import os
 import re
 import sys
 
-RACINE = os.path.join(os.path.dirname(__file__), "..", "ios", "App", "App")
-RACINE = os.path.abspath(RACINE)
+ROOT = os.path.join(os.path.dirname(__file__), "..", "ios", "App", "App")
+ROOT = os.path.abspath(ROOT)
 
 # Symbols provided by the frameworks — never reported as missing.
 CONNUS = set("""
@@ -43,7 +43,7 @@ Calendar Locale Notification NotificationCenter Timer DispatchQueue Bundle
 
 def swift_files():
     out = []
-    for base, _, noms in os.walk(RACINE):
+    for base, _, noms in os.walk(ROOT):
         for n in sorted(noms):
             if n.endswith(".swift"):
                 out.append(os.path.join(base, n))
@@ -60,14 +60,23 @@ def strip_strings_and_comments(src):
 def check():
     problems = []
     warnings = []
-    fichiers = swift_files()
-    if not fichiers:
-        return ["no Swift file found under " + RACINE], []
+    files = swift_files()
+    if not files:
+        return ["no Swift file found under " + ROOT], []
 
-    definitions = {}   # name -> [fichiers]
+    # A dropped folder is the classic Finder accident: dragging one folder onto
+    # another replaces it whole instead of merging. The project has a known
+    # floor of source files — fewer than that means something was wiped, and
+    # the build would fail thirty minutes later with a confusing error.
+    MINIMUM_SOURCES = 12
+    if len(files) < MINIMUM_SOURCES:
+        return ([f"only {len(files)} Swift file(s) found, expected at least "
+                 f"{MINIMUM_SOURCES} — a folder was probably replaced instead of merged"], [])
+
+    definitions = {}   # name -> [files]
     sources = {}
 
-    for path_ in fichiers:
+    for path_ in files:
         raw = open(path_, encoding="utf-8").read()
         code = strip_strings_and_comments(raw)
         sources[path_] = (raw, code)
@@ -108,7 +117,7 @@ def check():
                 warnings.append(f"{filename}: “{c}” used but not defined in the project")
 
     # 5. couleurs d'assets
-    assets = os.path.join(RACINE, "Assets.xcassets")
+    assets = os.path.join(ROOT, "Assets.xcassets")
     existing = set()
     if os.path.isdir(assets):
         existing = {d[:-len(".colorset")] for d in os.listdir(assets) if d.endswith(".colorset")}
@@ -118,7 +127,7 @@ def check():
                 problems.append(f"{os.path.basename(path_)} : asset couleur « {m.group(1)} » absent")
 
     # 6. identifiants StoreKit cohérents
-    sk = os.path.join(RACINE, "Bouchees.storekit")
+    sk = os.path.join(ROOT, "Bouchees.storekit")
     if os.path.exists(sk):
         d = json.load(open(sk, encoding="utf-8"))
         groupes = d.get("subscriptionGroups", [])
