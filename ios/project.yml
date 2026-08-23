@@ -57,6 +57,7 @@ targets:
         CFBundleLocalizations:
         - fr
         - en
+        BoucheesServeur: https://bouchees.onrender.com
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ca.bouchees.app

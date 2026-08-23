@@ -19,6 +19,8 @@ const path = require("path");
 const crypto = require("crypto");
 const { verifierSignature, evenementPertinent, creerSession } = require("./stripe.js");
 const Apple = require("./apple.js");
+const { CONDITIONS, CONFIDENTIALITE } = require("./pages-legales.js");
+const Notes = require("./notes.js");
 
 const racine = path.join(__dirname, "..");
 const dist = path.join(racine, "dist");
@@ -103,11 +105,32 @@ const routes = {
     json(rep, 200, {
       version: m.version,
       abonne: abonnementActif(ctx.compte),
+      semaineCourante: m.semaineCourante || null,
+      taillesFenetre: m.taillesFenetre || null,
       lots: m.lots.map(function (l) {
         return { id: l.id, titre: l.titre, date: l.date, acces: l.acces, note: l.note,
-                 nombre: l.nombre, deverrouille: permis.indexOf(l.id) !== -1 };
+                 nombre: l.nombre, hebdomadaire: !!l.hebdomadaire,
+                 dansFenetre: !!l.dansFenetre,
+                 /* « déverrouillé » = le compte y a droit ET c'est dans la
+                  * fenêtre. Un lot d'il y a deux mois reste verrouillé même
+                  * pour un abonné : il revient par les Meilleures. */
+                 deverrouille: permis.indexOf(l.id) !== -1 && (l.acces === "libre" || !!l.dansFenetre) };
       })
     });
+  },
+
+  /* Pages légales. Apple exige des URL publiques et fonctionnelles :
+   * un lien mort fait rejeter la soumission. */
+  "GET /conditions": function (req, rep) {
+    rep.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
+                         "Cache-Control": "public, max-age=3600" });
+    rep.end(CONDITIONS);
+  },
+
+  "GET /confidentialite": function (req, rep) {
+    rep.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
+                         "Cache-Control": "public, max-age=3600" });
+    rep.end(CONFIDENTIALITE);
   },
 
   /* Les tables de sécurité : gratuites, toujours, sans compte. */
@@ -117,12 +140,18 @@ const routes = {
     rep.end(s);
   },
 
-  /* Le contenu, filtré par droits. Un lot non autorisé ne traverse pas. */
+  /* Le contenu, filtré par droits ET par la fenêtre glissante.
+   *
+   * Un abonné reçoit les lots libres plus les trois dernières semaines. Les
+   * semaines plus anciennes ne descendent pas : elles reviennent par l'onglet
+   * Meilleures ou par les favoris que l'appareil a gardés. */
   "GET /api/recettes": function (req, rep, ctx) {
     const m = chargerManifeste();
     const permis = lotsAutorises(m, ctx.compte);
     const demande = ctx.url.searchParams.get("lot");
-    const cibles = demande ? [demande] : permis;
+    const dansFenetre = new Set(m.lots.filter(function (l) { return l.dansFenetre; })
+                                      .map(function (l) { return l.id; }));
+    const cibles = demande ? [demande] : permis.filter(function (id) { return dansFenetre.has(id); });
     const refuses = cibles.filter(function (id) { return permis.indexOf(id) === -1; });
     if (refuses.length) return json(rep, 402, { erreur: "abonnement requis", lots: refuses });
     let out = [];
@@ -130,6 +159,64 @@ const routes = {
       try { out = out.concat(chargerLot(id)); } catch (e) {}
     });
     json(rep, 200, { abonne: abonnementActif(ctx.compte), lots: cibles, recettes: out });
+  },
+
+  /* Une note, de 1 à 5. Une seule par compte et par recette : la nouvelle
+   * remplace l'ancienne, parce qu'un parent qui refait la recette peut
+   * changer d'avis. Un compte est requis — sinon rien n'empêche une même
+   * personne de voter cent fois. */
+  "POST /api/note": async function (req, rep, ctx) {
+    if (!ctx.compte) return json(rep, 401, { erreur: "connexion requise pour noter" });
+    let corps;
+    try { corps = JSON.parse((await corpsBrut(req)).toString("utf8")); }
+    catch (e) { return json(rep, 400, { erreur: "JSON invalide" }); }
+
+    const r = corps.note === null
+      ? Notes.retirerNote(corps.recette, ctx.compte.courriel)
+      : Notes.noter(corps.recette, ctx.compte.courriel, corps.note);
+    if (!r.ok) return json(rep, 400, { erreur: r.raison });
+    json(rep, 200, { ok: true, agregat: r.agregat });
+  },
+
+  /* Les agrégats d'une liste de recettes, avec la note du compte s'il en a
+   * une. On n'expose jamais les notes des autres, seulement le total. */
+  "GET /api/notes": function (req, rep, ctx) {
+    const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
+    if (!ids.length) return json(rep, 200, {});
+    json(rep, 200, Notes.agregats(ids, ctx.compte ? ctx.compte.courriel : null));
+  },
+
+  /* L'onglet Meilleures. C'est la façon dont une recette sortie de la fenêtre
+   * revient : par mérite, et pour de bon. Le contenu complet est renvoyé, même
+   * hors fenêtre — sinon le classement montrerait des titres inaccessibles. */
+  "GET /api/meilleures": function (req, rep, ctx) {
+    const limite = Math.min(Number(ctx.url.searchParams.get("limite")) || 10, 50);
+    const classees = Notes.classement(limite);
+    if (!classees.length) {
+      return json(rep, 200, { seuil: Notes.VOTES_MINIMUM, recettes: [],
+        progression: Notes.progression() });
+    }
+    const m = chargerManifeste();
+    const permis = new Set(lotsAutorises(m, ctx.compte));
+    const parId = {};
+    m.lots.forEach(function (l) {
+      if (!permis.has(l.id)) return;
+      try {
+        chargerLot(l.id).forEach(function (r) { parId[r.id] = r; });
+      } catch (e) {}
+    });
+
+    const out = [];
+    classees.forEach(function (c) {
+      const r = parId[c.recetteId];
+      if (!r) return;   /* lot non autorisé : on ne laisse rien filtrer */
+      const copie = JSON.parse(JSON.stringify(r));
+      copie.votes = c.votes;
+      copie.moyenne = c.moyenne;
+      if (ctx.compte) copie.maNote = Notes.noteDe(c.recetteId, ctx.compte.courriel);
+      out.push(copie);
+    });
+    json(rep, 200, { seuil: Notes.VOTES_MINIMUM, recettes: out, progression: Notes.progression() });
   },
 
   "GET /api/moi": function (req, rep, ctx) {
@@ -303,13 +390,36 @@ const routes = {
   }
 };
 
+/* Les photos vivent sur le serveur, pas dans l'app : les semaines tournent,
+ * et embarquer les images ferait grossir l'IPA sans fin. Le client les met en
+ * cache sur l'appareil et fait le ménage quand un lot sort de la fenêtre. */
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                 ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8",
                 ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
+const IMAGES_PERMISES = [".png", ".webp", ".jpg", ".jpeg"];
+
 function servirStatique(req, rep, url) {
   let rel = decodeURIComponent(url.pathname);
   if (rel === "/" || rel === "") rel = "/index.html";
+
+  /* Photos des recettes. Le nom de fichier contient l'empreinte des
+   * ingrédients : une image ne change jamais sous le même nom, donc cache
+   * immuable. Extensions en liste blanche — rien d'autre qu'une image ne
+   * sort de ce dossier. */
+  if (rel.indexOf("/images/") === 0) {
+    const ext = path.extname(rel).toLowerCase();
+    if (IMAGES_PERMISES.indexOf(ext) === -1) { rep.writeHead(404); return rep.end(); }
+    const cible = path.normalize(path.join(racine, rel));
+    if (cible.indexOf(path.join(racine, "images")) !== 0) { rep.writeHead(403); return rep.end(); }
+    return fs.readFile(cible, function (err, data) {
+      if (err) { rep.writeHead(404); return rep.end(); }
+      rep.writeHead(200, { "Content-Type": TYPES[ext] || "application/octet-stream",
+                           "Cache-Control": "public, max-age=31536000, immutable" });
+      rep.end(data);
+    });
+  }
+
   const base = rel === "/index.html" ? path.join(racine, "app") : racine;
   const cible = path.normalize(path.join(base, rel));
   if (!cible.startsWith(racine)) { rep.writeHead(403); return rep.end("interdit"); }

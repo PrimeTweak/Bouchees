@@ -203,3 +203,20 @@
 "Morceaux tendres, la plupart des plats familiaux" = "Tender pieces; most family dishes work";
 "Coupe normale prudente" = "Normal cutting, with care";
 "Texture libre" = "Any texture";
+
+/* ---------- Notes, favoris, classement ---------- */
+"Meilleures" = "Best";
+"Les mieux notées" = "Top rated";
+"Mes favoris" = "My saved";
+"Votre note" = "Your rating";
+"Le classement se construit" = "The ranking is building up";
+"Aucun favori" = "Nothing saved yet";
+"Enregistrez une recette et elle restera ici pour toujours — même après que sa semaine soit passée." = "Save a recipe and it stays here for good — even after its week has passed.";
+"Vos recettes enregistrées restent sur cet appareil, hors du roulement des semaines." = "Your saved recipes stay on this device, outside the weekly rotation.";
+"Retirer des favoris" = "Remove from saved";
+"Enregistrer dans les favoris" = "Save this recipe";
+"Une recette enregistrée reste accessible même après sa semaine." = "A saved recipe stays available even after its week.";
+"Connectez-vous dans les réglages pour noter — sans compte, une même personne pourrait voter cent fois." = "Sign in from Settings to rate — without an account, one person could vote a hundred times.";
+"Connectez-vous dans les réglages pour noter une recette." = "Sign in from Settings to rate a recipe.";
+"La note n’a pas pu être enregistrée. Réessayez plus tard." = "The rating couldn’t be saved. Try again later.";
+"Pas encore noté" = "Not rated yet";

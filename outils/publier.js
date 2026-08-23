@@ -17,6 +17,7 @@ const crypto = require("crypto");
 const racine = path.join(__dirname, "..");
 const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 const somme = (o) => crypto.createHash("sha1").update(JSON.stringify(o)).digest("hex").slice(0, 12);
+const Semaines = require("./semaines.js");
 
 function publier(options) {
   options = options || {};
@@ -42,7 +43,13 @@ function publier(options) {
     const copie = JSON.parse(JSON.stringify(r));
     copie.lot = lot;
     const img = manifesteImages[r.id];
-    if (img && img.revisePar) copie.image = img.fichier;
+    /* Une photo n'est publiée que si elle est révisée ET présente sur le
+     * disque. Sinon l'app demanderait un fichier qui n'existe pas et
+     * retomberait silencieusement sur l'illustration. */
+    if (img && img.revisePar && img.fichier &&
+        fs.existsSync(path.join(racine, img.fichier))) {
+      copie.image = img.fichier;
+    }
     parLot[lot].push(copie);
   });
 
@@ -53,11 +60,19 @@ function publier(options) {
     base: lire("donnees/base.json")
   };
 
+  /* La fenêtre glissante : un abonné voit la semaine courante et les deux
+   * précédentes. Les lots libres ne tournent jamais — c'est le socle qu'un
+   * parent doit garder sans payer. */
+  const f = Semaines.fenetreCourante(pub.lots, Date.now());
+  const visibles = new Set(f.libres.concat(f.fenetre));
+
   const lots = pub.lots.map(function (l) {
     const recettes = parLot[l.id];
     return {
       id: l.id, titre: l.titre, date: l.date, acces: l.acces, note: l.note,
-      nombre: recettes.length, somme: somme(recettes)
+      nombre: recettes.length, somme: somme(recettes),
+      hebdomadaire: !!l.hebdomadaire,
+      dansFenetre: visibles.has(l.id)
     };
   });
 
@@ -68,10 +83,14 @@ function publier(options) {
       lots: lots,
       /* Le client sait quels lots existent et lesquels sont verrouillés,
        * sans jamais recevoir leur contenu. */
-      libres: lots.filter(function (l) { return l.acces === "libre"; }).map(function (l) { return l.id; })
+      libres: lots.filter(function (l) { return l.acces === "libre"; }).map(function (l) { return l.id; }),
+      fenetre: f.fenetre,
+      semaineCourante: Semaines.identifiantSemaine(new Date()),
+      taillesFenetre: Semaines.FENETRE
     },
     securite: securite,
     contenu: parLot,
+    visibles: Array.from(visibles),
     orphelines: orphelines
   };
 }

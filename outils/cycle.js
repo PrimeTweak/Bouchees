@@ -39,10 +39,12 @@ const args = process.argv.slice(2);
 const a = (n) => args.indexOf(n) !== -1;
 const val = (n, d) => { const x = args.find((v) => v.startsWith(n + "=")); return x ? x.split("=")[1] : d; };
 
-function moisProchain() {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().slice(0, 7);
+const Semaines = require("./semaines.js");
+
+/* Les lots sont hebdomadaires depuis la fenêtre glissante : le cycle publie
+ * dans la semaine courante, pas dans un mois. */
+function semaineCourante() {
+  return Semaines.identifiantSemaine(new Date());
 }
 
 function titre(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
@@ -116,7 +118,7 @@ async function cycleRecettes(donnees, options) {
 
   titre("5 · Publication dans un lot");
   if (!gardees.length) { console.log("  rien à publier"); return journal; }
-  const lot = options.lot || moisProchain();
+  const lot = options.lot || semaineCourante();
   if (options.sec) { console.log("  [à sec] " + gardees.length + " recette(s) iraient dans " + lot); return journal; }
 
   let generees = [];
@@ -134,8 +136,9 @@ async function cycleRecettes(donnees, options) {
 
   const pub = lire("donnees/publication.json");
   if (!pub.lots.some((l) => l.id === lot)) {
-    pub.lots.push({ id: lot, titre: "Lot " + lot, date: lot + "-01", acces: "abonne",
-                    note: "Recettes visant les profils les moins servis." });
+    pub.lots.push({ id: lot, titre: "Semaine du " + lot, acces: "abonne",
+                    hebdomadaire: true,
+                    note: "Sept recettes visant les profils les moins servis." });
   }
   gardees.forEach(function (g) { pub.attribution[g.id] = lot; });
   ecrire("donnees/publication.json", pub);
@@ -163,7 +166,10 @@ async function cycleImages(donnees, options) {
   console.log("  vérification : " + mVision.nom + (mVision.nom === "absent" ? "  (aucune vision — tout sera rejeté)" : ""));
 
   const limite = Number(val("--max", plan.length));
-  const dossier = path.join(racine, "app", "images");
+  /* Les images vivent à la racine, dans images/. C'est exactement ce que
+   * l'URL /images/… du client résout côté serveur — les écrire ailleurs
+   * donnait un 404 silencieux et un repli permanent sur l'illustration. */
+  const dossier = path.join(racine, "images");
   if (!options.sec) fs.mkdirSync(dossier, { recursive: true });
 
   titre("7 · Génération et vérification");
@@ -184,7 +190,7 @@ async function cycleImages(donnees, options) {
     if (options.sec) { console.log("  ✓ [à sec] " + p.nom); journal.acceptees++; continue; }
 
     const fichier = p.fichier.replace(/\.webp$/, ".png");
-    fs.writeFileSync(path.join(racine, "app", fichier), img.octets);
+    fs.writeFileSync(path.join(racine, fichier), img.octets);
     manifeste[p.id] = {
       fichier: fichier, empreinte: p.empreinte, largeur: img.largeur, hauteur: img.hauteur,
       moteur: img.moteur,
@@ -250,4 +256,4 @@ if (require.main === module) {
   principal().catch(function (e) { console.error("Cycle interrompu : " + e.message); process.exit(1); });
 }
 
-module.exports = { cycleRecettes: cycleRecettes, cycleImages: cycleImages, moisProchain: moisProchain };
+module.exports = { cycleRecettes: cycleRecettes, cycleImages: cycleImages, semaineCourante: semaineCourante };

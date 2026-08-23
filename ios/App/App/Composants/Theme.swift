@@ -134,7 +134,7 @@ struct CarteRecette: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PlatVue(resultat: resultat, categorie: recette.categorie)
+            VisuelRecette(recette: recette, resultat: resultat)
                 .aspectRatio(4/3, contentMode: .fill)
                 .frame(maxWidth: .infinity)
                 .clipped()
@@ -156,9 +156,14 @@ struct CarteRecette: View {
                     .multilineTextAlignment(.leading)
                     .foregroundStyle(.primary)
 
-                Text(recette.sousTitre)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 7) {
+                    Text(recette.sousTitre)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    if let v = recette.votes, v > 0 {
+                        BadgeNote(votes: v, moyenne: recette.moyenne, compact: true)
+                    }
+                }
 
                 if let bloquante = resultat.alerteBloquante {
                     Text(bloquante.message)

@@ -18,7 +18,7 @@ struct FicheVue: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                PlatVue(resultat: resultat, categorie: recette.categorie)
+                VisuelRecette(recette: recette, resultat: resultat)
                     .aspectRatio(16/10, contentMode: .fill)
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: 280)
@@ -30,6 +30,7 @@ struct FicheVue: View {
                     blocTexture
                     alertes
                     blocIngredients
+                    BlocNotation(recette: recette)
                     blocPreparation
                     blocProvenance
                     Text(Reglages.avertissementMedical)
@@ -44,6 +45,11 @@ struct FicheVue: View {
         .background(Teinte.fond.ignoresSafeArea())
         .navigationTitle(recette.nom)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                BoutonFavori(recette: recette)
+            }
+        }
     }
 
     // MARK: - Sections

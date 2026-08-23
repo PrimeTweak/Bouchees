@@ -236,7 +236,7 @@ struct CarteHero: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            PlatVue(resultat: resultat, categorie: recette.categorie)
+            VisuelRecette(recette: recette, resultat: resultat)
                 .aspectRatio(16/10, contentMode: .fill)
                 .frame(maxWidth: .infinity)
                 .clipped()

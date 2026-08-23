@@ -148,6 +148,15 @@ struct Recette: Codable, Hashable, Identifiable, Sendable {
     let lot: String?
     let provenance: Provenance?
 
+    /// Nom de fichier d'une photo révisée, posé par la publication. Absent
+    /// tant qu'aucune photo n'a passé la vérification par vision.
+    let image: String?
+
+    /// Agrégat de notes, présent seulement dans la réponse des Meilleures.
+    let votes: Int?
+    let moyenne: Double?
+    let maNote: Int?
+
     var sousTitre: String {
         var bouts = [categorie]
         if let t = tempsMin { bouts.append("\(t) min") }
@@ -278,14 +287,31 @@ struct Lot: Codable, Hashable, Identifiable, Sendable {
     let note: String?
     let nombre: Int
     var deverrouille: Bool
+    var hebdomadaire: Bool?
+    var dansFenetre: Bool?
 
     var estLibre: Bool { acces == "libre" }
+    var estHebdomadaire: Bool { hebdomadaire ?? false }
 }
 
 struct ManifesteReponse: Codable, Sendable {
     let version: String?
     let abonne: Bool?
+    let semaineCourante: String?
+    let taillesFenetre: Int?
     let lots: [Lot]
+}
+
+/// Agrégat renvoyé par /api/notes — le total public, plus ma propre note.
+struct AgregatNote: Codable, Hashable, Sendable {
+    let votes: Int
+    let moyenne: Double?
+    let maNote: Int?
+}
+
+struct MeilleuresReponse: Codable, Sendable {
+    let seuil: Int
+    let recettes: [Recette]
 }
 
 struct RecettesReponse: Codable, Sendable {

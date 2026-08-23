@@ -184,6 +184,30 @@ actor DepotServeur {
         try await executer(RecettesReponse.self, requete("api/recettes", jeton: jeton))
     }
 
+    func notes(ids: [String], jeton: String?) async throws -> [String: AgregatNote] {
+        try await executer([String: AgregatNote].self,
+            requete("api/notes", jeton: jeton,
+                    elements: [URLQueryItem(name: "ids", value: ids.joined(separator: ","))]))
+    }
+
+    struct ReponseNote: Decodable { let ok: Bool?; let agregat: AgregatBrut? }
+    struct AgregatBrut: Decodable { let votes: Int; let moyenne: Double? }
+
+    func noter(_ recetteId: String, note: Int?, jeton: String) async throws -> AgregatNote {
+        var r = requete("api/note", jeton: jeton)
+        r.httpMethod = "POST"
+        let charge: [String: Any] = ["recette": recetteId, "note": note as Any]
+        r.httpBody = try JSONSerialization.data(withJSONObject: charge)
+        let rep = try await executer(ReponseNote.self, r)
+        return AgregatNote(votes: rep.agregat?.votes ?? 0,
+                           moyenne: rep.agregat?.moyenne,
+                           maNote: note)
+    }
+
+    func meilleures(jeton: String?) async throws -> MeilleuresReponse {
+        try await executer(MeilleuresReponse.self, requete("api/meilleures", jeton: jeton))
+    }
+
     func produit(code: String, jeton: String?) async throws -> Produit {
         try await executer(Produit.self, requete("api/produit", jeton: jeton,
                                                  elements: [URLQueryItem(name: "code", value: code)]))

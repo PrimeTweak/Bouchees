@@ -4,6 +4,13 @@ const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 
+/* Les notes doivent aller dans un fichier jetable. À poser AVANT tout require
+ * de serveur.js : celui-ci charge notes.js, qui fige son chemin au premier
+ * chargement. Sans cette ligne, la suite écrivait dans serveur/notes.json —
+ * le vrai fichier du dépôt. */
+process.env.BOUCHEES_NOTES = "/tmp/bouchees-notes-tests.json";
+try { fs.unlinkSync(process.env.BOUCHEES_NOTES); } catch (e) {}
+
 const Moteur = require(path.join(__dirname, "..", "moteur", "moteur.js"));
 const lire = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", "donnees", f), "utf8"));
 const lire2 = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", f), "utf8"));
@@ -520,25 +527,39 @@ test("images : une photo non révisée n'est jamais publiée — repli sur l'ill
   const emp = Images.empreinte(r);
   const res = Moteur.adapterRecette(r, { allergenes: [], ageMois: 24 }, donnees);
   const sansRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp } };
-  assert.equal(Images.visuelPour(r, res, sansRevision).type, "illustration");
+  assert.equal(Images.visuelPour(r, res, sansRevision, false).type, "illustration");
   const avecRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp, revisePar: "François", largeur: 1200 } };
-  assert.equal(Images.visuelPour(r, res, avecRevision).type, "photo");
+  assert.equal(Images.visuelPour(r, res, avecRevision, false).type, "photo");
 });
 
 test("images : dès qu'un échange a lieu, la photo cède la place à l'illustration", () => {
   const r = parId["crepes-moelleuses"];
   const manifeste = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1200 } };
   const adaptee = Moteur.adapterRecette(r, { allergenes: ["lait"], ageMois: 24 }, donnees);
-  const v = Images.visuelPour(r, adaptee, manifeste);
+  const v = Images.visuelPour(r, adaptee, manifeste, false);
   assert.equal(v.type, "illustration");
   assert(/montrerait autre chose/.test(v.raison));
 });
 
 test("images : une empreinte périmée invalide la photo (les ingrédients ont changé)", () => {
   const r = parId["crepes-moelleuses"];
-  const v = Images.validerEntree({ fichier: "x.webp", empreinte: "000000000000", revisePar: "François", largeur: 1200 }, r);
+  const v = Images.validerEntree({ fichier: "x.webp", empreinte: "000000000000", revisePar: "François", largeur: 1200 }, r, false);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /périmée/.test(x)));
+});
+
+test("images : un manifeste qui survit à la disparition du fichier ne publie rien", () => {
+  const r = parId["crepes-moelleuses"];
+  const entree = { fichier: "images/nexiste-pas.png", empreinte: Images.empreinte(r),
+                   revisePar: "vérification automatique (test)", largeur: 1024,
+                   verification: { moteur: "test", reconnus: 3, attendus: 5 } };
+  const v = Images.validerEntree(entree, r);
+  assert.equal(v.ok, false, "le disque doit faire foi, pas le manifeste");
+  assert(v.erreurs.some((x) => /introuvable/.test(x)));
+
+  const plan = Images.aGenerer([r], donnees, { [r.id]: entree });
+  assert.equal(plan.length, 1, "la recette doit repasser au plan de génération");
+  assert.equal(plan[0].etat, "fichier absent");
 });
 
 /* --- F : droits et Stripe --- */
@@ -650,16 +671,16 @@ test("manifeste : une révision automatique sans verdict de vision ne publie pas
   const res = Moteur.adapterRecette(r, { allergenes: [], ageMois: 24 }, donnees);
   const complet = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 3, attendus: 5 } } };
-  assert.equal(Images.visuelPour(r, res, complet).type, "photo");
+  assert.equal(Images.visuelPour(r, res, complet, false).type, "photo");
   const sansVerdict = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
     revisePar: "vérification automatique (test)" } };
-  assert.equal(Images.visuelPour(r, res, sansVerdict).type, "illustration");
+  assert.equal(Images.visuelPour(r, res, sansVerdict, false).type, "illustration");
   const rienVu = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 0, attendus: 5 } } };
-  assert.equal(Images.visuelPour(r, res, rienVu).type, "illustration");
+  assert.equal(Images.visuelPour(r, res, rienVu, false).type, "illustration");
   const visionAbsente = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
     revisePar: "vérification automatique (absent)", verification: { moteur: "absent", reconnus: 2, attendus: 5 } } };
-  assert.equal(Images.visuelPour(r, res, visionAbsente).type, "illustration");
+  assert.equal(Images.visuelPour(r, res, visionAbsente, false).type, "illustration");
 });
 
 test("cohérence : « fourchette » n'est pas « four » — les frontières de mots tiennent", () => {
@@ -804,6 +825,94 @@ test("iOS : le gabarit délègue l'abonnement à StoreKit et n'ouvre aucune cais
     "le chemin iOS doit court-circuiter Stripe (règle 3.1.1)");
   const apresIOS = src.slice(src.indexOf('if(SOUS_IOS){ versNatif("abonnement"); return; }'));
   assert(apresIOS.indexOf("api/paiement") > 0, "la route Stripe existe encore pour le web");
+});
+
+/* ---------- semaines glissantes, notes, classement (v1.0) ---------- */
+
+const Semaines = require(path.join(__dirname, "..", "outils", "semaines.js"));
+const Notes = require(path.join(__dirname, "..", "serveur", "notes.js"));
+
+test("semaines : l'identifiant ISO se calcule et se compare correctement", () => {
+  const id = Semaines.identifiantSemaine(new Date("2026-08-19T12:00:00Z"));
+  assert(/^\d{4}-S\d{2}$/.test(id), "format inattendu : " + id);
+  assert(Semaines.rang("2026-S02") < Semaines.rang("2026-S34"));
+  assert(Semaines.rang("2025-S52") < Semaines.rang("2026-S01"), "le passage d'année doit être ordonné");
+});
+
+test("semaines : remonter dans le temps traverse le changement d'année", () => {
+  const s = Semaines.semainesPrecedentes(new Date("2026-01-08T12:00:00Z"), 4);
+  assert.equal(s.length, 4);
+  assert(s.some((x) => x.startsWith("2025-")), "on doit retomber sur 2025 : " + s.join(", "));
+  for (let i = 1; i < s.length; i++) {
+    assert(Semaines.rang(s[i]) < Semaines.rang(s[i - 1]), "ordre décroissant attendu");
+  }
+});
+
+test("fenêtre : les lots libres ne tournent jamais, les hebdomadaires oui", () => {
+  const lots = [
+    { id: "2026-06", acces: "libre" },
+    { id: "2026-S30", acces: "abonne" }, { id: "2026-S31", acces: "abonne" },
+    { id: "2026-S32", acces: "abonne" }, { id: "2026-S33", acces: "abonne" }
+  ];
+  const f = Semaines.fenetreCourante(lots, Date.now());
+  assert.deepEqual(f.libres, ["2026-06"]);
+  assert.equal(f.fenetre.length, Semaines.FENETRE);
+  assert.deepEqual(f.fenetre, ["2026-S33", "2026-S32", "2026-S31"]);
+  assert.deepEqual(f.horsFenetre, ["2026-S30"], "la plus vieille sort de vue");
+});
+
+test("fenêtre : moins de lots que la fenêtre ne casse rien", () => {
+  const f = Semaines.fenetreCourante([{ id: "2026-S33", acces: "abonne" }], Date.now());
+  assert.equal(f.fenetre.length, 1);
+  assert.equal(f.horsFenetre.length, 0);
+});
+
+test("publication : le manifeste marque ce qui est dans la fenêtre", () => {
+  const r = Publier.publier();
+  const hebdo = r.manifeste.lots.filter((l) => l.hebdomadaire);
+  assert(hebdo.length > 0, "il doit exister des lots hebdomadaires");
+  assert(r.manifeste.lots.filter((l) => l.dansFenetre).length > 0);
+  assert(Array.isArray(r.manifeste.fenetre));
+  assert(r.manifeste.fenetre.length <= Semaines.FENETRE);
+  // Les lots libres restent toujours visibles
+  r.manifeste.lots.filter((l) => l.acces === "libre")
+    .forEach((l) => assert(l.dansFenetre, l.id + " libre doit rester visible"));
+});
+
+test("notes : bornes, remplacement et retrait", () => {
+  assert.equal(Notes.noter("r1", "a@x.ca", 6).ok, false);
+  assert.equal(Notes.noter("r1", "a@x.ca", 0).ok, false);
+  assert.equal(Notes.noter("r1", "a@x.ca", 3.5).ok, false);
+  Notes.noter("r1", "a@x.ca", 5);
+  Notes.noter("r1", "a@x.ca", 3);
+  assert.equal(Notes.agregat("r1").votes, 1, "un compte ne vote qu'une fois");
+  assert.equal(Notes.agregat("r1").moyenne, 3);
+  Notes.retirerNote("r1", "a@x.ca");
+  assert.equal(Notes.agregat("r1").votes, 0);
+});
+
+test("classement : le seuil de 5 votes est respecté", () => {
+  ["a", "b", "c", "d"].forEach((p) => Notes.noter("presque", p + "@x.ca", 5));
+  assert(!Notes.classement().some((c) => c.recetteId === "presque"), "4 votes : absente");
+  Notes.noter("presque", "e@x.ca", 5);
+  assert(Notes.classement().some((c) => c.recetteId === "presque"), "5 votes : présente");
+});
+
+test("classement : une recette éprouvée passe devant un 5/5 sur cinq votes", () => {
+  for (let i = 0; i < 60; i++) Notes.noter("eprouvee", "g" + i + "@x.ca", i < 50 ? 5 : 4);
+  const cl = Notes.classement();
+  const petite = cl.find((c) => c.recetteId === "presque");
+  const grande = cl.find((c) => c.recetteId === "eprouvee");
+  assert(grande.score > petite.score,
+    "l'ancrage fixe doit protéger le classement : " + grande.score + " vs " + petite.score);
+  assert.equal(petite.moyenne, 5, "sa moyenne brute reste parfaite, seul le score la tempère");
+});
+
+test("classement : trié, et la note d'autrui n'est jamais exposée", () => {
+  const cl = Notes.classement();
+  for (let i = 1; i < cl.length; i++) assert(cl[i - 1].score >= cl[i].score);
+  assert.equal(Notes.agregats(["presque"], "a@x.ca")["presque"].maNote, 5);
+  assert.equal(Notes.agregats(["presque"], "inconnu@x.ca")["presque"].maNote, null);
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

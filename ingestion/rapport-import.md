@@ -1,6 +1,6 @@
 # Rapport d'import — 2026-08-19
 
-Importées : **10** · En quarantaine : **3**
+Importées : **10** · En quarantaine : **4**
 
 ## Importées
 
@@ -26,6 +26,8 @@ Importées : **10** · En quarantaine : **3**
 - **Birthday Cake Pops** (`mealdb-demo:52928`) — lignes non reconnues
     - 200 g Candy Melts
     - 300 g Sponge Cake
+- **Essai** (`maison:essai-tableau-nu`) — curation manquante
+    - Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR).
 - **Apple Cinnamon Baked Oatmeal** (`spoonacular-demo:104`) — curation manquante
     - Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR).
 

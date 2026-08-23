@@ -17,8 +17,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -37,8 +40,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -57,8 +63,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -77,8 +86,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -97,8 +109,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -117,8 +132,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -137,8 +155,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -157,8 +178,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -177,8 +201,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -197,8 +224,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -217,8 +247,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -238,8 +271,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -259,8 +295,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -280,8 +319,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -301,8 +343,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -322,8 +367,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -344,8 +392,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -366,8 +417,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -389,8 +443,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -410,8 +467,11 @@
       },
       "bloquants": {},
       "utilisables": 22,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Repas": 1,
+        "Dessert": 2
+      },
+      "manque": 3
     },
     {
       "profil": [
@@ -430,8 +490,10 @@
       },
       "bloquants": {},
       "utilisables": 31,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Dessert": 2
+      },
+      "manque": 2
     },
     {
       "profil": [
@@ -450,8 +512,10 @@
       },
       "bloquants": {},
       "utilisables": 31,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Dessert": 2
+      },
+      "manque": 2
     },
     {
       "profil": [
@@ -470,8 +534,10 @@
       },
       "bloquants": {},
       "utilisables": 31,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Dessert": 2
+      },
+      "manque": 2
     },
     {
       "profil": [
@@ -490,8 +556,10 @@
       },
       "bloquants": {},
       "utilisables": 31,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Dessert": 2
+      },
+      "manque": 2
     },
     {
       "profil": [
@@ -510,8 +578,10 @@
       },
       "bloquants": {},
       "utilisables": 31,
-      "manqueCategories": {},
-      "manque": 0
+      "manqueCategories": {
+        "Dessert": 2
+      },
+      "manque": 2
     }
   ],
   "bloquants": [
@@ -521,5 +591,50 @@
       "n": 12
     }
   ],
-  "commande": []
+  "commande": [
+    {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Dessert"
+      ],
+      "evite": [
+        "arachide",
+        "ble",
+        "crustaces_mollusques",
+        "lait",
+        "moutarde",
+        "noix",
+        "oeuf",
+        "poisson",
+        "sesame",
+        "soya",
+        "sulfites"
+      ],
+      "passePartout": true,
+      "raison": "22 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 2 dessert. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous."
+    },
+    {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Repas"
+      ],
+      "evite": [
+        "arachide",
+        "ble",
+        "crustaces_mollusques",
+        "lait",
+        "moutarde",
+        "noix",
+        "oeuf",
+        "poisson",
+        "sesame",
+        "soya",
+        "sulfites"
+      ],
+      "passePartout": true,
+      "raison": "22 recettes utilisables à 6–8 mois, 16 du corpus visent plus vieux — il manque 1 repas. Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous."
+    }
+  ]
 }

@@ -44,17 +44,21 @@ struct RacineVue: View {
                 .tabItem { Label("Recettes", systemImage: "fork.knife") }
                 .tag(0)
 
+            MeilleuresVue()
+                .tabItem { Label("Meilleures", systemImage: "star") }
+                .tag(1)
+
             ScannerVue()
                 .tabItem { Label("Scanner", systemImage: "barcode.viewfinder") }
-                .tag(1)
+                .tag(2)
 
             ProfilsVue()
                 .tabItem { Label("Enfants", systemImage: "person.2") }
-                .tag(2)
+                .tag(3)
 
             ReglagesVue()
                 .tabItem { Label("Réglages", systemImage: "gearshape") }
-                .tag(3)
+                .tag(4)
         }
         .tint(Teinte.betterave)
     }

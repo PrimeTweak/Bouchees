@@ -34,6 +34,13 @@ final class EtatApp {
     private let local = DepotLocal()
     private let serveur = DepotServeur()
     let abonnement = Abonnement()
+    let favoris = Favoris()
+
+    /// Agrégats de notes par recette, rafraîchis avec le corpus.
+    private(set) var notes: [String: AgregatNote] = [:]
+    private(set) var meilleures: [Recette] = []
+    private(set) var seuilVotes = 5
+    private(set) var semaineCourante: String?
 
     // MARK: - Profil courant
 
@@ -97,6 +104,7 @@ final class EtatApp {
         do {
             let manif = try await serveur.manifeste(jeton: jeton)
             lots = manif.lots
+            semaineCourante = manif.semaineCourante
             local.ecrireLots(manif.lots)
             if let a = manif.abonne { abonne = a }
 
@@ -109,6 +117,8 @@ final class EtatApp {
             messageSynchro = nil
             derniereSynchro = Date()
             recalculer()
+            await chargerNotes()
+            await nettoyerPhotos()
         } catch {
             horsLigne = true
             messageSynchro = corpus.isEmpty
@@ -179,6 +189,65 @@ final class EtatApp {
     func basculerFamille() {
         modeFamille.toggle()
         recalculer()
+    }
+
+    // MARK: - Notes
+
+    /// Les agrégats de tout ce qui est visible, en un appel.
+    func chargerNotes() async {
+        let ids = (corpus.map(\.id) + favoris.recettes.map(\.id))
+        guard !ids.isEmpty else { return }
+        if let a = try? await serveur.notes(ids: Array(Set(ids)), jeton: abonnement.jetonServeur) {
+            notes = a
+        }
+    }
+
+    /// Noter demande un compte : sans ça, rien n'empêche une même personne de
+    /// voter cent fois. L'affichage se met à jour tout de suite, puis le
+    /// serveur confirme — c'est lui qui fait foi.
+    func noter(_ recetteId: String, note: Int?) async {
+        guard let jeton = abonnement.jetonServeur else {
+            messageSynchro = "Connectez-vous dans les réglages pour noter une recette."
+            return
+        }
+        do {
+            let a = try await serveur.noter(recetteId, note: note, jeton: jeton)
+            notes[recetteId] = a
+        } catch {
+            messageSynchro = "La note n’a pas pu être enregistrée. Réessayez plus tard."
+        }
+    }
+
+    func chargerMeilleures() async {
+        if let r = try? await serveur.meilleures(jeton: abonnement.jetonServeur) {
+            meilleures = r.recettes
+            seuilVotes = r.seuil
+        }
+    }
+
+    /// Adapte une recette qui n'est pas dans le corpus courant — une favorite
+    /// sortie de la fenêtre, ou une entrée du classement.
+    func resultatPour(_ recette: Recette) -> RecetteAdaptee? {
+        if let deja = adaptees.first(where: { $0.id == recette.id }) { return deja }
+        return try? moteur?.adapter(recette, pour: profilActif)
+    }
+
+    func paireLibre(pour id: String) -> (recette: Recette, resultat: RecetteAdaptee)? {
+        let source = corpus.first { $0.id == id }
+            ?? meilleures.first { $0.id == id }
+            ?? favoris.recettes.first { $0.id == id }
+        guard let r = source, let res = resultatPour(r) else { return nil }
+        return (r, res)
+    }
+
+    /// Les semaines tournent : les photos hors fenêtre et hors favoris n'ont
+    /// plus à occuper le disque.
+    private func nettoyerPhotos() async {
+        var garder = Set<String>()
+        for r in corpus + favoris.recettes + meilleures {
+            if let f = r.image { garder.insert(f) }
+        }
+        await CachePhotos.partage.nettoyer(garder: garder)
     }
 
     // MARK: - Références

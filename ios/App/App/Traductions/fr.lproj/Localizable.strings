@@ -168,3 +168,20 @@
 "Morceaux tendres, la plupart des plats familiaux" = "Morceaux tendres, la plupart des plats familiaux";
 "Coupe normale prudente" = "Coupe normale prudente";
 "Texture libre" = "Texture libre";
+
+/* ---------- Notes, favoris, classement ---------- */
+"Meilleures" = "Meilleures";
+"Les mieux notées" = "Les mieux notées";
+"Mes favoris" = "Mes favoris";
+"Votre note" = "Votre note";
+"Le classement se construit" = "Le classement se construit";
+"Aucun favori" = "Aucun favori";
+"Enregistrez une recette et elle restera ici pour toujours — même après que sa semaine soit passée." = "Enregistrez une recette et elle restera ici pour toujours — même après que sa semaine soit passée.";
+"Vos recettes enregistrées restent sur cet appareil, hors du roulement des semaines." = "Vos recettes enregistrées restent sur cet appareil, hors du roulement des semaines.";
+"Retirer des favoris" = "Retirer des favoris";
+"Enregistrer dans les favoris" = "Enregistrer dans les favoris";
+"Une recette enregistrée reste accessible même après sa semaine." = "Une recette enregistrée reste accessible même après sa semaine.";
+"Connectez-vous dans les réglages pour noter — sans compte, une même personne pourrait voter cent fois." = "Connectez-vous dans les réglages pour noter — sans compte, une même personne pourrait voter cent fois.";
+"Connectez-vous dans les réglages pour noter une recette." = "Connectez-vous dans les réglages pour noter une recette.";
+"La note n’a pas pu être enregistrée. Réessayez plus tard." = "La note n’a pas pu être enregistrée. Réessayez plus tard.";
+"Pas encore noté" = "Pas encore noté";

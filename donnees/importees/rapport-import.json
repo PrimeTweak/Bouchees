@@ -19,6 +19,14 @@
     ]
   },
   {
+    "cle": "maison:essai-tableau-nu",
+    "nom": "Essai",
+    "raison": "curation manquante",
+    "detail": [
+      "Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR)."
+    ]
+  },
+  {
     "cle": "spoonacular-demo:104",
     "nom": "Apple Cinnamon Baked Oatmeal",
     "raison": "curation manquante",

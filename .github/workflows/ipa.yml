@@ -6,6 +6,8 @@ name: IPA non signé (sideload)
 # Aucun certificat ni clé ne transite par GitHub.
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       bundle_id:

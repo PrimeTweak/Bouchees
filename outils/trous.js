@@ -34,9 +34,9 @@ const STADES = [6, 9, 12, 24, 48];
 const CATEGORIES = ["Déjeuner", "Repas", "Collation", "Dessert"];
 
 /* Seuil : en dessous, un parent n'a pas de quoi faire une semaine. */
-const SEUIL_SEMAINE = 7;
+const SEUIL_SEMAINE = 12;
 /* Un parent ne mange pas que des soupers : il faut de la variété par catégorie. */
-const SEUIL_CATEGORIE = 3;
+const SEUIL_CATEGORIE = 6;
 
 function nomProfil(ids) {
   if (!ids.length) return "aucun évitement";

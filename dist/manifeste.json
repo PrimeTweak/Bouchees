@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-19",
+  "version": "2026-08-23",
   "sommeSecurite": "85f967819a69",
   "lots": [
     {
@@ -9,7 +9,9 @@
       "acces": "libre",
       "note": "Le socle : de quoi manger toute une semaine, quel que soit le profil.",
       "nombre": 8,
-      "somme": "503d8a73cc4e"
+      "somme": "503d8a73cc4e",
+      "hebdomadaire": false,
+      "dansFenetre": true
     },
     {
       "id": "2026-07",
@@ -18,29 +20,60 @@
       "acces": "libre",
       "note": "Pour la diversification — purées, écrasés, premiers morceaux.",
       "nombre": 7,
-      "somme": "dceb0e16640a"
+      "somme": "dceb0e16640a",
+      "hebdomadaire": false,
+      "dansFenetre": true
     },
     {
-      "id": "2026-08",
-      "titre": "Repas de famille",
-      "date": "2026-08-01",
+      "id": "2026-S31",
+      "titre": "Semaine du 2026-S31",
       "acces": "abonne",
-      "note": "Des plats que toute la maisonnée mange, adaptés pour le plus jeune.",
-      "nombre": 8,
-      "somme": "9c07144729c1"
-    },
-    {
-      "id": "2026-09",
-      "titre": "Boîte à lunch",
-      "date": "2026-09-01",
-      "acces": "abonne",
-      "note": "Collations et lunchs qui voyagent — garderie et école.",
+      "note": "Sept recettes visant les profils les moins servis.",
       "nombre": 7,
-      "somme": "a82f517be444"
+      "somme": "79726cd8756c",
+      "hebdomadaire": true,
+      "dansFenetre": false
+    },
+    {
+      "id": "2026-S32",
+      "titre": "Semaine du 2026-S32",
+      "acces": "abonne",
+      "note": "Sept recettes visant les profils les moins servis.",
+      "nombre": 7,
+      "somme": "f20cce6373ba",
+      "hebdomadaire": true,
+      "dansFenetre": true
+    },
+    {
+      "id": "2026-S33",
+      "titre": "Semaine du 2026-S33",
+      "acces": "abonne",
+      "note": "Sept recettes visant les profils les moins servis.",
+      "nombre": 7,
+      "somme": "483d735d7204",
+      "hebdomadaire": true,
+      "dansFenetre": true
+    },
+    {
+      "id": "2026-S34",
+      "titre": "Semaine du 2026-S34",
+      "acces": "abonne",
+      "note": "Sept recettes visant les profils les moins servis.",
+      "nombre": 2,
+      "somme": "a969520385e7",
+      "hebdomadaire": true,
+      "dansFenetre": true
     }
   ],
   "libres": [
     "2026-06",
     "2026-07"
-  ]
+  ],
+  "fenetre": [
+    "2026-S34",
+    "2026-S33",
+    "2026-S32"
+  ],
+  "semaineCourante": "2026-S34",
+  "taillesFenetre": 3
 }

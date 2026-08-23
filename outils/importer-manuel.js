@@ -35,11 +35,9 @@ const fichier = args.find((a) => !a.startsWith("--"));
 const sec = args.includes("--sec");
 const lotDemande = (args.find((a) => a.startsWith("--lot=")) || "").split("=")[1];
 
-function moisProchain() {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().slice(0, 7);
-}
+const Semaines = require("./semaines.js");
+
+function semaineCourante() { return Semaines.identifiantSemaine(new Date()); }
 
 function corpusExistant() {
   let c = lire("donnees/recettes.json");
@@ -139,7 +137,7 @@ function principal() {
   }
 
   /* --- 3. Publication --- */
-  const lot = lotDemande || moisProchain();
+  const lot = lotDemande || semaineCourante();
   console.log("\nPublication dans le lot " + lot);
   console.log("─".repeat(42));
 
@@ -169,8 +167,9 @@ function principal() {
 
   const pub = lire("donnees/publication.json");
   if (!pub.lots.some((l) => l.id === lot)) {
-    pub.lots.push({ id: lot, titre: "Lot " + lot, date: lot + "-01", acces: "abonne",
-                    note: "Recettes visant les profils les moins servis." });
+    pub.lots.push({ id: lot, titre: "Semaine du " + lot, acces: "abonne",
+                    hebdomadaire: true,
+                    note: "Sept recettes visant les profils les moins servis." });
     console.log("  lot " + lot + " créé");
   }
   gardees.forEach(function (r) { pub.attribution[r.id] = lot; });

@@ -101,12 +101,23 @@ function empreinte(recette) {
 }
 
 /* Le plan de génération du mois : une entrée par recette sans image à jour. */
-function aGenerer(corpus, donnees, manifeste) {
+function aGenerer(corpus, donnees, manifeste, dossierImages) {
   manifeste = manifeste || {};
+  const fs2 = require("fs");
+  const path2 = require("path");
+  const base = dossierImages || path2.join(__dirname, "..");
+
   return corpus.map(function (r) {
     const emp = empreinte(r);
     const actuel = manifeste[r.id];
-    const etat = !actuel ? "manquante" : (actuel.empreinte !== emp ? "périmée" : "à jour");
+    /* Le manifeste dit ce qui a été vérifié; le disque dit ce qui existe.
+     * Un manifeste qui survit à la disparition des fichiers ferait poser un
+     * champ photo sur des recettes sans image — donc un 404 chez le parent. */
+    const surDisque = actuel && actuel.fichier &&
+      fs2.existsSync(path2.join(base, actuel.fichier));
+    const etat = !actuel ? "manquante"
+      : (!surDisque ? "fichier absent"
+      : (actuel.empreinte !== emp ? "périmée" : "à jour"));
     if (etat === "à jour") return null;
     const p = promptPour(r, donnees);
     return {
@@ -119,9 +130,15 @@ function aGenerer(corpus, donnees, manifeste) {
 
 /* Validation d'une entrée de manifeste : sans révision humaine explicite,
  * l'image n'est pas publiée — le repli sur l'illustration est toujours sûr. */
-function validerEntree(entree, recette) {
+function validerEntree(entree, recette, dossierImages) {
   const e = [];
   if (!entree.fichier) e.push("fichier manquant");
+  else if (dossierImages !== false) {
+    const fs2 = require("fs");
+    const path2 = require("path");
+    const base = dossierImages || path2.join(__dirname, "..");
+    if (!fs2.existsSync(path2.join(base, entree.fichier))) e.push("fichier introuvable sur le disque");
+  }
   if (!entree.empreinte) e.push("empreinte manquante");
   if (recette && entree.empreinte !== empreinte(recette))
     e.push("empreinte périmée : les ingrédients ont changé depuis la génération");
@@ -139,9 +156,9 @@ function validerEntree(entree, recette) {
 }
 
 /* La règle qui compte, côté client comme côté serveur. */
-function visuelPour(recette, resultat, manifeste) {
+function visuelPour(recette, resultat, manifeste, dossierImages) {
   const entree = manifeste && manifeste[recette.id];
-  const utilisable = entree && validerEntree(entree, recette).ok;
+  const utilisable = entree && validerEntree(entree, recette, dossierImages).ok;
   if (utilisable && resultat.statut === "telle_quelle") {
     return { type: "photo", fichier: entree.fichier };
   }
