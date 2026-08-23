@@ -38,7 +38,7 @@ extension AlertLevel {
     var color: Color {
         switch self {
         case .bloquant: return Tint.canneberge
-        case .securite, .attention: return Tint.courge
+        case .safety, .attention: return Tint.courge
         case .info: return Tint.betterave
         }
     }

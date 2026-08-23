@@ -88,7 +88,7 @@ actor PhotoCache {
             return img
         }
 
-        guard let url = URL(string: file, relativeTo: Settings.baseServeur) else { return nil }
+        guard let url = URL(string: file, relativeTo: Settings.serverBase) else { return nil }
         var request = URLRequest(url: url)
         request.timeoutInterval = 20
         guard let (data, response) = try? await URLSession.shared.data(for: request),

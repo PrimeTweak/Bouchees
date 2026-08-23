@@ -214,7 +214,7 @@ struct RecipesScreen: View {
     }
 
     private var footer: some View {
-        Text(Settings.avertissementMedical)
+        Text(Settings.medicalDisclaimer)
             .font(.caption2)
             .foregroundStyle(.tertiary)
             .padding(.top, 12)

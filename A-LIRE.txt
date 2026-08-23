@@ -57,6 +57,26 @@ plus sur de la documentation interne que toi seul lis. Aucun risque
 technique : redemande-le-moi et je le fais, ça ne peut rien casser.
 
 
+CORRIGÉ DEPUIS LA VERSION PRÉCÉDENTE
+------------------------------------
+Le workflow lisait encore dist/manifeste.json et embarquait un dossier
+« lots ». Corrigé, et l'étape a été reproduite en local : 15 recettes
+embarquées, moteur chargé, 92 ingrédients reconnus.
+
+Le Swift appelait aussi les anciennes routes (/api/recettes, /api/manifeste).
+Toutes alignées, et vérifié une par une : chaque route appelée par l'app
+existe côté serveur.
+
+
+RENDER
+------
+Change la Start Command dans Settings :
+
+    node server/server.js
+
+L'ancien chemin serveur/serveur.js n'existe plus.
+
+
 POUSSER
 -------
 Vide le dossier bouchees SAUF .git, colle le contenu de ce zip.

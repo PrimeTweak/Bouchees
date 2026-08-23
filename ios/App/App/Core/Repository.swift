@@ -19,39 +19,39 @@ import Foundation
 
 enum Resources {
     /// Les fichiers sont copiés dans le bundle par le workflow, sous
-    /// « Resources ». On tente le sous-folder, puis la racine, parce que la
+    /// « Resources ». On tente le sous-folder, puis la root, parce que la
     /// façon dont Xcode aplatit un folder varie selon la configuration.
-    static func url(_ name: String, _ extension_: String) -> URL? {
-        Bundle.main.url(forResource: name, withExtension: extension_, subdirectory: "Resources")
-            ?? Bundle.main.url(forResource: name, withExtension: extension_)
+    static func url(_ name: String, _ ext: String) -> URL? {
+        Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources")
+            ?? Bundle.main.url(forResource: name, withExtension: ext)
     }
 
-    static func data(_ name: String, _ extension_: String) throws -> Data {
-        guard let u = url(name, extension_) else {
-            throw RepositoryError.ressourceManquante("\(name).\(extension_)")
+    static func data(_ name: String, _ ext: String) throws -> Data {
+        guard let u = url(name, ext) else {
+            throw RepositoryError.missingResource("\(name).\(ext)")
         }
         return try Data(contentsOf: u)
     }
 
     /// Les batches gratuits embarqués dans l'app.
-    static func lotsEmbarques() -> [URL] {
+    static func bundledBatches() -> [URL] {
         let folder = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Resources/batches")
         return folder ?? []
     }
 }
 
 enum RepositoryError: LocalizedError {
-    case ressourceManquante(String)
-    case reseau(Int)
-    case abonnementRequis
-    case reponseIllisible
+    case missingResource(String)
+    case network(Int)
+    case subscriptionRequired
+    case unreadableResponse
 
     var errorDescription: String? {
         switch self {
-        case .ressourceManquante(let n): return "Ressource manquante dans l’app : \(n)"
-        case .reseau(let c): return "Le serveur a répondu \(c)."
-        case .abonnementRequis: return "Ce lot demande un subscription."
-        case .reponseIllisible: return "Réponse du serveur illisible."
+        case .missingResource(let n): return "Ressource manquante dans l’app : \(n)"
+        case .network(let c): return "Le serveur a répondu \(c)."
+        case .subscriptionRequired: return "Ce lot demande un subscription."
+        case .unreadableResponse: return "Réponse du serveur illisible."
         }
     }
 }
@@ -60,7 +60,7 @@ enum RepositoryError: LocalizedError {
 
 enum Settings {
     /// À remplacer par l'adresse de ton service déployé.
-    static var baseServeur: URL {
+    static var serverBase: URL {
         if let s = ProcessInfo.processInfo.environment["BOUCHEES_SERVEUR"], let u = URL(string: s) {
             return u
         }
@@ -73,10 +73,10 @@ enum Settings {
 
     /// Servies par le serveur lui-même — pas de site séparé à maintenir,
     /// et pas de lien mort au moment de la révision App Store.
-    static var conditions: URL { baseServeur.appendingPathComponent("conditions") }
-    static var confidentialite: URL { baseServeur.appendingPathComponent("confidentialite") }
+    static var terms: URL { serverBase.appendingPathComponent("terms") }
+    static var privacy: URL { serverBase.appendingPathComponent("privacy") }
 
-    static let avertissementMedical = """
+    static let medicalDisclaimer = """
     Bouchées ne remplace pas un avis médical. Les échanges d’ingrédients et les repères d’âge \
     viennent de tables déterministes, à faire valider par un professionnel. En cas d’allergie \
     diagnostiquée, le plan de votre allergologue a toujours préséance.
@@ -99,46 +99,46 @@ final class LocalStore {
         return base
     }
 
-    private var fichierProfils: URL { folder.appendingPathComponent("profiles.json") }
-    private var fichierCorpus: URL { folder.appendingPathComponent("recipes.json") }
-    private var fichierLots: URL { folder.appendingPathComponent("batches.json") }
+    private var profilesFile: URL { folder.appendingPathComponent("profiles.json") }
+    private var recipesFile: URL { folder.appendingPathComponent("recipes.json") }
+    private var batchesFile: URL { folder.appendingPathComponent("batches.json") }
 
     // Profils — jamais envoyés nulle part.
 
-    func lireProfils() -> [ChildProfile] {
-        guard let d = try? Data(contentsOf: fichierProfils),
+    func readProfiles() -> [ChildProfile] {
+        guard let d = try? Data(contentsOf: profilesFile),
               let p = try? JSONDecoder().decode([ChildProfile].self, from: d) else { return [] }
         return p
     }
 
-    func ecrireProfils(_ profiles: [ChildProfile]) {
+    func writeProfiles(_ profiles: [ChildProfile]) {
         guard let d = try? JSONEncoder().encode(profiles) else { return }
-        try? d.write(to: fichierProfils, options: .atomic)
+        try? d.write(to: profilesFile, options: .atomic)
     }
 
     // Corpus téléchargé — ce qui permet de fonctionner hors ligne.
 
-    func lireCorpus() -> [Recipe]? {
-        guard let d = try? Data(contentsOf: fichierCorpus) else { return nil }
+    func readRecipes() -> [Recipe]? {
+        guard let d = try? Data(contentsOf: recipesFile) else { return nil }
         return try? JSONDecoder().decode([Recipe].self, from: d)
     }
 
-    func ecrireCorpus(_ recipes: [Recipe]) {
+    func writeRecipes(_ recipes: [Recipe]) {
         guard let d = try? JSONEncoder().encode(recipes) else { return }
-        try? d.write(to: fichierCorpus, options: .atomic)
+        try? d.write(to: recipesFile, options: .atomic)
     }
 
-    func lireLots() -> [Batch]? {
-        guard let d = try? Data(contentsOf: fichierLots) else { return nil }
+    func readBatches() -> [Batch]? {
+        guard let d = try? Data(contentsOf: batchesFile) else { return nil }
         return try? JSONDecoder().decode([Batch].self, from: d)
     }
 
-    func ecrireLots(_ batches: [Batch]) {
+    func writeBatches(_ batches: [Batch]) {
         guard let d = try? JSONEncoder().encode(batches) else { return }
-        try? d.write(to: fichierLots, options: .atomic)
+        try? d.write(to: batchesFile, options: .atomic)
     }
 
-    var aDuContenu: Bool { fm.fileExists(atPath: fichierCorpus.path) }
+    var hasContent: Bool { fm.fileExists(atPath: recipesFile.path) }
 }
 
 // MARK: - Serveur
@@ -156,10 +156,10 @@ actor RemoteStore {
 
     private func request(_ path: String, token: String?, items: [URLQueryItem] = []) -> URLRequest {
         var composants = URLComponents(
-            url: Settings.baseServeur.appendingPathComponent(path),
+            url: Settings.serverBase.appendingPathComponent(path),
             resolvingAgainstBaseURL: false)
         if !items.isEmpty { composants?.queryItems = items }
-        var r = URLRequest(url: composants?.url ?? Settings.baseServeur.appendingPathComponent(path))
+        var r = URLRequest(url: composants?.url ?? Settings.serverBase.appendingPathComponent(path))
         r.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if let j = token { r.setValue("Bearer \(j)", forHTTPHeaderField: "Authorization") }
         return r
@@ -167,15 +167,15 @@ actor RemoteStore {
 
     private func execute<T: Decodable>(_ type: T.Type, _ r: URLRequest) async throws -> T {
         let (data, response) = try await session.data(for: r)
-        guard let http = response as? HTTPURLResponse else { throw RepositoryError.reponseIllisible }
-        if http.statusCode == 402 { throw RepositoryError.abonnementRequis }
-        guard (200..<300).contains(http.statusCode) else { throw RepositoryError.reseau(http.statusCode) }
+        guard let http = response as? HTTPURLResponse else { throw RepositoryError.unreadableResponse }
+        if http.statusCode == 402 { throw RepositoryError.subscriptionRequired }
+        guard (200..<300).contains(http.statusCode) else { throw RepositoryError.network(http.statusCode) }
         do { return try JSONDecoder().decode(T.self, from: data) }
-        catch { throw RepositoryError.reponseIllisible }
+        catch { throw RepositoryError.unreadableResponse }
     }
 
-    func manifeste(token: String?) async throws -> ManifestResponse {
-        try await execute(ManifestResponse.self, request("api/manifeste", token: token))
+    func manifest(token: String?) async throws -> ManifestResponse {
+        try await execute(ManifestResponse.self, request("api/manifest", token: token))
     }
 
     /// Le serveur ne renvoie que les batches auxquels le compte a droit. Le
@@ -184,28 +184,28 @@ actor RemoteStore {
         try await execute(RecipesResponse.self, request("api/recipes", token: token))
     }
 
-    func notes(ids: [String], token: String?) async throws -> [String: RatingSummary] {
+    func ratings(ids: [String], token: String?) async throws -> [String: RatingSummary] {
         try await execute([String: RatingSummary].self,
-            request("api/notes", token: token,
+            request("api/ratings", token: token,
                     items: [URLQueryItem(name: "ids", value: ids.joined(separator: ","))]))
     }
 
-    struct ReponseNote: Decodable { let ok: Bool?; let summary: AgregatBrut? }
-    struct AgregatBrut: Decodable { let votes: Int; let average: Double? }
+    struct RatingResponse: Decodable { let ok: Bool?; let summary: RawSummary? }
+    struct RawSummary: Decodable { let votes: Int; let average: Double? }
 
     func rate(_ recetteId: String, note: Int?, token: String) async throws -> RatingSummary {
-        var r = request("api/note", token: token)
+        var r = request("api/rating", token: token)
         r.httpMethod = "POST"
         let charge: [String: Any] = ["recipe": recetteId, "note": note as Any]
         r.httpBody = try JSONSerialization.data(withJSONObject: charge)
-        let rep = try await execute(ReponseNote.self, r)
+        let rep = try await execute(RatingResponse.self, r)
         return RatingSummary(votes: rep.summary?.votes ?? 0,
                            average: rep.summary?.average,
                            myRating: note)
     }
 
     func topRated(token: String?) async throws -> TopRatedResponse {
-        try await execute(TopRatedResponse.self, request("api/topRated", token: token))
+        try await execute(TopRatedResponse.self, request("api/top-rated", token: token))
     }
 
     func product(code: String, token: String?) async throws -> GroceryProduct {
@@ -213,21 +213,21 @@ actor RemoteStore {
                                                  items: [URLQueryItem(name: "code", value: code)]))
     }
 
-    struct ReponseConnexion: Decodable { let token: String; let email: String; let subscribed: Bool? }
+    struct LoginResponse: Decodable { let token: String; let email: String; let subscribed: Bool? }
 
-    func connexion(email: String) async throws -> ReponseConnexion {
-        var r = request("api/connexion", token: nil)
+    func login(email: String) async throws -> LoginResponse {
+        var r = request("api/login", token: nil)
         r.httpMethod = "POST"
         r.httpBody = try JSONEncoder().encode(["email": email])
-        return try await execute(ReponseConnexion.self, r)
+        return try await execute(LoginResponse.self, r)
     }
 
-    struct ReponseTransaction: Decodable { let ok: Bool?; let subscribed: Bool?; let error: String? }
+    struct TransactionResponse: Decodable { let ok: Bool?; let subscribed: Bool?; let error: String? }
 
-    func lierTransaction(_ jws: String, token: String) async throws -> ReponseTransaction {
+    func linkTransaction(_ jws: String, token: String) async throws -> TransactionResponse {
         var r = request("api/apple/transaction", token: token)
         r.httpMethod = "POST"
         r.httpBody = try JSONEncoder().encode(["signedTransaction": jws])
-        return try await execute(ReponseTransaction.self, r)
+        return try await execute(TransactionResponse.self, r)
     }
 }

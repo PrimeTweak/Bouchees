@@ -232,7 +232,7 @@ struct RatingBlock: View {
     @Environment(AppState.self) private var etat
     @State private var isWorking = false
 
-    private var summary: RatingSummary? { etat.notes[recipe.id] }
+    private var summary: RatingSummary? { etat.ratings[recipe.id] }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 11) {

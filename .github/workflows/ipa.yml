@@ -40,28 +40,29 @@ jobs:
           node web/build.js
 
       - name: Bundle resources into the iOS app
-        # Le moteur JavaScript et les tables de sécurité voyagent avec l'app :
-        # tout fonctionne hors ligne dès la première ouverture. Seuls les lots
-        # LIBRES sont embarqués — un fichier dans un IPA se lit avec un éditeur
-        # de texte, ce ne serait pas un mur.
+        # The JavaScript engine and the safety tables travel with the app, so
+        # everything works offline from the very first launch. Only the FREE
+        # batches are bundled — a file inside an IPA can be read with a text
+        # editor, so that would be no wall at all.
         run: |
           R=ios/App/App/Resources
-          rm -rf "$R"; mkdir -p "$R/lots"
+          rm -rf "$R"; mkdir -p "$R/batches"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
+          cp dist/safety.json "$R/" || true
           python3 - <<'PY'
           import json, shutil, pathlib
-          m = json.load(open('dist/manifeste.json'))
-          libres = set(m['libres'])
-          dest = pathlib.Path('ios/App/App/Resources/lots')
-          for lot in sorted(libres):
-              src = pathlib.Path('dist/lots') / (lot + '.json')
+          m = json.load(open('dist/manifest.json'))
+          free = set(m['free'])
+          dest = pathlib.Path('ios/App/App/Resources/batches')
+          for batch in sorted(free):
+              src = pathlib.Path('dist/batches') / (batch + '.json')
               if src.exists():
                   shutil.copy(src, dest / src.name)
-                  print('embarque :', lot)
-          for l in m['lots']:
-              if l['id'] not in libres:
-                  print('laisse au serveur :', l['id'])
+                  print('bundled:', batch)
+          for b in m['batches']:
+              if b['id'] not in free:
+                  print('left on the server:', b['id'])
           PY
           ls -R "$R"
 

@@ -275,11 +275,11 @@ struct SettingsScreen: View {
                 }
 
                 Section {
-                    Link("Terms of Use", destination: Settings.conditions)
-                    Link("Privacy", destination: Settings.confidentialite)
+                    Link("Terms of Use", destination: Settings.terms)
+                    Link("Privacy", destination: Settings.privacy)
                 } footer: {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text(Settings.avertissementMedical)
+                        Text(Settings.medicalDisclaimer)
                         Text("Product data: Open Food Facts, under the ODbL license.")
                     }
                 }
@@ -354,8 +354,8 @@ struct PaywallScreen: View {
                         .foregroundStyle(.tertiary)
 
                     HStack(spacing: 18) {
-                        Link("Terms", destination: Settings.conditions)
-                        Link("Privacy", destination: Settings.confidentialite)
+                        Link("Terms", destination: Settings.terms)
+                        Link("Privacy", destination: Settings.privacy)
                     }
                     .font(.caption)
                 }

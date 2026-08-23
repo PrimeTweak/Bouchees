@@ -36,8 +36,8 @@ final class AppState {
     let subscription = Subscription()
     let saved = SavedRecipes()
 
-    /// Agrégats de notes par recipe, rafraîchis avec le recipes.
-    private(set) var notes: [String: RatingSummary] = [:]
+    /// Agrégats de ratings par recipe, rafraîchis avec le recipes.
+    private(set) var ratings: [String: RatingSummary] = [:]
     private(set) var topRated: [Recipe] = []
     private(set) var ratingThreshold = 5
     private(set) var currentWeek: String?
@@ -57,7 +57,7 @@ final class AppState {
         isLoading = true
         defer { isLoading = false }
 
-        profiles = local.lireProfils()
+        profiles = local.readProfiles()
         activeProfileID = profiles.first?.id
 
         do {
@@ -81,11 +81,11 @@ final class AppState {
 
     /// Corpus téléchargé s'il existe, sinon les batches embarqués dans l'app.
     private func chargerCorpusLocal() {
-        if let sauvegarde = local.lireCorpus(), !sauvegarde.isEmpty {
+        if let sauvegarde = local.readRecipes(), !sauvegarde.isEmpty {
             recipes = sauvegarde
         } else {
             var embarquees: [Recipe] = []
-            for url in Resources.lotsEmbarques() {
+            for url in Resources.bundledBatches() {
                 if let d = try? Data(contentsOf: url),
                    let r = try? JSONDecoder().decode([Recipe].self, from: d) {
                     embarquees.append(contentsOf: r)
@@ -93,7 +93,7 @@ final class AppState {
             }
             recipes = embarquees.sorted { $0.name < $1.name }
         }
-        if let l = local.lireLots() { batches = l }
+        if let l = local.readBatches() { batches = l }
     }
 
     // MARK: - Synchronisation
@@ -102,16 +102,16 @@ final class AppState {
         guard fatalError == nil else { return }
         let token = subscription.serverToken
         do {
-            let manif = try await serveur.manifeste(token: token)
+            let manif = try await serveur.manifest(token: token)
             batches = manif.batches
             currentWeek = manif.currentWeek
-            local.ecrireLots(manif.batches)
+            local.writeBatches(manif.batches)
             if let a = manif.subscribed { subscribed = a }
 
             let rep = try await serveur.recipes(token: token)
             if !rep.recipes.isEmpty {
                 recipes = rep.recipes
-                local.ecrireCorpus(rep.recipes)
+                local.writeRecipes(rep.recipes)
             }
             isOffline = false
             syncMessage = nil
@@ -168,7 +168,7 @@ final class AppState {
             profiles.append(profile)
             activeProfileID = profile.id
         }
-        local.ecrireProfils(profiles)
+        local.writeProfiles(profiles)
         recompute()
     }
 
@@ -176,7 +176,7 @@ final class AppState {
         profiles.removeAll { $0.id == profile.id }
         if activeProfileID == profile.id { activeProfileID = profiles.first?.id }
         if profiles.count < 2 { familyMode = false }
-        local.ecrireProfils(profiles)
+        local.writeProfiles(profiles)
         recompute()
     }
 
@@ -197,8 +197,8 @@ final class AppState {
     func loadRatings() async {
         let ids = (recipes.map(\.id) + saved.recipes.map(\.id))
         guard !ids.isEmpty else { return }
-        if let a = try? await serveur.notes(ids: Array(Set(ids)), token: subscription.serverToken) {
-            notes = a
+        if let a = try? await serveur.ratings(ids: Array(Set(ids)), token: subscription.serverToken) {
+            ratings = a
         }
     }
 
@@ -212,7 +212,7 @@ final class AppState {
         }
         do {
             let a = try await serveur.rate(recetteId, note: note, token: token)
-            notes[recetteId] = a
+            ratings[recetteId] = a
         } catch {
             syncMessage = "The rating couldn’t be saved. Try again later."
         }
@@ -276,7 +276,7 @@ final class AppState {
     // MARK: - Compte
 
     func signIn(email: String) async throws {
-        let r = try await serveur.connexion(email: email)
+        let r = try await serveur.login(email: email)
         subscription.setToken(r.token, email: r.email)
         subscribed = r.subscribed ?? false
         await subscription.refreshEntitlements()
@@ -285,7 +285,7 @@ final class AppState {
 
     func linkPurchase(_ jws: String) async {
         guard let token = subscription.serverToken else { return }
-        if let r = try? await serveur.lierTransaction(jws, token: token), let a = r.subscribed {
+        if let r = try? await serveur.linkTransaction(jws, token: token), let a = r.subscribed {
             subscribed = a
             await sync()
         }

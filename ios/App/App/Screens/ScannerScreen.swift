@@ -193,7 +193,7 @@ struct ScannerScreen: View {
                 return
             }
             verdict = try etat.evaluateLabel(texte)
-        } catch RepositoryError.reseau(404) {
+        } catch RepositoryError.network(404) {
             messageErreur = "This product isn’t in the open database. Read the label — and feel free to add it to Open Food Facts."
         } catch {
             messageErreur = "Lookup failed. Check your connection — and when in doubt, read the label."

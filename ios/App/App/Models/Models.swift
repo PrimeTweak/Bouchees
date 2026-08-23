@@ -73,7 +73,7 @@ enum IngredientStatus: String, Codable, Sendable {
 
 enum AlertLevel: String, Codable, Sendable {
     case bloquant
-    case securite
+    case safety
     case attention
     case info
 
@@ -86,7 +86,7 @@ enum AlertLevel: String, Codable, Sendable {
     var label: String {
         switch self {
         case .bloquant: return "STOP"
-        case .securite: return "ÂGE"
+        case .safety: return "ÂGE"
         case .attention: return "NOTE"
         case .info: return "ÉCH."
         }
@@ -152,7 +152,7 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     /// tant qu'aucune photo n'a passé la vérification par vision.
     let image: String?
 
-    /// Agrégat de notes, présent seulement dans la réponse des Meilleures.
+    /// Agrégat de ratings, présent seulement dans la réponse des Meilleures.
     let votes: Int?
     let average: Double?
     let myRating: Int?
@@ -214,7 +214,7 @@ struct AdaptedRecipe: Codable, Sendable {
 
     var blockingAlert: Alert? { alerts.first { $0.level == .bloquant } }
     var nonBlockingAlerts: [Alert] { alerts.filter { $0.level != .bloquant } }
-    var ageGuidanceCount: Int { alerts.filter { $0.level == .securite }.count }
+    var ageGuidanceCount: Int { alerts.filter { $0.level == .safety }.count }
     var hasChanges: Bool { ingredients.contains { $0.status != .conserve } }
 
     /// Le premier échange, pour l'aperçu sur une carte.
@@ -302,7 +302,7 @@ struct ManifestResponse: Codable, Sendable {
     let batches: [Batch]
 }
 
-/// Agrégat renvoyé par /api/notes — le total public, plus ma propre note.
+/// Agrégat renvoyé par /api/ratings — le total public, plus ma propre note.
 struct RatingSummary: Codable, Hashable, Sendable {
     let votes: Int
     let average: Double?
