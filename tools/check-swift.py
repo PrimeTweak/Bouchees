@@ -141,12 +141,27 @@ def check():
             problems.append(f"{filename}:{line}: bare “{m.group(1)}(” — ambiguous between "
                           f"CoreGraphics and the standard library; use a typed wrapper")
 
-    # 8. un seul @main
+    # 8. properties that shadow a UIKit member. A `var layer` on a UIView
+    #    subclass makes the getter call itself and fails the build — exactly
+    #    the mistake a blind rename introduces.
+    SHADOWED = ["layer", "frame", "bounds", "view", "window", "subviews",
+                "superview", "tag", "alpha", "isHidden", "backgroundColor",
+                "contentMode", "transform", "center"]
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"class\s+\w+\s*:\s*(UIView|UIViewController|UIControl|UILabel)\b", code):
+            tail = code[m.end():m.end() + 1200]
+            for prop in SHADOWED:
+                if re.search(r"(?<!override )\bvar\s+" + prop + r"\s*:", tail):
+                    problems.append(f"{filename}: 'var {prop}' shadows a {m.group(1)} member — "
+                                    f"rename it, or mark it override")
+
+    # 9. exactly one @main
     mains = [os.path.basename(c) for c, (_, code) in sources.items() if re.search(r'^@main', code, re.M)]
     if len(mains) != 1:
         problems.append(f"exactly one @main is required, found {len(mains)}: {mains}")
 
-    # 9. missing imports for the frameworks in use
+    # 10. missing imports for the frameworks in use
     needs = {
         "SwiftUI": r'\b(View|Color|Text|VStack|Canvas)\b',
         "AVFoundation": r'\bAVCapture',

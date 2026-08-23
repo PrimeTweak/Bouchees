@@ -86,18 +86,20 @@ final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputO
 struct CameraPreview: UIViewRepresentable {
     let session: AVCaptureSession
 
-    func makeUIView(context: Context) -> VueApercu {
-        let v = VueApercu()
-        v.layer.session = session
-        v.layer.videoGravity = .resizeAspectFill
+    func makeUIView(context: Context) -> PreviewView {
+        let v = PreviewView()
+        v.previewLayer.session = session
+        v.previewLayer.videoGravity = .resizeAspectFill
         return v
     }
 
-    func updateUIView(_ uiView: VueApercu, context: Context) {}
+    func updateUIView(_ uiView: PreviewView, context: Context) {}
 
-    final class VueApercu: UIView {
+    final class PreviewView: UIView {
         override class var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
-        var layer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
+        /// Not named `layer`: UIView already owns that property, and shadowing
+        /// it makes the accessor call itself.
+        var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
     }
 }
 
