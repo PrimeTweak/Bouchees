@@ -15,12 +15,12 @@
 
 import Foundation
 
-// MARK: - Resources embarquées
+// MARK: - Bundled resources
 
 enum Resources {
     /// Les fichiers sont copiés dans le bundle par le workflow, sous
-    /// « Resources ». On tente le sous-folder, puis la root, parce que la
-    /// façon dont Xcode aplatit un folder varie selon la configuration.
+    /// Try the subdirectory first, then the bundle root: how Xcode flattens a
+    /// folder reference varies with the configuration.
     static func url(_ name: String, _ ext: String) -> URL? {
         Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources")
             ?? Bundle.main.url(forResource: name, withExtension: ext)
@@ -33,7 +33,7 @@ enum Resources {
         return try Data(contentsOf: u)
     }
 
-    /// Les batches gratuits embarqués dans l'app.
+    /// The free batches shipped inside the app.
     static func bundledBatches() -> [URL] {
         let folder = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Resources/batches")
         return folder ?? []
