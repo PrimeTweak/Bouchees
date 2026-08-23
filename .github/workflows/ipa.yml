@@ -29,6 +29,13 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Check repository integrity
+        # Runs first and costs a second. A folder dropped in the Finder
+        # replaces rather than merges, and a partial delivery silently deletes
+        # everything it does not carry. Naming the missing file here beats a
+        # MODULE_NOT_FOUND thirty minutes into the build.
+        run: node tools/check-repo.js
+
       - name: Run engine tests before building
         # Si les tests tombent, aucun IPA n'est produit. Un moteur cassé qui
         # part sur un téléphone, c'est exactement ce qu'on empêche.
