@@ -301,7 +301,7 @@ final class AppState {
 
     var lockedBatches: [Batch] { batches.filter { !$0.unlocked } }
 
-    var lotLePlusRecentDeverrouille: Batch? {
+    var mostRecentUnlockedBatch: Batch? {
         batches.filter(\.unlocked).sorted { $0.id < $1.id }.last
     }
 }
@@ -310,15 +310,18 @@ final class AppState {
 
 enum Format {
     /// "milk, eggs and peanuts" rather than "milk, eggs, peanuts".
+    /// The joining word is localised: French needs "et", English "and".
     static func liste(_ items: [String]) -> String {
         guard items.count > 1 else { return items.first ?? "" }
-        return items.dropLast().joined(separator: ", ") + " et " + (items.last ?? "")
+        let et = String(localized: "and", comment: "joins the last two items of a list")
+        return items.dropLast().joined(separator: ", ") + " " + et + " " + (items.last ?? "")
     }
 
-    static func age(_ mois: Int) -> String {
-        if mois < 24 { return "\(mois) mois" }
-        let ans = mois / 12
-        let others = mois % 12
-        return others == 0 ? "\(ans) ans" : "\(ans) ans \(others) mois"
+    static func age(_ months: Int) -> String {
+        if months < 24 { return String(localized: "\(months) months") }
+        let years = months / 12
+        let rest = months % 12
+        return rest == 0 ? String(localized: "\(years) years")
+                         : String(localized: "\(years) years \(rest) months")
     }
 }

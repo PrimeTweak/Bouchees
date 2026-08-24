@@ -175,14 +175,24 @@ async function cycleImages(donnees, options) {
   for (const p of plan.slice(0, limite)) {
     const recette = corpus.find((r) => r.id === p.id);
     let img;
-    /* 1216x832: enough definition for the cards and the detail view, and a
-     * 3:2 ratio that crops well to both 4:3 and 16:10. Adjustable through
-     * DRAWTHINGS_LARGEUR et DRAWTHINGS_HAUTEUR. */
+    /* 1664x1104 by default, and the arithmetic behind it:
+     *
+     *   iPhone 16 Pro      402pt x 3  = 1206 px wide
+     *   iPhone 16 Pro Max  440pt x 3  = 1320 px wide
+     *   iPad 11"           820pt x 2  = 1640 px wide
+     *
+     * The view uses scaledToFill, which CROPS: whatever survives the crop is
+     * then blown up to fill. At 1216 px there was 1% of headroom on a Pro and
+     * a deficit on a Pro Max, so every card was quietly upscaled. 1664 covers
+     * the iPad and leaves real room for the crop.
+     *
+     * A 3:2 ratio still crops cleanly to both 4:3 (cards) and 16:10 (hero).
+     * Adjustable through DRAWTHINGS_LARGEUR and DRAWTHINGS_HAUTEUR. */
     try {
       img = await mImage.generer({
         prompt: p.prompt, negatif: p.negatif,
-        largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1216),
-        hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 832)
+        largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1664),
+        hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1104)
       });
     }
     catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  x  " + p.name + " — " + e.message); continue; }

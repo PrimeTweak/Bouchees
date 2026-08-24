@@ -46,49 +46,54 @@ struct Quantity: Codable, Hashable, Sendable {
 
 // MARK: - Statuts
 
+/* The raw values MUST match what the engine emits. They are the one place
+ * where a rename on one side alone shows no error: an unknown case falls back
+ * to `unknown`, every recipe lands outside every section, and the list goes
+ * silently empty. That is exactly what happened. */
+
 enum RecipeStatus: String, Codable, Sendable {
-    case telleQuelle = "telle_quelle"
-    case adaptee
-    case nonAdaptable = "non_adaptable"
-    case inconnu
+    case asIs = "as_is"
+    case adapted
+    case notAdaptable = "not_adaptable"
+    case unknown
 
     init(from decoder: Decoder) throws {
-        let brut = try decoder.singleValueContainer().decode(String.self)
-        self = RecipeStatus(rawValue: brut) ?? .inconnu
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = RecipeStatus(rawValue: raw) ?? .unknown
     }
 }
 
 enum IngredientStatus: String, Codable, Sendable {
-    case conserve
-    case substitue
-    case omis
-    case impossible
-    case inconnu
+    case kept
+    case swapped
+    case omitted
+    case blocked
+    case unknown
 
     init(from decoder: Decoder) throws {
-        let brut = try decoder.singleValueContainer().decode(String.self)
-        self = IngredientStatus(rawValue: brut) ?? .inconnu
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = IngredientStatus(rawValue: raw) ?? .unknown
     }
 }
 
 enum AlertLevel: String, Codable, Sendable {
-    case bloquant
+    case blocking
     case safety
-    case attention
+    case caution
     case info
 
     init(from decoder: Decoder) throws {
-        let brut = try decoder.singleValueContainer().decode(String.self)
-        self = AlertLevel(rawValue: brut) ?? .info
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = AlertLevel(rawValue: raw) ?? .info
     }
 
     /// Short label shown ahead of the message.
     var label: String {
         switch self {
-        case .bloquant: return "STOP"
-        case .safety: return "ÂGE"
-        case .attention: return "NOTE"
-        case .info: return "ÉCH."
+        case .blocking: return String(localized: "STOP")
+        case .safety:   return String(localized: "AGE")
+        case .caution:  return String(localized: "NOTE")
+        case .info:     return String(localized: "SWAP")
         }
     }
 }
@@ -212,17 +217,17 @@ struct AdaptedRecipe: Codable, Sendable {
     let steps: [String]
     let remainingAllergens: [String]
 
-    var blockingAlert: Alert? { alerts.first { $0.level == .bloquant } }
-    var nonBlockingAlerts: [Alert] { alerts.filter { $0.level != .bloquant } }
+    var blockingAlert: Alert? { alerts.first { $0.level == .blocking } }
+    var nonBlockingAlerts: [Alert] { alerts.filter { $0.level != .blocking } }
     var ageGuidanceCount: Int { alerts.filter { $0.level == .safety }.count }
-    var hasChanges: Bool { ingredients.contains { $0.status != .conserve } }
+    var hasChanges: Bool { ingredients.contains { $0.status != .kept } }
 
     /// The first swap, for the preview on a card.
     var firstSwap: (de: String, to: String)? {
-        if let s = ingredients.first(where: { $0.status == .substitue }), let v = s.toName {
+        if let s = ingredients.first(where: { $0.status == .swapped }), let v = s.toName {
             return (s.name, v)
         }
-        if let o = ingredients.first(where: { $0.status == .omis }) {
+        if let o = ingredients.first(where: { $0.status == .omitted }) {
             return (o.name, "we leave it out")
         }
         return nil

@@ -77,7 +77,7 @@ struct ProfilesScreen: View {
                 Button("Remove", role: .destructive) { etat.remove(p) }
                 Button("Cancel", role: .cancel) { }
             } message: { p in
-                Text("Le profile de \(p.name) et ses allergènes seront effacés de cet appareil.")
+                Text("\(p.name)'s profile and their allergens will be erased from this device.")
             }
         }
     }
@@ -106,8 +106,8 @@ struct ProfileRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.name).font(.headline).foregroundStyle(.primary)
                 Text(noms.isEmpty
-                     ? "\(Format.age(profile.ageMonths)) — aucun allergène évité"
-                     : "\(Format.age(profile.ageMonths)) — sans \(Format.liste(noms))")
+                     ? "\(Format.age(profile.ageMonths)) — no allergen avoided"
+                     : "\(Format.age(profile.ageMonths)) — no \(Format.liste(noms))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

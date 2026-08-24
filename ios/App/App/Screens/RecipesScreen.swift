@@ -46,9 +46,9 @@ struct RecipesScreen: View {
     /// The suggestion of the day: ready as is, and quick if possible.
     private var hero: (recipe: Recipe, result: AdaptedRecipe)? {
         guard noFilters else { return nil }
-        return pairs.first { $0.result.status == .telleQuelle && ($0.recipe.timeMinutes ?? 99) <= 30 }
-            ?? pairs.first { $0.result.status == .telleQuelle }
-            ?? pairs.first { $0.result.status == .adaptee }
+        return pairs.first { $0.result.status == .asIs && ($0.recipe.timeMinutes ?? 99) <= 30 }
+            ?? pairs.first { $0.result.status == .asIs }
+            ?? pairs.first { $0.result.status == .adapted }
     }
 
     private var others: [(recipe: Recipe, result: AdaptedRecipe)] {
@@ -78,9 +78,9 @@ struct RecipesScreen: View {
                                  title: "Nothing matches",
                                  message: "Try another word, or remove a filter.")
                     } else {
-                        section(String(localized: "Ready as is"), others.filter { $0.result.status == .telleQuelle })
-                        section(String(localized: "With a few swaps"), others.filter { $0.result.status == .adaptee })
-                        section(String(localized: "Not this time"), others.filter { $0.result.status == .nonAdaptable })
+                        section(String(localized: "Ready as is"), others.filter { $0.result.status == .asIs })
+                        section(String(localized: "With a few swaps"), others.filter { $0.result.status == .adapted })
+                        section(String(localized: "Not this time"), others.filter { $0.result.status == .notAdaptable })
                     }
 
                     lockedBatches
@@ -131,12 +131,12 @@ struct RecipesScreen: View {
     private var descriptionProfil: String {
         let noms = etat.allergenNames(profile.allergens)
         if etat.familyMode && etat.profiles.count > 1 {
-            let base = "On prend l’âge du plus jeune (\(Format.age(profile.ageMonths))) et on évite tout ce que chacun évite"
+            let base = "We take the youngest age (\(Format.age(profile.ageMonths))) and avoid everything any of them avoids"
             return noms.isEmpty ? base + "." : base + " : \(Format.liste(noms))."
         }
         return noms.isEmpty
-            ? "\(Format.age(profile.ageMonths)) — aucun allergène évité pour l’instant."
-            : "\(Format.age(profile.ageMonths)) — sans \(Format.liste(noms))."
+            ? "\(Format.age(profile.ageMonths)) — no allergen avoided yet."
+            : "\(Format.age(profile.ageMonths)) — no \(Format.liste(noms))."
     }
 
     private var filters: some View {
@@ -194,7 +194,7 @@ struct RecipesScreen: View {
                                     .font(.title3)
                                     .foregroundStyle(Tint.betterave)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(lot.count) recipes verrouillées").font(.subheadline.weight(.semibold))
+                                    Text("\(lot.count) locked recipes").font(.subheadline.weight(.semibold))
                                     Text("See what the subscription adds")
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
@@ -229,7 +229,7 @@ struct FeaturedCard: View {
     let firstName: String
 
     private var pourquoi: String {
-        result.status == .telleQuelle
+        result.status == .asIs
             ? "Rien à changer : telle quelle, elle convient à \(firstName)."
             : "\(result.swapCount) échange\(result.swapCount > 1 ? "s" : "") et c’est prêt pour \(firstName)."
     }

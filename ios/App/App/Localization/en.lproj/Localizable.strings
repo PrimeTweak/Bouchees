@@ -180,3 +180,23 @@
 "Sign in from Settings to rate a recipe." = "Sign in from Settings to rate a recipe.";
 "The rating couldn’t be saved. Try again later." = "The rating couldn’t be saved. Try again later.";
 "Not rated yet" = "Not rated yet";
+
+/* Added with the enum and formatting alignment */
+"and" = "and";
+"%lld months" = "%lld months";
+"%lld years" = "%lld years";
+"%lld years %lld months" = "%lld years %lld months";
+"%@'s profile and their allergens will be erased from this device." = "%@'s profile and their allergens will be erased from this device.";
+"%@ — no allergen avoided" = "%@ — no allergen avoided";
+"%@ — no %@" = "%@ — no %@";
+"STOP" = "STOP";
+"AGE" = "AGE";
+"NOTE" = "NOTE";
+"SWAP" = "SWAP";
+"Exact age: %lld months" = "Exact age: %lld months";
+"no %@" = "no %@";
+"%@, no safe replacement." = "%@, no safe replacement.";
+"We take the youngest age (%@) and avoid everything any of them avoids" = "We take the youngest age (%@) and avoid everything any of them avoids";
+"%@ — no allergen avoided yet." = "%@ — no allergen avoided yet.";
+", avoided" = ", avoided";
+"%@ — no %@." = "%@ — no %@.";

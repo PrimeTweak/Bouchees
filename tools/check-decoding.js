@@ -84,6 +84,48 @@ CASES.forEach(function (c) {
   });
 });
 
+/* Enum raw values. This is the case a field-by-field check cannot see: the
+ * property is present, the type is right, and an unrecognised value falls back
+ * to `unknown`. Every recipe then lands outside every section and the list goes
+ * silently empty. Measured once, in production. */
+function enumValues(enumName) {
+  const m = swift.match(new RegExp("enum\\s+" + enumName + "[^{]*\\{((?:.|\\n)*?)\\n\\}"));
+  if (!m) return null;
+  const out = [];
+  const re = /^\s*case\s+(\w+)(?:\s*=\s*"([^"]+)")?/gm;
+  let f;
+  while ((f = re.exec(m[1])) !== null) out.push(f[2] || f[1]);
+  return out;
+}
+
+const Engine = require(path.join(root, "engine/engine.js"));
+const data = { catalogue: catalogue, substitutions: read("data/substitutions.json"), base: base };
+
+/* Run the engine over a spread of profiles and collect every value it can
+ * actually emit, then check each one has a home in the Swift enum. */
+const emitted = { status: new Set(), ingredientStatus: new Set(), level: new Set() };
+[[[], 6], [["milk"], 9], [["egg", "milk", "peanut"], 24], [["wheat", "soy"], 12],
+ [["tree_nut"], 48], [["fish", "shellfish"], 18]].forEach(function (p) {
+  corpus.forEach(function (r) {
+    const res = Engine.adapterRecette(r, { allergens: p[0], ageMois: p[1] }, data);
+    emitted.status.add(res.status);
+    (res.ingredients || []).forEach(function (i) { if (i.status) emitted.ingredientStatus.add(i.status); });
+    (res.alerts || []).forEach(function (a) { if (a.level) emitted.level.add(a.level); });
+  });
+});
+
+[["RecipeStatus", emitted.status], ["IngredientStatus", emitted.ingredientStatus],
+ ["AlertLevel", emitted.level]].forEach(function (pair) {
+  const declared = enumValues(pair[0]);
+  if (!declared) { problems.push("enum " + pair[0] + " not found in Models.swift"); return; }
+  Array.from(pair[1]).forEach(function (v) {
+    if (declared.indexOf(v) === -1) {
+      problems.push("the engine emits " + pair[0] + " \"" + v + "\", which Swift does not declare" +
+        "  (it declares: " + declared.join(", ") + ")");
+    }
+  });
+});
+
 /* The bridge and the Swift side have to agree on function names too. */
 const bridge = fs.readFileSync(path.join(root, "engine/native-bridge.js"), "utf8");
 const engineSwift = fs.readFileSync(path.join(root, "ios/App/App/Core/RecipeEngine.swift"), "utf8");

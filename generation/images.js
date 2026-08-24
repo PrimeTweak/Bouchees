@@ -229,7 +229,12 @@ function validerEntree(entree, recette, dossierImages) {
     else if (!entree.verification.reconnus) e.push("la vision n'a reconnu aucun ingrédient de la recette");
     else if (entree.verification.moteur === "absent") e.push("aucun moteur de vision n'a réellement vérifié");
   }
-  if (entree.largeur && entree.largeur < 800) e.push("image trop petite : " + entree.largeur + " px");
+  /* The display needs 1320 px on an iPhone Pro Max, 1640 on an iPad, and the
+   * view crops before it fills. Anything under 1320 is upscaled on screen —
+   * which is exactly how a set of soft photos got shipped once. */
+  const LARGEUR_MIN = 1320;
+  if (entree.largeur && entree.largeur < LARGEUR_MIN)
+    e.push("image too small: " + entree.largeur + " px wide, " + LARGEUR_MIN + " required");
   return { ok: e.length === 0, erreurs: e };
 }
 

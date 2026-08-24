@@ -68,7 +68,7 @@ struct RecipeDetailScreen: View {
     private var soustitre: String {
         var bouts = [recipe.subtitle, "\(firstName), \(Format.age(etat.activeProfile.ageMonths))"]
         let noms = etat.allergenNames(etat.activeProfile.allergens)
-        if !noms.isEmpty { bouts.append("sans \(Format.liste(noms))") }
+        if !noms.isEmpty { bouts.append("no \(Format.liste(noms))") }
         return bouts.joined(separator: " · ")
     }
 
@@ -238,22 +238,22 @@ struct IngredientRow: View {
     @ViewBuilder
     private var name: some View {
         switch ingredient.status {
-        case .substitue:
+        case .swapped:
             (Text(ingredient.name).strikethrough(true, color: Tint.canneberge).foregroundStyle(.secondary)
              + Text("  →  ").foregroundStyle(Tint.betterave)
              + Text(ingredient.toName ?? "").foregroundStyle(Tint.betterave))
                 .font(.subheadline.weight(.semibold))
-        case .omis:
+        case .omitted:
             (Text(ingredient.name).strikethrough(true, color: Tint.canneberge).foregroundStyle(.secondary)
              + Text("  →  ").foregroundStyle(Tint.betterave)
              + Text("we leave it out").foregroundStyle(Tint.betterave))
                 .font(.subheadline.weight(.semibold))
-        case .impossible:
+        case .blocked:
             Text(ingredient.name)
                 .strikethrough(true, color: Tint.canneberge)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
-        case .conserve, .inconnu:
+        case .kept, .unknown:
             Text(ingredient.name).font(.subheadline.weight(.semibold))
         }
     }
@@ -262,11 +262,11 @@ struct IngredientRow: View {
         var out: [(String, Color)] = []
         if let m = ingredient.reason { out.append((m, Tint.betterave)) }
         if let r = ingredient.ratio,
-           ingredient.status == .substitue || ingredient.status == .omis {
+           ingredient.status == .swapped || ingredient.status == .omitted {
             out.append((r, Tint.pois))
         }
         if let p = ingredient.prep { out.append((p, Tint.courge)) }
-        if ingredient.status == .impossible {
+        if ingredient.status == .blocked {
             out.append(("no safe replacement", Tint.canneberge))
         }
         return out.map { (texte: $0.0, color: $0.1) }
@@ -274,12 +274,12 @@ struct IngredientRow: View {
 
     private var descriptionAccessible: String {
         switch ingredient.status {
-        case .substitue:
+        case .swapped:
             return "\(ingredient.name), remplacé par \(ingredient.toName ?? ""). \(ingredient.reason ?? "")"
-        case .omis:
+        case .omitted:
             return "\(ingredient.name), retiré. \(ingredient.reason ?? "")"
-        case .impossible:
-            return "\(ingredient.name), aucun remplacement sûr."
+        case .blocked:
+            return "\(ingredient.name), no safe replacement."
         default:
             return "\(ingredient.name), \(ingredient.displayQuantity). \(ingredient.prep ?? "")"
         }

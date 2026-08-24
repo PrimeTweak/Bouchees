@@ -178,3 +178,23 @@
 "Sign in from Settings to rate a recipe." = "Connectez-vous dans les réglages pour noter une recette.";
 "The rating couldn’t be saved. Try again later." = "La note n’a pas pu être enregistrée. Réessayez plus tard.";
 "Not rated yet" = "Pas encore noté";
+
+/* Added with the enum and formatting alignment */
+"and" = "et";
+"%lld months" = "%lld mois";
+"%lld years" = "%lld ans";
+"%lld years %lld months" = "%lld ans %lld mois";
+"%@'s profile and their allergens will be erased from this device." = "Le profil de %@ et ses allergènes seront effacés de cet appareil.";
+"%@ — no allergen avoided" = "%@ — aucun allergène évité";
+"%@ — no %@" = "%@ — sans %@";
+"STOP" = "STOP";
+"AGE" = "ÂGE";
+"NOTE" = "NOTE";
+"SWAP" = "ÉCH.";
+"Exact age: %lld months" = "Âge exact : %lld mois";
+"no %@" = "sans %@";
+"%@, no safe replacement." = "%@, aucun remplacement sûr.";
+"We take the youngest age (%@) and avoid everything any of them avoids" = "On prend l’âge du plus jeune (%@) et on évite tout ce que chacun évite";
+"%@ — no allergen avoided yet." = "%@ — aucun allergène évité pour l’instant.";
+", avoided" = ", évité";
+"%@ — no %@." = "%@ — sans %@.";

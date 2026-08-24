@@ -48,7 +48,7 @@ enum RepositoryError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .missingResource(let n): return "Ressource manquante dans l’app : \(n)"
+        case .missingResource(let n): return "Missing resource in the app: \(n)"
         case .network(let c): return "Le serveur a répondu \(c)."
         case .subscriptionRequired: return "Ce lot demande un subscription."
         case .unreadableResponse: return "Réponse du serveur illisible."

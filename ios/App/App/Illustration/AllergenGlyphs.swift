@@ -170,6 +170,6 @@ struct AllergenToggle: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isOn ? [.isSelected] : [])
-        .accessibilityLabel("\(allergene.name)\(isOn ? ", évité" : "")")
+        .accessibilityLabel("\(allergene.name)\(isOn ? String(localized: ", avoided") : "")")
     }
 }

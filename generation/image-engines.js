@@ -12,6 +12,43 @@
 const zlib = require("zlib");
 const crypto = require("crypto");
 
+/* Reads the real dimensions out of the image header. No dependency: PNG,
+ * JPEG and WebP all state their size in the first bytes. */
+function tailleImage(buf) {
+  if (!buf || buf.length < 32) return null;
+
+  /* PNG: IHDR at byte 16, width and height as big-endian 32-bit */
+  if (buf[0] === 0x89 && buf.toString("ascii", 1, 4) === "PNG") {
+    return { largeur: buf.readUInt32BE(16), hauteur: buf.readUInt32BE(20) };
+  }
+
+  /* WebP: "RIFF" .... "WEBP" */
+  if (buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") {
+    const type = buf.toString("ascii", 12, 16);
+    if (type === "VP8X") return { largeur: buf.readUIntLE(24, 3) + 1, hauteur: buf.readUIntLE(27, 3) + 1 };
+    if (type === "VP8 ") return { largeur: buf.readUInt16LE(26) & 0x3fff, hauteur: buf.readUInt16LE(28) & 0x3fff };
+    if (type === "VP8L") {
+      const b = buf.readUInt32LE(21);
+      return { largeur: (b & 0x3fff) + 1, hauteur: ((b >> 14) & 0x3fff) + 1 };
+    }
+    return null;
+  }
+
+  /* JPEG: walk the segments to the first SOF marker */
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    let i = 2;
+    while (i < buf.length - 9) {
+      if (buf[i] !== 0xff) { i++; continue; }
+      const marqueur = buf[i + 1];
+      if (marqueur >= 0xc0 && marqueur <= 0xcf && marqueur !== 0xc4 && marqueur !== 0xc8 && marqueur !== 0xcc) {
+        return { hauteur: buf.readUInt16BE(i + 5), largeur: buf.readUInt16BE(i + 7) };
+      }
+      i += 2 + buf.readUInt16BE(i + 2);
+    }
+  }
+  return null;
+}
+
 const drawthings = {
   name: "drawthings",
   disponible: function () { return !!(process.env.DRAWTHINGS_URL || process.env.DRAWTHINGS_ACTIF); },
@@ -23,8 +60,8 @@ const drawthings = {
       body: JSON.stringify({
         prompt: spec.prompt,
         negative_prompt: spec.negatif,
-        width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1216),
-        height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 832),
+        width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
+        height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
         steps: Number(process.env.DRAWTHINGS_ETAPES || 30),
         cfg_scale: Number(process.env.DRAWTHINGS_CFG || 6),
         seed: spec.graine === undefined ? -1 : spec.graine,
@@ -36,9 +73,25 @@ const drawthings = {
       throw new Error("Draw Things a refusé : " + (d.error || rep.status) +
         " — vérifie que l'API HTTP est activée dans les réglages de l'app");
     }
-    return { octets: Buffer.from(d.images[0], "base64"),
-             largeur: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1216),
-             hauteur: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 832),
+    const octets = Buffer.from(d.images[0], "base64");
+
+    /* Read the size FROM THE PNG, never from what we asked for.
+     *
+     * Draw Things silently clamps to whatever the selected model and the
+     * machine allow. Recording the requested size meant the manifest claimed
+     * 1664 px while the file on disk was far smaller — and the size gate,
+     * reading the manifest, waved it through. Measure the artifact. */
+    const reelle = tailleImage(octets);
+    const demandee = { largeur: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
+                       hauteur: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104) };
+    if (reelle && reelle.largeur < demandee.largeur) {
+      console.log("      Draw Things returned " + reelle.largeur + "x" + reelle.hauteur +
+                  " for a request of " + demandee.largeur + "x" + demandee.hauteur +
+                  " — the model or the app is clamping the size");
+    }
+    return { octets: octets,
+             largeur: reelle ? reelle.largeur : demandee.largeur,
+             hauteur: reelle ? reelle.hauteur : demandee.hauteur,
              moteur: "drawthings" };
   }
 };

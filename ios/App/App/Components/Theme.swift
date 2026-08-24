@@ -17,19 +17,19 @@ enum Tint {
 extension RecipeStatus {
     var color: Color {
         switch self {
-        case .telleQuelle: return Tint.pois
-        case .adaptee: return Tint.betterave
-        case .nonAdaptable: return Tint.canneberge
-        case .inconnu: return .secondary
+        case .asIs: return Tint.pois
+        case .adapted: return Tint.betterave
+        case .notAdaptable: return Tint.canneberge
+        case .unknown: return .secondary
         }
     }
 
     var symbol: String {
         switch self {
-        case .telleQuelle: return "checkmark.circle.fill"
-        case .adaptee: return "arrow.triangle.swap"
-        case .nonAdaptable: return "xmark.octagon.fill"
-        case .inconnu: return "questionmark.circle.fill"
+        case .asIs: return "checkmark.circle.fill"
+        case .adapted: return "arrow.triangle.swap"
+        case .notAdaptable: return "xmark.octagon.fill"
+        case .unknown: return "questionmark.circle.fill"
         }
     }
 }
@@ -37,8 +37,8 @@ extension RecipeStatus {
 extension AlertLevel {
     var color: Color {
         switch self {
-        case .bloquant: return Tint.canneberge
-        case .safety, .attention: return Tint.courge
+        case .blocking: return Tint.canneberge
+        case .safety, .caution: return Tint.courge
         case .info: return Tint.betterave
         }
     }
@@ -57,21 +57,21 @@ struct Verdict {
         color = result.status.color
         symbol = result.status.symbol
         switch result.status {
-        case .telleQuelle:
+        case .asIs:
             title = String(localized: "Yes, as is")
             detail = String(format: String(localized: "No ingredient to change for %@."), firstName)
-        case .adaptee:
+        case .adapted:
             let n = result.swapCount
             let modele = n > 1
                 ? String(localized: "Yes — with %lld swaps")
                 : String(localized: "Yes — with %lld swap")
             title = String(format: modele, n)
             detail = String(localized: "What we replace, with what, and why — it’s all detailed below.")
-        case .nonAdaptable:
+        case .notAdaptable:
             title = String(format: String(localized: "Not this time for %@"), firstName)
             detail = result.blockingAlert?.message
                 ?? String(localized: "One ingredient has no safe replacement.")
-        case .inconnu:
+        case .unknown:
             title = String(localized: "We can’t say")
             detail = String(localized: "This recipe couldn’t be analysed. Don’t serve it without checking yourself.")
         }
@@ -80,15 +80,15 @@ struct Verdict {
     /// Version courte pour une carte.
     static func token(_ result: AdaptedRecipe) -> String {
         switch result.status {
-        case .telleQuelle: return String(localized: "As is")
-        case .adaptee:
+        case .asIs: return String(localized: "As is")
+        case .adapted:
             let n = result.swapCount
             let modele = n > 1
                 ? String(localized: "Yes — with %lld swaps")
                 : String(localized: "Yes — with %lld swap")
             return String(format: modele, n)
-        case .nonAdaptable: return String(localized: "Not this time")
-        case .inconnu: return String(localized: "Needs checking")
+        case .notAdaptable: return String(localized: "Not this time")
+        case .unknown: return String(localized: "Needs checking")
         }
     }
 }
@@ -116,13 +116,13 @@ struct GuidanceChip: View {
     let count: Int
 
     var body: some View {
-        Text("\(count) consigne\(count > 1 ? "s" : "")")
+        Text("\(count) age-related safety note\(count > 1 ? "s" : "")")
             .font(.caption2.weight(.semibold))
             .foregroundStyle(Tint.courge)
             .padding(.horizontal, 9)
             .padding(.vertical, 5)
             .background(.thinMaterial, in: Capsule())
-            .accessibilityLabel("\(count) consigne\(count > 1 ? "s" : "") de sécurité liée\(count > 1 ? "s" : "") à l’âge")
+            .accessibilityLabel("\(count) age-related safety note\(count > 1 ? "s" : "")")
     }
 }
 
@@ -130,7 +130,7 @@ struct RecipeCard: View {
     let recipe: Recipe
     let result: AdaptedRecipe
 
-    private var estBloquee: Bool { result.status == .nonAdaptable }
+    private var estBloquee: Bool { result.status == .notAdaptable }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

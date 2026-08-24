@@ -22,7 +22,7 @@ const REQUIRED = [
   "data/recipes.json", "data/publishing.json",
   "data/imported/imported-recipes.json", "data/generated/generated-recipes.json",
   "tools/gaps.js", "tools/publish.js", "tools/weeks.js", "tools/cycle.js",
-  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "tools/check-bundle-names.js",
+  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "tools/image-sizes.js", "tools/check-bundle-names.js",
   "server/server.js", "server/ratings.js", "server/apple.js", "server/stripe.js",
   "server/legal-pages.js",
   "ingest/importer.js", "ingest/adapters.js", "ingest/normalizer.js",

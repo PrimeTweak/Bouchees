@@ -256,7 +256,7 @@ struct DishArtwork: View {
     /// Visible ingredients = those left after adaptation.
     private var items: [IngredientVisual] {
         result.ingredients
-            .filter { $0.status != .omis && $0.status != .impossible }
+            .filter { $0.status != .omitted && $0.status != .blocked }
             .map { Palette.visuel($0.to ?? $0.id, role: $0.role) }
     }
 

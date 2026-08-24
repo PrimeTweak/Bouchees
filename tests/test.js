@@ -548,13 +548,13 @@ test("images : une photo non révisée n'est jamais publiée — repli sur l'ill
   const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
   const sansRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp } };
   assert.equal(Images.visuelPour(r, res, sansRevision, false).type, "illustration");
-  const avecRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp, revisePar: "François", largeur: 1200 } };
+  const avecRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp, revisePar: "François", largeur: 1664 } };
   assert.equal(Images.visuelPour(r, res, avecRevision, false).type, "photo");
 });
 
 test("images : dès qu'un échange a lieu, la photo cède la place à l'illustration", () => {
   const r = parId["fluffy-pancakes"];
-  const manifeste = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1200 } };
+  const manifeste = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1664 } };
   const adaptee = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, donnees);
   const v = Images.visuelPour(r, adaptee, manifeste, false);
   assert.equal(v.type, "illustration");
@@ -563,15 +563,30 @@ test("images : dès qu'un échange a lieu, la photo cède la place à l'illustra
 
 test("images : une empreinte périmée invalide la photo (les ingrédients ont changé)", () => {
   const r = parId["fluffy-pancakes"];
-  const v = Images.validerEntree({ fichier: "x.webp", empreinte: "000000000000", revisePar: "François", largeur: 1200 }, r, false);
+  const v = Images.validerEntree({ fichier: "x.webp", empreinte: "000000000000", revisePar: "François", largeur: 1664 }, r, false);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /périmée/.test(x)));
+});
+
+test("images : une photo sous la largeur d'affichage est refusée", () => {
+  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre avant
+   * de remplir. Une image plus petite est agrandie à l'écran — c'est comme ça
+   * qu'un lot de photos molles s'est retrouvé livré. */
+  const r = parId["fluffy-pancakes"];
+  const base = { fichier: "images/x.png", empreinte: Images.empreinte(r),
+                 revisePar: "François" };
+  const petite = Images.validerEntree(Object.assign({}, base, { largeur: 1216 }), r, false);
+  assert.equal(petite.ok, false, "1216 px doit être refusé");
+  assert(petite.erreurs.some((e) => /too small/.test(e)));
+
+  const bonne = Images.validerEntree(Object.assign({}, base, { largeur: 1664 }), r, false);
+  assert.equal(bonne.ok, true, bonne.erreurs.join(" / "));
 });
 
 test("images : un manifeste qui survit à la disparition du fichier ne publie rien", () => {
   const r = parId["fluffy-pancakes"];
   const entree = { fichier: "images/nexiste-pas.png", empreinte: Images.empreinte(r),
-                   revisePar: "vérification automatique (test)", largeur: 1024,
+                   revisePar: "vérification automatique (test)", largeur: 1664,
                    verification: { moteur: "test", reconnus: 3, attendus: 5 } };
   const v = Images.validerEntree(entree, r);
   assert.equal(v.ok, false, "le disque doit faire foi, pas le manifeste");
@@ -689,16 +704,16 @@ test("manifeste : une révision automatique sans verdict de vision ne publie pas
   const r = parId["squash-and-coconut-soup"];
   const emp = Images.empreinte(r);
   const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
-  const complet = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
+  const complet = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1664,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 3, attendus: 5 } } };
   assert.equal(Images.visuelPour(r, res, complet, false).type, "photo");
-  const sansVerdict = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
+  const sansVerdict = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1664,
     revisePar: "vérification automatique (test)" } };
   assert.equal(Images.visuelPour(r, res, sansVerdict, false).type, "illustration");
-  const rienVu = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
+  const rienVu = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1664,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 0, attendus: 5 } } };
   assert.equal(Images.visuelPour(r, res, rienVu, false).type, "illustration");
-  const visionAbsente = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
+  const visionAbsente = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1664,
     revisePar: "vérification automatique (absent)", verification: { moteur: "absent", reconnus: 2, attendus: 5 } } };
   assert.equal(Images.visuelPour(r, res, visionAbsente, false).type, "illustration");
 });

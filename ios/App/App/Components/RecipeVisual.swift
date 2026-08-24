@@ -25,7 +25,7 @@ struct RecipeVisual: View {
     @State private var echec = false
 
     private var photoPertinente: Bool {
-        recipe.image != nil && result.status == .telleQuelle && !echec
+        recipe.image != nil && result.status == .asIs && !echec
     }
 
     var body: some View {

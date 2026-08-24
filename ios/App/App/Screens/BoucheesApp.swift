@@ -212,7 +212,7 @@ struct OnboardingScreen: View {
 
     private var etapeAllergenes: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Qu’est-ce qu’on évite pour \(firstName) ?")
+            Text("What are we avoiding for \(firstName)?")
                 .font(.title2.weight(.bold))
             Text("We remove these ingredients from every recipe and suggest a replacement.")
                 .font(.subheadline)
@@ -323,7 +323,7 @@ struct AgePicker: View {
             .buttonStyle(.bordered)
             .padding(.top, 8)
             .accessibilityElement(children: .contain)
-            .accessibilityLabel("Âge exact : \(ageMonths) mois")
+            .accessibilityLabel("Exact age: \(ageMonths) months")
         }
     }
 }
