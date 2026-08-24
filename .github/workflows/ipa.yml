@@ -72,6 +72,13 @@ jobs:
           PY
           ls -R "$R"
 
+      - name: Check bundled resource names
+        # The Swift loads bundled files by name, as string literals. A rename
+        # in the repository does not rename those literals, and nothing else
+        # catches it: the build passes, the IPA installs, and the app dies on
+        # first launch. One second here beats a reinstall.
+        run: node tools/check-bundle-names.js
+
       - name: Check Swift sources
         # Pas un compilateur : attrape les symboles manquants, les types en
         # double, les assets absents. Deux secondes ici évitent quinze minutes

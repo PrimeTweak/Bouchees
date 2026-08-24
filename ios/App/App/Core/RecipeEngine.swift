@@ -63,7 +63,7 @@ final class RecipeEngine {
     }
 
     private func chargerScripts() throws {
-        for name in ["moteur", "pont-natif"] {
+        for name in ["engine", "native-bridge"] {
             guard let url = Resources.url(name, "js") else {
                 throw EngineError.scriptIntrouvable("\(name).js")
             }
