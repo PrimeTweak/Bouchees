@@ -116,12 +116,40 @@ jobs:
             clean build 2>&1 | tail -60
 
       - name: Package as .ipa
+        # Packaged with ditto, not zip.
+        #
+        # An installer reads Payload/*.app/Info.plist straight out of the
+        # archive, without extracting it first. `zip` on macOS writes entries
+        # some readers cannot walk — resource forks, directory headers, name
+        # encoding — which is why a bundle can be perfect once extracted and
+        # still read as "Unknown" by the installer.
+        #
+        # ditto is Apple's own tool for archiving a bundle and produces an
+        # archive iOS tooling reliably parses.
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
-          if [ -z "$APP" ]; then echo "Aucun .app produit — voir l'étape précédente"; exit 1; fi
-          mkdir -p sortie/Payload
-          cp -R "$APP" sortie/Payload/
-          cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
+          if [ -z "$APP" ]; then echo "No .app was produced — see the previous step"; exit 1; fi
+
+          rm -rf sortie && mkdir -p sortie/Payload
+          ditto "$APP" "sortie/Payload/$(basename "$APP")"
+
+          # Strip anything macOS may have attached to the copy; an installer
+          # walking the archive should meet nothing but the bundle.
+          xattr -cr sortie/Payload 2>/dev/null || true
+          find sortie -name ".DS_Store" -delete
+          find sortie -name "._*" -delete
+
+          ( cd sortie && ditto -c -k --sequesterRsrc --keepParent Payload Bouchees-unsigned.ipa )
+
+          echo "--- archive contents, as an installer sees them ---"
+          unzip -l sortie/Bouchees-unsigned.ipa | head -12
+          echo "--- the installer must find this entry ---"
+          unzip -l sortie/Bouchees-unsigned.ipa | grep -E "Payload/[^/]+\.app/Info\.plist" \
+            || { echo "Info.plist is not reachable at Payload/*.app/Info.plist"; exit 1; }
+          echo "--- and read it without extracting ---"
+          unzip -p sortie/Bouchees-unsigned.ipa "Payload/*.app/Info.plist" > /tmp/plist-from-archive
+          plutil -p /tmp/plist-from-archive | grep -E "CFBundleIdentifier|CFBundleShortVersionString|CFBundleName" \
+            || { echo "Info.plist unreadable straight from the archive"; exit 1; }
           ls -lh sortie/Bouchees-unsigned.ipa
 
       - name: Upload artifact
