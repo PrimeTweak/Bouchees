@@ -66,14 +66,25 @@ const drawthings = {
        * They are now opt-in: set DRAWTHINGS_CFG or DRAWTHINGS_SAMPLER only if
        * you know the value your build accepts. Left unset, Draw Things uses
        * whatever is configured in the app, which is the value that works. */
+      /* NO negative_prompt.
+       *
+       * Measured, not assumed: the same curl, same size, same steps, produces
+       * a clean photo without it and an embossed anaglyph with it. FLUX has no
+       * negative guidance — Draw Things ends up subtracting the render instead
+       * of steering it.
+       *
+       * Everything the negative prompt was guarding against is now stated
+       * positively in the prompt itself, which is how FLUX is meant to be
+       * driven anyway. Set DRAWTHINGS_NEGATIF=1 to send it again on a model
+       * that actually supports it (SDXL does). */
       body: JSON.stringify(Object.assign({
         prompt: spec.prompt,
-        negative_prompt: spec.negatif,
         width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
         height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
         steps: Number(process.env.DRAWTHINGS_ETAPES || 8),
         seed: spec.graine === undefined ? -1 : spec.graine
       },
+        process.env.DRAWTHINGS_NEGATIF && spec.negatif ? { negative_prompt: spec.negatif } : {},
         process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
         process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
       ))

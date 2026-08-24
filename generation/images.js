@@ -106,9 +106,12 @@ const NOMS_EN = {
 
 /* The KIND of dish is described rather than the title translated: a title
  * rendered word for word produces awkward prompts. */
+/* The categories are English in the data now; the French keys were left over
+ * from before the conversion and every recipe fell through to the generic
+ * fallback. */
 const PLATS_EN = {
-  "Déjeuner": "breakfast dish", "Repas": "family meal",
-  "Collation": "snack", "Dessert": "dessert"
+  "Breakfast": "breakfast dish", "Meal": "family meal",
+  "Snack": "snack", "Dessert": "dessert"
 };
 
 const EXCLUSIONS = {
@@ -167,10 +170,18 @@ function promptPour(recette, donnees) {
   const moment = MOMENTS[Math.floor(g / CADRAGES.length) % MOMENTS.length];
   const plat = PLATS_EN[recette.category] || "home-cooked dish";
 
+  /* The exclusions used to live in the negative prompt. That prompt is no
+   * longer sent — Draw Things turns it into an embossed anaglyph on FLUX — so
+   * they are stated POSITIVELY here instead. That is how FLUX is meant to be
+   * driven anyway, and the vision check still rejects any intruder that slips
+   * through: the prompt asks, the verification decides. */
+  const seulement = visibles.join(", ");
+
   return {
     positif: [
       "A homemade " + plat + " served in an everyday bowl on a kitchen table",
-      "clearly visible: " + visibles.join(", "),
+      "the bowl contains only these foods and nothing else: " + seulement,
+      "no other ingredient is present in the frame",
       cadrage,
       moment,
       STYLE
