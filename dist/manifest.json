@@ -1,6 +1,6 @@
 {
   "version": "2026-08-24",
-  "safetyChecksum": "6209d2ee1b7c",
+  "safetyChecksum": "23bb22d5cc42",
   "batches": [
     {
       "id": "2026-06",
@@ -74,6 +74,6 @@
     "2026-S33",
     "2026-S32"
   ],
-  "currentWeek": "2026-S35",
+  "currentWeek": "2026-S34",
   "windowSize": 3
 }
