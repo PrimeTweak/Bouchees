@@ -22,7 +22,7 @@ enum Resources {
     /// Try the subdirectory first, then the bundle root: how Xcode flattens a
     /// folder reference varies with the configuration.
     static func url(_ name: String, _ ext: String) -> URL? {
-        Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources")
+        Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Bundled")
             ?? Bundle.main.url(forResource: name, withExtension: ext)
     }
 
@@ -35,7 +35,7 @@ enum Resources {
 
     /// The free batches shipped inside the app.
     static func bundledBatches() -> [URL] {
-        let folder = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Resources/batches")
+        let folder = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Bundled/batches")
         return folder ?? []
     }
 }

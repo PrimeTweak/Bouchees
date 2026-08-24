@@ -52,7 +52,7 @@ jobs:
         # batches are bundled — a file inside an IPA can be read with a text
         # editor, so that would be no wall at all.
         run: |
-          R=ios/App/App/Resources
+          R=ios/App/App/Bundled
           rm -rf "$R"; mkdir -p "$R/batches"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
@@ -60,7 +60,7 @@ jobs:
           import json, shutil, pathlib
           m = json.load(open('dist/manifest.json'))
           free = set(m['free'])
-          dest = pathlib.Path('ios/App/App/Resources/batches')
+          dest = pathlib.Path('ios/App/App/Bundled/batches')
           for batch in sorted(free):
               src = pathlib.Path('dist/batches') / (batch + '.json')
               if src.exists():

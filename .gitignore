@@ -22,4 +22,4 @@ sortie/
 
 # Ressources embarquées au moment du build (moteur JS, tables, lots libres).
 # Le workflow les copie avant XcodeGen — rien à suivre ici.
-ios/App/App/Resources/
+ios/App/App/Bundled/

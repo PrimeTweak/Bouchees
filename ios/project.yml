@@ -33,7 +33,7 @@ targets:
     - path: App/App/Bouchees.storekit
     - path: App/App/Localization
       type: group
-    - path: App/App/Resources
+    - path: App/App/Bundled
       type: folder
       buildPhase: resources
     info:

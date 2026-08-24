@@ -38,6 +38,15 @@ const REQUIRED = [
 
 /* Folders with a known floor. Fewer files than this means one was replaced
  * rather than merged. */
+/* Names Apple reserves inside a bundle. A folder called "Resources" at the
+ * root of an iOS .app makes a bundle reader fall back to the macOS layout and
+ * look for Info.plist under Contents/ — which does not exist. The app then
+ * reads as unreadable to an installer even though every file is correct.
+ * Measured: renaming Ressources -> Resources during the English conversion is
+ * what broke sideloading. */
+const RESERVED_BUNDLE_DIRS = ["Resources", "Contents", "Frameworks", "PlugIns",
+                              "SharedFrameworks", "XPCServices", "_CodeSignature"];
+
 const FLOORS = [
   { dir: "ios/App/App", ext: ".swift", min: 12, recursive: true },
   { dir: "tools", ext: ".js", min: 5, recursive: false },
@@ -56,10 +65,25 @@ function countFiles(dir, ext, recursive) {
   return n;
 }
 
+const bundleRoot = path.join(root, "ios", "App", "App");
+const reserved = fs.existsSync(bundleRoot)
+  ? fs.readdirSync(bundleRoot, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && RESERVED_BUNDLE_DIRS.indexOf(e.name) !== -1)
+      .map((e) => e.name)
+  : [];
+
 const missing = REQUIRED.filter((f) => !fs.existsSync(path.join(root, f)));
 const thin = FLOORS
   .map((f) => ({ ...f, found: countFiles(f.dir, f.ext, f.recursive) }))
   .filter((f) => f.found < f.min);
+
+if (reserved.length) {
+  console.error("\nRESERVED BUNDLE DIRECTORY NAME");
+  reserved.forEach((n) => console.error("  x ios/App/App/" + n +
+    " — Apple reserves this name inside a bundle; an installer will fail to read the app"));
+  console.error("\nRename it to something neutral (Bundled, AppData, Content).\n");
+  process.exit(1);
+}
 
 if (!missing.length && !thin.length) {
   console.log("Repository complete — " + REQUIRED.length + " required files, all folders above their floor.");
