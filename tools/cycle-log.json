@@ -1,0 +1,207 @@
+{
+  "le": "2026-08-24T11:27:00.943Z",
+  "recettes": {
+    "commandees": 4,
+    "redigees": 0,
+    "acceptees": 0,
+    "rejetees": [],
+    "aRevoir": [],
+    "nouvelles": []
+  },
+  "images": {
+    "generees": 38,
+    "acceptees": 0,
+    "rejetees": [
+      {
+        "id": "banana-oat-muffins",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "fluffy-pancakes",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "lentil-and-carrot-patties",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "sweet-potato-and-chicken-puree",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "apple-cinnamon-oatmeal",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "date-energy-bites",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "pasta-in-rose-sauce-with-chicken",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "baked-fish-nuggets",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "silky-hummus",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "banana-bread",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "oatmeal-raisin-cookies",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "mini-vegetable-frittatas",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "squash-and-coconut-soup",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "mac-and-cheese-with-hidden-squash",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "turkey-and-apple-meatballs",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "vanilla-rice-pudding",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "mango-banana-smoothie",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "chewy-granola-bars",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "vanilla-chia-pudding",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "yogurt-dip-with-vegetable-sticks",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "chicken-couscous",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "creamy-shrimp-and-pea-risotto",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "soft-apricot-granola",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "mild-chicken-quesadillas",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "tomato-alphabet-soup",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "crispy-tofu-with-sweet-maple-sauce",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "carrot-and-maple-muffins",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "creamy-salmon-pasta",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "banana-oat-pancakes",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "vegetable-fried-rice",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "coconut-rice-pudding-with-mango",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "apple-and-date-cinnamon-sauce",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "lentil-squash-and-carrot-puree",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "chicken-sweet-potato-and-green-peas",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "roasted-sweet-potato-sticks",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "soft-banana-oat-patties",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "creamy-mango-oatmeal",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      },
+      {
+        "id": "tender-rice-flour-crepes",
+        "reason": "image jugée illisible par la vision : aucun modèle de vision configuré",
+        "detectes": []
+      }
+    ]
+  }
+}
