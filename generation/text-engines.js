@@ -1,9 +1,9 @@
-/* Moteurs de texte — rédaction des recettes
+/* Text engines — writing the recipes
  *
- * Trois adaptateurs derrière une seule interface. Le reste du pipeline ne sait
- * pas lequel tourne : il reçoit du JSON et le passe au validateur, qui rejette
- * tout ce qui sort du catalogue. Le modèle ne décide d'aucune question de
- * sécurité — il rédige, les tables décident.
+ * Three adapters behind one interface. The rest of the pipeline does not know
+ * which one is running: it receives JSON and hands it to the validator, which
+ * rejects anything outside the catalogue. The model decides no safety question
+ * — it writes, the tables decide.
  *
  *   anthropic  — ANTHROPIC_API_KEY
  *   openai     — OPENAI_API_KEY
@@ -11,7 +11,7 @@
  */
 "use strict";
 
-/* Un modèle bavard entoure son JSON de texte. On récupère le tableau. */
+/* A chatty model wraps its JSON in prose. The array is pulled back out. */
 function extraireJSON(texte) {
   const t = String(texte).replace(/```json|```/g, "").trim();
   const debut = t.indexOf("[");
@@ -68,8 +68,8 @@ const openai = {
   }
 };
 
-/* Simulé : compose une recette valide à partir du catalogue autorisé lu dans
- * le prompt. Ça permet de faire tourner le cycle complet sans réseau. */
+/* Simulated: composes a valid recipe from the allowed catalogue read out of
+ * the prompt. Lets the whole cycle run with no network. */
 const simule = {
   name: "simule",
   disponible: function () { return true; },
@@ -114,8 +114,8 @@ const simule = {
   }
 };
 
-/* Table minimale de rôles pour le mode simulé — le vrai catalogue reste la
- * source de vérité partout ailleurs. */
+/* Minimal role table for the simulated mode — the real catalogue stays the
+ * source of truth everywhere else. */
 const SIMULE_ROLES = {
   compote_pommes: "binder", puree_banane: "binder", lin_moulu: "binder", graines_chia: "binder",
   banane: "fruit", pomme: "fruit", mangue: "fruit", bleuets: "fruit",

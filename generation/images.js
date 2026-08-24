@@ -2,22 +2,20 @@
  *
  * TROIS CHANGEMENTS, ET LE PREMIER EST LE PLUS IMPORTANT.
  *
- * 1. LES PROMPTS SONT EN ANGLAIS. Les modèles d'image sont entraînés
- *    massivement sur des légendes anglaises. Un prompt français passe par une
- *    traduction implicite et perd en fidélité — c'est la première cause de
- *    résultats mous. Le reste du projet reste en français; seul ce qui part
- *    to le modèle change de langue.
+ * 1. PROMPTS ARE IN ENGLISH. Image models are trained overwhelmingly on
+ *    English captions. A French prompt goes through an implicit translation
+ *    and loses fidelity — the first cause of soft results.
  *
- * 2. L'ESTHÉTIQUE CHANGE. L'ancienne visait le magazine : céramique mate,
+ * 2. THE AESTHETIC CHANGED. The old one aimed at magazine work: matte
  *    nappe de lin, fond calme. C'est joli et faux. On vise maintenant une
- *    vraie cuisine de famille — comptoir de bois, lumière de fenêtre, un
- *    linge qui traîne, quelques miettes. L'imperfection rend la photo
- *    crédible.
+ *    real family kitchen — a wooden counter, window light, a dish towel
+ *    lying about, a few crumbs. Imperfection is what makes a photo
+ *    believable.
  *
- * 3. LA COMPOSITION VARIE. Toutes les images avaient le même angle. Trente
- *    photos identiques ressemblent à un gabarit, pas à une collection. La
- *    variation est semée par l'identifiant de la recette : déterministe, donc
- *    la même recette garde toujours son cadrage.
+ * 3. COMPOSITION VARIES. Every image used to share the same angle. Thirty
+ *    identical photos look like a template, not a collection. The variation
+ *    is seeded by the recipe id: deterministic, so a given recipe always
+ *    keeps its framing.
  */
 "use strict";
 const fs = require("fs");
@@ -59,8 +57,8 @@ const NEGATIF = [
   "oversaturated", "plastic looking", "cgi", "illustration", "cartoon"
 ].join(", ");
 
-/* Noms anglais des ingrédients. C'est de la présentation, pas de la donnée de
- * sécurité — les allergènes restent dérivés du catalogue français. */
+/* English ingredient names. This is presentation, not safety data — allergens
+ * are still derived from the catalogue. */
 const NOMS_EN = {
   farine_ble: "wheat flour", farine_avoine: "oat flour", farine_riz: "rice flour",
   farine_pois_chiches: "chickpea flour", melange_sans_gluten: "gluten-free flour blend",
@@ -106,8 +104,8 @@ const NOMS_EN = {
   bicarbonate: "baking soda", bouillon_sans_sel: "chicken broth", eau: "water"
 };
 
-/* On décrit le TYPE de plat plutôt que de traduire le titre : un titre
- * français traduit mot à mot donne des prompts bancals. */
+/* The KIND of dish is described rather than the title translated: a title
+ * rendered word for word produces awkward prompts. */
 const PLATS_EN = {
   "Déjeuner": "breakfast dish", "Repas": "family meal",
   "Collation": "snack", "Dessert": "dessert"
@@ -133,7 +131,7 @@ function nomAnglais(id, catalogue) {
   return d ? d.name.toLowerCase().replace(/\(.*?\)/g, "").trim() : id;
 }
 
-/* Choix déterministe : même recette, même cadrage, toujours. */
+/* Deterministic choice: same recipe, same framing, always. */
 function graine(texte) {
   let h = 0;
   for (const octet of Buffer.from(texte, "utf8")) h = (h * 31 + octet) >>> 0;
@@ -178,7 +176,7 @@ function promptPour(recette, donnees) {
       STYLE
     ].join(". "),
     negatif: NEGATIF + ", " + exclusions.join(", "),
-    /* La révision reste en français : c'est toi qui la lis. */
+    /* The review list is for a human reader, not for the model. */
     aVerifier: [
       "les ingrédients visibles correspondent à la liste : " + visibles.join(", "),
       "aucun ingrédient absent de la recette n'apparaît dans l'image"

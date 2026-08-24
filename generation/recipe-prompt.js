@@ -1,13 +1,13 @@
-/* Génération de recettes — prompt contraint (bloc C)
- * node generation/recipe-prompt.js  →  écrit generation/monthly-prompt.txt
+/* Recipe generation — constrained prompt
+ * node generation/recipe-prompt.js  ->  writes generation/monthly-prompt.txt
  *
- * Le modèle ne rédige PAS librement : il reçoit la liste fermée des
- * identifiants d'ingrédients du catalogue et n'a le droit de nommer que
- * ceux-là. Tout le reste (allergènes, âges, substitutions) est déjà
- * déterministe — le modèle ne décide d'aucune question de sécurité.
+ * The model does NOT write freely: it receives the closed list of catalogue
+ * ingredient identifiers and may name nothing else. Everything else
+ * (allergens, ages, substitutions) is already deterministic — the model
+ * decides no safety question.
  *
  * La commande vient de tools/gaps.js : on ne demande pas « 8 recettes »,
- * on demande ce qui manque réellement.
+ * what is actually missing gets commissioned.
  */
 "use strict";
 const fs = require("fs");

@@ -1,16 +1,15 @@
-/* Pages légales — servies par le serveur
+/* Legal pages — served by the server
  *
  * Apple exige des URL publiques et fonctionnelles pour les conditions et la
- * confidentialité. Un lien mort fait rejeter la soumission.
+ * privacy policy. A dead link gets the submission rejected.
  *
- * Ces textes décrivent ce que le code fait RÉELLEMENT. Si le comportement
- * change, ces pages doivent changer le même jour — une politique qui ment est
+ * These texts describe what the code ACTUALLY does. If the behaviour changes,
+ * these pages change the same day — a policy that lies is
  * pire que pas de politique.
  *
- * ⚠️ Je ne suis pas avocat. Ces textes sont un point de départ honnête et
- * complet, à faire relire avant une vraie mise en marché — surtout pour la
- * partie qui touche aux données d'enfants (Loi 25 au Québec, RGPD si tu
- * dépasses la frontière).
+ * Not written by a lawyer. These texts are an honest, complete starting point
+ * and must be reviewed before a real launch — especially the part touching
+ * children's data (Quebec's Law 25, GDPR beyond the border).
  */
 "use strict";
 

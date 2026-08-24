@@ -1,13 +1,13 @@
 //  ScannerScreen.swift
 //
 //  Le scanner. Impossible dans un navigateur, et probablement la fonction la
-//  plus utile de l'app : vérifier un product dans l'allée d'épicerie.
+//  most useful thing the app does: check a product in the grocery aisle.
 //
-//  Le verdict vient du MOTEUR, jamais des étiquettes d'allergènes de la base
-//  de products — elles sont indicatives et incomplètes sur bien des articles.
+//  The verdict comes from the ENGINE, never from the product database's own
+//  allergen tags — those are indicative and incomplete on many items.
 //
-//  Données products : Open Food Facts, sous license ODbL. Deux conséquences
-//  respectées à la lettre : attribution affichée sur chaque fiche, et aucune
+//  Product data: Open Food Facts, under the ODbL. Two consequences honoured to
+//  the letter: attribution shown on every sheet, and no
 //  fusion dans notre catalogue. On consulte, on affiche, on ne conserve rien.
 
 import SwiftUI

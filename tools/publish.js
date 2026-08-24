@@ -1,14 +1,14 @@
 /* Publication — bloc A
- * node tools/publish.js  →  écrit dist/manifest.json et dist/batches/<lot>.json
+ * node tools/publish.js  ->  writes dist/manifest.json and dist/batches/<batch>.json
  *
- * Le corpus sort du fichier HTML. À partir d'ici, l'app charge des batches
- * versionnés, et le serveur ne remet QUE les batches auxquels le account a droit.
- * Un mur payant côté client se contourne en dix secondes; le seul mur qui
- * tient est celui qui n'envoie pas les données.
+ * The corpus leaves the HTML file. From here the app loads versioned batches,
+ * and the server hands over ONLY the batches the account is entitled to. A
+ * paywall on the client is bypassed in ten seconds; the only wall that holds
+ * is the one that does not send the data.
  *
- * Ce qui n'est JAMAIS derrière le mur : le moteur, les substitutions, les
- * règles d'âge. Un parent qui reçoit un diagnostic un mardi soir ne doit pas
- * buter sur un écran de paiement.
+ * What is NEVER behind the wall: the engine, the substitutions, the age rules.
+ * A parent handed a diagnosis on a Tuesday evening must not hit a payment
+ * screen.
  */
 "use strict";
 const fs = require("fs");
@@ -26,8 +26,8 @@ function publier(options) {
   if (!corpus) {
     corpus = lire("data/recipes.json");
     try { corpus = corpus.concat(lire("data/imported/imported-recipes.json")); } catch (e) {}
-    /* Les recettes générées comptent comme les autres — les oublier ici les
-     * rendait invisibles au manifeste alors qu'elles étaient bien publiées. */
+    /* Generated recipes count like any other — leaving them out here made them
+     * invisible to the manifest even though they were properly published. */
     try { corpus = corpus.concat(lire("data/generated/generated-recipes.json")); } catch (e) {}
   }
   let manifesteImages = options.images || {};
@@ -43,7 +43,7 @@ function publier(options) {
     const copie = JSON.parse(JSON.stringify(r));
     copie.batch = lot;
     const img = manifesteImages[r.id];
-    /* Une photo n'est publiée que si elle est révisée ET présente sur le
+    /* A photo is published only if it was reviewed AND is present on
      * disque. Sinon l'app demanderait un fichier qui n'existe pas et
      * retomberait silencieusement sur l'illustration. */
     if (img && img.revisePar && img.fichier &&
@@ -60,8 +60,8 @@ function publier(options) {
     base: lire("data/base.json")
   };
 
-  /* La fenêtre glissante : un abonné voit la semaine courante et les deux
-   * précédentes. Les batches free ne tournent jamais — c'est le socle qu'un
+  /* The rolling window: a subscriber sees the current week and the two before
+   * it. Free batches never rotate — that is the floor a
    * parent doit garder sans payer. */
   const f = Semaines.fenetreCourante(pub.batches, Date.now());
   const visible = new Set(f.free.concat(f.window));
@@ -81,7 +81,7 @@ function publier(options) {
       version: new Date().toISOString().slice(0, 10),
       safetyChecksum: checksum(securite),
       batches: batches,
-      /* Le client sait quels batches existent et lesquels sont verrouillés,
+      /* The client knows which batches exist and which are locked,
        * sans jamais recevoir leur content. */
       free: batches.filter(function (l) { return l.access === "free"; }).map(function (l) { return l.id; }),
       window: f.window,

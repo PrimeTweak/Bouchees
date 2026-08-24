@@ -1122,7 +1122,7 @@ window.evaluerProduitScanne = function(entree){
            unknownIngredients: inconnus.slice(0, 6), message: message };
 };
 
-/* Le natif est propriétaire des profils : il les pousse ici. */
+/* The native side owns the profiles: it pushes them here. */
 window.appliquerProfilNatif = function(p){
   if(!p) return;
   etat.profils = [{ id:"natif", nom:p.nom || "Mon enfant", ageMois:p.ageMois || 9,

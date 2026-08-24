@@ -2,12 +2,12 @@
  * node ingest/importer.js
  * Sources → adaptateur → normalisation → PORTES DE SÉCURITÉ → recettes canoniques.
  *
- * Deux portes, non négociables :
- *   1. Reconnaissance totale : une seule ligne d'ingrédient inconnue et la
- *      recette entière part en quarantine. On ne devine jamais un ingrédient
+ * Two gates, non-negotiable:
+ *   1. Full recognition: one unknown ingredient line and the WHOLE recipe goes
+ *      to quarantine. An ingredient is never guessed
  *      dans une app d'allergies.
- *   2. Curation humaine : sans entrée dans curation.json (âge minimal validé,
- *      rôles confirmés, étapes en français), pas d'import — même si tout est
+ *   2. Human curation: with no entry in curation.json (validated minimum age,
+ *      confirmed roles, rewritten steps), no import — even if everything is
  *      recognized. Le pipeline propose, l'humain dispose.
  */
 "use strict";
@@ -94,7 +94,7 @@ function rapportMarkdown(resultat) {
   l.push("");
   l.push("Importées : **" + resultat.imported.length + "** · En quarantine : **" + resultat.quarantine.length + "**");
   l.push("");
-  l.push("## Importées");
+  l.push("## Imported");
   l.push("");
   l.push("| Recette | Source | Âge min. | Confiance |");
   l.push("|---|---|---|---|");
@@ -102,7 +102,7 @@ function rapportMarkdown(resultat) {
     l.push("| " + r.name + " | " + r.source.source + " | " + r.minAgeMonths + " mois | " + r.source.confidence + " |");
   });
   l.push("");
-  l.push("## Quarantaine — à traiter par un humain");
+  l.push("## Quarantine — for a human to handle");
   l.push("");
   resultat.quarantine.forEach(function (q) {
     l.push("- **" + q.name + "** (`" + q.cle + "`) — " + q.reason);

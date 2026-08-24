@@ -9,9 +9,9 @@
 
 import Foundation
 
-// MARK: - Quantité tolérante
+// MARK: - Tolerant quantity
 
-/// Les quantités arrivent en count, parfois en chaîne vide quand l'ingestion
+/// Quantities arrive as numbers, sometimes as an empty string when ingestion
 /// n'a rien pu extraire. On accepte les deux sans faire tomber la recipe.
 struct Quantity: Codable, Hashable, Sendable {
     let value: Double?
@@ -34,7 +34,7 @@ struct Quantity: Codable, Hashable, Sendable {
         if let v = value { try c.encode(v) } else { try c.encode("") }
     }
 
-    /// « 2,5 » plutôt que « 2.5 » — on écrit en français.
+    /// Decimal comma when the locale calls for it.
     var affichage: String {
         guard let v = value else { return "" }
         if v == v.rounded() && abs(v) < 1_000_000 {
@@ -82,7 +82,7 @@ enum AlertLevel: String, Codable, Sendable {
         self = AlertLevel(rawValue: brut) ?? .info
     }
 
-    /// Étiquette courte affichée devant le message.
+    /// Short label shown ahead of the message.
     var label: String {
         switch self {
         case .bloquant: return "STOP"
@@ -93,7 +93,7 @@ enum AlertLevel: String, Codable, Sendable {
     }
 }
 
-// MARK: - Données de référence
+// MARK: - Reference data
 
 struct Allergen: Codable, Hashable, Identifiable, Sendable {
     let id: String
@@ -115,7 +115,7 @@ struct IngredientDefinition: Codable, Hashable, Sendable {
     let note: String?
 }
 
-/// base.json — familles d'allergènes et stades de texture.
+/// base.json — allergen families and texture stages.
 struct ReferenceTables: Codable, Sendable {
     let allergens: [Allergen]
     let stades: [TextureStage]
@@ -148,11 +148,11 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     let lot: String?
     let source: RecipeSource?
 
-    /// Nom de file d'une photo révisée, posé par la publication. Absent
-    /// tant qu'aucune photo n'a passé la vérification par vision.
+    /// Filename of a reviewed photo, set by publishing. Absent until a photo
+    /// has passed the vision check.
     let image: String?
 
-    /// Agrégat de ratings, présent seulement dans la réponse des Meilleures.
+    /// Rating summary, present only in the Top rated response.
     let votes: Int?
     let average: Double?
     let myRating: Int?
@@ -165,7 +165,7 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     }
 }
 
-// MARK: - Résultat de l'adaptation
+// MARK: - Adaptation result
 
 struct AdaptedIngredient: Codable, Hashable, Identifiable, Sendable {
     let id: String
@@ -182,8 +182,8 @@ struct AdaptedIngredient: Codable, Hashable, Identifiable, Sendable {
     let ingredientNote: String?
     let substituteNote: String?
 
-    /// Identifiant stable pour ForEach : un ingrédient peut apparaître deux
-    /// fois dans une recipe (la farine du roux et celle de la pâte).
+    /// Stable identifier for ForEach: one ingredient can appear twice in a
+    /// recipe (the flour in the roux and the flour in the batter).
     var listID: String { id + "-" + role }
     var note: String? { substituteNote ?? ingredientNote }
 
@@ -217,7 +217,7 @@ struct AdaptedRecipe: Codable, Sendable {
     var ageGuidanceCount: Int { alerts.filter { $0.level == .safety }.count }
     var hasChanges: Bool { ingredients.contains { $0.status != .conserve } }
 
-    /// Le premier échange, pour l'aperçu sur une carte.
+    /// The first swap, for the preview on a card.
     var firstSwap: (de: String, to: String)? {
         if let s = ingredients.first(where: { $0.status == .substitue }), let v = s.toName {
             return (s.name, v)
@@ -229,7 +229,7 @@ struct AdaptedRecipe: Codable, Sendable {
     }
 }
 
-// MARK: - Verdict d'un product scanné
+// MARK: - Verdict on a scanned product
 
 struct ProductVerdict: Codable, Sendable {
     enum Statut: String, Codable, Sendable {
@@ -263,9 +263,9 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
 
     static let defaut = ChildProfile(name: "Mon enfant", ageMonths: 9, allergens: [])
 
-    /// ChildProfile résolu quand plusieurs enfants mangent le même plat : on prend
-    /// l'âge du plus jeune et l'union des allergènes. C'est le vrai cas
-    /// difficile d'une famille, et il doit être strict par construction.
+    /// Profile resolved when several children eat the same dish: the youngest
+    /// age and the union of the allergens. This is the hard case in a family,
+    /// and it has to be strict by construction.
     static func famille(_ profiles: [ChildProfile]) -> ChildProfile {
         guard !profiles.isEmpty else { return .defaut }
         let age = profiles.map(\.ageMonths).min() ?? 9
@@ -302,7 +302,7 @@ struct ManifestResponse: Codable, Sendable {
     let batches: [Batch]
 }
 
-/// Agrégat renvoyé par /api/ratings — le total public, plus ma propre note.
+/// Summary returned by /api/ratings — the public total, plus my own rating.
 struct RatingSummary: Codable, Hashable, Sendable {
     let votes: Int
     let average: Double?

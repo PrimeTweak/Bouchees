@@ -1,8 +1,8 @@
 //  RecipesScreen.swift
 //
-//  L'écran principal. La question du parent est « peut-il manger ça ? », alors
-//  le tri se fait par réponse : ce qui marche tel quel, ce qui demande des
-//  échanges, ce qui ne passe pas cette fois.
+//  The main screen. The parent's question is "can they eat this?", so the
+//  sorting follows the answer: what works as is, what needs swaps, what does
+//  not pass this time.
 
 import SwiftUI
 
@@ -14,7 +14,7 @@ struct RecipesScreen: View {
     @State private var openRecipeID: String?
     @State private var showPaywall = false
 
-    /// Les catégories arrivent en français depuis les données; on traduit à
+    /// Categories arrive from the data; they are localised at
     /// l'affichage seulement, pour que la comparaison avec recipe.category
     /// others exacte.
     private static let categories = ["All", "Breakfast", "Meal", "Snack", "Dessert"]
@@ -43,7 +43,7 @@ struct RecipesScreen: View {
             && category == "All" && !quickOnly
     }
 
-    /// La suggestion du jour : prête telle quelle et rapide si possible.
+    /// The suggestion of the day: ready as is, and quick if possible.
     private var hero: (recipe: Recipe, result: AdaptedRecipe)? {
         guard noFilters else { return nil }
         return pairs.first { $0.result.status == .telleQuelle && ($0.recipe.timeMinutes ?? 99) <= 30 }
@@ -221,7 +221,7 @@ struct RecipesScreen: View {
     }
 }
 
-// MARK: - Carte héro
+// MARK: - Featured card
 
 struct FeaturedCard: View {
     let recipe: Recipe

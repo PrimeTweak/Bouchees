@@ -1,7 +1,7 @@
 //  AppState.swift
 //
-//  L'état central. Une seule source de vérité pour les profiles, le recipes et
-//  les résultats adaptés — les vues ne calculent rien, elles affichent.
+//  The central state. One source of truth for profiles, recipes and adapted
+//  results — the views compute nothing, they display.
 
 import Foundation
 import Observation
@@ -10,7 +10,7 @@ import Observation
 @Observable
 final class AppState {
 
-    // MARK: - État exposé
+    // MARK: - Exposed state
 
     var profiles: [ChildProfile] = []
     var activeProfileID: String?
@@ -28,7 +28,7 @@ final class AppState {
 
     var subscribed = false
 
-    // MARK: - Dépendances
+    // MARK: - Dependencies
 
     private var moteur: RecipeEngine?
     private let local = LocalStore()
@@ -36,7 +36,7 @@ final class AppState {
     let subscription = Subscription()
     let saved = SavedRecipes()
 
-    /// Agrégats de ratings par recipe, rafraîchis avec le recipes.
+    /// Rating summaries per recipe, refreshed along with the recipes.
     private(set) var ratings: [String: RatingSummary] = [:]
     private(set) var topRated: [Recipe] = []
     private(set) var ratingThreshold = 5
@@ -51,7 +51,7 @@ final class AppState {
 
     var needsOnboarding: Bool { profiles.isEmpty }
 
-    // MARK: - Démarrage
+    // MARK: - Startup
 
     func start() async {
         isLoading = true
@@ -69,7 +69,7 @@ final class AppState {
             moteur = m
         } catch {
             // Sans moteur, l'app ne peut rien affirmer. On le dit franchement
-            // plutôt que d'afficher des recipes non vérifiées.
+            // rather than showing recipes that were never verified.
             fatalError = error.localizedDescription
             return
         }
@@ -79,7 +79,7 @@ final class AppState {
         await sync()
     }
 
-    /// Corpus téléchargé s'il existe, sinon les batches embarqués dans l'app.
+    /// Downloaded corpus if there is one, otherwise the batches shipped in the app.
     private func chargerCorpusLocal() {
         if let sauvegarde = local.readRecipes(), !sauvegarde.isEmpty {
             recipes = sauvegarde
@@ -142,7 +142,7 @@ final class AppState {
         }
     }
 
-    /// Paire recipe + résultat, dans l'ordre du recipes.
+    /// Recipe and result paired, in corpus order.
     var pairs: [(recipe: Recipe, result: AdaptedRecipe)] {
         let parId = Dictionary(uniqueKeysWithValues: adapted.map { ($0.id, $0) })
         return recipes.compactMap { r in
@@ -193,7 +193,7 @@ final class AppState {
 
     // MARK: - Notes
 
-    /// Les agrégats de tout ce qui est visible, en un appel.
+    /// Summaries for everything visible, in one call.
     func loadRatings() async {
         let ids = (recipes.map(\.id) + saved.recipes.map(\.id))
         guard !ids.isEmpty else { return }
@@ -202,8 +202,8 @@ final class AppState {
         }
     }
 
-    /// Noter demande un compte : sans ça, rien n'empêche une même personne de
-    /// voter cent fois. L'affichage se met à jour tout de suite, puis le
+    /// Rating requires an account: without one, nothing stops a single person
+    /// voting a hundred times. The display updates at once, then the
     /// serveur confirme — c'est lui qui fait foi.
     func rate(_ recetteId: String, note: Int?) async {
         guard let token = subscription.serverToken else {
@@ -226,7 +226,7 @@ final class AppState {
     }
 
     /// Adapte une recipe qui n'est pas dans le recipes courant — une favorite
-    /// out de la fenêtre, ou une entrée du ranking.
+    /// outside the window, or an entry in the ranking.
     func resultFor(_ recipe: Recipe) -> AdaptedRecipe? {
         if let deja = adapted.first(where: { $0.id == recipe.id }) { return deja }
         return try? moteur?.adapter(recipe, pour: activeProfile)
@@ -240,8 +240,8 @@ final class AppState {
         return (r, res)
     }
 
-    /// Les semaines tournent : les photos hors fenêtre et hors saved n'ont
-    /// plus à occuper le disque.
+    /// Weeks rotate: photos outside the window and not saved no longer need to
+    /// take up disk space.
     private func prunePhotos() async {
         var garder = Set<String>()
         for r in recipes + saved.recipes + topRated {
@@ -250,7 +250,7 @@ final class AppState {
         await PhotoCache.partage.nettoyer(garder: garder)
     }
 
-    // MARK: - Références
+    // MARK: - Lookups
 
     var knownAllergens: [Allergen] { moteur?.base?.allergens ?? [] }
 
@@ -306,10 +306,10 @@ final class AppState {
     }
 }
 
-// MARK: - Formatage partagé
+// MARK: - Shared formatting
 
 enum Format {
-    /// « lait, œufs et arachides » plutôt que « lait, œufs, arachides ».
+    /// "milk, eggs and peanuts" rather than "milk, eggs, peanuts".
     static func liste(_ items: [String]) -> String {
         guard items.count > 1 else { return items.first ?? "" }
         return items.dropLast().joined(separator: ", ") + " et " + (items.last ?? "")

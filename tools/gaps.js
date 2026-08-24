@@ -1,12 +1,12 @@
 /* Rapport de trous — bloc B
  * node tools/gaps.js
  *
- * Passe tout le corpus dans le moteur pour chaque profile d'évitement réaliste
- * × chaque stade d'âge, et classe les combinaisons par pénurie.
+ * Runs the whole corpus through the engine for every realistic avoidance
+ * profile x every age stage, and ranks the combinations by scarcity.
  *
- * C'est ce qui décide du contenu du mois : au lieu de « 8 recettes au hasard »,
- * on écrit « 6 recettes pour le trou le plus douloureux ». Aucune app de
- * recettes générique ne peut faire ça — il faut un moteur déterministe pour
+ * This is what decides the month's content: instead of "8 random recipes", it
+ * says "6 recipes for the most painful gap". No generic recipe app can do
+ * this — it takes a deterministic engine to
  * savoir ce qui missing.
  */
 "use strict";
@@ -22,8 +22,8 @@ const donnees = {
   base: lire("data/base.json")
 };
 
-/* Profils d'évitement : chaque allergène seul, plus les combinaisons
- * réellement fréquentes chez les tout-petits. */
+/* Avoidance profiles: each allergen on its own, plus the combinations that
+ * actually turn up often in toddlers. */
 const PROFILS = donnees.base.allergens.map((a) => [a.id]).concat([
   ["lait", "oeuf"], ["lait", "soya"], ["lait", "ble"], ["oeuf", "ble"],
   ["arachide", "noix"], ["arachide", "noix", "sesame"],
@@ -35,7 +35,7 @@ const CATEGORIES = ["Breakfast", "Meal", "Snack", "Dessert"];
 
 /* Seuil : en dessous, un parent n'a pas de quoi faire une semaine. */
 const SEUIL_SEMAINE = 12;
-/* Un parent ne mange pas que des soupers : il faut de la variété par catégorie. */
+/* A family does not only eat dinner: variety per category matters. */
 const SEUIL_CATEGORIE = 6;
 
 function nomProfil(ids) {
@@ -57,8 +57,8 @@ function analyser(corpus) {
                   outOfAge: 0, byCategory: {}, blockers: {} };
       CATEGORIES.forEach(function (cat) { c.byCategory[cat] = 0; });
       corpus.forEach(function (r) {
-        /* Une recette pensée pour 18 mois n'est pas « utilisable » à 6 mois,
-         * même si le moteur sait l'adapter côté allergènes. */
+        /* A recipe written for 18 months is not "usable" at 6 months, even if
+         * the engine can adapt it on the allergen side. */
         if (ageMois < r.minAgeMonths) { c.outOfAge++; return; }
         const res = Engine.adapterRecette(r, { allergens: profile, ageMois: ageMois }, donnees);
         c[res.status]++;
@@ -84,8 +84,8 @@ function analyser(corpus) {
   return cases;
 }
 
-/* Classement : d'abord les combinaisons sous le seuil, puis celles où
- * une catégorie entière est vide (pas un seul déjeuner, par exemple). */
+/* Ranking: combinations under the threshold first, then those where a whole
+ * category is empty (not a single breakfast, for instance). */
 function classer(cases) {
   return cases.slice().sort(function (a, b) {
     if (b.missing !== a.missing) return b.missing - a.missing;
@@ -96,8 +96,8 @@ function classer(cases) {
   });
 }
 
-/* Ingrédients qui bloquent le plus souvent : chaque entrée est une règle
- * de substitution manquante — souvent moins cher à écrire qu'une recette. */
+/* The ingredients that block most often: each entry is a missing substitution
+ * rule — usually cheaper to write than a whole recipe. */
 function bloquantsGlobaux(cases) {
   const tot = {};
   cases.forEach(function (c) {
@@ -108,9 +108,9 @@ function bloquantsGlobaux(cases) {
   }).sort((a, b) => b.n - a.n);
 }
 
-/* Une recette sans lait ET sans œufs ET sans arachides sert les trois profils.
- * On fusionne donc les trous qui partagent l'âge et la catégorie : le lot du
- * mois devient une poignée d'instructions fortes, pas vingt lignes redondantes. */
+/* A recipe with no milk AND no egg AND no peanut serves all three profiles.
+ * So gaps sharing an age and a category are merged: the month's batch becomes
+ * a handful of strong instructions instead of twenty redundant lines. */
 function commande(classement, target) {
   target = target || 8;
   const groupes = {};
@@ -126,9 +126,9 @@ function commande(classement, target) {
       groupes[cle].usable = Math.min(groupes[cle].usable, c.usable);
     });
   }
-  /* Second pliage : le même trou qui revient à 6, 9, 12 et 24 mois est UN
-   * trou, pas quatre. On garde l'âge le plus jeune — une recette qui marche
-   * à 6 mois marche aussi plus tard. */
+  /* Second fold: the same gap appearing at 6, 9, 12 and 24 months is ONE gap,
+   * not four. The youngest age is kept — a recipe that works at 6 months also
+   * works later. */
   const parTrou = {};
   Object.values(groupes).forEach(function (g) {
     const evite = Object.keys(g.evite).sort();
@@ -171,7 +171,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   l.push("");
   l.push("\"Too old\" = recipes whose minimum age is above the age being tested. They do not count.");
   l.push("");
-  l.push("## Les 12 combinaisons les plus dépourvues");
+  l.push("## The 12 most starved combinations");
   l.push("");
   l.push("| Profil | Âge | Telles quelles | Adaptées | Bloquées | Trop vieilles | Manque | Catégories en pénurie |");
   l.push("|---|---|---|---|---|---|---|---|");
@@ -182,9 +182,9 @@ function markdown(classement, blockers, cmd, nCorpus) {
       " | " + (cats.length ? cats.map((k) => k + " (" + c.missingCategories[k] + ")").join(", ") : "—") + " |");
   });
   l.push("");
-  l.push("## Ingrédients qui bloquent le plus");
+  l.push("## The ingredients that block most often");
   l.push("");
-  l.push("Chaque ligne est une **règle de substitution manquante**. En écrire une");
+  l.push("Each line is a **missing substitution rule**. Writing one");
   l.push("often unlocks more recipes than writing a new one.");
   l.push("");
   if (!blockers.length) l.push("None — every blocked recipe is blocked by age, not by an allergen.");
@@ -192,11 +192,11 @@ function markdown(classement, blockers, cmd, nCorpus) {
     l.push("- **" + b.name + "** (`" + b.id + "`) — bloque " + b.n + " fois");
   });
   l.push("");
-  l.push("## Commande suggérée pour le prochain lot");
+  l.push("## Suggested commission for the next batch");
   l.push("");
   if (!cmd.length) l.push("Aucun trou sous le seuil — le prochain lot peut viser la variété plutôt que la couverture.");
   cmd.forEach(function (c) {
-    l.push("- **" + c.n + " " + c.categories[0].toLowerCase() + "** dès " + c.ageMois + " mois — " +
+    l.push("- **" + c.n + " " + c.categories[0].toLowerCase() + "** from " + c.ageMois + " months — " +
       (c.passePartout ? "**works for everyone** (none of the 11 priority allergens)" : nomProfil(c.evite)));
     l.push("    - " + c.reason);
   });

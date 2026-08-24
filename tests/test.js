@@ -4,10 +4,10 @@ const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 
-/* Les notes doivent aller dans un fichier jetable. À poser AVANT tout require
+/* Ratings must go to a throwaway file. Set BEFORE any require
  * de serveur.js : celui-ci charge notes.js, qui fige son chemin au premier
- * chargement. Sans cette ligne, la suite écrivait dans server/ratings.json —
- * le vrai fichier du dépôt. */
+ * load. Without this line the suite wrote into server/ratings.json — the real
+ * file in the repository. */
 process.env.BOUCHEES_NOTES = "/tmp/bouchees-notes-tests.json";
 try { fs.unlinkSync(process.env.BOUCHEES_NOTES); } catch (e) {}
 
@@ -40,7 +40,7 @@ const adapter = (id, allergens, ageMois) =>
   Engine.adapterRecette(parId[id], { allergens, ageMois }, donnees);
 const ing = (res, id) => res.ingredients.find((i) => i.id === id);
 
-/* ---------- intégrité des données (lot 1) ---------- */
+/* ---------- data integrity ---------- */
 
 test("données : toutes les recettes référencent des ingrédients du catalogue", () => {
   for (const r of recettes) for (const u of r.ingredients)
@@ -69,7 +69,7 @@ test("données : les ageRules d'une même target sont ordonnés de la tranche la
   }
 });
 
-/* ---------- substitutions dirigées ---------- */
+/* ---------- targeted substitutions ---------- */
 
 test("muffins sans œuf à 12 mois → compote de pommes (option 1)", () => {
   const r = adapter("banana-oat-muffins", ["egg"], 12);
@@ -133,7 +133,7 @@ test("boulettes sans moutarde → moutarde omise, recette adaptée", () => {
   assert.equal(r.status, "adapted");
 });
 
-/* ---------- règles d'âge ---------- */
+/* ---------- age rules ---------- */
 
 test("barres granola à 9 mois : miel → sirop d'érable (swap d'âge) + alerte ageMinBase", () => {
   const r = adapter("chewy-granola-bars", [], 9);
@@ -183,7 +183,7 @@ test("le swap d'âge respecte les allergènes : miel→érable même sans lait n
   assert.equal(ing(r, "honey").to, "maple_syrup");
 });
 
-/* ---------- non-adaptable : la porte de sortie honnête ---------- */
+/* ---------- not adaptable: the honest way out ---------- */
 
 test("aucun substitut valide → status non_adaptable avec alerte bloquante (gating par ageMin)", () => {
   const donneesTest = {
@@ -203,7 +203,7 @@ test("ingrédient évité sans règle du tout → non_adaptable, jamais de retra
   assert.equal(r.status, "not_adaptable");
 });
 
-/* ---------- déterminisme ---------- */
+/* ---------- determinism ---------- */
 
 test("même entrée → même sortie (sérialisation identique sur 3 appels)", () => {
   const a = JSON.stringify(adapter("mac-and-cheese-with-hidden-squash", ["milk", "wheat"], 9));
@@ -212,7 +212,7 @@ test("même entrée → même sortie (sérialisation identique sur 3 appels)", (
   assert.equal(a, b); assert.equal(b, c);
 });
 
-/* ---------- test de propriété : l'invariant de sécurité ---------- */
+/* ---------- property test: the safety invariant ---------- */
 
 test("INVARIANT — aucune recette adaptée ne contient un allergène évité, aucun substitut sous son âge minimum", () => {
   const familles = donnees.base.allergens.map((a) => a.id);
@@ -329,7 +329,7 @@ test("bout en bout : granola sans sulfites → abricots séchés remplacés (rai
   assert.equal(res.ingredients.find((i) => i.id === "dried_apricots").to, "raisins");
 });
 
-/* ---------- invariant élargi : témoins + importées ---------- */
+/* ---------- wider invariant: seed plus imported ---------- */
 
 test("INVARIANT (corpus complet) — témoins + importées, aucune fuite d'allergène, aucun substitut sous l'âge", () => {
   const familles = donnees.base.allergens.map((a) => a.id);
@@ -352,7 +352,7 @@ test("INVARIANT (corpus complet) — témoins + importées, aucune fuite d'aller
   console.log("      " + verifies + " combinaisons (corpus de " + corpus.length + " recettes)");
 });
 
-/* ---------- système visuel (v0.3) ---------- */
+/* ---------- visual system ---------- */
 
 const Illustration = require(path.join(__dirname, "..", "web", "illustration.js"));
 const corpusVisuel = recettes.concat(importation.imported);
@@ -518,13 +518,13 @@ test("validateur : refuse un id déjà pris et les superlatifs marketing", () =>
 test("images : le prompt décrit les ingrédients réels, en anglais", () => {
   const r = parId["squash-and-coconut-soup"];
   const p = Images.promptPour(r, donnees);
-  /* Les modèles d'image sont entraînés sur des légendes anglaises : le prompt
-   * doit sortir en anglais, avec les noms d'ingrédients traduits. */
+  /* Image models are trained on English captions: the prompt has to come out
+   * in English, with the ingredient names translated. */
   assert(/butternut squash/i.test(p.positif), "l'ingrédient dominant doit être nommé en anglais");
   assert(/coconut milk/i.test(p.positif));
   assert(!/courge|lait de coco/i.test(p.positif), "aucun mot français ne doit rester");
   assert(/no visible egg/.test(p.negatif), "les exclusions doivent être explicites");
-  /* La liste de révision, elle, reste en français — c'est François qui la lit. */
+  /* The review list is for a human reader. */
   assert(p.aVerifier.some((x) => /vérifier/.test(x)));
 });
 
@@ -789,12 +789,12 @@ test("apple : la signature DER↔brute fait l'aller-retour", () => {
   assert.equal(Apple.bruteVersDER(Buffer.alloc(63)), null, "une signature de mauvaise taille est rejetée");
 });
 
-/* --- le pont JS que Swift appelle, extrait du gabarit et exercé ici --- */
+/* --- the JS bridge Swift calls, pulled out of the template and exercised here --- */
 
 function chargerPont() {
   const src = fs.readFileSync(path.join(__dirname, "..", "web", "template.html"), "utf8");
   const debut = src.indexOf("window.evaluerProduitScanne = function");
-  const fin = src.indexOf("/* Le natif est propriétaire");
+  const fin = src.indexOf("/* The native side owns");
   assert(debut !== -1 && fin > debut, "le pont natif est introuvable dans le gabarit");
   const sansAcc = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const nomAll = (id) => { const a = donnees.base.allergens.find((x) => x.id === id); return a ? a.name.toLowerCase() : id; };
@@ -937,9 +937,9 @@ test("classement : trié, et la note d'autrui n'est jamais exposée", () => {
 
 test("vision : une image qui ne ressemble à rien ET fait hésiter est rejetée", async () => {
   const r = parId["banana-oat-muffins"];
-  /* Le profil exact de la bouillie orange qui est passée en production :
-   * un seul ingrédient vaguement recognized, et la vision qui énumère des
-   * possibilités. Avant le correctif, c'était un simple avertissement. */
+  /* The exact profile of the orange mush that made it through: one ingredient
+   * vaguely recognised, and the vision listing possibilities. Before the fix
+   * this was only a warning. */
   const hesitant = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
     aliments: ["banana"], lisible: true,
     incertitudes: ["pourrait être du couscous, de la polenta ou du curcuma"] }) };

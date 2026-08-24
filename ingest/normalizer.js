@@ -1,8 +1,8 @@
-/* Normaliseur d'ingrédients — lot 3, v0.2
+/* Ingredient normaliser
  * Transforme une ligne brute (« 2 cups all-purpose flour », « 1/2 tasse de
- * compote de pommes non sucrée ») en ingrédient canonique du catalogue.
- * Déterministe : lexicon versionné, zéro modèle. Ce que le lexicon ne
- * reconnaît pas sort en status « unknown » → quarantine, jamais deviné.
+ * unsweetened applesauce") into a canonical catalogue ingredient.
+ * Deterministic: versioned lexicon, no model. Anything the lexicon does not
+ * recognise comes out as status "unknown" -> quarantine, never guessed.
  * L'IA peut PROPOSER de nouveaux alias; un humain les valide dans le
  * lexicon. « L'IA propose, le lexicon dispose. »
  */
@@ -23,7 +23,7 @@ function nettoyer(t) {
     .trim();
 }
 
-/* Extrait la quantité en tête de ligne : « 2 », « 1/2 », « 1 1/2 », « ½ », « 1,5 ». */
+/* Pulls the quantity from the start of the line: 2, 1/2, 1 1/2, one-half, 1.5. */
 function extraireQuantite(texte) {
   let t = texte, qty = null;
   const mFrac = t.match(/^([0-9]+)?\s*([\u00bd\u2153\u2154\u00bc\u00be\u215b])\s*/);
@@ -41,7 +41,7 @@ function extraireQuantite(texte) {
   return { qty: qty, reste: t };
 }
 
-/* Extrait l'unité au début du reste; retourne {unit, facteur, type} normalisés. */
+/* Pulls the unit from what is left; returns a normalised {unit, factor, type}. */
 function extraireUnite(texte, lexicon) {
   const u = lexicon.units;
   const candidats = [];
@@ -63,7 +63,7 @@ function retirerDescripteurs(texte, lexicon) {
   return texte.split(" ").filter(function (mot) { return mot && !stop.has(mot); }).join(" ");
 }
 
-/* Construit l'index alias→id une seule fois (clés déjà sans accents dans le lexicon). */
+/* Builds the alias-to-id index once (keys are already unaccented in the lexicon). */
 function construireIndex(lexicon) {
   const index = {};
   Object.keys(lexicon.aliases).forEach(function (id) {
@@ -77,7 +77,7 @@ function construireIndex(lexicon) {
 function chercherCanonique(texte, index) {
   if (index[texte]) return { id: index[texte], confidence: "exacte" };
   if (texte.endsWith("s") && index[texte.slice(0, -1)]) return { id: index[texte.slice(0, -1)], confidence: "exacte" };
-  /* correspondance par la clé la plus longue contenue dans le texte */
+  /* match on the longest key contained in the text */
   let meilleure = null;
   Object.keys(index).forEach(function (cle) {
     const re = new RegExp("(^|\\s)" + cle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|\\s)");

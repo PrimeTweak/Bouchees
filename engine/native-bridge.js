@@ -1,7 +1,7 @@
 /* Native bridge — the surface JavaScriptCore calls from Swift.
  *
  * Why the engine stays in JavaScript: it is deterministic and covered by the
- * test suite, including an invariant checked across thousands of profile ×
+ * test suite, including an invariant checked across thousands of profile x
  * age combinations. Porting it to Swift would create a SECOND engine, and a
  * divergence between the two would mean a child eating something they should
  * not.
@@ -39,7 +39,7 @@ var PONT = (function () {
   }
 
   return {
-    /* Appelé une fois au démarrage. */
+    /* Called once at startup. */
     load: function (jsonData) {
       var d = JSON.parse(jsonData);
       data = { catalogue: d.ingredients, substitutions: d.substitutions, base: d.base };
@@ -49,7 +49,7 @@ var PONT = (function () {
         allergens: d.base.allergens.length });
     },
 
-    /* Adapte une recipe à un profile. Entrée et sortie en JSON. */
+    /* Adapts a recipe to a profile. JSON in, JSON out. */
     adapt: function (jsonRecipe, jsonProfile) {
       var d = required();
       var recipe = JSON.parse(jsonRecipe);
@@ -71,16 +71,16 @@ var PONT = (function () {
       return JSON.stringify(out);
     },
 
-    /* Stade de texture pour un âge donné. */
+    /* Texture stage for a given age. */
     stage: function (ageMois) {
       return JSON.stringify(Engine.stadePour(ageMois, required().base));
     },
 
-    /* Analyse d'une liste d'ingrédients lue sur une étiquette de produit.
+    /* Reads an ingredient list off a product label.
      *
-     * Règle de prudence : ce qui n'est pas reconnu est SIGNALÉ, jamais ignoré.
-     * Sur une étiquette, le mot inconnu peut être précisément l'allergène. Un
-     * produit ne ressort donc « sûr » que si TOUT a été identifié. */
+     * Rule of caution: anything unrecognised is FLAGGED, never ignored. On a
+     * label, the unknown word may be precisely the allergen. A product comes
+     * back "safe" only when EVERYTHING has been identified. */
     evaluateLabel: function (text, jsonAvoided) {
       var d = required();
       var avoided = JSON.parse(jsonAvoided) || [];
@@ -92,7 +92,7 @@ var PONT = (function () {
         })
         .filter(function (t) { return t.length > 1; });
 
-      /* Both names are indexed. A Quebec label reads "farine de blé", not
+      /* Both names are indexed. A Quebec label reads "farine de ble", not
        * "wheat flour": without the French name the scanner would stop
        * recognising products sold here. */
       var index = {};

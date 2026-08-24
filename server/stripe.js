@@ -1,17 +1,17 @@
 /* Stripe — bloc F
- * Vérification de signature et lecture des événements. Node pur.
+ * Signature verification and event reading. Plain Node.
  *
- * Aucune clé n'est écrite ici. Elles se passent par variables
- * d'environnement, jamais dans le dépôt :
- *   STRIPE_WEBHOOK_SECRET   (whsec_…)  — pour vérifier les webhooks
- *   STRIPE_CLE_SECRETE      (sk_…)     — pour créer une session de paiement
+ * No key is written here. They are passed through environment variables,
+ * never committed:
+ *   STRIPE_WEBHOOK_SECRET   (whsec_...)  — to verify webhooks
+ *   STRIPE_CLE_SECRETE      (sk_...)     — to create a checkout session
  */
 "use strict";
 const crypto = require("crypto");
 
-const TOLERANCE = 300; /* secondes : une signature vieille de 5 min est refusée */
+const TOLERANCE = 300; /* seconds: a signature older than 5 minutes is refused */
 
-/* Format de l'entête : t=1719000000,v1=abcdef…
+/* Header format: t=1719000000,v1=abcdef...
  * On recalcule le HMAC de « t.corps » et on compare en temps constant. */
 function verifierSignature(corpsBrut, entete, secret, maintenant) {
   if (!entete || !secret) return false;
@@ -40,8 +40,8 @@ function verifierSignature(corpsBrut, entete, secret, maintenant) {
   });
 }
 
-/* Traduit un événement Stripe en mise à jour de account, ou null si l'événement
- * ne nous concerne pas. On ne s'intéresse qu'au cycle de vie de l'subscription. */
+/* Translates a Stripe event into an account update, or null when the event is
+ * none of our business. Only the subscription lifecycle matters here. */
 function evenementPertinent(evt) {
   if (!evt || !evt.type || !evt.data || !evt.data.object) return null;
   const o = evt.data.object;
@@ -77,8 +77,8 @@ function evenementPertinent(evt) {
   }
 }
 
-/* Création d'une session de paiement. Nécessite le réseau et une clé secrète —
- * s'exécute sur ta machine ou ton hébergeur, jamais dans le navigateur. */
+/* Creates a checkout session. Needs the network and a secret key — runs on
+ * your machine or your host, never in the browser. */
 async function creerSession(options) {
   const cle = process.env.STRIPE_CLE_SECRETE;
   if (!cle) throw new Error("STRIPE_CLE_SECRETE absente");

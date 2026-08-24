@@ -400,8 +400,8 @@ svg{display:block}
     return a.filter(function (x) { return b.indexOf(x) !== -1; });
   }
 
-  /* Familles d'allergènes présentes dans une liste d'usages d'ingrédients,
-   * dérivées du catalogue — jamais lues depuis des étiquettes externes. */
+  /* Allergen families present in a list of ingredient usages, derived from the
+   * catalogue — never read off an external label. */
   function allergenesDe(usages, catalogue) {
     var vus = {};
     usages.forEach(function (u) {
@@ -418,7 +418,7 @@ svg{display:block}
     return allergenesDe(recette.ingredients, catalogue);
   }
 
-  /* Stade de texture applicable à un âge donné. */
+  /* Texture stage that applies to a given age. */
   function stadePour(ageMois, base) {
     for (var i = 0; i < base.stages.length; i++) {
       var s = base.stages[i];
@@ -427,9 +427,8 @@ svg{display:block}
     return base.stages[base.stages.length - 1];
   }
 
-  /* Première règle d'interdit applicable à un ingrédient pour un âge.
-   * Les règles sont ordonnées de la tranche la plus jeune à la plus vieille
-   * dans base.ageRules; on retourne la première qui s'applique. */
+  /* First age rule that applies to an ingredient at a given age. Rules are
+   * ordered youngest bracket first in base.ageRules; the first match wins. */
   function interditPour(id, ageMois, base) {
     for (var i = 0; i < base.ageRules.length; i++) {
       var r = base.ageRules[i];
@@ -438,7 +437,7 @@ svg{display:block}
     return null;
   }
 
-  /* Règle de substitution pour (ingrédient, rôle). */
+  /* Substitution rule for (ingredient, role). */
   function reglePour(id, role, tableSubst) {
     for (var i = 0; i < tableSubst.length; i++) {
       var r = tableSubst[i];
@@ -447,10 +446,10 @@ svg{display:block}
     return null;
   }
 
-  /* Choix déterministe d'un substitut : première option de la table qui
-   * (1) n'introduit aucun allergène évité,
-   * (2) respecte son âge minimum,
-   * (3) n'est pas elle-même interdite à cet âge sans porte de sortie.
+  /* Deterministic pick of a substitute: the first option in the table that
+   * (1) introduces no avoided allergen,
+   * (2) meets its own minimum age,
+   * (3) is not itself blocked at that age with no way out.
    * Retourne null si aucune option ne passe. */
   function choisirSubstitut(regle, allergenesEvites, ageMois, catalogue, base) {
     if (!regle) return null;
@@ -462,7 +461,7 @@ svg{display:block}
       if (!def) continue;
       if (intersection(def.allergens, allergenesEvites).length > 0) continue;
       var interdit = interditPour(o.id, ageMois, base);
-      if (interdit && interdit.action.type === "bloquer") continue;
+      if (interdit && interdit.action.type === "block") continue;
       return o;
     }
     return null;
@@ -472,8 +471,8 @@ svg{display:block}
 
   /* adapterRecette(recette, { allergens: [...], ageMois: n }, donnees)
    * donnees = { catalogue, substitutions, base }
-   * Retourne un objet complet : ingrédients avec provenance de chaque
-   * décision, alerts graduées, consigne de texture, status global. */
+   * Returns a complete object: ingredients carrying the origin of every
+   * decision, graded alerts, texture guidance, overall status. */
   function adapterRecette(recette, options, donnees) {
     var evites = (options.allergens || []).slice().sort();
     var ageMois = options.ageMois;
@@ -494,7 +493,7 @@ svg{display:block}
     if (ageMois < recette.minAgeMonths) {
       resultat.alerts.push({
         level: "caution",
-        message: "Recette pensée pour " + recette.minAgeMonths + " mois et plus — texture et format à revoir avant cet âge."
+        message: "This recipe is written for " + recette.minAgeMonths + " months and up — texture and shape need rethinking below that age."
       });
     }
 
@@ -511,22 +510,22 @@ svg{display:block}
       };
       if (def && def.note) item.ingredientNote = def.note;
 
-      /* 1 — conflit d'allergène sur l'ingrédient d'origine */
+      /* 1 — allergen conflict on the original ingredient */
       var conflit = def ? intersection(def.allergens, evites) : [];
       if (conflit.length > 0) {
         var regle = reglePour(usage.id, role, donnees.substitutions);
         var choix = choisirSubstitut(regle, evites, ageMois, catalogue, base);
         if (!choix) {
           item.status = "blocked";
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           resultat.status = "not_adaptable";
           resultat.alerts.push({
             level: "blocking",
-            message: "Aucun substitut sûr pour « " + item.name + " » (" + conflit.join(", ") + ") à cet âge."
+            message: "No safe substitute for " + item.name + " (" + conflit.join(", ") + ") at this age."
           });
         } else if (choix.id === "_omit") {
           item.status = "omitted";
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           item.ratio = choix.ratio;
           resultat.swapCount++;
         } else {
@@ -535,14 +534,14 @@ svg{display:block}
           item.to = choix.id;
           item.toName = defSub.name;
           item.ratio = choix.ratio;
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           if (choix.note) item.substituteNote = choix.note;
           if (defSub.note) item.ingredientNote = defSub.note;
           resultat.swapCount++;
         }
       }
 
-      /* 2 — règles d'âge sur l'ingrédient FINAL (origine ou substitut) */
+      /* 2 — age rules on the FINAL ingredient (original or substitute) */
       if (item.status !== "blocked") {
         var idFinal = item.to || item.id;
         var interdit = (item.status === "omitted") ? null : interditPour(idFinal, ageMois, base);
@@ -555,8 +554,8 @@ svg{display:block}
               resultat.status = "not_adaptable";
               resultat.alerts.push({
                 level: "blocking",
-                message: "« " + item.name + " » est à éviter avant " + interdit.beforeMonths +
-                  " mois et son remplacement (" + defSwap.name + ") contient : " + conflitSwap.join(", ") + "."
+                message: item.name + " should be avoided before " + interdit.beforeMonths +
+                  " months, and its replacement (" + defSwap.name + ") contains: " + conflitSwap.join(", ") + "."
               });
             } else {
               item.status = "swapped";
@@ -565,7 +564,7 @@ svg{display:block}
               item.ratio = interdit.action.ratio;
               item.reason = interdit.reason;
               resultat.swapCount++;
-              resultat.alerts.push({ level: "info", message: item.name + " → " + defSwap.name + " : " + interdit.reason + "." });
+              resultat.alerts.push({ level: "info", message: item.name + " -> " + defSwap.name + ": " + interdit.reason + "." });
             }
           } else if (interdit.action.type === "prep") {
             item.prep = interdit.action.note;
@@ -578,7 +577,7 @@ svg{display:block}
             resultat.status = "not_adaptable";
             resultat.alerts.push({
               level: "blocking",
-              message: "« " + item.name + " » est à éviter avant " + interdit.beforeMonths + " mois : " + interdit.reason + "."
+              message: item.name + " should be avoided before " + interdit.beforeMonths + " months: " + interdit.reason + "."
             });
           }
         }
@@ -591,8 +590,8 @@ svg{display:block}
       resultat.status = "adapted";
     }
 
-    /* Invariant vérifiable : les allergènes dérivés du résultat ne
-     * croisent jamais la liste évitée, sauf status non_adaptable. */
+    /* Checkable invariant: the allergens derived from the result never
+     * intersect the avoided list, except when status is not_adaptable. */
     resultat.remainingAllergens = allergenesDe(resultat.ingredients, catalogue);
     return resultat;
   }
@@ -607,15 +606,15 @@ svg{display:block}
   };
 });
 
-/* Système visuel — v0.3
- * Illustration.plat(resultatAdapte, catalogue) → SVG (chaîne)
+/* Visual system
+ * Illustration.plat(adaptedResult, catalogue) -> SVG string
  *
- * Point clé : l'illustration est dérivée des ingrédients APRÈS adaptation.
+ * The key point: the drawing is derived from the ingredients AFTER adaptation.
  * Quand le beurre d'arachide devient du beurre de tournesol, la tuile change
  * de couleur. Une image ne peut donc jamais contredire la fiche — c'est le
- * défaut fatal d'une photo de stock dans une app d'allergies.
+ * the fatal flaw of a stock photo in an allergy app.
  *
- * Déterministe : même recette + même profil → même image, au pixel près.
+ * Deterministic: same recipe plus same profile -> same image, to the pixel.
  */
 (function (racine, fabrique) {
   if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
@@ -700,7 +699,7 @@ svg{display:block}
     "Dessert":   ["#F4EFF6", "#E8E0EF"]
   };
 
-  /* ---------- aléa déterministe ---------- */
+  /* ---------- deterministic randomness ---------- */
   function graine(texte) {
     var h = 2166136261;
     for (var i = 0; i < texte.length; i++) { h ^= texte.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -838,7 +837,7 @@ svg{display:block}
       '<stop offset="1" stop-color="#1B211B" stop-opacity="0.17"/></radialGradient></defs>';
     s += '<rect width="320" height="240" fill="url(#g' + uid + ')"/>';
 
-    /* miettes sur la table : positions semées, jamais les mêmes deux fois */
+    /* crumbs on the table: seeded positions, never the same twice */
     accents.slice(0, 3).forEach(function (a, i) {
       var ang = (graine(a.id + cle) % 360) * Math.PI / 180;
       var d0 = 112 + rnd() * 26;
@@ -857,7 +856,7 @@ svg{display:block}
     s += '<g clip-path="url(#' + uid + ')">';
 
     /* La base se dessine selon sa NATURE : un potage remplit le bol,
-     * un plat en morceaux se pose en pièces, une pâtisserie fait un dôme. */
+     * something in pieces sits as pieces, a bake forms a dome. */
     var mode = (base.forme === "arc") ? "liquid" : (base.forme === "chunk" ? "morceaux" : "dome");
     if (mode === "liquid") {
       s += '<circle cx="' + cx + '" cy="' + cy + '" r="74" fill="' + base.couleur + '"/>';
@@ -904,7 +903,7 @@ svg{display:block}
     return s + "</svg>";
   }
 
-  /* ---------- glyphes d'allergènes (monoline, currentColor) ---------- */
+  /* ---------- allergen glyphs (monoline, currentColor) ---------- */
   var G = {
     lait: '<path d="M7 3h6v3l2 3v9H5v-9l2-3z"/><path d="M7 6h6"/>',
     oeuf: '<path d="M10 3c3 0 5 4.2 5 7.6C15 14.3 12.8 17 10 17s-5-2.7-5-6.4C5 7.2 7 3 10 3z"/>',
@@ -1680,7 +1679,7 @@ window.evaluerProduitScanne = function(entree){
            unknownIngredients: inconnus.slice(0, 6), message: message };
 };
 
-/* Le natif est propriétaire des profils : il les pousse ici. */
+/* The native side owns the profiles: it pushes them here. */
 window.appliquerProfilNatif = function(p){
   if(!p) return;
   etat.profils = [{ id:"natif", nom:p.nom || "Mon enfant", ageMois:p.ageMois || 9,

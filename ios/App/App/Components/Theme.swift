@@ -1,7 +1,7 @@
 //  Theme.swift
 //
 //  Le langage visuel, en un seul endroit. Les couleurs viennent des assets
-//  (clair et sombre), pas de valeurs codées dans les vues.
+//  (light and dark), no values hard-coded in the views.
 
 import SwiftUI
 
@@ -46,7 +46,7 @@ extension AlertLevel {
 
 // MARK: - Verdict
 
-/// Le verdict, formulé comme un parent le poserait : « peut-il manger ça ? »
+/// The verdict, phrased the way a parent would ask it: can they eat this?
 struct Verdict {
     let title: String
     let detail: String
@@ -192,7 +192,7 @@ struct RecipeCard: View {
     }
 }
 
-/// L'aperçu d'échange : original barré, flèche, remplacement.
+/// The swap preview: original struck through, arrow, replacement.
 struct SwapLine: View {
     let de: String
     let to: String

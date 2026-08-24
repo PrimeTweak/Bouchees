@@ -2,21 +2,20 @@
  *   node tools/cycle.js
  *
  * Options :
- *   --recettes-seulement   s'arrête avant les images
- *   --images-seulement     saute la rédaction
- *   --sec                  n'écrit rien, montre ce qui se passerait
- *   --lot=2026-10          le lot où publier les nouvelles recettes
+ *   --recettes-seulement   stop before the images
+ *   --images-seulement     skip the writing
+ *   --sec                  write nothing, show what would happen
+ *   --lot=2026-10          the batch the new recipes go into
  *
- * Enchaîne : trous → prompt contraint → rédaction → validation → cohérence →
- * curation automatique → publication → génération d'images → vérification par
+ * Chains: gaps -> constrained prompt -> writing -> validation -> coherence ->
+ * automatic curation -> publishing -> image generation -> verification by
  * vision → manifeste → republication.
  *
  * Ce qui est automatique et ce qui ne l'est pas :
- *   AUTOMATIQUE — allergènes, âges, ingrédients hors catalogue, intrus dans
- *     les images, proportions aberrantes, étapes incomplètes.
- *   PAS AUTOMATIQUE — le goût, la levée, la texture réelle. Aucune ligne de
- *     code ne remplace une vraie cuisson pour ça. Le journal du cycle le
- *     rappelle à chaque passage.
+ *   AUTOMATIC — allergens, ages, ingredients outside the catalogue, intruders
+ *     in the images, impossible proportions, incomplete steps.
+ *   NOT AUTOMATIC — taste, rise, real texture. No line of code replaces an
+ *     actual bake for that. The cycle log says so on every run.
  */
 "use strict";
 const fs = require("fs");
@@ -41,7 +40,7 @@ const val = (n, d) => { const x = args.find((v) => v.startsWith(n + "=")); retur
 
 const Semaines = require("./weeks.js");
 
-/* Les batches sont hebdomadaires depuis la fenêtre glissante : le cycle publie
+/* Batches are weekly since the rolling window: the cycle publishes
  * dans la semaine courante, pas dans un mois. */
 function currentWeek() {
   return Semaines.identifiantSemaine(new Date());
@@ -63,7 +62,7 @@ function chargerCorpus() {
   return c;
 }
 
-/* ---------- 1 à 5 : les recettes ---------- */
+/* ---------- 1 to 5: the recipes ---------- */
 async function cycleRecettes(donnees, options) {
   const journal = { commandees: 0, redigees: 0, acceptees: 0, rejetees: [], aRevoir: [], nouvelles: [] };
   const corpus = chargerCorpus();
@@ -146,7 +145,7 @@ async function cycleRecettes(donnees, options) {
   return journal;
 }
 
-/* ---------- 6 à 8 : les images ---------- */
+/* ---------- 6 to 8: the images ---------- */
 async function cycleImages(donnees, options) {
   const journal = { generees: 0, acceptees: 0, rejetees: [] };
   const corpus = chargerCorpus();
@@ -166,8 +165,8 @@ async function cycleImages(donnees, options) {
   console.log("  vision check: " + mVision.name + (mVision.name === "absent" ? "  (no vision — everything will be rejected)" : ""));
 
   const limite = Number(val("--max", plan.length));
-  /* Les images vivent à la racine, dans images/. C'est exactement ce que
-   * l'URL /images/… du client résout côté serveur — les écrire ailleurs
+  /* Images live at the root, in images/. That is exactly what the client's
+   * /images/... URL resolves to on the server — writing them anywhere else
    * donnait un 404 silencieux et un repli permanent sur l'illustration. */
   const dossier = path.join(racine, "images");
   if (!options.sec) fs.mkdirSync(dossier, { recursive: true });
@@ -176,8 +175,8 @@ async function cycleImages(donnees, options) {
   for (const p of plan.slice(0, limite)) {
     const recette = corpus.find((r) => r.id === p.id);
     let img;
-    /* 1216×832 : assez de définition pour les cartes et la fiche, et un
-     * rapport 3:2 qui se recadre bien en 4:3 comme en 16:10. Réglable par
+    /* 1216x832: enough definition for the cards and the detail view, and a
+     * 3:2 ratio that crops well to both 4:3 and 16:10. Adjustable through
      * DRAWTHINGS_LARGEUR et DRAWTHINGS_HAUTEUR. */
     try {
       img = await mImage.generer({
@@ -211,18 +210,18 @@ async function cycleImages(donnees, options) {
     journal.acceptees++;
     console.log("  ok " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
 
-    /* Le manifeste s'écrit APRÈS CHAQUE image, pas à la fin.
+    /* The manifest is written AFTER EACH image, not at the end.
      *
-     * Autrement, une interruption — Ctrl-C, terminal fermé, erreur — laisse
-     * sur le disque des images que rien ne déclare. Elles sont invisibles à
-     * la publishing, et le prochain passage les regénère pour rien. C'est
-     * exactement ce qui est arrivé : cinq images orphans. */
+     * Otherwise an interruption — Ctrl-C, a closed terminal, an error — leaves
+     * images on disk that nothing declares. They are invisible to publishing,
+     * and the next run regenerates them for nothing. That is exactly what
+     * happened: five orphaned images. */
     fs.mkdirSync(path.join(racine, "generation", "images"), { recursive: true });
     ecrire("generation/images/manifest.json", manifeste);
   }
 
-  /* Fichiers sur le disque que le manifeste ne connaît pas : restes d'un
-   * passage interrompu. On le DIT plutôt que de laisser deviner. */
+  /* Files on disk the manifest does not know about: leftovers from an
+   * interrupted run. We SAY so rather than leave it to guesswork. */
   if (!options.sec) {
     const declares = new Set(Object.values(manifeste).map(function (e) { return e.fichier; }));
     let orphelins = [];

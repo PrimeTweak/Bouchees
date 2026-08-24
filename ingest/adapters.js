@@ -1,18 +1,18 @@
 /* Adaptateurs de sources — lot 3, v0.2
- * Chaque adaptateur transforme le schéma d'une source to le format brut
+ * Each adapter turns a source schema into the raw format
  * commun : { source, externalId, originalName, portions?, tempsMin?,
  *            lines: [texte], steps: [texte], url?, license }
- * Le pipeline est agnostique de la source : brancher une vraie API = écrire
- * (ou réutiliser) un adaptateur et respecter sa licence. Voir LICENCES.md.
+ * The pipeline is source-agnostic: wiring a real API means writing (or
+ * reusing) an adapter and honouring its licence. See LICENSES.md.
  */
 "use strict";
 
-/* Schéma « générique » — notre propre format d'échange (partenaires, exports).
+/* The "generic" schema — our own exchange format (partners, exports).
  *
- * Accepte DEUX formes, parce que le prompt du mois demande au modèle un
+ * Accepts TWO shapes, because the monthly prompt asks the model for a
  * tableau nu et qu'il serait absurde d'exiger un emballage manuel ensuite :
  *   [ {...}, {...} ]                      (tableau direct)
- *   { source, license, recettes: [...] }  (avec métadonnées)
+ *   { source, license, recipes: [...] }  (with metadata)
  */
 function generic(doc) {
   var wrapper = Array.isArray(doc)
@@ -37,7 +37,7 @@ function generic(doc) {
   });
 }
 
-/* Schéma « spoonacular » — forme des réponses /recipes/{id}/information
+/* The "spoonacular" schema — shape of /recipes/{id}/information responses
  * (extendedIngredients[].original, analyzedInstructions[].steps[].step). */
 function spoonacular(doc) {
   return (doc.recipes || []).map(function (r) {
@@ -59,7 +59,7 @@ function spoonacular(doc) {
   });
 }
 
-/* Schéma « TheMealDB » — strIngredient1..20 / strMeasure1..20, strInstructions. */
+/* The "TheMealDB" schema — strIngredient1..20 / strMeasure1..20, strInstructions. */
 function mealdb(doc) {
   return (doc.meals || []).map(function (m) {
     const lines = [];

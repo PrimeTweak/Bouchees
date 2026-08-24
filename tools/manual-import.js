@@ -1,23 +1,23 @@
-/* Import manuel de recettes générées
+/* Manual import of generated recipes
  *   node tools/manual-import.js <fichier.json> [--lot=2026-09] [--sec]
  *
  * POURQUOI CET OUTIL EXISTE
  *
- * Il y a deux portes d'entrée, et elles ne se ressemblent pas :
+ * There are two entry gates, and they are not alike:
  *
- *   ingest/importer.js  — recettes VENUES DE L'EXTÉRIEUR, en texte libre
+ *   ingest/importer.js  — recipes FROM OUTSIDE, in free text
  *                            (« 2 cups all-purpose flour »). Il faut les
- *                            normaliser to le catalogue, d'où le lexique.
+ *                            normalised against the catalogue, hence the lexicon.
  *
- *   celui-ci               — recettes GÉNÉRÉES à partir du prompt du mois.
- *                            Elles utilisent déjà les identifiants du
- *                            catalogue : rien à normaliser, tout à valider.
+ *   this one               — recipes GENERATED from the month's prompt. They
+ *                            already use catalogue identifiers: nothing to
+ *                            normalise, everything to validate.
  *
  * Passer les secondes par le premier ne donne rien de dangereux — elles
  * partent en quarantine — mais rien d'utile non plus.
  *
- * Les portes de sécurité restent les mêmes : validateur contre le catalogue,
- * cohérence culinaire, et publication dans un lot.
+ * The safety gates stay the same: validation against the catalogue, culinary
+ * coherence, and publishing into a batch.
  */
 "use strict";
 const fs = require("fs");
@@ -94,7 +94,7 @@ function principal() {
   const aRevoir = [];
 
   recettes.forEach(function (r) {
-    /* La commande n'est pas connue ici : on valide sans contrainte d'évitement
+    /* The commission is not known here: validation runs with no avoidance
      * et on laisse le moteur juger le reste. */
     const v = Valideur.valider(r, null, donnees, ids.concat(survivantes.map((s) => s.id)));
     if (!v.ok) {
@@ -107,7 +107,7 @@ function principal() {
     console.log("  ok " + r.id);
   });
 
-  /* --- 2. Cohérence culinaire --- */
+  /* --- 2. Culinary coherence --- */
   console.log("\nCulinary coherence");
   console.log("─".repeat(42));
   const gardees = [];

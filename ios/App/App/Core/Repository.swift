@@ -18,7 +18,7 @@ import Foundation
 // MARK: - Bundled resources
 
 enum Resources {
-    /// Les fichiers sont copiés dans le bundle par le workflow, sous
+    /// The files are copied into the bundle by the workflow, under
     /// Try the subdirectory first, then the bundle root: how Xcode flattens a
     /// folder reference varies with the configuration.
     static func url(_ name: String, _ ext: String) -> URL? {
@@ -56,10 +56,10 @@ enum RepositoryError: LocalizedError {
     }
 }
 
-// MARK: - Réglages
+// MARK: - Settings
 
 enum Settings {
-    /// À remplacer par l'adresse de ton service déployé.
+    /// Replace with the address of your deployed service.
     static var serverBase: URL {
         if let s = ProcessInfo.processInfo.environment["BOUCHEES_SERVEUR"], let u = URL(string: s) {
             return u
@@ -71,8 +71,8 @@ enum Settings {
         return URL(string: "https://bouchees.onrender.com")!
     }
 
-    /// Servies par le serveur lui-même — pas de site séparé à maintenir,
-    /// et pas de lien mort au moment de la révision App Store.
+    /// Served by the server itself — no separate site to maintain, and no dead
+    /// link at App Store review time.
     static var terms: URL { serverBase.appendingPathComponent("terms") }
     static var privacy: URL { serverBase.appendingPathComponent("privacy") }
 
@@ -103,7 +103,7 @@ final class LocalStore {
     private var recipesFile: URL { folder.appendingPathComponent("recipes.json") }
     private var batchesFile: URL { folder.appendingPathComponent("batches.json") }
 
-    // Profils — jamais envoyés nulle part.
+    // Profiles — never sent anywhere.
 
     func readProfiles() -> [ChildProfile] {
         guard let d = try? Data(contentsOf: profilesFile),
@@ -116,7 +116,7 @@ final class LocalStore {
         try? d.write(to: profilesFile, options: .atomic)
     }
 
-    // Corpus téléchargé — ce qui permet de fonctionner hors ligne.
+    // Downloaded corpus — what makes offline work possible.
 
     func readRecipes() -> [Recipe]? {
         guard let d = try? Data(contentsOf: recipesFile) else { return nil }

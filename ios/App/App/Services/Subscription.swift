@@ -1,18 +1,18 @@
 //  Subscription.swift
 //
-//  Règle 3.1.1 : sur iOS, déverrouiller du content numérique passe par l'achat
-//  intégré. Stripe others en place pour le web; les deux se rejoignent sur le
+//  Rule 3.1.1: on iOS, unlocking digital content goes through in-app purchase.
+//  Stripe stays in place for the web; the two meet on the
 //  serveur, qui others seul juge des droits.
 //
-//  On n'accorde JAMAIS l'accès sur la foi du client. La transaction signée
-//  part au serveur, qui vérifie la chaîne de certificats Apple avant d'ouvrir
-//  quoi que ce soit. Un appareil modifié peut mentir; le serveur, non.
+//  Access is NEVER granted on the client's word. The signed transaction goes
+//  to the server, which verifies Apple's certificate chain before unlocking
+//  anything. A modified device can lie; the server cannot.
 
 import Foundation
 import StoreKit
 import Observation
 
-/// StoreKit et SwiftUI définissent tous les deux un type « Transaction ».
+/// StoreKit and SwiftUI both define a type named Transaction.
 /// Cet alias tranche une fois pour toutes.
 typealias PurchaseTransaction = StoreKit.Transaction
 
@@ -31,7 +31,7 @@ final class Subscription {
     @ObservationIgnored private let clefJeton = "bouchees.token"
     @ObservationIgnored private let clefCourriel = "bouchees.email"
 
-    /// Identifiants déclarés dans App Store Connect.
+    /// Identifiers declared in App Store Connect.
     static let identifiants = ["ca.bouchees.abo.mensuel", "ca.bouchees.abo.annuel"]
 
     init() {
@@ -68,8 +68,8 @@ final class Subscription {
             products = try await Product.products(for: Self.identifiants)
                 .sorted { $0.price < $1.price }
         } catch {
-            // En sideload avec un certificat resigné, StoreKit ne répond pas.
-            // Ce n'est pas un bogue : l'écran le dit à l'utilisateur.
+            // Sideloaded with a resigned certificate, StoreKit does not answer.
+            // That is not a bug: the screen says so to the user.
             products = []
         }
         await refreshEntitlements()
@@ -77,8 +77,8 @@ final class Subscription {
 
     // MARK: - Achat
 
-    /// Retourne la représentation JWS signée par Apple, à transmettre au
-    /// serveur pour vérification indépendante.
+    /// Returns the JWS representation signed by Apple, to be passed to the
+    /// server for independent verification.
     func purchase(_ product: Product) async -> String? {
         do {
             let result = try await product.purchase()
@@ -102,7 +102,7 @@ final class Subscription {
         }
     }
 
-    /// Apple exige un bouton de restauration explicite (règle 3.1.1).
+    /// Apple requires an explicit restore button (rule 3.1.1).
     func restore() async {
         do {
             try await AppStore.sync()
@@ -113,7 +113,7 @@ final class Subscription {
         }
     }
 
-    // MARK: - Vérification
+    // MARK: - Verification
 
     @discardableResult
     private func traiter(_ v: VerificationResult<PurchaseTransaction>) async -> String? {
@@ -134,12 +134,12 @@ final class Subscription {
             guard t.revocationDate == nil else { continue }
             if (t.expirationDate ?? .distantFuture) > Date() { isOn = true }
         }
-        // L'état local sert l'affichage. Le serveur others l'autorité pour
-        // livrer le content : un appareil qui ment ne reçoit rien de plus.
+        // Local state drives the display. The server keeps the authority to
+        // deliver content: a device that lies receives nothing extra.
         activeOnDevice = isOn
     }
 
-    /// La transaction courante, pour lier le compte au démarrage.
+    /// The current transaction, used to link the account at startup.
     func currentTransaction() async -> String? {
         for await droit in PurchaseTransaction.currentEntitlements {
             guard case .verified(let t) = droit, Self.identifiants.contains(t.productID) else { continue }

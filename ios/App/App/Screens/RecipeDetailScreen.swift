@@ -1,6 +1,6 @@
 //  RecipeDetailScreen.swift
 //
-//  La fiche. Le cœur du product, c'est le journal des ingrédients : ce qu'on
+//  The detail view. The heart of the product is the ingredient log: what was
 //  change, par quoi, et pourquoi. Un parent qui ne comprend pas un
 //  remplacement ne le fera pas.
 
@@ -206,7 +206,7 @@ struct RecipeDetailScreen: View {
     }
 }
 
-// MARK: - Ligne d'ingrédient
+// MARK: - Ingredient row
 
 struct IngredientRow: View {
     let ingredient: AdaptedIngredient
@@ -286,7 +286,7 @@ struct IngredientRow: View {
     }
 }
 
-/// Étiquettes qui passent à la ligne, sans dépendre d'une API récente.
+/// Wrapping labels, without depending on recent API.
 struct TagFlow: View {
     let etiquettes: [(texte: String, color: Color)]
 

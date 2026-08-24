@@ -50,8 +50,8 @@ final class SavedRecipes {
 
     func contains(_ id: String) -> Bool { recipes.contains { $0.id == id } }
 
-    /// On garde la recipe entière, pas seulement son identifier. C'est tout
-    /// l'intérêt : elle doit rester lisible quand le serveur ne la sert plus.
+    /// The whole recipe is kept, not only its identifier. That is the entire
+    /// point: it has to stay readable once the server stops serving it.
     func toggle(_ recipe: Recipe) {
         if let i = recipes.firstIndex(where: { $0.id == recipe.id }) {
             recipes.remove(at: i)

@@ -1,5 +1,5 @@
 /* Build du banc d'essai : node demo/build.js
- * Une seule source de vérité — le moteur et les données sont injectés
+ * One source of truth — the engine and the data are injected
  * tels quels dans le gabarit. Produit demo/index.html autonome. */
 "use strict";
 const fs = require("fs");

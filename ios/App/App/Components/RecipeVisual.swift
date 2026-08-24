@@ -74,7 +74,7 @@ actor PhotoCache {
 
     private func cheminLocal(_ file: String) -> URL {
         // Le name du file peut contenir un sous-folder : on l'aplatit pour
-        // ne jamais écrire hors du folder de cache.
+        // never write outside the cache folder.
         let sur = file.replacingOccurrences(of: "/", with: "_")
         return folder.appendingPathComponent(sur)
     }
@@ -100,8 +100,8 @@ actor PhotoCache {
         return img
     }
 
-    /// Les batches tournent : les photos des semaines sorties de la fenêtre
-    /// n'ont plus à occuper le disque.
+    /// Batches rotate: photos from weeks that left the window no longer need
+    /// to take up disk space.
     func nettoyer(garder fichiers: Set<String>) {
         let gardes = Set(fichiers.map { $0.replacingOccurrences(of: "/", with: "_") })
         guard let items = try? fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil) else { return }
@@ -112,10 +112,10 @@ actor PhotoCache {
     }
 }
 
-// MARK: - Contrôle de note
+// MARK: - Rating control
 
-/// Cinq étoiles. Toucher la même étoile deux fois retire la note — un parent
-/// doit pouvoir se rétracter, pas seulement corriger.
+/// Five stars. Tapping the same star twice removes the rating — a parent has
+/// to be able to take it back, not only to correct it.
 struct StarRating: View {
     let note: Int?
     var size: CGFloat = 26
@@ -142,7 +142,7 @@ struct StarRating: View {
     }
 }
 
-/// L'agrégat public, affiché à côté du title.
+/// The public summary, shown next to the title.
 struct RatingBadge: View {
     let votes: Int
     let average: Double?

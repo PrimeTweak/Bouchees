@@ -2,7 +2,7 @@
 
 Importées : **10** · En quarantine : **3**
 
-## Importées
+## Imported
 
 | Recette | Source | Âge min. | Confiance |
 |---|---|---|---|
@@ -17,7 +17,7 @@ Importées : **10** · En quarantine : **3**
 | Banana oat pancakes | spoonacular-demo | 6 mois | à revoir (correspondances partielles) |
 | Vegetable fried rice | spoonacular-demo | 9 mois | exacte |
 
-## Quarantaine — à traiter par un humain
+## Quarantine — for a human to handle
 
 - **Thai Green Curry** (`mealdb-demo:52831`) — lines non reconnues
     - 2 tbsp Green Curry Paste

@@ -1,6 +1,6 @@
 /* Build de l'app parents : node web/build.js
- * Corpus = recettes témoins + recettes importées (sortie de l'importeur).
- * Une seule source de vérité : moteur et données injectés tels quels. */
+ * Corpus = seed recipes plus imported recipes (the importer's output).
+ * One source of truth: engine and data injected as they are. */
 "use strict";
 const fs = require("fs");
 const path = require("path");

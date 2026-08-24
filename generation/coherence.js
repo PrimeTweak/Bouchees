@@ -162,6 +162,8 @@ function verifier(recette, donnees) {
 
   /* 4. The stated time has to hold up against what the steps describe. */
   const minutes = [];
+  /* Bilingual on purpose: "20 à 25 minutes" and "20-25 minutes" both parse.
+   * The French words stay so a Quebec partner feed keeps being understood. */
   const re = /(\d{1,3})\s*(?:à|-)?\s*(\d{1,3})?\s*minutes?/g;
   let m;
   while ((m = re.exec(txt))) minutes.push(Number(m[2] || m[1]));
@@ -179,7 +181,9 @@ function verifier(recette, donnees) {
   const total = recette.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);
   /* « 500 ml » n'est pas 500 portions. On n'accepte un nombre que s'il est
    * followed by a serving word, not by a volume unit. */
-  const mp = /(\d+)\s*(portions?|muffins?|galettes?|croquettes?|boulettes?|barres?|biscuits?|cr[eê]pes?|verres?|pains?|parts?|boules?|mini)/i
+  /* Yield words, both languages. A partner feed may say "10 galettes" where
+   * ours says "10 patties" — both have to be recognised as piece yields. */
+  const mp = /(\d+)\s*(servings?|portions?|muffins?|patties?|galettes?|nuggets?|croquettes?|meatballs?|boulettes?|bars?|barres?|cookies?|biscuits?|cr[eê]pes?|glasses?|verres?|loaf|loaves|pains?|slices?|parts?|bites?|boules?|mini)/i
     .exec(recette.servings || "");
   const nPortions = mp ? Number(mp[1]) : null;
   /* A meatball is not a serving: piece yields have their own scale, or the

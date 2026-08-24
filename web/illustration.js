@@ -1,12 +1,12 @@
-/* Système visuel — v0.3
- * Illustration.plat(resultatAdapte, catalogue) → SVG (chaîne)
+/* Visual system
+ * Illustration.plat(adaptedResult, catalogue) -> SVG string
  *
- * Point clé : l'illustration est dérivée des ingrédients APRÈS adaptation.
+ * The key point: the drawing is derived from the ingredients AFTER adaptation.
  * Quand le beurre d'arachide devient du beurre de tournesol, la tuile change
  * de couleur. Une image ne peut donc jamais contredire la fiche — c'est le
- * défaut fatal d'une photo de stock dans une app d'allergies.
+ * the fatal flaw of a stock photo in an allergy app.
  *
- * Déterministe : même recette + même profil → même image, au pixel près.
+ * Deterministic: same recipe plus same profile -> same image, to the pixel.
  */
 (function (racine, fabrique) {
   if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
@@ -91,7 +91,7 @@
     "Dessert":   ["#F4EFF6", "#E8E0EF"]
   };
 
-  /* ---------- aléa déterministe ---------- */
+  /* ---------- deterministic randomness ---------- */
   function graine(texte) {
     var h = 2166136261;
     for (var i = 0; i < texte.length; i++) { h ^= texte.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -229,7 +229,7 @@
       '<stop offset="1" stop-color="#1B211B" stop-opacity="0.17"/></radialGradient></defs>';
     s += '<rect width="320" height="240" fill="url(#g' + uid + ')"/>';
 
-    /* miettes sur la table : positions semées, jamais les mêmes deux fois */
+    /* crumbs on the table: seeded positions, never the same twice */
     accents.slice(0, 3).forEach(function (a, i) {
       var ang = (graine(a.id + cle) % 360) * Math.PI / 180;
       var d0 = 112 + rnd() * 26;
@@ -248,7 +248,7 @@
     s += '<g clip-path="url(#' + uid + ')">';
 
     /* La base se dessine selon sa NATURE : un potage remplit le bol,
-     * un plat en morceaux se pose en pièces, une pâtisserie fait un dôme. */
+     * something in pieces sits as pieces, a bake forms a dome. */
     var mode = (base.forme === "arc") ? "liquid" : (base.forme === "chunk" ? "morceaux" : "dome");
     if (mode === "liquid") {
       s += '<circle cx="' + cx + '" cy="' + cy + '" r="74" fill="' + base.couleur + '"/>';
@@ -295,7 +295,7 @@
     return s + "</svg>";
   }
 
-  /* ---------- glyphes d'allergènes (monoline, currentColor) ---------- */
+  /* ---------- allergen glyphs (monoline, currentColor) ---------- */
   var G = {
     lait: '<path d="M7 3h6v3l2 3v9H5v-9l2-3z"/><path d="M7 6h6"/>',
     oeuf: '<path d="M10 3c3 0 5 4.2 5 7.6C15 14.3 12.8 17 10 17s-5-2.7-5-6.4C5 7.2 7 3 10 3z"/>',

@@ -1,7 +1,7 @@
 //  Glyphes.swift
 //
-//  Les onze familles d'allergènes, dessinées en Path natif. Un glyphe se
-//  reconnaît d'un coup d'œil dans une grille; un mot demande d'être lu.
+//  The eleven allergen families, drawn as native Paths. A glyph is recognised
+//  at a glance in a grid; a word has to be read.
 
 import SwiftUI
 
@@ -20,7 +20,7 @@ struct AllergenGlyph: View {
         .accessibilityHidden(true)
     }
 
-    /// Chemins dessinés dans un carré de 20×20, puis mis à l'échelle.
+    /// Paths drawn inside a 20x20 square, then scaled.
     static func path(_ id: String, dans size: CGSize) -> Path {
         var p = Path()
         let e = min(size.width, size.height) / 20
@@ -79,7 +79,7 @@ struct AllergenGlyph: View {
             }
 
         case "soya":
-            // Gousse avec fèves
+            // Pod with beans
             p.move(to: point(4.5, 12.5))
             p.addCurve(to: point(12, 5), control1: point(4.5, 8.5), control2: point(8, 5))
             p.addCurve(to: point(15.5, 8.5), control1: point(14, 5), control2: point(15.5, 6.5))
@@ -103,7 +103,7 @@ struct AllergenGlyph: View {
             p.addEllipse(in: CGRect(x: 12.1 * e, y: 8.3 * e, width: 1.6 * e, height: 1.6 * e))
 
         case "crustaces_mollusques":
-            // Crevette recourbée
+            // Curved shrimp
             p.move(to: point(15, 5.5))
             p.addCurve(to: point(7.5, 11), control1: point(11, 5.5), control2: point(7.5, 8))
             p.addCurve(to: point(11.5, 14.8), control1: point(7.5, 13.2), control2: point(9.3, 14.8))
@@ -140,7 +140,7 @@ struct AllergenGlyph: View {
     }
 }
 
-/// Le bouton d'allergène : glyphe + name, état pressé bien visible.
+/// The allergen toggle: glyph plus name, pressed state clearly visible.
 struct AllergenToggle: View {
     let allergene: Allergen
     let isOn: Bool

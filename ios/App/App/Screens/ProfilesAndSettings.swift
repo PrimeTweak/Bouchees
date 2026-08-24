@@ -1,8 +1,8 @@
 //  ProfilsEtReglages.swift
 //
 //  Les profiles vivent sur l'appareil et n'en sortent jamais : aucune route
-//  serveur ne les reçoit. C'est ce qui est déclaré aux étiquettes de
-//  confidentialité de l'App Store, et ça doit rester vrai dans le code.
+//  server receives them. That is what the App Store privacy labels declare,
+//  and it has to stay true in the code.
 
 import SwiftUI
 import StoreKit
@@ -194,7 +194,7 @@ struct FieldLabel: View {
     }
 }
 
-// MARK: - Réglages
+// MARK: - Settings
 
 struct SettingsScreen: View {
     @Environment(AppState.self) private var etat

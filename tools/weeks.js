@@ -37,7 +37,7 @@ function identifiantSemaine(date) {
   return annee + "-S" + String(semaine).padStart(2, "0");
 }
 
-/* Semaines précédentes, en remontant. Gère le passage d'année. */
+/* Previous weeks, walking back. Handles the year boundary. */
 function semainesPrecedentes(depuis, combien) {
   const out = [];
   const d = new Date(depuis || Date.now());
@@ -48,18 +48,18 @@ function semainesPrecedentes(depuis, combien) {
   return out;
 }
 
-/* Ordre chronologique d'un identifiant de semaine, pour trier sans ambiguïté. */
+/* Chronological order of a week identifier, for unambiguous sorting. */
 function rang(id) {
   const m = /^(\d{4})-S(\d{1,2})$/.exec(id);
   return m ? Number(m[1]) * 100 + Number(m[2]) : -1;
 }
 
-/* ---------- la fenêtre ---------- */
+/* ---------- the window ---------- */
 
 /* Les batches visible aujourd'hui : tous les free, plus les FENETRE batches
- * hebdomadaires les plus récents qui existent réellement. On ne se fie pas à
- * la date du jour seule — si aucun lot n'a été publié depuis un mois, le
- * dernier reste visible plutôt que de laisser l'app vide. */
+ * most recent weekly batches that actually exist. Today's date alone is not
+ * trusted — if nothing has been published for a month, the last batch stays
+ * visible rather than leaving the app empty. */
 function fenetreCourante(batches, maintenant) {
   const free = batches.filter((l) => l.access === "free").map((l) => l.id);
   const hebdo = batches
@@ -96,8 +96,8 @@ function convertir() {
   const paquets = [];
   for (let i = 0; i < abonnes.length; i += 7) paquets.push(abonnes.slice(i, i + 7));
 
-  /* Le paquet le plus récent devient la semaine courante; on remonte pour les
-   * autres, pour que l'historique existant reste cohérent. */
+  /* The most recent bundle becomes the current week; the others walk back, so
+   * the existing history stays coherent. */
   const semaines = semainesPrecedentes(Date.now(), paquets.length).reverse();
 
   const nouveauxLots = pub.batches.filter((l) => l.access === "free");

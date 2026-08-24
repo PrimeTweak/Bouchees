@@ -16,8 +16,8 @@
 "use strict";
 const path = require("path");
 
-/* Vocabulaire visuel : ce qu'un modèle de vision est susceptible de nommer,
- * relié aux familles d'allergènes. C'est la table qui décide, pas le modèle. */
+/* Visual vocabulary: what a vision model is likely to name, mapped to the
+ * allergen families. The table decides, not the model. */
 const VOCABULAIRE = {
   milk: ["fromage", "cheddar", "mozzarella", "parmesan", "crème", "creme", "beurre", "yogourt", "yaourt",
          "lait", "cheese", "butter", "cream", "yogurt", "milk", "gratin", "béchamel"],
@@ -25,8 +25,8 @@ const VOCABULAIRE = {
   peanut: ["arachide", "cacahuète", "cacahuete", "peanut", "beurre d'arachide"],
   tree_nut: ["noix", "amande", "pacane", "noisette", "pistache", "cajou", "walnut", "almond", "pecan",
          "hazelnut", "cashew", "pistachio"],
-  /* « pâte » tout court est trop large : la poudre à pâte n'est pas du blé.
-   * On nomme les formes réelles. */
+  /* "batter" on its own is too broad: baking powder is not wheat. The real
+   * forms are named instead. */
   wheat: ["pain", "croûton", "crouton", "chapelure", "biscuit", "bread", "breadcrumb",
         "pasta", "cracker", "tortilla de blé", "pâtes", "pâte à pizza", "pâte brisée", "pâte feuilletée",
         "pâte à tarte", "farine de blé", "couscous", "spaghetti", "macaroni", "penne", "baguette"],
@@ -39,8 +39,8 @@ const VOCABULAIRE = {
   sulphites: ["abricot séché", "raisin doré", "fruits séchés orange", "dried apricot"]
 };
 
-/* Aliments à risque d'étouffement qu'une image ne doit pas montrer pour un
- * public de tout-petits, quels que soient les allergènes. */
+/* Choking hazards an image must not show to a toddler audience, whatever the
+ * allergens are. */
 const RISQUES_VISUELS = {
   "noix entières": ["noix entière", "noix entières", "whole nut", "whole nuts", "amandes entières"],
   "raisins entiers": ["raisin entier", "raisins entiers", "whole grape", "whole grapes"],
@@ -54,12 +54,12 @@ function normaliser(t) {
     .replace(/['\u2019]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* The plant-based trap : « lait de coco » contient le mot lait sans être un
+/* The plant-based trap: "lait de coco" contains the word lait without being
  * produit laitier, « beurre de tournesol » n'est pas du beurre. Ces formes
  * sont reconnues AVANT le vocabulaire, et elles neutralisent la famille. */
 const INNOCENTS = [
   /* Formes anglaises — les descriptions de vision sont maintenant en anglais,
-   * et « coconut milk » contient le mot milk sans être un produit laitier. */
+   * dairy, and "coconut milk" does the same in English. */
   { reason: /\b(coconut|rice|oat|almond|soy|hazelnut) milk\b/, except: null },
   { reason: /\b(coconut|rice|oat|soy) (beverage|drink|cream)\b/, except: null },
   { reason: /\b(coconut|soy|oat) yogh?urt\b/, except: null },
@@ -91,7 +91,7 @@ const INNOCENTS = [
   { reason: /\blevure\b/, except: null }
 ];
 
-/* Familles impliquées par un aliment nommé — le code décide, pas le modèle. */
+/* Families implied by a named food — the code decides, not the model. */
 function famillesDe(alimentNormalise) {
   for (let i = 0; i < INNOCENTS.length; i++) {
     if (INNOCENTS[i].reason.test(alimentNormalise)) {
@@ -102,7 +102,7 @@ function famillesDe(alimentNormalise) {
   Object.keys(VOCABULAIRE).forEach(function (famille) {
     const touche = VOCABULAIRE[famille].some(function (mot) {
       const m = normaliser(mot);
-      /* frontières de mots des deux côtés, pluriel toléré */
+      /* word boundaries on both sides, plural tolerated */
       return new RegExp("(^|[^a-z])" + m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "s?([^a-z]|$)")
         .test(alimentNormalise);
     });
@@ -174,7 +174,7 @@ const openai = {
   }
 };
 
-/* Sans vision configurée, on ne devine pas : on déclare l'image illisible,
+/* With no vision configured we do not guess: the image is declared unreadable,
  * ce qui la fait rejeter. L'app garde son illustration. */
 const absent = {
   name: "absent",
@@ -209,8 +209,8 @@ function lireDescription(texte) {
   }
 }
 
-/* Le cœur : comparer ce que la vision a nommé à ce que la recette contient.
- * Le verdict sort du code, pas du modèle. */
+/* The core: compare what the vision named against what the recipe contains.
+ * The verdict comes from the code, not from the model. */
 function comparer(description, recette, donnees) {
   const catalogue = donnees.catalogue;
   const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
@@ -227,8 +227,8 @@ function comparer(description, recette, donnees) {
   const vus = description.aliments.map(normaliser);
   const presentes = Engine.analyserAllergenes(recette, catalogue);
 
-  /* 1. Un allergène ABSENT de la recette ne doit pas apparaître dans l'image.
-   *    C'est le contrôle qui compte vraiment. */
+  /* 1. An allergen ABSENT from the recipe must not appear in the image.
+   *    This is the check that really matters. */
   vus.forEach(function (aliment, i) {
     famillesDe(aliment).forEach(function (famille) {
       if (presentes.indexOf(famille) !== -1) return;
@@ -239,7 +239,7 @@ function comparer(description, recette, donnees) {
     });
   });
 
-  /* 2. Aliments à risque d'étouffement, quels que soient les allergènes. */
+  /* 2. Choking hazards, whatever the allergens are. */
   Object.keys(RISQUES_VISUELS).forEach(function (risque) {
     const touches = RISQUES_VISUELS[risque].filter(function (mot) {
       const m = normaliser(mot);
@@ -248,8 +248,8 @@ function comparer(description, recette, donnees) {
     if (touches.length) erreurs.push("l'image montre un risque d'étouffement : " + risque);
   });
 
-  /* 3. L'image doit ressembler à la recette : au moins un ingrédient principal
-   *    reconnu, sinon c'est peut-être une image d'un autre plat. */
+  /* 3. The image has to look like the recipe: at least one main ingredient
+   *    recognised, otherwise it may well be a picture of another dish. */
   const principaux = recette.ingredients.map(function (u) {
     const d = catalogue[u.id];
     return d ? normaliser(d.name.split("(")[0].trim()) : null;
@@ -261,14 +261,14 @@ function comparer(description, recette, donnees) {
   if (!reconnus.length) {
     erreurs.push("aucun ingrédient de la recette n'est reconnaissable dans l'image");
   } else if (reconnus.length < 2 && principaux.length >= 4) {
-    /* Un seul ingrédient reconnu, c'est parfois légitime : sur une photo de
+    /* One ingredient recognised is sometimes legitimate: in a photo of
      * muffins on voit « muffin », pas la banane ni l'avoine. Mais si la
-     * vision hésite EN PLUS, c'est le profil d'une image ratée — celle qui
-     * « pourrait être du couscous, de la polenta ou du curcuma ». Mesuré :
-     * une bouillie orange est passée avec reconnus=1 et des hésitations.
+     * vision ALSO hedges, that is the profile of a failed image — the one that
+     * "could be couscous, polenta or turmeric". Measured: an orange mush got
+     * through with recognised=1 and hedging.
      *
-     * Un ingrédient reconnu ET aucune hésitation : on accepte.
-     * Un ingrédient reconnu ET des hésitations : on rejette. */
+     * One ingredient recognised AND no hedging: accept.
+     * One ingredient recognised AND hedging: reject. */
     if (description.incertitudes.length) {
       erreurs.push("un seul ingrédient reconnu sur " + principaux.length +
         ", et la vision hésite — l'image ne ressemble pas assez à la recette");

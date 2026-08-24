@@ -1,6 +1,6 @@
 //  BoucheesApp.swift
 //
-//  Point d'entrée et navigation. Quatre onglets natifs, et un accueil guidé
+//  Entry point and navigation. Native tabs, and a guided onboarding
 //  au premier lancement — pas un profile bidon qu'il faudrait corriger.
 
 import SwiftUI
@@ -64,8 +64,8 @@ struct RootView: View {
     }
 }
 
-/// Sans moteur, l'app ne peut rien affirmer. On le dit franchement plutôt que
-/// d'afficher des recipes qui n'ont pas été vérifiées.
+/// With no engine the app can assert nothing. Better to say so plainly than to
+/// show recipes that were never verified.
 struct FatalErrorScreen: View {
     let message: String
 
@@ -91,7 +91,7 @@ struct FatalErrorScreen: View {
     }
 }
 
-// MARK: - Accueil guidé
+// MARK: - Guided onboarding
 
 struct OnboardingScreen: View {
     @Environment(AppState.self) private var etat
@@ -135,7 +135,7 @@ struct OnboardingScreen: View {
         .accessibilityLabel("Étape \(step + 1) sur 3")
     }
 
-    // Étape 1 — le prénom
+    // Step 1 — the first name
 
     private var etapePrenom: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -183,7 +183,7 @@ struct OnboardingScreen: View {
         .onAppear { champNomActif = true }
     }
 
-    // Étape 2 — l'âge
+    // Step 2 — the age
 
     private var etapeAge: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -208,7 +208,7 @@ struct OnboardingScreen: View {
         }
     }
 
-    // Étape 3 — les allergènes
+    // Step 3 — the allergens
 
     private var etapeAllergenes: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -250,9 +250,9 @@ struct OnboardingScreen: View {
     }
 }
 
-// MARK: - Sélecteur d'âge
+// MARK: - Age picker
 
-/// Stades d'abord, réglage fin ensuite. Monter à six ans avec un pas d'un mois
+/// Stages first, fine tuning after. Stepping to six years one month at a time
 /// demanderait soixante-six tapes.
 struct AgePicker: View {
     @Binding var ageMonths: Int
@@ -328,7 +328,7 @@ struct AgePicker: View {
     }
 }
 
-// MARK: - Grid d'allergènes
+// MARK: - Allergen grid
 
 struct AllergenGrid: View {
     @Binding var selection: [String]

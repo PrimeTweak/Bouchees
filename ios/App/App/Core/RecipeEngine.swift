@@ -43,15 +43,15 @@ final class RecipeEngine {
     private var pont: JSValue?
     private var derniereException: String?
 
-    /// Cache par profile : recompute 30 recipes à chaque redessin serait du
-    /// gaspillage. La clé change dès que l'âge ou un allergène change.
+    /// Cache per profile: recomputing 30 recipes on every redraw would be
+    /// waste. The key changes as soon as the age or an allergen changes.
     private var cache: [String: [AdaptedRecipe]] = [:]
 
     private(set) var pret = false
     private(set) var catalogue: [String: IngredientDefinition] = [:]
     private(set) var base: ReferenceTables?
 
-    // MARK: - Démarrage
+    // MARK: - Startup
 
     init() throws {
         guard let ctx = JSContext() else { throw EngineError.contexteIndisponible }
@@ -78,8 +78,8 @@ final class RecipeEngine {
         pont = p
     }
 
-    /// Injecte les tables de sécurité. Tant que ce n'est pas fait, le moteur
-    /// refuse de répondre — jamais de value par défaut silencieuse.
+    /// Injects the safety tables. Until that is done the engine refuses to
+    /// answer — never a silent default value.
     func chargerDonnees(ingredients: Data, substitutions: Data, base baseData: Data) throws {
         let enveloppe = """
         {"ingredients":\(String(decoding: ingredients, as: UTF8.self)),\
@@ -126,8 +126,8 @@ final class RecipeEngine {
 
     // MARK: - API publique
 
-    /// Adapte tout le recipes d'un coup. Un seul aller-retour to JS plutôt
-    /// que trente, et le résultat est mis en cache pour ce profile.
+    /// Adapts the whole corpus at once. One round trip into JS instead of
+    /// thirty, and the result is cached for this profile.
     func adapter(_ recipes: [Recipe], pour profile: ChildProfile) throws -> [AdaptedRecipe] {
         guard pret else { throw EngineError.exception("données non chargées") }
         let k = key(profile, recipes.count)
@@ -158,7 +158,7 @@ final class RecipeEngine {
         return try decoder(TextureStage.self, brut, "stage")
     }
 
-    /// Analyse d'une étiquette de product scannée.
+    /// Reads the label of a scanned product.
     func evaluateLabel(_ texte: String, evites: [String]) throws -> ProductVerdict {
         let jsonEvites = String(decoding: try JSONEncoder().encode(evites), as: UTF8.self)
         let brut = try appeler("evaluateLabel", [texte, jsonEvites])

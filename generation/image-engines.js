@@ -1,10 +1,10 @@
 /* Moteurs d'image
  *
- *   drawthings — l'API HTTP locale de Draw Things sur ton Mac (aucun coût,
- *                aucune donnée qui sort). Endpoint compatible AUTOMATIC1111.
- *   openai     — OPENAI_API_KEY, si tu préfères payer à l'image
- *   simule     — hors ligne : écrit un PNG minuscule mais valide, pour que le
- *                cycle complet soit testable sans réseau
+ *   drawthings — Draw Things' local HTTP API on your Mac (no cost, no data
+ *                leaving the machine). AUTOMATIC1111-compatible endpoint.
+ *   openai     — OPENAI_API_KEY, if you would rather pay per image
+ *   simule     — offline: writes a tiny but valid PNG so the whole cycle can
+ *                be tested with no network
  *
  * Chaque adaptateur retourne { octets, largeur, hauteur, moteur }.
  */
@@ -47,7 +47,7 @@ const openai = {
   name: "openai",
   disponible: function () { return !!process.env.OPENAI_API_KEY; },
   generer: async function (spec) {
-    /* Les modèles d'image n'ont pas de champ « négatif » : on le replie
+    /* Image models have no negative field: it is folded
      * dans le prompt, en formulation positive quand c'est possible. */
     const rep = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
@@ -64,9 +64,9 @@ const openai = {
   }
 };
 
-/* PNG valide, généré sans dépendance : bandes de couleur dérivées du prompt.
- * Ce n'est pas une image de recette — c'est un fichier réel pour que le reste
- * du cycle (écriture, empreinte, manifeste, publication) soit testé pour vrai. */
+/* A valid PNG built with no dependency: colour bands derived from the prompt.
+ * This is not a recipe photo — it is a real file so the rest of the cycle
+ * (writing, fingerprint, manifest, publishing) is genuinely tested. */
 function pngSimple(largeur, hauteur, couleurs) {
   const lignes = [];
   for (let y = 0; y < hauteur; y++) {

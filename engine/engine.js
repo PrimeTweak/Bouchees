@@ -31,8 +31,8 @@
     return a.filter(function (x) { return b.indexOf(x) !== -1; });
   }
 
-  /* Familles d'allergènes présentes dans une liste d'usages d'ingrédients,
-   * dérivées du catalogue — jamais lues depuis des étiquettes externes. */
+  /* Allergen families present in a list of ingredient usages, derived from the
+   * catalogue — never read off an external label. */
   function allergenesDe(usages, catalogue) {
     var vus = {};
     usages.forEach(function (u) {
@@ -49,7 +49,7 @@
     return allergenesDe(recette.ingredients, catalogue);
   }
 
-  /* Stade de texture applicable à un âge donné. */
+  /* Texture stage that applies to a given age. */
   function stadePour(ageMois, base) {
     for (var i = 0; i < base.stages.length; i++) {
       var s = base.stages[i];
@@ -58,9 +58,8 @@
     return base.stages[base.stages.length - 1];
   }
 
-  /* Première règle d'interdit applicable à un ingrédient pour un âge.
-   * Les règles sont ordonnées de la tranche la plus jeune à la plus vieille
-   * dans base.ageRules; on retourne la première qui s'applique. */
+  /* First age rule that applies to an ingredient at a given age. Rules are
+   * ordered youngest bracket first in base.ageRules; the first match wins. */
   function interditPour(id, ageMois, base) {
     for (var i = 0; i < base.ageRules.length; i++) {
       var r = base.ageRules[i];
@@ -69,7 +68,7 @@
     return null;
   }
 
-  /* Règle de substitution pour (ingrédient, rôle). */
+  /* Substitution rule for (ingredient, role). */
   function reglePour(id, role, tableSubst) {
     for (var i = 0; i < tableSubst.length; i++) {
       var r = tableSubst[i];
@@ -78,10 +77,10 @@
     return null;
   }
 
-  /* Choix déterministe d'un substitut : première option de la table qui
-   * (1) n'introduit aucun allergène évité,
-   * (2) respecte son âge minimum,
-   * (3) n'est pas elle-même interdite à cet âge sans porte de sortie.
+  /* Deterministic pick of a substitute: the first option in the table that
+   * (1) introduces no avoided allergen,
+   * (2) meets its own minimum age,
+   * (3) is not itself blocked at that age with no way out.
    * Retourne null si aucune option ne passe. */
   function choisirSubstitut(regle, allergenesEvites, ageMois, catalogue, base) {
     if (!regle) return null;
@@ -103,8 +102,8 @@
 
   /* adapterRecette(recette, { allergens: [...], ageMois: n }, donnees)
    * donnees = { catalogue, substitutions, base }
-   * Retourne un objet complet : ingrédients avec provenance de chaque
-   * décision, alerts graduées, consigne de texture, status global. */
+   * Returns a complete object: ingredients carrying the origin of every
+   * decision, graded alerts, texture guidance, overall status. */
   function adapterRecette(recette, options, donnees) {
     var evites = (options.allergens || []).slice().sort();
     var ageMois = options.ageMois;
@@ -142,7 +141,7 @@
       };
       if (def && def.note) item.ingredientNote = def.note;
 
-      /* 1 — conflit d'allergène sur l'ingrédient d'origine */
+      /* 1 — allergen conflict on the original ingredient */
       var conflit = def ? intersection(def.allergens, evites) : [];
       if (conflit.length > 0) {
         var regle = reglePour(usage.id, role, donnees.substitutions);
@@ -173,7 +172,7 @@
         }
       }
 
-      /* 2 — règles d'âge sur l'ingrédient FINAL (origine ou substitut) */
+      /* 2 — age rules on the FINAL ingredient (original or substitute) */
       if (item.status !== "blocked") {
         var idFinal = item.to || item.id;
         var interdit = (item.status === "omitted") ? null : interditPour(idFinal, ageMois, base);
@@ -222,8 +221,8 @@
       resultat.status = "adapted";
     }
 
-    /* Invariant vérifiable : les allergènes dérivés du résultat ne
-     * croisent jamais la liste évitée, sauf status non_adaptable. */
+    /* Checkable invariant: the allergens derived from the result never
+     * intersect the avoided list, except when status is not_adaptable. */
     resultat.remainingAllergens = allergenesDe(resultat.ingredients, catalogue);
     return resultat;
   }

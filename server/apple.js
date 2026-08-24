@@ -1,16 +1,16 @@
-/* Apple — StoreKit 2 côté serveur (bloc I)
+/* Apple — StoreKit 2, server side
  *
- * Le client iOS envoie une transaction signée (JWS). On ne lui fait PAS
- * confiance : on vérifie la signature, on remonte la chaîne de certificats
- * jusqu'à la racine Apple épinglée, et seulement ensuite on accorde le droit.
- * Exactement la même règle que pour Stripe — le serveur décide, jamais le
+ * The iOS client sends a signed transaction (JWS). It is NOT trusted: the
+ * signature is verified, the certificate chain is walked up to the pinned
+ * Apple root, and only then is the entitlement granted. Same rule as Stripe —
+ * the server decides, never the
  * client.
  *
- * Node pur, aucune dépendance.
+ * Plain Node, no dependencies.
  *
- * Racine Apple : télécharge « Apple Root CA - G3 » sur
+ * Apple root: download "Apple Root CA - G3" from
  * https://www.apple.com/certificateauthority/ et place le fichier .cer dans
- * serveur/AppleRootCA-G3.cer. Sans elle, on refuse tout — le repli sûr.
+ * server/AppleRootCA-G3.cer. Without it everything is refused — the safe fallback.
  */
 "use strict";
 const crypto = require("crypto");
@@ -18,8 +18,8 @@ const fs = require("fs");
 const path = require("path");
 
 /* Empreinte SHA-256 de la racine attendue. Si le fichier fourni ne correspond
- * pas, on refuse : ça bloque une racine substituée. Laisser vide désactive
- * l'épinglage par empreinte (la chaîne reste vérifiée). */
+ * does not match, everything is refused: that blocks a substituted root.
+ * Leaving it empty disables fingerprint pinning (the chain is still checked). */
 const EMPREINTE_RACINE = process.env.APPLE_ROOT_SHA256 || "";
 
 function base64urlVersBuffer(s) {
@@ -65,9 +65,8 @@ function chargerRacine(cheminRacine) {
   return new crypto.X509Certificate(txt.indexOf("-----BEGIN") !== -1 ? txt : brut);
 }
 
-/* Vérifie la chaîne x5c : feuille → intermédiaire(s) → racine attendue.
- * Chaque certificat doit être signé par le suivant, et tous doivent être
- * valides à la date du jour. */
+/* Verifies the x5c chain: leaf -> intermediate(s) -> expected root. Each
+ * certificate must be signed by the next, and all must be valid today. */
 function verifierChaine(x5c, racine, maintenant) {
   if (!Array.isArray(x5c) || x5c.length < 2) return { ok: false, reason: "chaîne x5c absente ou trop courte" };
   let certs;
@@ -94,7 +93,7 @@ function verifierChaine(x5c, racine, maintenant) {
   return { ok: true, feuille: certs[0] };
 }
 
-/* Vérifie un JWS signé par Apple et retourne sa charge utile. */
+/* Verifies a JWS signed by Apple and returns its payload. */
 function verifierJWS(jws, options) {
   options = options || {};
   const parties = String(jws || "").split(".");
@@ -122,8 +121,8 @@ function verifierJWS(jws, options) {
   return { ok: true, charge: charge };
 }
 
-/* Traduit une transaction StoreKit vérifiée en état d'subscription.
- * Mêmes statuts que Stripe : le reste du serveur ne voit aucune différence. */
+/* Translates a verified StoreKit transaction into subscription state. Same
+ * statuses as Stripe: the rest of the server sees no difference. */
 function etatDepuisTransaction(charge, options) {
   options = options || {};
   const attendu = options.bundleId || process.env.APPLE_BUNDLE_ID;
@@ -153,7 +152,7 @@ function etatDepuisTransaction(charge, options) {
 }
 
 /* Notifications V2 : Apple pousse les changements d'subscription.
- * signedPayload → signedTransactionInfo/signedRenewalInfo, chacun signé. */
+ * signedPayload -> signedTransactionInfo/signedRenewalInfo, each signed. */
 function lireNotification(signedPayload, options) {
   const ext = verifierJWS(signedPayload, options);
   if (!ext.ok) return { ok: false, reason: ext.reason };
@@ -168,7 +167,7 @@ function lireNotification(signedPayload, options) {
   if (!base.ok) return { ok: false, reason: base.reason };
 
   /* Le type de notification prime sur la date d'expiration : un remboursement
-   * coupe l'accès immédiatement, un échec de paiement laisse la grâce jouer. */
+   * cuts access immediately; a failed payment lets the grace period run. */
   const carte = {
     SUBSCRIBED: "actif", DID_RENEW: "actif", OFFER_REDEEMED: "actif",
     DID_CHANGE_RENEWAL_STATUS: base.status || "actif",

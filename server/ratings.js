@@ -17,22 +17,22 @@
 const fs = require("fs");
 const path = require("path");
 
-const MIN_VOTES = 5;   /* en deçà, la recette n'apparaît pas au ranking */
+const MIN_VOTES = 5;   /* below this, a recipe does not appear in the ranking */
 const WEIGHT = 8;            /* poids de l'ancrage, en votes fictifs */
 
-/* ANCHOR FIXE, ET C'EST DÉLIBÉRÉ.
+/* THE ANCHOR IS FIXED, AND THAT IS DELIBERATE.
  *
- * L'ancrage habituel est la average observée de toutes les ratings. Ça marche
- * quand les ratings sont étalées. Ici, elles ne le seront pas : un parent rating
- * surtout une recette qu'il a aimée, alors la average générale montera to
+ * The usual anchor is the observed average of all ratings. That works when
+ * ratings are spread out. Here they will not be: a parent mostly rates a recipe
+ * they liked, so the overall average climbs toward
  * 4,5 et plus. L'ancrage se retrouverait au level des bonnes recettes, et ne
  * freinerait plus rien.
  *
- * Mesuré sur des données d'essai : avec l'ancrage mobile, une recette notée
- * 5/5 par cinq personnes passait DEVANT une recette à 4,8 sur soixante. Ce
+ * Measured on test data: with a moving anchor, a recipe rated 5/5 by five
+ * people came AHEAD of one rated 4.8 by sixty. That
  * n'est pas le ranking qu'on veut montrer.
  *
- * Avec un ancrage fixe à 3,5, une recette doit convaincre plus de cinq
+ * With a fixed anchor at 3.5, a recipe has to convince more than five
  * personnes pour monter — ce qui est exactement l'intention. */
 const ANCHOR = 3.5;
 
@@ -90,7 +90,7 @@ function aggregate(recipeId, db) {
   };
 }
 
-/* Moyenne générale, gardée pour l'observation et les rapports — plus utilisée
+/* Overall average, kept for observation and reporting — no longer used
  * comme ancrage, voir le commentaire au-dessus de ANCHOR. */
 function overallAverage(db) {
   let checksum = 0, n = 0;
@@ -101,7 +101,7 @@ function overallAverage(db) {
 }
 
 /* Le ranking. Retourne des identifiants et des scores; c'est l'appelant
- * qui va chercher le content des recettes — le ranking ne connaît pas les
+ * that fetches the recipe content — the ranking knows nothing about
  * recettes, seulement les votes. */
 function ranking(limit) {
   const db = read();
@@ -111,7 +111,7 @@ function ranking(limit) {
     const a = aggregate(recipeId, db);
     if (a.votes < MIN_VOTES) return;
     const checksum = Object.values(db.ratings[recipeId]).reduce((s, x) => s + x.rating, 0);
-    /* Moyenne bayésienne : (lest × ancrage + checksum) / (lest + votes) */
+    /* Bayesian average: (weight * anchor + total) / (weight + votes) */
     const score = (WEIGHT * ANCHOR + checksum) / (WEIGHT + a.votes);
     out.push({
       recipeId: recipeId,
@@ -129,7 +129,7 @@ function ranking(limit) {
   return limit ? out.slice(0, limit) : out;
 }
 
-/* Agrégats de plusieurs recettes d'un coup, pour l'affichage d'une liste. */
+/* Summaries for several recipes at once, for list display. */
 function aggregates(ids, email) {
   const db = read();
   const out = {};

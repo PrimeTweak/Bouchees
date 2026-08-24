@@ -82,7 +82,7 @@ def check():
         sources[path_] = (raw, code)
         filename = os.path.basename(path_)
 
-        # 1. délimiteurs équilibrés
+        # 1. balanced delimiters
         for opening, closing, label in [("{", "}", "braces"),
                                         ("(", ")", "parentheses"),
                                         ("[", "]", "brackets")]:
@@ -90,7 +90,7 @@ def check():
             if a != b:
                 problems.append(f"{filename}: unbalanced {label} ({a} vs {b})")
 
-        # 2. déclarations de types
+        # 2. type declarations
         for m in re.finditer(
                 r'^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:public |private |internal |fileprivate )?'
                 r'(?:final )?(struct|class|enum|actor|protocol|typealias)\s+(\w+)', code, re.M):
@@ -101,7 +101,7 @@ def check():
         if len(places) > 1:
             problems.append(f"type “{name}” declared {len(places)} times: {', '.join(places)}")
 
-    # 4. types utilisés mais jamais définis
+    # 4. types used but never defined
     definis = set(definitions) | CONNUS
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
@@ -126,7 +126,7 @@ def check():
             if m.group(1) not in existing:
                 problems.append(f"{os.path.basename(path_)} : asset couleur « {m.group(1)} » absent")
 
-    # 6. identifiants StoreKit cohérents
+    # 6. StoreKit identifiers line up
     sk = os.path.join(ROOT, "Bouchees.storekit")
     if os.path.exists(sk):
         d = json.load(open(sk, encoding="utf-8"))

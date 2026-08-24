@@ -1,12 +1,12 @@
-/* Validateur de recettes générées — bloc C
+/* Validator for generated recipes
  * valider(recette, commande, donnees) → { ok, erreurs[], avertissements[] }
  *
- * Un modèle qui invente « graines de tournesol grillées » au lieu de
+ * A model that invents "toasted sunflower seeds" instead of
  * beurre_tournesol produit une recette invisible pour le moteur : elle
- * passerait le filtre allergène sans jamais avoir été analysée. Ce validateur
- * est la porte qui empêche ça.
+ * would slip past the allergen filter without ever being analysed. This
+ * validator is the gate that stops it.
  *
- * Erreur = rejet. Avertissement = quarantaine pour révision humaine.
+ * Error = rejection. Warning = quarantine for human review.
  */
 "use strict";
 const path = require("path");
@@ -29,13 +29,13 @@ function valider(r, commande, donnees, idsExistants) {
   });
   if (e.length) return { ok: false, erreurs: e, avertissements: a };
 
-  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(r.id)) e.push("id mal formé : " + r.id);
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(r.id)) e.push("malformed id: " + r.id);
   if (idsExistants.indexOf(r.id) !== -1) e.push("id déjà utilisé : " + r.id);
   if (!Array.isArray(r.ingredients) || r.ingredients.length < 2) e.push("moins de 2 ingrédients");
   if (!Array.isArray(r.steps) || r.steps.length < 2) e.push("moins de 2 étapes");
   if (!Number.isInteger(r.minAgeMonths) || r.minAgeMonths < 6) e.push("ageMinBase invalide : " + r.minAgeMonths);
 
-  /* --- ingrédients : la porte principale --- */
+  /* --- ingredients: the main gate --- */
   (r.ingredients || []).forEach(function (u, i) {
     if (!u || !u.id) { e.push("ingrédient " + i + " sans id"); return; }
     if (!catalogue[u.id]) { e.push("ingrédient hors catalogue : « " + u.id + " » — inventé par le modèle"); return; }
@@ -50,7 +50,7 @@ function valider(r, commande, donnees, idsExistants) {
   });
   if (e.length) return { ok: false, erreurs: e, avertissements: a };
 
-  /* --- respect de la commande : l'allergène demandé absent doit l'être --- */
+  /* --- honouring the commission: the excluded allergen must be absent --- */
   const evite = (commande && commande.evite) || [];
   const presents = Engine.analyserAllergenes(r, catalogue);
   const fuite = presents.filter(function (x) { return evite.indexOf(x) !== -1; });
@@ -61,7 +61,7 @@ function valider(r, commande, donnees, idsExistants) {
   if (commande && r.minAgeMonths > commande.ageMois)
     a.push("âge minimal " + r.minAgeMonths + " mois alors que la commande visait " + commande.ageMois + " mois");
 
-  /* --- consignes d'âge : elles doivent être tenables à l'âge visé --- */
+  /* --- age guidance: it has to be workable at the target age --- */
   r.ingredients.forEach(function (u) {
     const interdit = Engine.interditPour(u.id, r.minAgeMonths, donnees.base);
     if (interdit && interdit.action.type === "bloquer")
@@ -81,7 +81,7 @@ function valider(r, commande, donnees, idsExistants) {
     e.push("le moteur plante dessus : " + err.message);
   }
 
-  /* --- rédaction --- */
+  /* --- writing --- */
   (r.steps || []).forEach(function (s, i) {
     if (typeof s !== "string" || s.trim().length < 8) e.push("étape " + (i + 1) + " trop courte ou vide");
     else if (s.length > 320) a.push("étape " + (i + 1) + " très longue");

@@ -23,8 +23,8 @@ struct IngredientVisual: Sendable {
     let shape: FoodShape
     /// 3 = base du plat, 2 = garniture, 1 = touche
     let weight: Int
-    /// Clé stable pour dédupliquer et semer l'aléa. Color n'expose pas de
-    /// représentation fiable, et hashValue change à chaque lancement.
+    /// Stable key for deduplication and for seeding the randomness. Color has
+    /// no reliable representation, and hashValue changes on every launch.
     let key: String
 
     init(_ hex: UInt32, _ shape: FoodShape, _ weight: Int, _ key: String = "") {
@@ -45,7 +45,7 @@ enum Palette {
               blue: Double(hex & 0xFF) / 255)
     }
 
-    /// Par identifier d'ingrédient. Tout ce qui manque retombe sur le rôle.
+    /// Keyed by ingredient identifier. Anything missing falls back to the role.
     static let parIngredient: [String: IngredientVisual] = [
         "farine_ble": .init(0xE6CB93, .poudre, 3),
         "farine_avoine": .init(0xDEC49B, .poudre, 3),
@@ -149,7 +149,7 @@ enum Palette {
         "eau": .init(0xEDF1EE, .arc, 1)
     ]
 
-    /// Repli par rôle : aucun ingrédient ne others sans color.
+    /// Fallback by role: no ingredient is ever left without a colour.
     static let parRole: [String: IngredientVisual] = [
         "farine": .init(0xE6CB93, .poudre, 3),
         "proteine": .init(0xD8A778, .chunk, 3),
@@ -169,7 +169,7 @@ enum Palette {
         parIngredient[id] ?? parRole[role] ?? parRole["assaisonnement"]!
     }
 
-    /// Teintes de background par catégorie — la nappe sous le bowl.
+    /// Background tints per category — the cloth under the bowl.
     static func background(_ category: String) -> (Color, Color) {
         switch category {
         case "Breakfast":  return (c(0xF7F1E4), c(0xEFE4CE))
@@ -180,11 +180,11 @@ enum Palette {
     }
 }
 
-// MARK: - Trigonométrie sans ambiguïté
+// MARK: - Unambiguous trigonometry
 
-// CoreGraphics expose cos(CGFloat) et la bibliothèque standard cos(Double).
-// Dès qu'on mêle les deux dans une expression CGPoint, le compilateur refuse
-// de select. Ces enveloppes tranchent : entrée Double, out CGFloat.
+// CoreGraphics exposes cos(CGFloat) and the standard library cos(Double). Mix
+// the two in a CGPoint expression and the compiler refuses to choose. These
+// wrappers settle it: Double in, CGFloat out.
 
 @inline(__always)
 private func cosine(_ angleRadians: Double) -> CGFloat {
@@ -198,14 +198,14 @@ private func sine(_ angleRadians: Double) -> CGFloat {
     return CGFloat(v)
 }
 
-/// Degrés to radians, en Double, pour éviter la même ambiguïté.
+/// Degrees to radians, in Double, to avoid the same ambiguity.
 @inline(__always)
 private func radians(_ degres: Double) -> Double { degres * Double.pi / 180 }
 
-// MARK: - Aléa déterministe
+// MARK: - Deterministic randomness
 
-/// Même recipe et même profile donnent toujours la même image. Un dessin qui
-/// change à chaque défilement donnerait l'impression que l'app improvise.
+/// The same recipe and the same profile always give the same image. A drawing
+/// that changed on every scroll would make the app look like it improvises.
 struct SeededRandom {
     private var etat: UInt32
 
@@ -228,9 +228,9 @@ struct SeededRandom {
 
     mutating func between(_ a: Double, _ b: Double) -> Double { a + (b - a) * next() }
 
-    /// Même chose, mais typée CGFloat : le dessin travaille en CGFloat et les
+    /// Same thing, typed CGFloat: the drawing works in CGFloat and mixed
     /// conversions implicites sont exactement ce qui rend les expressions
-    /// ambiguës pour le compilateur.
+    /// expressions are ambiguous to the compiler.
     mutating func betweenCG(_ a: Double, _ b: Double) -> CGFloat { CGFloat(between(a, b)) }
 }
 
@@ -245,7 +245,7 @@ struct DishArtwork: View {
             draw(context: &context, size: size)
         }
         .background(backgroundGradient)
-        .accessibilityHidden(true)   // décoratif : le verdict est lu par ailleurs
+        .accessibilityHidden(true)   // decorative: the verdict is read elsewhere
     }
 
     private var backgroundGradient: some View {
@@ -253,7 +253,7 @@ struct DishArtwork: View {
         return LinearGradient(colors: [a, b], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
-    /// Ingrédients visible = ceux qui restent après adaptation.
+    /// Visible ingredients = those left after adaptation.
     private var items: [IngredientVisual] {
         result.ingredients
             .filter { $0.status != .omis && $0.status != .impossible }
@@ -284,7 +284,7 @@ struct DishArtwork: View {
         let rayonBol = side * 0.38
         let rayonInterieur = rayonBol * 0.845
 
-        // Miettes sur la nappe : asymétrie volontaire.
+        // Crumbs on the cloth: deliberate asymmetry.
         for (i, a) in accents.prefix(3).enumerated() {
             let angle: Double = rng.between(0, 2 * Double.pi) + Double(i) * 2.1
             let distance = rayonBol * rng.betweenCG(1.22, 1.45)
@@ -296,7 +296,7 @@ struct DishArtwork: View {
             shape(a.shape, dans: &sousContexte, center: p, size: side * 0.028, color: a.color, rng: &rng)
         }
 
-        // Ombre portée
+        // Drop shadow
         context.fill(
             Path(ellipseIn: CGRect(x: center.x - rayonBol * 0.95, y: center.y + rayonBol * 0.86,
                                    width: rayonBol * 1.9, height: rayonBol * 0.22)),
@@ -312,7 +312,7 @@ struct DishArtwork: View {
                                                width: rayonInterieur * 2, height: rayonInterieur * 2))
         context.fill(inner, with: .color(Color(red: 0.973, green: 0.961, blue: 0.925)))
 
-        // Contenu, découpé au bowl
+        // Contents, clipped to the bowl
         context.drawLayer { layer in
             layer.clip(to: inner)
             dessinerContenu(&layer, center: center, radius: rayonInterieur,
@@ -330,7 +330,7 @@ struct DishArtwork: View {
     }
 
     /// La base se dessine selon sa nature : un potage remplit le bowl, un plat
-    /// en morceaux se pose en pièces, une pâtisserie fait un dôme.
+    /// something in pieces sits as pieces, a bake forms a dome.
     private func dessinerContenu(_ context: inout GraphicsContext, center: CGPoint, radius: CGFloat,
                                  base: IngredientVisual, accents: [IngredientVisual],
                                  rng: inout SeededRandom) {
@@ -383,7 +383,7 @@ struct DishArtwork: View {
             }
         }
 
-        // Garnitures, réparties en spirale d'or pour éviter les grappes.
+        // Toppings, laid out on a golden spiral to avoid clumping.
         let n = max(accents.count, 1)
         for (i, a) in accents.enumerated() {
             let repetitions = n <= 2 ? 3 : (n <= 4 ? 2 : 1)
@@ -502,7 +502,7 @@ struct DishArtwork: View {
         }
     }
 
-    /// Décalage angulaire dérivé de la clé, identique à chaque lancement.
+    /// Angular offset derived from the key, identical on every launch.
     private func stableOffset(_ key: String) -> Double {
         var somme: UInt32 = 0
         for octet in key.utf8 { somme = (somme &* 31 &+ UInt32(octet)) % 1000 }
@@ -521,7 +521,7 @@ struct DishArtwork: View {
 }
 
 extension Color {
-    /// Mélange simple, sans dépendre d'API récentes.
+    /// Simple shuffle, without depending on recent API.
     func mix(avec autre: Color, quantite: Double) -> Color {
         let q = max(0, min(1, quantite))
         #if canImport(UIKit)
