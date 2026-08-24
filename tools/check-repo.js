@@ -32,6 +32,7 @@ const REQUIRED = [
   "generation/text-engines.js", "generation/image-engines.js",
   "web/build.js", "web/illustration.js", "web/template.html",
   "tests/test.js", "ios/project.yml", "ios/App/App/Info.plist",
+  "ios/App/App/App.entitlements",
   ".github/workflows/ipa.yml"
 ];
 

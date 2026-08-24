@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Restored. Removing this file was a guess, not a measurement, and it broke an
+  install that had been working. A bundle with no entitlements file leaves the
+  signer to infer what to inject, and the installation manifest then does not
+  match what the profile declares.
+
+  in-app-payments is the only entitlement here. It is what the App Store build
+  needs for StoreKit, and a resigning certificate that already carried it is
+  what made sideloading work before.
+-->
+<plist version="1.0">
+<dict>
+  <key>com.apple.developer.in-app-payments</key>
+  <array/>
+</dict>
+</plist>
