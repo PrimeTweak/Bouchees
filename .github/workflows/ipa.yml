@@ -100,7 +100,14 @@ jobs:
       - name: Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Build unsigned
+      - name: Build ad-hoc signed
+        # Ad-hoc signing ("-") needs no certificate and no team, but it does
+        # produce a real _CodeSignature/CodeResources inside the bundle.
+        #
+        # Every working IPA in a sideloading library has that folder. A build
+        # with CODE_SIGNING_ALLOWED=NO has no signature structure at all, and a
+        # resigning tool replaces an existing signature rather than inventing
+        # one — with nothing to replace, it cannot read the app.
         run: |
           set -o pipefail
           xcodebuild \
@@ -109,11 +116,24 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -derivedDataPath build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
             ONLY_ACTIVE_ARCH=NO \
             clean build 2>&1 | tail -60
+
+      - name: Verify the bundle carries a signature
+        run: |
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          echo "--- signature structure ---"
+          ls -la "$APP/_CodeSignature" || { echo "NO _CodeSignature — the app cannot be resigned"; exit 1; }
+          echo "--- codesign verdict ---"
+          codesign -dv "$APP" 2>&1 || true
+          echo "--- entitlements carried ---"
+          codesign -d --entitlements :- "$APP" 2>&1 || true
 
       - name: Package as .ipa
         # Packaged with ditto, not zip.
