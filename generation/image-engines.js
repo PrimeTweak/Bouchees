@@ -57,21 +57,36 @@ const drawthings = {
     const rep = await fetch(base + "/sdapi/v1/txt2img", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      /* Only the fields Draw Things reliably accepts are sent by default.
+       *
+       * cfg_scale and sampler_name were being sent with SDXL values — 30 steps,
+       * CFG 6, "DPM++ 2M Karras" — which FLUX neither wants nor recognises,
+       * and which some builds reject outright with a bare HTTPException.
+       *
+       * They are now opt-in: set DRAWTHINGS_CFG or DRAWTHINGS_SAMPLER only if
+       * you know the value your build accepts. Left unset, Draw Things uses
+       * whatever is configured in the app, which is the value that works. */
+      body: JSON.stringify(Object.assign({
         prompt: spec.prompt,
         negative_prompt: spec.negatif,
         width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
         height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
-        steps: Number(process.env.DRAWTHINGS_ETAPES || 30),
-        cfg_scale: Number(process.env.DRAWTHINGS_CFG || 6),
-        seed: spec.graine === undefined ? -1 : spec.graine,
-        sampler_name: process.env.DRAWTHINGS_SAMPLER || "DPM++ 2M Karras"
-      })
+        steps: Number(process.env.DRAWTHINGS_ETAPES || 8),
+        seed: spec.graine === undefined ? -1 : spec.graine
+      },
+        process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
+        process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
+      ))
     });
     const d = await rep.json();
     if (!rep.ok || !d.images || !d.images.length) {
-      throw new Error("Draw Things a refusé : " + (d.error || rep.status) +
-        " — vérifie que l'API HTTP est activée dans les réglages de l'app");
+      const detail = d.errors || d.detail || d.error || rep.status;
+      throw new Error("Draw Things refused the request: " +
+        (typeof detail === "string" ? detail : JSON.stringify(detail)) +
+        "  (asked for " + (spec.largeur || 1664) + "x" + (spec.hauteur || 1104) +
+        ", " + Number(process.env.DRAWTHINGS_ETAPES || 8) + " steps" +
+        (process.env.DRAWTHINGS_CFG ? ", cfg " + process.env.DRAWTHINGS_CFG : "") +
+        (process.env.DRAWTHINGS_SAMPLER ? ", sampler " + process.env.DRAWTHINGS_SAMPLER : "") + ")");
     }
     const octets = Buffer.from(d.images[0], "base64");
 
