@@ -116,33 +116,44 @@ jobs:
             clean build 2>&1 | tail -40
 
       - name: Ad-hoc sign the bundle
-        # Xcode refuses ad-hoc signing for the iOS SDK — that is a rule of its
-        # build system, not of codesign. Running codesign directly is allowed,
-        # and it produces the _CodeSignature/CodeResources that every working
-        # IPA in a sideloading library carries.
+        # Every working IPA in a sideloading library carries a
+        # _CodeSignature/CodeResources. A build made with CODE_SIGNING_ALLOWED=NO
+        # has none, and a resigning tool replaces an existing signature rather
+        # than inventing one.
         #
-        # A resigning tool replaces an existing signature. With nothing to
-        # replace it has no anchor, which is consistent with an app that reads
-        # as "Unknown" however correct its Info.plist is.
+        # Xcode refuses ad-hoc signing for the iOS SDK, but codesign accepts it
+        # when invoked directly. No set -e here: a diagnostic command must never
+        # be what fails the step.
         run: |
-          set -e
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
           if [ -z "$APP" ]; then echo "No .app was produced"; exit 1; fi
 
-          codesign --force --sign - \
-            --entitlements ios/App/App/App.entitlements \
-            --timestamp=none \
-            "$APP"
+          # A StoreKit configuration file is a development artifact. It has no
+          # business in a shipped bundle and only widens what an installer has
+          # to parse.
+          rm -f "$APP/Bouchees.storekit"
+
+          echo "--- signing ---"
+          if codesign --force --sign - --timestamp=none \
+               --entitlements ios/App/App/App.entitlements "$APP"; then
+            echo "signed with entitlements"
+          elif codesign --force --sign - --timestamp=none "$APP"; then
+            echo "signed without entitlements (the entitlements file was refused)"
+          else
+            echo "codesign could not sign the bundle"; exit 1
+          fi
 
           echo "--- signature structure ---"
-          ls -la "$APP/_CodeSignature" \
-            || { echo "NO _CodeSignature — the app cannot be resigned"; exit 1; }
+          ls -la "$APP/_CodeSignature" 2>&1 || echo "no _CodeSignature directory"
           echo "--- codesign verdict ---"
-          codesign -dv "$APP" 2>&1
+          codesign -dv "$APP" 2>&1 || true
           echo "--- entitlements carried ---"
           codesign -d --entitlements :- "$APP" 2>&1 || true
-          echo "--- signature validates ---"
-          codesign --verify --verbose "$APP" 2>&1 || true
+          echo "--- bundle contents ---"
+          ls -la "$APP"
+
+          test -f "$APP/_CodeSignature/CodeResources" \
+            || { echo "FAILED: no CodeResources — the app cannot be resigned"; exit 1; }
 
       - name: Package as .ipa
         # Packaged with ditto, not zip.
