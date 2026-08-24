@@ -6,12 +6,12 @@
 import SwiftUI
 
 enum Tint {
-    static let betterave = Color("Beet")
-    static let pois = Color("Pea")
-    static let courge = Color("Squash")
-    static let courgePale = Color("SquashPale")
-    static let canneberge = Color("Cranberry")
-    static let background = Color("Canvas")
+    static let betterave = Color("Betterave")
+    static let pois = Color("Pois")
+    static let courge = Color("Courge")
+    static let courgePale = Color("CourgePale")
+    static let canneberge = Color("Canneberge")
+    static let background = Color("Fond")
 }
 
 extension RecipeStatus {

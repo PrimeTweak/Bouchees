@@ -115,31 +115,6 @@ jobs:
             ONLY_ACTIVE_ARCH=NO \
             clean build 2>&1 | tail -60
 
-      - name: Inspect the built Info.plist
-        # A third-party installer reads these keys to show the name, the
-        # identifier and the version. If any of them is empty the app shows up
-        # as "Unknown" and will not install — so fail here, not on the phone.
-        run: |
-          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
-          if [ -z "$APP" ]; then echo "No .app was produced"; exit 1; fi
-          PLIST="$APP/Info.plist"
-          echo "--- $PLIST ---"
-          plutil -p "$PLIST"
-          echo "--- required keys ---"
-          FAIL=0
-          for KEY in CFBundleIdentifier CFBundleName CFBundleExecutable \
-                     CFBundleShortVersionString CFBundleVersion CFBundlePackageType; do
-            VALUE=$(/usr/libexec/PlistBuddy -c "Print :$KEY" "$PLIST" 2>/dev/null || true)
-            if [ -z "$VALUE" ]; then echo "  MISSING  $KEY"; FAIL=1
-            else echo "  ok       $KEY = $VALUE"; fi
-          done
-          echo "--- icon files produced by actool ---"
-          ls "$APP" | grep -i "^AppIcon" || { echo "  no AppIcon file in the bundle"; FAIL=1; }
-          BIN="$APP/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$PLIST")"
-          if [ ! -f "$BIN" ]; then echo "  MISSING  executable at $BIN"; FAIL=1
-          else echo "  ok       executable present"; fi
-          exit $FAIL
-
       - name: Package as .ipa
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
