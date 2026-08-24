@@ -56,7 +56,6 @@ jobs:
           rm -rf "$R"; mkdir -p "$R/batches"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
-          cp dist/safety.json "$R/" || true
           python3 - <<'PY'
           import json, shutil, pathlib
           m = json.load(open('dist/manifest.json'))
@@ -113,83 +112,22 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=NO \
-            clean build 2>&1 | tail -40
-
-      - name: Ad-hoc sign the bundle
-        # Every working IPA in a sideloading library carries a
-        # _CodeSignature/CodeResources. A build made with CODE_SIGNING_ALLOWED=NO
-        # has none, and a resigning tool replaces an existing signature rather
-        # than inventing one.
-        #
-        # Xcode refuses ad-hoc signing for the iOS SDK, but codesign accepts it
-        # when invoked directly. No set -e here: a diagnostic command must never
-        # be what fails the step.
-        run: |
-          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
-          if [ -z "$APP" ]; then echo "No .app was produced"; exit 1; fi
-
-          # A StoreKit configuration file is a development artifact. It has no
-          # business in a shipped bundle and only widens what an installer has
-          # to parse.
-          rm -f "$APP/Bouchees.storekit"
-
-          echo "--- signing ---"
-          if codesign --force --sign - --timestamp=none \
-               --entitlements ios/App/App/App.entitlements "$APP"; then
-            echo "signed with entitlements"
-          elif codesign --force --sign - --timestamp=none "$APP"; then
-            echo "signed without entitlements (the entitlements file was refused)"
-          else
-            echo "codesign could not sign the bundle"; exit 1
-          fi
-
-          echo "--- signature structure ---"
-          ls -la "$APP/_CodeSignature" 2>&1 || echo "no _CodeSignature directory"
-          echo "--- codesign verdict ---"
-          codesign -dv "$APP" 2>&1 || true
-          echo "--- entitlements carried ---"
-          codesign -d --entitlements :- "$APP" 2>&1 || true
-          echo "--- bundle contents ---"
-          ls -la "$APP"
-
-          test -f "$APP/_CodeSignature/CodeResources" \
-            || { echo "FAILED: no CodeResources — the app cannot be resigned"; exit 1; }
+            clean build 2>&1 | tail -60
 
       - name: Package as .ipa
-        # Packaged with ditto, not zip.
+        # zip, exactly as in the build that installs.
         #
-        # An installer reads Payload/*.app/Info.plist straight out of the
-        # archive, without extracting it first. `zip` on macOS writes entries
-        # some readers cannot walk — resource forks, directory headers, name
-        # encoding — which is why a bundle can be perfect once extracted and
-        # still read as "Unknown" by the installer.
-        #
-        # ditto is Apple's own tool for archiving a bundle and produces an
-        # archive iOS tooling reliably parses.
+        # Measured, not assumed: the known-good workflow packages with
+        # `zip -qry` and its IPA installs. I had replaced this with
+        # `ditto -c -k --sequesterRsrc`, and --sequesterRsrc is the flag that
+        # writes a __MACOSX directory into the archive next to Payload/.
+        # That replacement was a theory; the comparison says zip is what works.
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
           if [ -z "$APP" ]; then echo "No .app was produced — see the previous step"; exit 1; fi
-
-          rm -rf sortie && mkdir -p sortie/Payload
-          ditto "$APP" "sortie/Payload/$(basename "$APP")"
-
-          # Strip anything macOS may have attached to the copy; an installer
-          # walking the archive should meet nothing but the bundle.
-          xattr -cr sortie/Payload 2>/dev/null || true
-          find sortie -name ".DS_Store" -delete
-          find sortie -name "._*" -delete
-
-          ( cd sortie && ditto -c -k --sequesterRsrc --keepParent Payload Bouchees-unsigned.ipa )
-
-          echo "--- archive contents, as an installer sees them ---"
-          unzip -l sortie/Bouchees-unsigned.ipa | head -12
-          echo "--- the installer must find this entry ---"
-          unzip -l sortie/Bouchees-unsigned.ipa | grep -E "Payload/[^/]+\.app/Info\.plist" \
-            || { echo "Info.plist is not reachable at Payload/*.app/Info.plist"; exit 1; }
-          echo "--- and read it without extracting ---"
-          unzip -p sortie/Bouchees-unsigned.ipa "Payload/*.app/Info.plist" > /tmp/plist-from-archive
-          plutil -p /tmp/plist-from-archive | grep -E "CFBundleIdentifier|CFBundleShortVersionString|CFBundleName" \
-            || { echo "Info.plist unreadable straight from the archive"; exit 1; }
+          mkdir -p sortie/Payload
+          cp -R "$APP" sortie/Payload/
+          cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
           ls -lh sortie/Bouchees-unsigned.ipa
 
       - name: Upload artifact
