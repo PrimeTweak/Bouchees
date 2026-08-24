@@ -104,12 +104,12 @@ if (require.main === module) {
   Object.keys(r.content).forEach(function (lot) {
     fs.writeFileSync(path.join(dist, "batches", lot + ".json"), JSON.stringify(r.content[lot]) + "\n");
   });
-  console.log("Publié — version " + r.manifeste.version);
+  console.log("Published — version " + r.manifeste.version);
   r.manifeste.batches.forEach(function (l) {
-    console.log("  " + l.id + "  " + (l.access === "free" ? "libre " : "abonné") + "  " +
-      String(l.count).padStart(2) + " recettes  " + l.title);
+    console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
+      String(l.count).padStart(2) + " recipes  " + l.title);
   });
-  if (r.orphans.length) console.log("  ATTENTION — sans lot : " + r.orphans.join(", "));
+  if (r.orphans.length) console.log("  WARNING — no batch assigned: " + r.orphans.join(", "));
 }
 
 module.exports = { publier: publier };

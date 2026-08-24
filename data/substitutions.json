@@ -287,7 +287,7 @@
     "target": "dijon_mustard",
     "options": [
       {
-        "id": "_omettre",
+        "id": "_omit",
         "ratio": "leave it out — the recipe works without it",
         "minAgeMonths": 6
       }
@@ -356,7 +356,7 @@
     "target": "fish_sauce",
     "options": [
       {
-        "id": "_omettre",
+        "id": "_omit",
         "ratio": "leave it out — the recipe works without it",
         "minAgeMonths": 6
       }

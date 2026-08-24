@@ -12,7 +12,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const Moteur = require(path.join(__dirname, "..", "engine", "engine.js"));
+const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
 const racine = path.join(__dirname, "..");
 const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
@@ -40,13 +40,13 @@ const SEUIL_CATEGORIE = 6;
 
 function nomProfil(ids) {
   if (!ids.length) return "aucun évitement";
-  return "sans " + ids.map(function (id) {
+  return "no " + ids.map(function (id) {
     const a = donnees.base.allergens.find((x) => x.id === id);
     return a ? a.name.toLowerCase() : id;
   }).join(" + ");
 }
 function nomStade(mois) {
-  return Moteur.stadePour(mois, donnees.base).name;
+  return Engine.stadePour(mois, donnees.base).name;
 }
 
 function analyser(corpus) {
@@ -60,7 +60,7 @@ function analyser(corpus) {
         /* Une recette pensée pour 18 mois n'est pas « utilisable » à 6 mois,
          * même si le moteur sait l'adapter côté allergènes. */
         if (ageMois < r.minAgeMonths) { c.outOfAge++; return; }
-        const res = Moteur.adapterRecette(r, { allergens: profile, ageMois: ageMois }, donnees);
+        const res = Engine.adapterRecette(r, { allergens: profile, ageMois: ageMois }, donnees);
         c[res.status]++;
         if (res.status !== "not_adaptable") {
           if (c.byCategory[r.category] !== undefined) c.byCategory[r.category]++;
@@ -151,10 +151,10 @@ function commande(classement, target) {
     out.push({
       n: n, ageMois: g.ageMois, categories: [g.category], evite: g.evite,
       passePartout: passePartout,
-      reason: g.usable + " recettes usable à " + nomStade(g.ageMois) +
+      reason: g.usable + " usable recipes at " + nomStade(g.ageMois) +
         (g.horsAge ? ", " + g.horsAge + " du corpus visent plus vieux" : "") +
         " — il missing " + g.missing + " " + g.category.toLowerCase() +
-        (passePartout ? ". Ce trou existe pour TOUS les profils : une seule recette passe-partout les sert tous." : "")
+        (passePartout ? ". This gap exists for EVERY profile: one recipe that works for all of them fills it." : "")
     });
     reste -= n;
   }
@@ -165,11 +165,11 @@ function markdown(classement, blockers, cmd, nCorpus) {
   const l = [];
   l.push("# Rapport de trous — " + new Date().toISOString().slice(0, 10));
   l.push("");
-  l.push("Corpus : **" + nCorpus + " recettes**. Seuils : **" + SEUIL_SEMAINE +
-    " recettes usable** par combinaison (de quoi faire une semaine) et **" + SEUIL_CATEGORIE +
+  l.push("Corpus: **" + nCorpus + " recipes**. Thresholds: **" + SEUIL_SEMAINE +
+    " usable recipes** per combination (enough for a week) and **" + SEUIL_CATEGORIE +
     " par catégorie** (un parent ne sert pas que des soupers).");
   l.push("");
-  l.push("« Trop vieilles » = recettes dont l'âge minimal dépasse l'âge testé. Elles ne comptent pas.");
+  l.push("\"Too old\" = recipes whose minimum age is above the age being tested. They do not count.");
   l.push("");
   l.push("## Les 12 combinaisons les plus dépourvues");
   l.push("");
@@ -185,9 +185,9 @@ function markdown(classement, blockers, cmd, nCorpus) {
   l.push("## Ingrédients qui bloquent le plus");
   l.push("");
   l.push("Chaque ligne est une **règle de substitution manquante**. En écrire une");
-  l.push("débloque souvent plus de recettes que d'en rédiger une nouvelle.");
+  l.push("often unlocks more recipes than writing a new one.");
   l.push("");
-  if (!blockers.length) l.push("Aucun — toutes les recettes bloquées le sont pour des raisons d'âge, pas d'allergène.");
+  if (!blockers.length) l.push("None — every blocked recipe is blocked by age, not by an allergen.");
   blockers.slice(0, 10).forEach(function (b) {
     l.push("- **" + b.name + "** (`" + b.id + "`) — bloque " + b.n + " fois");
   });
@@ -197,7 +197,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   if (!cmd.length) l.push("Aucun trou sous le seuil — le prochain lot peut viser la variété plutôt que la couverture.");
   cmd.forEach(function (c) {
     l.push("- **" + c.n + " " + c.categories[0].toLowerCase() + "** dès " + c.ageMois + " mois — " +
-      (c.passePartout ? "**passe-partout** (sans aucun des 11 allergènes prioritaires)" : nomProfil(c.evite)));
+      (c.passePartout ? "**works for everyone** (none of the 11 priority allergens)" : nomProfil(c.evite)));
     l.push("    - " + c.reason);
   });
   l.push("");
@@ -223,12 +223,12 @@ if (require.main === module) {
     markdown(r.classement, r.blockers, r.commande, corpus.length) + "\n");
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.json"),
     JSON.stringify({ classement: r.classement.slice(0, 25), blockers: r.blockers, commande: r.commande }, null, 2) + "\n");
-  console.log("Trous analysés : " + r.cases.length + " combinaisons (" + PROFILS.length + " profils × " + STADES.length + " âges)");
+  console.log("Gaps analysed: " + r.cases.length + " combinations (" + PROFILS.length + " profiles x " + STADES.length + " ages)");
   r.classement.slice(0, 5).forEach(function (c) {
     console.log("  " + nomProfil(c.profile) + " @ " + nomStade(c.ageMois) + " → " + c.usable + " usable" +
-      (c.missing ? "  MANQUE " + c.missing : ""));
+      (c.missing ? "  MISSING " + c.missing : ""));
   });
-  console.log("Commande suggérée : " + r.commande.reduce((s, c) => s + c.n, 0) + " recettes");
+  console.log("Suggested commission: " + r.commande.reduce((s, c) => s + c.n, 0) + " recipes");
 }
 
 module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, rapport: rapport, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };

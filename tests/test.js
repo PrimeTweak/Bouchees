@@ -11,7 +11,7 @@ const fs = require("fs");
 process.env.BOUCHEES_NOTES = "/tmp/bouchees-notes-tests.json";
 try { fs.unlinkSync(process.env.BOUCHEES_NOTES); } catch (e) {}
 
-const Moteur = require(path.join(__dirname, "..", "engine", "engine.js"));
+const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
 const lire = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", f), "utf8"));
 const lire2 = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", f), "utf8"));
 
@@ -37,7 +37,7 @@ function test(name, fn) {
   catch (e) { console.error("ÉCHEC " + name + "\n      " + e.message); process.exitCode = 1; }
 }
 const adapter = (id, allergens, ageMois) =>
-  Moteur.adapterRecette(parId[id], { allergens, ageMois }, donnees);
+  Engine.adapterRecette(parId[id], { allergens, ageMois }, donnees);
 const ing = (res, id) => res.ingredients.find((i) => i.id === id);
 
 /* ---------- intégrité des données (lot 1) ---------- */
@@ -52,7 +52,7 @@ test("données : toutes les options de substitution existent et tout allergène 
   for (const regle of donnees.substitutions) {
     assert(donnees.catalogue[regle.target], "target inconnue : " + regle.target);
     for (const o of regle.options)
-      assert(o.id === "_omettre" || donnees.catalogue[o.id], regle.target + " → option inconnue : " + o.id);
+      assert(o.id === "_omit" || donnees.catalogue[o.id], regle.target + " → option inconnue : " + o.id);
   }
   for (const [id, def] of Object.entries(donnees.catalogue))
     for (const a of def.allergens) assert(familles.has(a), id + " → famille inconnue : " + a);
@@ -191,7 +191,7 @@ test("aucun substitut valide → status non_adaptable avec alerte bloquante (gat
     base: donnees.base,
     substitutions: [{ target: "egg", role: "binder", options: [{ id: "aquafaba", ratio: "45 ml", minAgeMonths: 12 }] }]
   };
-  const r = Moteur.adapterRecette(parId["fluffy-pancakes"], { allergens: ["egg"], ageMois: 8 }, donneesTest);
+  const r = Engine.adapterRecette(parId["fluffy-pancakes"], { allergens: ["egg"], ageMois: 8 }, donneesTest);
   assert.equal(r.status, "not_adaptable");
   assert(r.alerts.some((a) => a.level === "blocking"));
   assert.equal(ing(r, "egg").status, "blocked");
@@ -199,7 +199,7 @@ test("aucun substitut valide → status non_adaptable avec alerte bloquante (gat
 
 test("ingrédient évité sans règle du tout → non_adaptable, jamais de retrait silencieux", () => {
   const donneesTest = { catalogue: donnees.catalogue, base: donnees.base, substitutions: [] };
-  const r = Moteur.adapterRecette(parId["silky-hummus"], { allergens: ["sesame"], ageMois: 12 }, donneesTest);
+  const r = Engine.adapterRecette(parId["silky-hummus"], { allergens: ["sesame"], ageMois: 12 }, donneesTest);
   assert.equal(r.status, "not_adaptable");
 });
 
@@ -227,7 +227,7 @@ test("INVARIANT — aucune recette adaptée ne contient un allergène évité, a
   for (const recette of recettes)
     for (const combo of combos)
       for (const ageMois of ages) {
-        const r = Moteur.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
+        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
         if (r.status === "not_adaptable") { verifies++; continue; }
         const croise = r.remainingAllergens.filter((a) => combo.includes(a));
         assert.equal(croise.length, 0,
@@ -313,19 +313,19 @@ test("importeur : le rôle curé remplace le rôle par défaut (riz frit : œuf 
 
 test("bout en bout : riz frit sans soya à 12 mois → tamari sauté (soya), aminos de coco choisis", () => {
   const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
-  const res = Moteur.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, donnees);
   assert.equal(res.ingredients.find((i) => i.id === "soy_sauce").to, "coconut_aminos");
 });
 
 test("bout en bout : risotto sans crustacés à 12 mois → crevettes remplacées par du poulet", () => {
   const r = importation.imported.find((x) => x.id === "creamy-shrimp-and-pea-risotto");
-  const res = Moteur.adapterRecette(r, { allergens: ["shellfish"], ageMois: 12 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["shellfish"], ageMois: 12 }, donnees);
   assert.equal(res.ingredients.find((i) => i.id === "shrimp").to, "chicken");
 });
 
 test("bout en bout : granola sans sulfites → abricots séchés remplacés (raisins bruns)", () => {
   const r = importation.imported.find((x) => x.id === "soft-apricot-granola");
-  const res = Moteur.adapterRecette(r, { allergens: ["sulphites"], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["sulphites"], ageMois: 24 }, donnees);
   assert.equal(res.ingredients.find((i) => i.id === "dried_apricots").to, "raisins");
 });
 
@@ -343,7 +343,7 @@ test("INVARIANT (corpus complet) — témoins + importées, aucune fuite d'aller
   for (const recette of corpus)
     for (const combo of combos)
       for (const ageMois of ages) {
-        const r = Moteur.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
+        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
         if (r.status === "not_adaptable") { verifies++; continue; }
         const croise = r.remainingAllergens.filter((a) => combo.includes(a));
         assert.equal(croise.length, 0, recette.id + " [" + combo + "] laisse passer : " + croise);
@@ -359,7 +359,7 @@ const corpusVisuel = recettes.concat(importation.imported);
 
 test("illustration : les 30 recettes produisent un SVG bien formé, sans valeur invalide", () => {
   for (const r of corpusVisuel) {
-    const res = Moteur.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+    const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
     const svg = Illustration.plat(res, donnees.catalogue, r.category);
     assert(svg.startsWith("<svg") && svg.endsWith("</svg>"), r.id);
     assert(!/undefined|NaN|null/.test(svg), r.id + " contient une valeur invalide");
@@ -369,21 +369,21 @@ test("illustration : les 30 recettes produisent un SVG bien formé, sans valeur 
 
 test("illustration : déterministe — même recette et même profil donnent le même SVG", () => {
   const r = parId["mac-and-cheese-with-hidden-squash"];
-  const f = () => Illustration.plat(Moteur.adapterRecette(r, { allergens: ["milk"], ageMois: 12 }, donnees), donnees.catalogue, r.category);
+  const f = () => Illustration.plat(Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 12 }, donnees), donnees.catalogue, r.category);
   assert.equal(f(), f());
 });
 
 test("illustration : l'image CHANGE quand la recette s'adapte (beurre d'arachide → tournesol)", () => {
   const r = parId["date-energy-bites"];
-  const avant = Illustration.plat(Moteur.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
-  const apres = Illustration.plat(Moteur.adapterRecette(r, { allergens: ["peanut"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
+  const avant = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
+  const apres = Illustration.plat(Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
   assert.notEqual(avant, apres, "une photo de stock ne pourrait pas faire ça");
 });
 
 test("illustration : un ingrédient omis disparaît de l'image", () => {
   const r = parId["turkey-and-apple-meatballs"];
-  const avec = Illustration.plat(Moteur.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
-  const sans = Illustration.plat(Moteur.adapterRecette(r, { allergens: ["mustard"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
+  const avec = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
+  const sans = Illustration.plat(Engine.adapterRecette(r, { allergens: ["mustard"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
   assert.notEqual(avec, sans);
 });
 
@@ -545,7 +545,7 @@ test("images : le cadrage varie mais reste stable pour une même recette", () =>
 test("images : une photo non révisée n'est jamais publiée — repli sur l'illustration", () => {
   const r = parId["fluffy-pancakes"];
   const emp = Images.empreinte(r);
-  const res = Moteur.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
   const sansRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp } };
   assert.equal(Images.visuelPour(r, res, sansRevision, false).type, "illustration");
   const avecRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp, revisePar: "François", largeur: 1200 } };
@@ -555,7 +555,7 @@ test("images : une photo non révisée n'est jamais publiée — repli sur l'ill
 test("images : dès qu'un échange a lieu, la photo cède la place à l'illustration", () => {
   const r = parId["fluffy-pancakes"];
   const manifeste = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1200 } };
-  const adaptee = Moteur.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, donnees);
+  const adaptee = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, donnees);
   const v = Images.visuelPour(r, adaptee, manifeste, false);
   assert.equal(v.type, "illustration");
   assert(/montrerait autre chose/.test(v.reason));
@@ -688,7 +688,7 @@ test("vision : une image d'un autre plat est rejetée", async () => {
 test("manifeste : une révision automatique sans verdict de vision ne publie pas", () => {
   const r = parId["squash-and-coconut-soup"];
   const emp = Images.empreinte(r);
-  const res = Moteur.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
   const complet = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1024,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 3, attendus: 5 } } };
   assert.equal(Images.visuelPour(r, res, complet, false).type, "photo");

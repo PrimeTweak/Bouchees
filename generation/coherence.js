@@ -14,21 +14,21 @@
  */
 "use strict";
 
-/* Volumes de référence, en ml, pour ramener tout à une échelle comparable. */
+/* Reference volumes in ml, so everything lands on a comparable scale. */
 function enMl(u, catalogue) {
   const q = Number(u.qty);
   if (!Number.isFinite(q) || q <= 0) return 0;
   if (u.unit === "ml") return q;
-  if (u.unit === "g") return q;                       /* approximation assumée */
+  if (u.unit === "g") return q;                       /* deliberate approximation */
   const un = String(u.unit || "").toLowerCase();
   if (/gousse/.test(un)) return q * 5;
   if (/tranche/.test(un)) return q * 30;
   if (/bo[îi]te|conserve/.test(un)) return q * 400;
   if (/gros|grosse/.test(un)) return q * 400;
   if (/filet/.test(un)) return q * 150;
-  /* Unité inconnue avec une petite quantité (« 1 grosse », « 2 unités râpées ») :
+  /* Unknown unit with a small quantity ("1 large", "2 grated units"):
    * c'est un aliment qui se compte, pas un volume. Retourner le nombre brut
-   * ferait croire à 1 ml et déclencherait de faux rejets. */
+   * would read as 1 ml and trigger false rejections. */
   if (q <= 10) return q * 100;
   return q;
 }
@@ -46,7 +46,7 @@ function totalPourRole(recette, catalogue, roles) {
 
 /* Word boundaries are mandatory : “fourchette” contains “four”.
  * A checker that cries wolf gets ignored, so it has to be exact.
- * Les entrées se terminant par « ~ » acceptent une conjugaison (mijot~ →
+ * Entries ending in "~" accept an inflection (simmer~ ->
  * mijoter, mijotez, mijote). */
 /* Recipe steps are English now, but partner feeds and older content may still
  * be French. Both vocabularies are kept: a checker that only understands one
@@ -84,11 +84,11 @@ function verifier(recette, donnees) {
   const txt = texteEtapes(recette);
   const txtNorm = normalise(txt);
 
-  /* 1. Chaque ingrédient doit apparaître quelque part dans les étapes.
-   *    Un ingrédient listé mais jamais utilisé est le raté nº 1 des recettes
-   *    générées — et il se voit à la cuisson, jamais avant. */
-  /* « les ingrédients secs », « le reste » : formule légitime qui couvre tout.
-   * Si elle est présente, on n'exige plus que chaque ingrédient soit nommé. */
+  /* 1. Every ingredient has to appear somewhere in the steps. An ingredient
+   *    listed but never used is the number one flaw in generated recipes —
+   *    and it only shows up while cooking, never before. */
+  /* "the dry ingredients", "the rest": a legitimate catch-all. When it is
+   * present, each ingredient no longer has to be named individually. */
   const collectif = /(les |tous les |le reste des )?(ingr[ée]dients|secs|humides)\b|le reste\b|tout le reste/.test(txt);
   const jamaisNommes = [];
   if (!collectif) {
@@ -97,13 +97,13 @@ function verifier(recette, donnees) {
       if (!d) return;
       const name = normalise(d.name.replace(/\(.*?\)/g, " "));
       const mots = name.split(/[\s,]+/).filter(function (w) { return w.length > 3; });
-      /* Les noms courts (œuf, ail, sel, riz) n'ont aucun mot long : on cherche
-       * le name entier avec frontières, pluriel toléré. */
-      /* Un cuisinier écrit « ajouter les légumes », pas « ajouter la courgette,
-       * les épinards et le cheddar ». Un terme de famille couvre son rôle. */
-      /* Les rôles portent maintenant des identifiants anglais, et les termes
+      /* Short names (egg, garlic, salt, rice) have no long word: match the
+       * whole name with boundaries, plural tolerated. */
+      /* A cook writes "add the vegetables", not "add the zucchini, the
+       * spinach and the cheddar". A family term covers its role. */
+      /* Roles now carry English identifiers, and the family terms cover both
        * de famille couvrent les deux langues : un flux partenaire francophone
-       * doit continuer d'être compris. */
+       * languages: a French partner feed must still be understood. */
       const familles = {
         vegetable: ["vegetable", "veggie", "legume"],
         fruit: ["fruit"],
@@ -127,9 +127,9 @@ function verifier(recette, donnees) {
       if (couvertParFamille) return;
       const cibles = mots.length ? mots : [name];
       const nomme = cibles.some(function (w) {
-        /* Racine + suffixe toléré. Le suffixe était calibré sur le français
-         * (chapelure = chapel + ure) : les composés anglais sont plus longs
-         * (breadcrumbs = breadc + rumbs) et passaient à côté. */
+        /* Stem plus tolerated suffix. The suffix was calibrated on French
+         * (chapelure = chapel + ure); English compounds are longer
+         * (breadcrumbs = breadc + rumbs) and were slipping past. */
         const racineMot = w.length > 6 ? w.slice(0, 6) : w;
         return new RegExp("(^|[^a-z])" + racineMot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[a-z]{0,8}([^a-z]|$)")
           .test(txtNorm);
@@ -142,8 +142,8 @@ function verifier(recette, donnees) {
   else if (jamaisNommes.length)
     avertissements.push("ingrédient peu clair dans les étapes : " + jamaisNommes.join(", "));
 
-  /* 2. Proportions liquide / absorbant. Une pâte à 3 fois plus de liquide que
-   *    de farine ne tient pas — ça se voit sans allumer le four. */
+  /* 2. Liquid to absorbent ratio. A batter with three times more liquid than
+   *    flour does not hold — you can see that without turning on the oven. */
   const liquide = totalPourRole(recette, catalogue, ["liquid", "dairy"]);
   const absorbant = totalPourRole(recette, catalogue, ["flour", "binder"]);
   const cuisson = contient(txt, OVEN_WORDS);
@@ -156,11 +156,11 @@ function verifier(recette, donnees) {
   if (cuisson && absorbant === 0 && liquide > 200)
     avertissements.push("cuisson au four avec beaucoup de liquide et aucun absorbant");
 
-  /* 3. Un four sans température, c'est une recette inutilisable. */
+  /* 3. An oven with no temperature makes a recipe unusable. */
   if (cuisson && !/\d{2,3}\s*°|\d{3}\s*(f|degr)/i.test(txt))
     erreurs.push("cuisson au four sans température indiquée");
 
-  /* 4. Le temps annoncé doit tenir avec ce que les étapes décrivent. */
+  /* 4. The stated time has to hold up against what the steps describe. */
   const minutes = [];
   const re = /(\d{1,3})\s*(?:à|-)?\s*(\d{1,3})?\s*minutes?/g;
   let m;
@@ -175,15 +175,15 @@ function verifier(recette, donnees) {
       (cuisson || contient(txt, SIMMER_WORDS)))
     avertissements.push("cuisson décrite sans aucune durée dans les étapes");
 
-  /* 5. Le volume total doit être plausible pour le nombre de portions. */
+  /* 5. Total volume has to be plausible for the number of servings. */
   const total = recette.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);
   /* « 500 ml » n'est pas 500 portions. On n'accepte un nombre que s'il est
-   * suivi d'un mot de portion, pas d'une unité de volume. */
+   * followed by a serving word, not by a volume unit. */
   const mp = /(\d+)\s*(portions?|muffins?|galettes?|croquettes?|boulettes?|barres?|biscuits?|cr[eê]pes?|verres?|pains?|parts?|boules?|mini)/i
     .exec(recette.servings || "");
   const nPortions = mp ? Number(mp[1]) : null;
-  /* Une boulette n'est pas une portion : les rendements en pièces ont leur
-   * propre échelle, sinon le contrôle crie au loup sur toutes les recettes. */
+  /* A meatball is not a serving: piece yields have their own scale, or the
+   * check cries wolf on every recipe. */
   const enPieces = mp ? !/portions?|parts?/i.test(mp[2]) : false;
   if (nPortions && total > 0) {
     const parUnite = total / nPortions;

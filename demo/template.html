@@ -242,7 +242,7 @@ $("agePlus").addEventListener("click", function(){ etat.ageMois = Math.min(72, e
 /* ---------- liste ---------- */
 function calculerTout(){
   return recettes.map(function(r){
-    return Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+    return Engine.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
   });
 }
 function badgesDe(res){
@@ -278,7 +278,7 @@ function rendreListe(){
     return a ? a.nom.toLowerCase() : id;
   });
   $("profil").textContent = (noms.length ? "sans " + noms.join(", ") : "aucun allergène évité") + " · " + etat.ageMois + " mois";
-  var stade = Moteur.stadePour(etat.ageMois, DONNEES.base);
+  var stade = Engine.stadePour(etat.ageMois, DONNEES.base);
   $("ageNum").textContent = etat.ageMois;
   $("ageStade").textContent = stade.nom + " — " + (stade.nom==="4 ans et +" ? "texture libre" : "voir consigne par recette");
 }
@@ -314,7 +314,7 @@ function ligneJournal(i){
 }
 function ouvrirFiche(id){
   var r = recettes.find(function(x){ return x.id===id; });
-  var res = Moteur.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
+  var res = Engine.adapterRecette(r, { allergenes: etat.allergenes, ageMois: etat.ageMois }, donnees);
   etat.ouverte = id;
   var noms = etat.allergenes.map(function(aid){
     var a = DONNEES.base.allergenes.find(function(x){ return x.id===aid; });

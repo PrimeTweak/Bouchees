@@ -17,7 +17,7 @@
  */
 (function (racine, fabrique) {
   if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
-  else racine.Moteur = fabrique();
+  else racine.Engine = fabrique();
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
@@ -88,12 +88,12 @@
     for (var i = 0; i < regle.options.length; i++) {
       var o = regle.options[i];
       if (o.minAgeMonths > ageMois) continue;
-      if (o.id === "_omettre") return o;
+      if (o.id === "_omit") return o;
       var def = catalogue[o.id];
       if (!def) continue;
       if (intersection(def.allergens, allergenesEvites).length > 0) continue;
       var interdit = interditPour(o.id, ageMois, base);
-      if (interdit && interdit.action.type === "bloquer") continue;
+      if (interdit && interdit.action.type === "block") continue;
       return o;
     }
     return null;
@@ -125,7 +125,7 @@
     if (ageMois < recette.minAgeMonths) {
       resultat.alerts.push({
         level: "caution",
-        message: "Recette pensée pour " + recette.minAgeMonths + " mois et plus — texture et format à revoir avant cet âge."
+        message: "This recipe is written for " + recette.minAgeMonths + " months and up — texture and shape need rethinking below that age."
       });
     }
 
@@ -149,15 +149,15 @@
         var choix = choisirSubstitut(regle, evites, ageMois, catalogue, base);
         if (!choix) {
           item.status = "blocked";
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           resultat.status = "not_adaptable";
           resultat.alerts.push({
             level: "blocking",
-            message: "Aucun substitut sûr pour « " + item.name + " » (" + conflit.join(", ") + ") à cet âge."
+            message: "No safe substitute for " + item.name + " (" + conflit.join(", ") + ") at this age."
           });
-        } else if (choix.id === "_omettre") {
+        } else if (choix.id === "_omit") {
           item.status = "omitted";
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           item.ratio = choix.ratio;
           resultat.swapCount++;
         } else {
@@ -166,7 +166,7 @@
           item.to = choix.id;
           item.toName = defSub.name;
           item.ratio = choix.ratio;
-          item.reason = "Contient : " + conflit.join(", ");
+          item.reason = "Contains: " + conflit.join(", ");
           if (choix.note) item.substituteNote = choix.note;
           if (defSub.note) item.ingredientNote = defSub.note;
           resultat.swapCount++;
@@ -186,8 +186,8 @@
               resultat.status = "not_adaptable";
               resultat.alerts.push({
                 level: "blocking",
-                message: "« " + item.name + " » est à éviter avant " + interdit.beforeMonths +
-                  " mois et son remplacement (" + defSwap.name + ") contient : " + conflitSwap.join(", ") + "."
+                message: item.name + " should be avoided before " + interdit.beforeMonths +
+                  " months, and its replacement (" + defSwap.name + ") contains: " + conflitSwap.join(", ") + "."
               });
             } else {
               item.status = "swapped";
@@ -196,7 +196,7 @@
               item.ratio = interdit.action.ratio;
               item.reason = interdit.reason;
               resultat.swapCount++;
-              resultat.alerts.push({ level: "info", message: item.name + " → " + defSwap.name + " : " + interdit.reason + "." });
+              resultat.alerts.push({ level: "info", message: item.name + " -> " + defSwap.name + ": " + interdit.reason + "." });
             }
           } else if (interdit.action.type === "prep") {
             item.prep = interdit.action.note;
@@ -209,7 +209,7 @@
             resultat.status = "not_adaptable";
             resultat.alerts.push({
               level: "blocking",
-              message: "« " + item.name + " » est à éviter avant " + interdit.beforeMonths + " mois : " + interdit.reason + "."
+              message: item.name + " should be avoided before " + interdit.beforeMonths + " months: " + interdit.reason + "."
             });
           }
         }

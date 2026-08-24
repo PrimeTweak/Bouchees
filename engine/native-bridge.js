@@ -16,21 +16,21 @@
 
 var PONT = (function () {
 
-  var donnees = null;   /* { catalogue, substitutions, base } */
+  var data = null;   /* { catalogue, substitutions, base } */
 
-  function requis() {
-    if (!donnees) throw new Error("pont : données non chargées");
-    return donnees;
+  function required() {
+    if (!data) throw new Error("pont : données non chargées");
+    return data;
   }
 
   function sansAccents(t) {
     return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   }
-  function aplatir(t) {
+  function flatten(t) {
     return sansAccents(t).replace(/['\u2019\u2013-]/g, " ").replace(/\s+/g, " ").trim();
   }
   function nomAllergene(id) {
-    var a = requis().base.allergens.find(function (x) { return x.id === id; });
+    var a = required().base.allergens.find(function (x) { return x.id === id; });
     return a ? a.name.toLowerCase() : id;
   }
   function listeFr(t) {
@@ -40,40 +40,40 @@ var PONT = (function () {
 
   return {
     /* Appelé une fois au démarrage. */
-    charger: function (jsonDonnees) {
-      var d = JSON.parse(jsonDonnees);
-      donnees = { catalogue: d.ingredients, substitutions: d.substitutions, base: d.base };
+    load: function (jsonData) {
+      var d = JSON.parse(jsonData);
+      data = { catalogue: d.ingredients, substitutions: d.substitutions, base: d.base };
       return JSON.stringify({ ok: true,
         ingredients: Object.keys(d.ingredients).length,
         substitutions: d.substitutions.length,
         allergens: d.base.allergens.length });
     },
 
-    /* Adapte une recette à un profil. Entrée et sortie en JSON. */
-    adapter: function (jsonRecette, jsonProfil) {
-      var d = requis();
-      var recette = JSON.parse(jsonRecette);
-      var profil = JSON.parse(jsonProfil);
-      var res = Moteur.adapterRecette(recette,
-        { allergens: profil.allergens || [], ageMois: profil.ageMois },
+    /* Adapte une recipe à un profile. Entrée et sortie en JSON. */
+    adapt: function (jsonRecipe, jsonProfile) {
+      var d = required();
+      var recipe = JSON.parse(jsonRecipe);
+      var profile = JSON.parse(jsonProfile);
+      var res = Engine.adapterRecette(recipe,
+        { allergens: profile.allergens || [], ageMois: profile.ageMois },
         { catalogue: d.catalogue, substitutions: d.substitutions, base: d.base });
       return JSON.stringify(res);
     },
 
     /* Adapte tout un corpus d'un coup : un seul aller-retour au lieu de 30. */
-    adapterLot: function (jsonRecettes, jsonProfil) {
-      var d = requis();
-      var recettes = JSON.parse(jsonRecettes);
-      var profil = JSON.parse(jsonProfil);
-      var opts = { allergens: profil.allergens || [], ageMois: profil.ageMois };
+    adaptBatch: function (jsonRecipes, jsonProfile) {
+      var d = required();
+      var recipes = JSON.parse(jsonRecipes);
+      var profile = JSON.parse(jsonProfile);
+      var opts = { allergens: profile.allergens || [], ageMois: profile.ageMois };
       var tables = { catalogue: d.catalogue, substitutions: d.substitutions, base: d.base };
-      var out = recettes.map(function (r) { return Moteur.adapterRecette(r, opts, tables); });
+      var out = recipes.map(function (r) { return Engine.adapterRecette(r, opts, tables); });
       return JSON.stringify(out);
     },
 
     /* Stade de texture pour un âge donné. */
-    stade: function (ageMois) {
-      return JSON.stringify(Moteur.stadePour(ageMois, requis().base));
+    stage: function (ageMois) {
+      return JSON.stringify(Engine.stadePour(ageMois, required().base));
     },
 
     /* Analyse d'une liste d'ingrédients lue sur une étiquette de produit.
@@ -81,10 +81,10 @@ var PONT = (function () {
      * Règle de prudence : ce qui n'est pas reconnu est SIGNALÉ, jamais ignoré.
      * Sur une étiquette, le mot inconnu peut être précisément l'allergène. Un
      * produit ne ressort donc « sûr » que si TOUT a été identifié. */
-    evaluerEtiquette: function (texte, jsonEvites) {
-      var d = requis();
-      var evites = JSON.parse(jsonEvites) || [];
-      var morceaux = String(texte || "")
+    evaluateLabel: function (text, jsonAvoided) {
+      var d = required();
+      var avoided = JSON.parse(jsonAvoided) || [];
+      var parts = String(text || "")
         .split(/[,;()\[\]\u2022\u00b7\n]+/)
         .map(function (t) {
           return t.replace(/\d+([.,]\d+)?\s*%/g, " ")
@@ -92,44 +92,49 @@ var PONT = (function () {
         })
         .filter(function (t) { return t.length > 1; });
 
+      /* Both names are indexed. A Quebec label reads "farine de blé", not
+       * "wheat flour": without the French name the scanner would stop
+       * recognising products sold here. */
       var index = {};
       Object.keys(d.catalogue).forEach(function (id) {
-        index[aplatir(d.catalogue[id].name)] = id;
+        var def = d.catalogue[id];
+        if (def.name) index[flatten(def.name)] = id;
+        if (def.nameFr) index[flatten(def.nameFr)] = id;
       });
-      var cles = Object.keys(index);
+      var keys = Object.keys(index);
 
-      var trouves = {}, inconnus = [];
-      morceaux.forEach(function (m) {
-        var n = aplatir(m);
+      var found = {}, unknown = [];
+      parts.forEach(function (m) {
+        var n = flatten(m);
         var id = index[n];
         if (!id) {
-          var cle = cles.find(function (c) {
+          var key = keys.find(function (c) {
             return c.length > 3 && (n.indexOf(c) !== -1 || (n.length > 3 && c.indexOf(n) !== -1));
           });
-          id = cle ? index[cle] : null;
+          id = key ? index[key] : null;
         }
-        if (!id) { if (n.length > 2) inconnus.push(m); return; }
+        if (!id) { if (n.length > 2) unknown.push(m); return; }
         d.catalogue[id].allergens.forEach(function (a) {
-          if (evites.indexOf(a) !== -1) trouves[a] = true;
+          if (avoided.indexOf(a) !== -1) found[a] = true;
         });
       });
 
-      var liste = Object.keys(trouves).map(nomAllergene);
+      var liste = Object.keys(found).map(nomAllergene);
       var status, message;
       if (liste.length) {
-        status = "a_eviter";
+        status = "avoid";
         message = "\u00c0 \u00e9viter \u2014 l\u2019\u00e9tiquette contient : " + listeFr(liste) + ".";
-      } else if (inconnus.length) {
-        status = "incertain";
+      } else if (unknown.length) {
+        status = "uncertain";
         message = "Rien d\u2019interdit reconnu, mais des ingr\u00e9dients n\u2019ont pas \u00e9t\u00e9 identifi\u00e9s. Lisez l\u2019\u00e9tiquette.";
       } else {
-        status = "sur";
+        status = "safe";
         message = "Aucun allerg\u00e8ne \u00e9vit\u00e9 d\u00e9tect\u00e9 dans la liste d\u2019ingr\u00e9dients.";
       }
       return JSON.stringify({
         status: status,
-        allergenesTrouves: liste,
-        ingredientsInconnus: inconnus.slice(0, 6),
+        allergensFound: liste,
+        unknownIngredients: unknown.slice(0, 6),
         message: message
       });
     }

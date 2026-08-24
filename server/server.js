@@ -1,16 +1,16 @@
-/* Serveur Bouchées — bloc F
- * node server/server.js        (port 8787 par défaut)
+/* Bouchees server
+ * node server/server.js        (port 8787 by default)
  *
- * Node pur, zéro dépendance : rien à installer.
+ * Plain Node, zero dependencies: nothing to install.
  *
  * LE POINT CENTRAL : le serveur n'envoie jamais un lot auquel le account n'a
  * pas droit. Pas « envoyer puis cacher » — ne pas envoyer. Un mur payant
- * côté client s'ouvre avec Ctrl+U.
+ * on the client is one Ctrl+U away.
  *
- * ET LA CONTREPARTIE : les tables de sécurité (moteur, substitutions, règles
- * d'âge) et les batches free partent pour TOUT LE MONDE, connecté ou non.
- * On vend le flux de nouvelles recipes, pas la réponse à « est-ce que mon
- * fils peut manger ça ».
+ * AND THE OTHER SIDE OF IT: the safety tables (engine, substitutions, age
+ * rules) and the free batches go out to EVERYONE, signed in or not. What is
+ * sold is the stream of new recipes, never the answer to "can my child eat
+ * this".
  */
 "use strict";
 const http = require("http");
@@ -27,7 +27,7 @@ const dist = path.join(root, "dist");
 const PORT = process.env.PORT || 8787;
 const FICHIER_COMPTES = process.env.BOUCHEES_COMPTES || path.join(__dirname, "accounts.json");
 const SECRET_WEBHOOK = process.env.STRIPE_WEBHOOK_SECRET || "";
-const GRACE_DAYS = 3;   /* on ne coupe pas l'accès à la seconde où un paiement échoue */
+const GRACE_DAYS = 3;   /* access is not cut the second a payment fails */
 
 /* ---------- petite base sur fichier ---------- */
 function readAccounts() {
@@ -49,8 +49,8 @@ function activeFrom(a) {
   return false;
 }
 /* Deux sources d'subscription — Stripe pour le web, Apple pour iOS. Un account
- * peut avoir les deux (il s'est abonné sur le web puis a installé l'app) :
- * l'une OU l'autre suffit, et on ne facture jamais deux fois pour ça. */
+ * can hold both (subscribed on the web, then installed the app): either one
+ * is enough, and nobody is ever charged twice for it. */
 function subscriptionActive(account) {
   if (!account) return false;
   return activeFrom(account.subscription) || activeFrom(account.abonnementApple);
@@ -62,7 +62,7 @@ function allowedBatches(manifeste, account) {
     .map(function (l) { return l.id; });
 }
 
-/* ---------- lecture du content publié ---------- */
+/* ---------- reading the published content ---------- */
 function loadManifest() {
   return JSON.parse(fs.readFileSync(path.join(dist, "manifest.json"), "utf8"));
 }
@@ -98,7 +98,7 @@ function compteDeLaRequete(req, db) {
 
 const routes = {
   /* Ce que tout le monde peut savoir : quels batches existent, lesquels sont
-   * verrouillés. Le content, lui, ne part pas. */
+   * locked. The content itself does not go out. */
   "GET /api/manifest": function (req, res, ctx) {
     const m = loadManifest();
     const allowed = allowedBatches(m, ctx.account);
@@ -111,15 +111,15 @@ const routes = {
         return { id: l.id, title: l.title, date: l.date, access: l.access, note: l.note,
                  count: l.count, weekly: !!l.weekly,
                  inWindow: !!l.inWindow,
-                 /* « déverrouillé » = le account y a droit ET c'est dans la
-                  * fenêtre. Un lot d'il y a deux mois reste verrouillé même
-                  * pour un abonné : il revient par les Meilleures. */
+                 /* "unlocked" = the account is entitled to it AND it is in
+                  * the window. A batch from two months ago stays locked even
+                  * for a subscriber: it comes back through Top rated. */
                  unlocked: allowed.indexOf(l.id) !== -1 && (l.access === "free" || !!l.inWindow) };
       })
     });
   },
 
-  /* Pages légales. Apple exige des URL publiques et fonctionnelles :
+  /* Legal pages. Apple requires public, working URLs:
    * un lien mort fait rejeter la soumission. */
   "GET /terms": function (req, res) {
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
@@ -133,18 +133,18 @@ const routes = {
     res.end(CONFIDENTIALITE);
   },
 
-  /* Les tables de sécurité : gratuites, toujours, sans account. */
+  /* The safety tables: free, always, no account required. */
   "GET /api/safety": function (req, res) {
     const s = fs.readFileSync(path.join(dist, "safety.json"));
     res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600" });
     res.end(s);
   },
 
-  /* Le content, filtré par droits ET par la fenêtre glissante.
+  /* The content, filtered by entitlement AND by the rolling window.
    *
-   * Un abonné reçoit les batches free plus les trois dernières semaines. Les
+   * A subscriber gets the free batches plus the last three weeks. Anything
    * semaines plus anciennes ne descendent pas : elles reviennent par l'onglet
-   * Meilleures ou par les favoris que l'appareil a gardés. */
+   * older comes back through Top rated or through saved recipes. */
   "GET /api/recipes": function (req, res, ctx) {
     const m = loadManifest();
     const allowed = allowedBatches(m, ctx.account);
@@ -161,9 +161,9 @@ const routes = {
     json(res, 200, { subscribed: subscriptionActive(ctx.account), batches: targets, recipes: out });
   },
 
-  /* Une note, de 1 à 5. Une seule par account et par recipe : la nouvelle
+  /* A rating, 1 to 5. One per account per recipe: the newer one
    * remplace l'ancienne, parce qu'un parent qui refait la recipe peut
-   * changer d'notice. Un account est requis — sinon rien n'empêche une même
+   * replaces the older. An account is required — otherwise nothing stops one
    * personne de voter cent fois. */
   "POST /api/rating": async function (req, res, ctx) {
     if (!ctx.account) return json(res, 401, { error: "connexion requise pour noter" });
@@ -178,7 +178,7 @@ const routes = {
     json(res, 200, { ok: true, aggregate: r.aggregate });
   },
 
-  /* Les agrégats d'une liste de recipes, avec la note du account s'il en a
+  /* Aggregates for a list of recipes, with the account's own rating if it
    * une. On n'expose jamais les notes des autres, seulement le total. */
   "GET /api/ratings": function (req, res, ctx) {
     const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
@@ -186,9 +186,9 @@ const routes = {
     json(res, 200, Ratings.aggregates(ids, ctx.account ? ctx.account.email : null));
   },
 
-  /* L'onglet Meilleures. C'est la façon dont une recipe out de la fenêtre
-   * revient : par mérite, et pour de bon. Le content complet est renvoyé, même
-   * hors fenêtre — sinon le ranking montrerait des titres inaccessibles. */
+  /* The Top rated tab. This is how a recipe that left the window comes back:
+   * on merit, and for good. Full content is returned even outside the window —
+   * otherwise the ranking would show titles nobody can open. */
   "GET /api/top-rated": function (req, res, ctx) {
     const limit = Math.min(Number(ctx.url.searchParams.get("limit")) || 10, 50);
     const ranked = Ratings.ranking(limit);
@@ -209,7 +209,7 @@ const routes = {
     const out = [];
     ranked.forEach(function (c) {
       const r = parId[c.recipeId];
-      if (!r) return;   /* lot non autorisé : on ne laisse rien filtrer */
+      if (!r) return;   /* batch not allowed: nothing leaks through */
       const copie = JSON.parse(JSON.stringify(r));
       copie.votes = c.votes;
       copie.average = c.average;
@@ -230,8 +230,8 @@ const routes = {
     });
   },
 
-  /* L'app iOS envoie sa transaction StoreKit signée. On la vérifie
-   * intégralement avant d'accorder quoi que ce soit — le client n'est jamais
+  /* The iOS app sends its signed StoreKit transaction. It is verified in
+   * full before anything is granted — the client is never
    * cru sur parole, pas plus qu'un navigateur. */
   "POST /api/apple/transaction": async function (req, res, ctx) {
     if (!ctx.account) return json(res, 401, { error: "connexion requise" });
@@ -244,7 +244,7 @@ const routes = {
     if (!etat.ok) return json(res, 400, { error: "transaction refusée", detail: etat.reason });
 
     const db = ctx.db;
-    /* Une même transaction Apple ne peut pas servir deux accounts. */
+    /* One Apple transaction cannot serve two accounts. */
     const proprietaire = Object.keys(db.accounts).find(function (c) {
       const a = db.accounts[c].abonnementApple;
       return a && a.transaction === etat.transaction && c !== ctx.account.email;
@@ -261,7 +261,7 @@ const routes = {
   },
 
   /* Notifications V2 d'Apple : renouvellements, remboursements, expirations.
-   * Comme le webhook Stripe, c'est la source de vérité, pas le client. */
+   * Like the Stripe webhook, this is the source of truth, not the client. */
   "POST /api/webhook/apple": async function (req, res, ctx) {
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
@@ -275,8 +275,8 @@ const routes = {
       const a = db.accounts[c].abonnementApple;
       return a && a.transaction === n.transaction;
     });
-    /* Transaction inconnue : on l'archive sans planter. Le account sera lié au
-     * prochain lancement de l'app, et l'état sera repris à ce moment-là. */
+    /* Unknown transaction: filed without crashing. The account gets linked on
+     * the app's next launch, and the state is picked up then. */
     if (!email) {
       db.orphelinsApple = db.orphelinsApple || {};
       db.orphelinsApple[n.transaction] = { status: n.status, periodEnd: n.periodEnd, le: new Date().toISOString() };
@@ -293,8 +293,8 @@ const routes = {
   },
 
   /* Consultation d'un product par code-barres. Le serveur relaie Open Food
-   * Facts, dérive les allergènes AVEC NOTRE catalogue, et ne conserve rien.
-   * L'ODbL impose le partage à l'identique si on FUSIONNE ces données dans
+   * Facts, derives allergens WITH OUR catalogue, and keeps nothing.
+   * The ODbL requires share-alike if that data is MERGED into
    * une base : on ne fusionne pas, on consulte. */
   "GET /api/product": async function (req, res, ctx) {
     const code = (ctx.url.searchParams.get("code") || "").replace(/[^0-9]/g, "");
@@ -322,8 +322,8 @@ const routes = {
   },
 
   /* Connexion volontairement minimale : un email, un token. Pas de mot de
-   * passe à gérer, donc pas de mot de passe à faire fuir. En production, ce
-   * token s'envoie par email au lieu d'être retourné ici. */
+   * password to manage, so no password to leak. In production this token is
+   * emailed instead of being returned here. */
   "POST /api/login": async function (req, res, ctx) {
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
@@ -345,7 +345,7 @@ const routes = {
     json(res, 200, { ok: true });
   },
 
-  /* Ouvre une session de paiement. La clé secrète reste sur le serveur;
+  /* Opens a checkout session. The secret key stays on the server;
    * le navigateur ne voit qu'une URL Stripe. */
   "POST /api/checkout": async function (req, res, ctx) {
     if (!ctx.account) return json(res, 401, { error: "connexion requise" });
@@ -363,8 +363,8 @@ const routes = {
     } catch (err) { json(res, 502, { error: err.message }); }
   },
 
-  /* Webhook Stripe : la seule source de vérité sur l'état de l'subscription.
-   * Jamais le client. Signature vérifiée avant de toucher à quoi que ce soit. */
+  /* Stripe webhook: the only source of truth on subscription state. Never the
+   * client. The signature is verified before anything is touched. */
   "POST /api/webhook/stripe": async function (req, res, ctx) {
     const brut = await rawBody(req);
     const sig = req.headers["stripe-signature"] || "";
@@ -392,7 +392,7 @@ const routes = {
 
 /* Les photos vivent sur le serveur, pas dans l'app : les semaines tournent,
  * et embarquer les images ferait grossir l'IPA sans fin. Le client les met en
- * cache sur l'appareil et fait le ménage quand un lot sort de la fenêtre. */
+ * caches on the device and prunes when a batch leaves the window. */
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                 ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8",
                 ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
@@ -404,7 +404,7 @@ function serveStatic(req, res, url) {
   if (rel === "/" || rel === "") rel = "/index.html";
 
   /* Photos des recipes. Le name de fichier contient l'empreinte des
-   * ingrédients : une image ne change jamais sous le même name, donc cache
+   * ingredients: an image never changes under the same name, so the cache
    * immuable. Extensions en liste blanche — rien d'autre qu'une image ne
    * sort de ce dossier. */
   if (rel.indexOf("/images/") === 0) {

@@ -138,7 +138,7 @@ final class RecipeEngine {
         let jsonProfil = String(decoding: try encodeur.encode(
             ProfilPourMoteur(ageMonths: profile.ageMonths, allergens: profile.allergens)), as: UTF8.self)
 
-        let brut = try appeler("adapterLot", [jsonRecettes, jsonProfil])
+        let brut = try appeler("adaptBatch", [jsonRecettes, jsonProfil])
         let resultats = try decoder([AdaptedRecipe].self, brut, "adapterLot")
         cache[k] = resultats
         return resultats
@@ -149,7 +149,7 @@ final class RecipeEngine {
         let jsonRecette = String(decoding: try encodeur.encode(recipe), as: UTF8.self)
         let jsonProfil = String(decoding: try encodeur.encode(
             ProfilPourMoteur(ageMonths: profile.ageMonths, allergens: profile.allergens)), as: UTF8.self)
-        let brut = try appeler("adapter", [jsonRecette, jsonProfil])
+        let brut = try appeler("adapt", [jsonRecette, jsonProfil])
         return try decoder(AdaptedRecipe.self, brut, "adapter")
     }
 

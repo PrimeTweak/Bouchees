@@ -267,7 +267,7 @@ if (require.main === module) {
   if (!fs.existsSync(path.join(racine, "generation", "images", "manifest.json"))) {
     fs.writeFileSync(path.join(racine, "generation", "images", "manifest.json"), "{}\n");
   }
-  console.log("À générer : " + plan.length + " image(s) sur " + corpus.length + " recettes");
+  console.log("À générer : " + plan.length + " image(s) sur " + corpus.length + " recipes");
   if (plan.length) {
     console.log("\nExemple de prompt :\n");
     console.log(plan[0].prompt);

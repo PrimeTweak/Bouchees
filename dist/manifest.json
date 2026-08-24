@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-23",
+  "version": "2026-08-24",
   "safetyChecksum": "6209d2ee1b7c",
   "batches": [
     {
@@ -74,6 +74,6 @@
     "2026-S33",
     "2026-S32"
   ],
-  "currentWeek": "2026-S34",
+  "currentWeek": "2026-S35",
   "windowSize": 3
 }

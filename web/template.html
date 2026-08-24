@@ -804,7 +804,7 @@ function reindexer(){
 reindexer();
 function calculer(prof){
   return recettes.filter(function(r){ return !estVerrouillee(r); }).map(function(r){
-    return { r:r, res:Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees) };
+    return { r:r, res:Engine.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees) };
   });
 }
 function passeFiltres(p){
@@ -992,7 +992,7 @@ function ouvrirFiche(id){
   var r = recettes.find(function(x){ return x.id===id; });
   if(!r) return;
   var prof = profilResolu();
-  var res = Moteur.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees);
+  var res = Engine.adapterRecette(r, {allergenes:prof.allergenes, ageMois:prof.ageMois}, donnees);
   etat.ficheOuverte = id;
 
   var vcls, vic, vtt, vss;

@@ -121,7 +121,7 @@ if (require.main === module) {
   fs.writeFileSync(path.join(dossier, "imported-recipes.json"), JSON.stringify(resultat.imported, null, 2) + "\n");
   fs.writeFileSync(path.join(dossier, "import-report.json"), JSON.stringify(resultat.quarantine, null, 2) + "\n");
   fs.writeFileSync(path.join(racine, "ingest", "import-report.md"), rapportMarkdown(resultat) + "\n");
-  console.log("Importées : " + resultat.imported.length + " · Quarantaine : " + resultat.quarantine.length);
+  console.log("Imported: " + resultat.imported.length + " · Quarantined: " + resultat.quarantine.length);
   resultat.quarantine.forEach(function (q) { console.log("  quarantine — " + q.name + " (" + q.reason + ")"); });
 }
 

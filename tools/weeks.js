@@ -112,7 +112,7 @@ function convertir() {
       id: id,
       title: "Semaine du " + id,
       access: "subscriber",
-      note: "Sept recettes visant les profils les moins servis.",
+      note: "Seven recipes aimed at the least-served profiles.",
       weekly: true
     });
     paquet.forEach(function (r) { attribution[r] = id; });
@@ -139,17 +139,17 @@ function etat() {
   Object.values(pub.assignment).forEach(function (l) { account[l] = (account[l] || 0) + 1; });
 
   console.log("Semaine courante : " + identifiantSemaine(new Date()));
-  console.log("Fenêtre : " + FENETRE + " semaines\n");
+  console.log("Window: " + FENETRE + " weeks\n");
   console.log("Toujours visible (free)");
-  f.free.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recettes"); });
-  console.log("\nDans la fenêtre (abonnés)");
-  f.window.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recettes"); });
+  f.free.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recipes"); });
+  console.log("\nInside the window (subscribers)");
+  f.window.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recipes"); });
   if (f.horsFenetre.length) {
     console.log("\nSorties de vue — reviennent par les Meilleures ou les favoris");
-    f.horsFenetre.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recettes"); });
+    f.horsFenetre.forEach(function (id) { console.log("  " + id + "  " + (account[id] || 0) + " recipes"); });
   }
   const visible = f.free.concat(f.window).reduce((s, id) => s + (account[id] || 0), 0);
-  console.log("\n  " + visible + " recettes visible pour un abonné aujourd'hui");
+  console.log("\n  " + visible + " recipes visible to a subscriber today");
 }
 
 if (require.main === module) {
@@ -158,7 +158,7 @@ if (require.main === module) {
     console.log("Converti en batches hebdomadaires.\n");
     pub.batches.forEach(function (l) {
       const n = Object.values(pub.assignment).filter((x) => x === l.id).length;
-      console.log("  " + l.id + "  " + (l.access === "free" ? "libre " : "abonné") + "  " + n + " recettes");
+      console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " + n + " recipes");
     });
     console.log("");
     etat();

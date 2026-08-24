@@ -10,7 +10,7 @@
  */
 "use strict";
 const path = require("path");
-const Moteur = require(path.join(__dirname, "..", "engine", "engine.js"));
+const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
 
 const ROLES = ["flour", "binder", "fat", "liquid", "dairy", "protein", "sweetener",
                "fruit", "vegetable", "seasoning", "leavening", "topping", "autre"];
@@ -52,7 +52,7 @@ function valider(r, commande, donnees, idsExistants) {
 
   /* --- respect de la commande : l'allergène demandé absent doit l'être --- */
   const evite = (commande && commande.evite) || [];
-  const presents = Moteur.analyserAllergenes(r, catalogue);
+  const presents = Engine.analyserAllergenes(r, catalogue);
   const fuite = presents.filter(function (x) { return evite.indexOf(x) !== -1; });
   if (fuite.length) e.push("contient un allergène que la commande exclut : " + fuite.join(", "));
 
@@ -63,7 +63,7 @@ function valider(r, commande, donnees, idsExistants) {
 
   /* --- consignes d'âge : elles doivent être tenables à l'âge visé --- */
   r.ingredients.forEach(function (u) {
-    const interdit = Moteur.interditPour(u.id, r.minAgeMonths, donnees.base);
+    const interdit = Engine.interditPour(u.id, r.minAgeMonths, donnees.base);
     if (interdit && interdit.action.type === "bloquer")
       e.push("« " + u.id + " » est interdit avant " + interdit.beforeMonths + " mois : " + interdit.reason);
     else if (interdit)
@@ -72,7 +72,7 @@ function valider(r, commande, donnees, idsExistants) {
 
   /* --- le moteur doit savoir la traiter sans planter --- */
   try {
-    const res = Moteur.adapterRecette(r, { allergens: evite, ageMois: r.minAgeMonths }, donnees);
+    const res = Engine.adapterRecette(r, { allergens: evite, ageMois: r.minAgeMonths }, donnees);
     if (res.status === "not_adaptable")
       e.push("le moteur la déclare non adaptable pour la commande elle-même");
     const restant = res.remainingAllergens.filter(function (x) { return evite.indexOf(x) !== -1; });

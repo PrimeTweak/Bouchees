@@ -68,20 +68,20 @@ async function cycleRecettes(donnees, options) {
   const journal = { commandees: 0, redigees: 0, acceptees: 0, rejetees: [], aRevoir: [], nouvelles: [] };
   const corpus = chargerCorpus();
 
-  title("1 · Où manquent les recettes");
+  title("1 · Where recipes are missing");
   const r = Trous.rapport(corpus);
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.md"), "");
   const commande = r.commande;
-  if (!commande.length) { console.log("  aucun trou sous les seuils — rien à commander ce mois-ci"); return journal; }
+  if (!commande.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return journal; }
   commande.forEach(function (c) {
-    console.log("  " + c.n + " × " + c.categories[0].toLowerCase() + " dès " + c.ageMois + " mois" +
-      (c.passePartout ? " (passe-partout)" : " — sans " + c.evite.join(", ")));
+    console.log("  " + c.n + " x " + c.categories[0].toLowerCase() + " from " + c.ageMois + " months" +
+      (c.passePartout ? " (works for everyone)" : " — no " + c.evite.join(", ")));
   });
   journal.commandees = commande.reduce((s, c) => s + c.n, 0);
 
-  title("2 · Rédaction");
+  title("2 · Writing");
   const moteur = options.moteurTexte || MoteursTexte.choisir();
-  console.log("  moteur : " + moteur.name + (moteur.name === "simule" ? "  (aucune clé d'API — recettes factices)" : ""));
+  console.log("  text engine: " + moteur.name + (moteur.name === "simule" ? "  (no API key — placeholder recipes)" : ""));
   const idsExistants = corpus.map((x) => x.id);
   let brutes = [];
   for (const ligne of commande) {
@@ -89,37 +89,37 @@ async function cycleRecettes(donnees, options) {
     try {
       const sortie = await moteur.rediger(prompt);
       sortie.forEach(function (rec) { brutes.push({ rec: rec, commande: ligne }); });
-    } catch (e) { console.log("  échec de rédaction : " + e.message); }
+    } catch (e) { console.log("  writing failed: " + e.message); }
   }
   journal.redigees = brutes.length;
   console.log("  " + brutes.length + " recette(s) rédigée(s)");
 
-  title("3 · Validation — catalogue, allergènes, âges");
+  title("3 · Validation — catalogue, allergens, ages");
   const survivantes = [];
   brutes.forEach(function (b) {
     const v = Valideur.valider(b.rec, b.commande, donnees, idsExistants.concat(survivantes.map((s) => s.rec.id)));
-    if (!v.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: v.erreurs }); console.log("  ✕ " + b.rec.id + " — " + v.erreurs[0]); return; }
+    if (!v.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: v.erreurs }); console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return; }
     if (v.avertissements.length) journal.aRevoir.push({ id: b.rec.id, avertissements: v.avertissements });
     survivantes.push(b);
-    console.log("  ✓ " + b.rec.id);
+    console.log("  ok " + b.rec.id);
   });
 
-  title("4 · Cohérence culinaire");
+  title("4 · Culinary coherence");
   const gardees = [];
   survivantes.forEach(function (b) {
     const c = Coherence.verifier(b.rec, donnees);
-    if (!c.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: c.erreurs }); console.log("  ✕ " + b.rec.id + " — " + c.erreurs[0]); return; }
+    if (!c.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: c.erreurs }); console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return; }
     if (c.avertissements.length) journal.aRevoir.push({ id: b.rec.id, avertissements: c.avertissements });
     gardees.push(b.rec);
-    console.log("  ✓ " + b.rec.id + (c.avertissements.length ? "  (" + c.avertissements.length + " réserve[s])" : ""));
+    console.log("  ok " + b.rec.id + (c.avertissements.length ? "  (" + c.avertissements.length + " reservation[s])" : ""));
   });
   journal.acceptees = gardees.length;
   journal.nouvelles = gardees.map((g) => g.id);
 
   title("5 · Publication dans un lot");
-  if (!gardees.length) { console.log("  rien à publier"); return journal; }
+  if (!gardees.length) { console.log("  nothing to publish"); return journal; }
   const lot = options.lot || currentWeek();
-  if (options.sec) { console.log("  [à sec] " + gardees.length + " recette(s) iraient dans " + lot); return journal; }
+  if (options.sec) { console.log("  [dry run] " + gardees.length + " recipe(s) would go into " + lot); return journal; }
 
   let generees = [];
   try { generees = lire("data/generated/generated-recipes.json"); } catch (e) {}
@@ -138,7 +138,7 @@ async function cycleRecettes(donnees, options) {
   if (!pub.batches.some((l) => l.id === lot)) {
     pub.batches.push({ id: lot, title: "Semaine du " + lot, access: "subscriber",
                     weekly: true,
-                    note: "Sept recettes visant les profils les moins servis." });
+                    note: "Seven recipes aimed at the least-served profiles." });
   }
   gardees.forEach(function (g) { pub.assignment[g.id] = lot; });
   ecrire("data/publishing.json", pub);
@@ -153,17 +153,17 @@ async function cycleImages(donnees, options) {
   let manifeste = {};
   try { manifeste = lire("generation/images/manifest.json"); } catch (e) {}
 
-  title("6 · Images à produire");
+  title("6 · Images to produce");
   const plan = Images.aGenerer(corpus, donnees, manifeste);
-  if (!plan.length) { console.log("  toutes les images sont à jour"); return journal; }
+  if (!plan.length) { console.log("  every image is up to date"); return journal; }
   console.log("  " + plan.length + " image(s) — " +
     plan.filter((p) => p.etat === "manquante").length + " manquante(s), " +
     plan.filter((p) => p.etat === "périmée").length + " périmée(s)");
 
   const mImage = options.moteurImage || MoteursImage.choisir();
   const mVision = options.moteurVision || Vision.choisir();
-  console.log("  génération : " + mImage.name + (mImage.name === "simule" ? "  (aucun moteur — fichiers factices)" : ""));
-  console.log("  vérification : " + mVision.name + (mVision.name === "absent" ? "  (aucune vision — tout sera rejeté)" : ""));
+  console.log("  image engine: " + mImage.name + (mImage.name === "simule" ? "  (no engine — placeholder files)" : ""));
+  console.log("  vision check: " + mVision.name + (mVision.name === "absent" ? "  (no vision — everything will be rejected)" : ""));
 
   const limite = Number(val("--max", plan.length));
   /* Les images vivent à la racine, dans images/. C'est exactement ce que
@@ -172,7 +172,7 @@ async function cycleImages(donnees, options) {
   const dossier = path.join(racine, "images");
   if (!options.sec) fs.mkdirSync(dossier, { recursive: true });
 
-  title("7 · Génération et vérification");
+  title("7 · Generation and verification");
   for (const p of plan.slice(0, limite)) {
     const recette = corpus.find((r) => r.id === p.id);
     let img;
@@ -186,17 +186,17 @@ async function cycleImages(donnees, options) {
         hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 832)
       });
     }
-    catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  ✕ " + p.name + " — " + e.message); continue; }
+    catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  x  " + p.name + " — " + e.message); continue; }
     journal.generees++;
 
     const verdict = await Vision.verifier(img.octets, recette, donnees, { moteur: mVision, typeMime: "image/png" });
     if (!verdict.ok) {
       journal.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "), detectes: verdict.detectes });
-      console.log("  ✕ " + p.name + " — " + verdict.erreurs[0]);
+      console.log("  x  " + p.name + " — " + verdict.erreurs[0]);
       console.log("      → l'app garde son illustration pour cette recette");
       continue;
     }
-    if (options.sec) { console.log("  ✓ [à sec] " + p.name); journal.acceptees++; continue; }
+    if (options.sec) { console.log("  ok [dry run] " + p.name); journal.acceptees++; continue; }
 
     const fichier = p.fichier.replace(/\.webp$/, ".png");
     fs.writeFileSync(path.join(racine, fichier), img.octets);
@@ -209,7 +209,7 @@ async function cycleImages(donnees, options) {
                       avertissements: verdict.avertissements }
     };
     journal.acceptees++;
-    console.log("  ✓ " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
+    console.log("  ok " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
 
     /* Le manifeste s'écrit APRÈS CHAQUE image, pas à la fin.
      *
@@ -232,9 +232,9 @@ async function cycleImages(donnees, options) {
         .filter(function (f) { return !declares.has("images/" + f); });
     } catch (e) {}
     if (orphelins.length) {
-      console.log("\n  " + orphelins.length + " image(s) sur le disque sans verdict de vision :");
+      console.log("\n  " + orphelins.length + " image(s) on disk with no vision verdict:");
       orphelins.slice(0, 5).forEach(function (f) { console.log("      " + f); });
-      console.log("  Elles ne seront PAS publiées — une image sans verdict ne se montre pas.");
+      console.log("  They will NOT be published — an image with no verdict is never shown.");
       console.log("  Relance le cycle pour les refaire, ou supprime-les.");
       journal.orphelins = orphelins;
     }
@@ -246,7 +246,7 @@ async function principal() {
   const donnees = chargerDonnees();
   const options = { sec: a("--sec"), lot: val("--lot", null) };
   console.log("═".repeat(64));
-  console.log("  Cycle Bouchées — " + new Date().toISOString().slice(0, 10) + (options.sec ? "   [À SEC]" : ""));
+  console.log("  Bouchees cycle — " + new Date().toISOString().slice(0, 10) + (options.sec ? "   [DRY RUN]" : ""));
   console.log("═".repeat(64));
 
   let jr = null, ji = null;
@@ -254,7 +254,7 @@ async function principal() {
   if (!a("--recettes-seulement")) ji = await cycleImages(donnees, options);
 
   if (!options.sec) {
-    title("8 · Republication");
+    title("8 · Republishing");
     const r = Publier.publier();
     fs.mkdirSync(path.join(racine, "dist", "batches"), { recursive: true });
     fs.writeFileSync(path.join(racine, "dist", "manifest.json"), JSON.stringify(r.manifeste, null, 2) + "\n");
@@ -263,25 +263,25 @@ async function principal() {
       fs.writeFileSync(path.join(racine, "dist", "batches", lot + ".json"), JSON.stringify(r.content[lot]) + "\n");
     });
     r.manifeste.batches.forEach(function (l) {
-      console.log("  " + l.id + "  " + (l.access === "free" ? "libre " : "abonné") + "  " +
-        String(l.count).padStart(2) + " recettes");
+      console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
+        String(l.count).padStart(2) + " recipes");
     });
   }
 
-  title("Bilan");
-  if (jr) console.log("  recettes  : " + jr.acceptees + " acceptée(s), " + jr.rejetees.length + " rejetée(s)");
-  if (ji) console.log("  images    : " + ji.acceptees + " publiée(s), " + ji.rejetees.length + " rejetée(s)");
+  title("Summary");
+  if (jr) console.log("  recipes : " + jr.acceptees + " accepted, " + jr.rejetees.length + " rejected");
+  if (ji) console.log("  images  : " + ji.acceptees + " published, " + ji.rejetees.length + " rejected");
   const revoir = (jr && jr.aRevoir.length) || 0;
-  if (revoir) console.log("  réserves  : " + revoir + " recette(s) avec avertissement");
+  if (revoir) console.log("  flagged : " + revoir + " recipe(s) carry a warning");
 
   if (!options.sec) {
     ecrire("tools/cycle-log.json", { le: new Date().toISOString(), recettes: jr, images: ji });
     console.log("  journal   : tools/cycle-log.json");
   }
 
-  console.log("\n  Ce que le cycle NE peut pas vérifier : le goût, la levée, la texture réelle.");
-  console.log("  Une recette non cuisinée peut être ratée — jamais dangereuse : la sécurité");
-  console.log("  vit dans les tables déterministes, pas dans le test en cuisine.\n");
+  console.log("\n  What the cycle CANNOT check: taste, rise, real texture.");
+  console.log("  A recipe that was never cooked can be bad — never unsafe: safety lives");
+  console.log("  in the deterministic tables, not in the kitchen test.\n");
 }
 
 if (require.main === module) {

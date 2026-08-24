@@ -213,7 +213,7 @@ function lireDescription(texte) {
  * Le verdict sort du code, pas du modèle. */
 function comparer(description, recette, donnees) {
   const catalogue = donnees.catalogue;
-  const Moteur = require(path.join(__dirname, "..", "engine", "engine.js"));
+  const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
   const erreurs = [], avertissements = [];
 
   if (!description.lisible) {
@@ -225,7 +225,7 @@ function comparer(description, recette, donnees) {
   }
 
   const vus = description.aliments.map(normaliser);
-  const presentes = Moteur.analyserAllergenes(recette, catalogue);
+  const presentes = Engine.analyserAllergenes(recette, catalogue);
 
   /* 1. Un allergène ABSENT de la recette ne doit pas apparaître dans l'image.
    *    C'est le contrôle qui compte vraiment. */

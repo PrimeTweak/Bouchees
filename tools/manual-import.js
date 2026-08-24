@@ -51,7 +51,7 @@ function corpusExistant() {
 function principal() {
   if (!fichier) {
     console.error("Usage : node tools/manual-import.js <fichier.json> [--lot=2026-09] [--sec]");
-    console.error("Exemple : node tools/manual-import.js ingest/sources/recettes-du-mois.json");
+    console.error("Example: node tools/manual-import.js ingest/sources/recipes-of-the-month.json");
     process.exit(1);
   }
 
@@ -65,8 +65,8 @@ function principal() {
   try { brut = JSON.parse(fs.readFileSync(chemin, "utf8")); }
   catch (e) {
     console.error("Ce fichier n'est pas du JSON valide : " + e.message);
-    console.error("Piège fréquent : TextEdit enregistre du texte enrichi.");
-    console.error("Format → Convertir au format texte, puis réenregistrer.");
+    console.error("Common trap: TextEdit saves rich text by default.");
+    console.error("Format -> Make Plain Text, then save again.");
     process.exit(1);
   }
 
@@ -84,10 +84,10 @@ function principal() {
   const existantes = corpusExistant();
   const ids = existantes.map((r) => r.id);
 
-  console.log("\n" + recettes.length + " recette(s) lue(s) dans " + path.basename(chemin) + "\n");
+  console.log("\n" + recettes.length + " recipe(s) read from " + path.basename(chemin) + "\n");
 
   /* --- 1. Validation contre le catalogue --- */
-  console.log("Validation — catalogue, allergènes, âges");
+  console.log("Validation — catalogue, allergens, ages");
   console.log("─".repeat(42));
   const survivantes = [];
   const rejetees = [];
@@ -98,33 +98,33 @@ function principal() {
      * et on laisse le moteur juger le reste. */
     const v = Valideur.valider(r, null, donnees, ids.concat(survivantes.map((s) => s.id)));
     if (!v.ok) {
-      rejetees.push({ id: r.id || "(sans id)", erreurs: v.erreurs });
-      console.log("  ✕ " + (r.id || "(sans id)") + " — " + v.erreurs[0]);
+      rejetees.push({ id: r.id || "(no id)", erreurs: v.erreurs });
+      console.log("  x  " + (r.id || "(no id)") + " — " + v.erreurs[0]);
       return;
     }
     if (v.avertissements.length) aRevoir.push({ id: r.id, avertissements: v.avertissements });
     survivantes.push(r);
-    console.log("  ✓ " + r.id);
+    console.log("  ok " + r.id);
   });
 
   /* --- 2. Cohérence culinaire --- */
-  console.log("\nCohérence culinaire");
+  console.log("\nCulinary coherence");
   console.log("─".repeat(42));
   const gardees = [];
   survivantes.forEach(function (r) {
     const c = Coherence.verifier(r, donnees);
     if (!c.ok) {
       rejetees.push({ id: r.id, erreurs: c.erreurs });
-      console.log("  ✕ " + r.id + " — " + c.erreurs[0]);
+      console.log("  x  " + r.id + " — " + c.erreurs[0]);
       return;
     }
     if (c.avertissements.length) aRevoir.push({ id: r.id, avertissements: c.avertissements });
     gardees.push(r);
-    console.log("  ✓ " + r.id + (c.avertissements.length ? "  (" + c.avertissements.length + " réserve[s])" : ""));
+    console.log("  ok " + r.id + (c.avertissements.length ? "  (" + c.avertissements.length + " reservation[s])" : ""));
   });
 
   if (aRevoir.length) {
-    console.log("\nRéserves — acceptées, mais à regarder");
+    console.log("\nReservations — accepted, but worth a look");
     console.log("─".repeat(42));
     aRevoir.forEach(function (a) {
       a.avertissements.forEach(function (m) { console.log("  ~ " + a.id + " : " + m); });
@@ -132,7 +132,7 @@ function principal() {
   }
 
   if (!gardees.length) {
-    console.log("\nRien à publier.");
+    console.log("\nNothing to publish.");
     return;
   }
 
@@ -142,7 +142,7 @@ function principal() {
   console.log("─".repeat(42));
 
   if (sec) {
-    gardees.forEach(function (r) { console.log("  [à sec] " + r.name); });
+    gardees.forEach(function (r) { console.log("  [dry run] " + r.name); });
     console.log("\n" + gardees.length + " recette(s) seraient publiées. Rien n'a été écrit.");
     return;
   }
@@ -169,8 +169,8 @@ function principal() {
   if (!pub.batches.some((l) => l.id === lot)) {
     pub.batches.push({ id: lot, title: "Semaine du " + lot, access: "subscriber",
                     weekly: true,
-                    note: "Sept recettes visant les profils les moins servis." });
-    console.log("  lot " + lot + " créé");
+                    note: "Seven recipes aimed at the least-served profiles." });
+    console.log("  batch " + lot + " created");
   }
   gardees.forEach(function (r) { pub.assignment[r.id] = lot; });
   ecrire("data/publishing.json", pub);
@@ -185,13 +185,13 @@ function principal() {
 
   console.log("\nBilan");
   console.log("─".repeat(42));
-  console.log("  publiées : " + gardees.length + " · rejetées : " + rejetees.length);
+  console.log("  published: " + gardees.length + " · rejected: " + rejetees.length);
   r.manifeste.batches.forEach(function (l) {
-    console.log("  " + l.id + "  " + (l.access === "free" ? "libre " : "abonné") + "  " +
-      String(l.count).padStart(2) + " recettes");
+    console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
+      String(l.count).padStart(2) + " recipes");
   });
-  console.log("\n  Ce qui n'est PAS vérifié : le goût, la levée, la texture réelle.");
-  console.log("  Une recette non cuisinée peut être ratée — jamais dangereuse.\n");
+  console.log("\n  What is NOT checked: taste, rise, real texture.");
+  console.log("  A recipe that was never cooked can be bad — never unsafe.\n");
 }
 
 if (require.main === module) principal();
