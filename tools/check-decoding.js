@@ -1,0 +1,112 @@
+/* Decoding check — Swift Codable structs against the real JSON.
+ *   node tools/check-decoding.js
+ *
+ * WHY THIS EXISTS
+ *
+ * A Swift struct declares a non-optional field. The JSON does not carry it, or
+ * carries it under another name. Everything compiles, the IPA installs, and
+ * the app dies on first launch with "The data couldn't be read because it is
+ * missing" — a message that names nothing.
+ *
+ * That has now happened twice: once on the bridge function names, once on
+ * `stades` versus `stages`. Nothing in the build could catch it, because
+ * neither side is wrong on its own; they simply disagree.
+ *
+ * This reads every Codable struct in Models.swift, matches it against a real
+ * sample of the JSON that will be served, and fails when a required field has
+ * nowhere to come from.
+ */
+"use strict";
+const fs = require("fs");
+const path = require("path");
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
+
+const swift = fs.readFileSync(path.join(root, "ios/App/App/Models/Models.swift"), "utf8");
+
+/* Fields of a Swift struct: name, and whether it is optional. Lines inside a
+ * nested enum or a CodingKeys block are skipped — they are not stored
+ * properties. */
+function fieldsOf(structName) {
+  /* Match to the FIRST closing brace at column 0, and stop at the next
+   * top-level declaration — otherwise two adjacent structs bleed into one. */
+  const start = swift.search(new RegExp("^struct\\s+" + structName + "\\b", "m"));
+  if (start === -1) return null;
+  const after = swift.slice(start);
+  const end = after.search(/\n\}/);
+  if (end === -1) return null;
+  let body = after.slice(after.indexOf("{") + 1, end);
+  body = body.replace(/enum\s+CodingKeys(?:.|\n)*?\n\s*\}/g, "");
+  const out = [];
+  /* Only STORED properties are decoded. A computed one is followed by "{" on
+   * the same line or the next, and carries no value from the JSON. */
+  const lines = body.split("\n");
+  lines.forEach(function (line, idx) {
+    const f = line.match(/^\s*(?:let|var)\s+(\w+)\s*:\s*(.+)$/);
+    if (!f) return;
+    const rest = f[2].trim();
+    const suivante = (lines[idx + 1] || "").trim();
+    if (rest.endsWith("{") || suivante.startsWith("{")) return;   /* computed */
+    if (rest.includes("=")) return;                                /* has a default */
+    out.push({ name: f[1], optional: rest.replace(/\s*\{.*$/, "").trim().endsWith("?") });
+  });
+  return out;
+}
+
+/* Samples of exactly what the app will decode. */
+const base = read("data/base.json");
+const catalogue = read("data/ingredients.json");
+const corpus = read("data/recipes.json");
+const firstIngredientKey = Object.keys(catalogue)[0];
+
+const CASES = [
+  { struct: "ReferenceTables", sample: base, label: "base.json" },
+  { struct: "Allergen", sample: base.allergens[0], label: "allergen" },
+  { struct: "TextureStage", sample: base.stages[0], label: "stage, with note" },
+  { struct: "TextureStage", sample: base.stages[base.stages.length - 1], label: "stage, no note" },
+  { struct: "IngredientDefinition", sample: catalogue[firstIngredientKey], label: "ingredient" },
+  { struct: "Recipe", sample: corpus[0], label: "recipe" },
+  { struct: "RecipeIngredient", sample: corpus[0].ingredients[0], label: "recipe ingredient" }
+];
+
+const problems = [];
+CASES.forEach(function (c) {
+  const fields = fieldsOf(c.struct);
+  if (!fields) { problems.push("struct " + c.struct + " not found in Models.swift"); return; }
+  fields.forEach(function (f) {
+    if (!f.optional && !(f.name in c.sample)) {
+      const near = Object.keys(c.sample).find(function (k) {
+        return k.toLowerCase().startsWith(f.name.slice(0, 4).toLowerCase());
+      });
+      problems.push(c.struct + "." + f.name + " is required but absent from " + c.label +
+        (near ? "  (the JSON has \"" + near + "\" — a rename that did not reach both sides?)" : ""));
+    }
+  });
+});
+
+/* The bridge and the Swift side have to agree on function names too. */
+const bridge = fs.readFileSync(path.join(root, "engine/native-bridge.js"), "utf8");
+const engineSwift = fs.readFileSync(path.join(root, "ios/App/App/Core/RecipeEngine.swift"), "utf8");
+const exposed = (bridge.match(/^\s{4}(\w+): function/gm) || []).map(function (l) {
+  return l.trim().split(":")[0];
+});
+const called = Array.from(new Set((engineSwift.match(/appeler\("(\w+)"/g) || []).map(function (l) {
+  return l.match(/"(\w+)"/)[1];
+})));
+called.forEach(function (nameCalled) {
+  if (exposed.indexOf(nameCalled) === -1) {
+    problems.push("the Swift calls PONT." + nameCalled + "(), which the bridge does not expose" +
+      "  (it exposes: " + exposed.join(", ") + ")");
+  }
+});
+
+if (!problems.length) {
+  console.log("Decoding check passed — " + CASES.length + " structs match the JSON, " +
+    exposed.length + " bridge functions match the Swift calls.");
+  process.exit(0);
+}
+
+console.error("\nDECODING MISMATCH (" + problems.length + ")");
+problems.forEach(function (p) { console.error("  x " + p); });
+console.error("\nThe build would succeed and the app would die on first launch.\n");
+process.exit(1);

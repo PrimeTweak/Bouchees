@@ -257,7 +257,7 @@ struct OnboardingScreen: View {
 struct AgePicker: View {
     @Binding var ageMonths: Int
 
-    private static let stades: [(min: Int, name: String, texte: String)] = [
+    private static let stages: [(min: Int, name: String, texte: String)] = [
         (6, "6–8 months", "Smooth purées and large melt-in-the-mouth sticks"),
         (9, "9–11 months", "Coarsely mashed and small soft pieces"),
         (12, "1–2 years", "Tender pieces; most family dishes work"),
@@ -266,12 +266,12 @@ struct AgePicker: View {
     ]
 
     private func borneSuivante(_ index: Int) -> Int {
-        index + 1 < Self.stades.count ? Self.stades[index + 1].min : 999
+        index + 1 < Self.stages.count ? Self.stages[index + 1].min : 999
     }
 
     var body: some View {
         VStack(spacing: 9) {
-            ForEach(Array(Self.stades.enumerated()), id: \.offset) { index, stage in
+            ForEach(Array(Self.stages.enumerated()), id: \.offset) { index, stage in
                 let isOn = ageMonths >= stage.min && ageMonths < borneSuivante(index)
                 Button {
                     ageMonths = stage.min

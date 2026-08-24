@@ -118,7 +118,7 @@ struct IngredientDefinition: Codable, Hashable, Sendable {
 /// base.json — allergen families and texture stages.
 struct ReferenceTables: Codable, Sendable {
     let allergens: [Allergen]
-    let stades: [TextureStage]
+    let stages: [TextureStage]
 }
 
 // MARK: - Recipe
