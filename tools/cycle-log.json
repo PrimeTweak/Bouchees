@@ -1,0 +1,15 @@
+{
+  "le": "2026-08-25T00:15:20.300Z",
+  "recettes": null,
+  "images": {
+    "generees": 1,
+    "acceptees": 0,
+    "rejetees": [
+      {
+        "id": "banana-oat-muffins",
+        "reason": "la vision a échoué : API key is invalid.",
+        "detectes": []
+      }
+    ]
+  }
+}
