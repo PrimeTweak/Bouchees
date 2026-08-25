@@ -54,39 +54,31 @@ const drawthings = {
   disponible: function () { return !!(process.env.DRAWTHINGS_URL || process.env.DRAWTHINGS_ACTIF); },
   generer: async function (spec) {
     const base = process.env.DRAWTHINGS_URL || "http://127.0.0.1:7860";
+    /* The request body is built first, so DRAWTHINGS_TRACE=1 can print exactly
+     * what goes on the wire. Guessing which field differs from a curl that
+     * works cost several rounds; printing it costs one line. */
+    const corps = Object.assign({
+      prompt: spec.prompt,
+      negative_prompt: spec.negatif,
+      width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
+      height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
+      steps: Number(process.env.DRAWTHINGS_ETAPES || 8)
+    },
+      spec.graine !== undefined ? { seed: spec.graine } : {},
+      process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
+      process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
+    );
+
+    if (process.env.DRAWTHINGS_TRACE) {
+      console.log("\n--- request sent to " + base + "/sdapi/v1/txt2img ---");
+      console.log(JSON.stringify(corps, null, 2));
+      console.log("--- end of request ---\n");
+    }
+
     const rep = await fetch(base + "/sdapi/v1/txt2img", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      /* Only the fields Draw Things reliably accepts are sent by default.
-       *
-       * cfg_scale and sampler_name were being sent with SDXL values — 30 steps,
-       * CFG 6, "DPM++ 2M Karras" — which FLUX neither wants nor recognises,
-       * and which some builds reject outright with a bare HTTPException.
-       *
-       * They are now opt-in: set DRAWTHINGS_CFG or DRAWTHINGS_SAMPLER only if
-       * you know the value your build accepts. Left unset, Draw Things uses
-       * whatever is configured in the app, which is the value that works. */
-      /* EXACTLY the five fields your working curl sends, and nothing else.
-       *
-       * Measured side by side: the same request with negative_prompt gives a
-       * clean photo, without it gives an embossed anaglyph. So the negative
-       * prompt stays. What did NOT belong was `seed: -1` — your curl omits it
-       * entirely, and omitting it is what works.
-       *
-       * cfg_scale and sampler_name are opt-in: unset, Draw Things uses what
-       * the app itself is configured with. Adding either one moves this away
-       * from the request that is known to work. */
-      body: JSON.stringify(Object.assign({
-        prompt: spec.prompt,
-        negative_prompt: spec.negatif,
-        width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
-        height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
-        steps: Number(process.env.DRAWTHINGS_ETAPES || 8)
-      },
-        spec.graine !== undefined ? { seed: spec.graine } : {},
-        process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
-        process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
-      ))
+      body: JSON.stringify(corps)
     });
     const d = await rep.json();
     if (!rep.ok || !d.images || !d.images.length) {
