@@ -66,25 +66,24 @@ const drawthings = {
        * They are now opt-in: set DRAWTHINGS_CFG or DRAWTHINGS_SAMPLER only if
        * you know the value your build accepts. Left unset, Draw Things uses
        * whatever is configured in the app, which is the value that works. */
-      /* NO negative_prompt.
+      /* EXACTLY the five fields your working curl sends, and nothing else.
        *
-       * Measured, not assumed: the same curl, same size, same steps, produces
-       * a clean photo without it and an embossed anaglyph with it. FLUX has no
-       * negative guidance — Draw Things ends up subtracting the render instead
-       * of steering it.
+       * Measured side by side: the same request with negative_prompt gives a
+       * clean photo, without it gives an embossed anaglyph. So the negative
+       * prompt stays. What did NOT belong was `seed: -1` — your curl omits it
+       * entirely, and omitting it is what works.
        *
-       * Everything the negative prompt was guarding against is now stated
-       * positively in the prompt itself, which is how FLUX is meant to be
-       * driven anyway. Set DRAWTHINGS_NEGATIF=1 to send it again on a model
-       * that actually supports it (SDXL does). */
+       * cfg_scale and sampler_name are opt-in: unset, Draw Things uses what
+       * the app itself is configured with. Adding either one moves this away
+       * from the request that is known to work. */
       body: JSON.stringify(Object.assign({
         prompt: spec.prompt,
+        negative_prompt: spec.negatif,
         width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
         height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
-        steps: Number(process.env.DRAWTHINGS_ETAPES || 8),
-        seed: spec.graine === undefined ? -1 : spec.graine
+        steps: Number(process.env.DRAWTHINGS_ETAPES || 8)
       },
-        process.env.DRAWTHINGS_NEGATIF && spec.negatif ? { negative_prompt: spec.negatif } : {},
+        spec.graine !== undefined ? { seed: spec.graine } : {},
         process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
         process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
       ))
