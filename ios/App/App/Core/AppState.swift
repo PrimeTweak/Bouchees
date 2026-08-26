@@ -18,6 +18,30 @@ final class AppState {
 
     private(set) var recipes: [Recipe] = []
     private(set) var adapted: [AdaptedRecipe] = []
+
+    /// How many recipes come out as is, adapted, or blocked for a given child.
+    /// This is the question a parent actually has — "what can they eat" — and
+    /// the Children screen was showing an empty page instead of answering it.
+    struct ProfileTally: Sendable {
+        var asIs = 0
+        var adapted = 0
+        var blocked = 0
+        var total: Int { asIs + adapted + blocked }
+    }
+
+    func tally(for profile: ChildProfile) -> ProfileTally {
+        var t = ProfileTally()
+        guard let results = try? moteur.adapter(recipes, pour: profile) else { return t }
+        for r in results {
+            switch r.status {
+            case .asIs: t.asIs += 1
+            case .adapted: t.adapted += 1
+            case .notAdaptable: t.blocked += 1
+            case .unknown: break
+            }
+        }
+        return t
+    }
     private(set) var batches: [Batch] = []
 
     private(set) var isLoading = true

@@ -93,7 +93,7 @@ final class Subscription {
                 message = "Purchase awaiting approval. Access opens as soon as it’s confirmed."
                 return nil
             @unknown default:
-                message = "Résultat d’achat inattendu."
+                message = String(localized: "Unexpected purchase result.")
                 return nil
             }
         } catch {

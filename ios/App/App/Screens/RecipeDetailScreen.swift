@@ -174,7 +174,7 @@ struct RecipeDetailScreen: View {
                 }
                 .padding(.vertical, 7)
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Étape \(index + 1). \(step)")
+                .accessibilityLabel("Step \(index + 1). \(step)")
             }
         }
         .padding(17)
@@ -275,9 +275,9 @@ struct IngredientRow: View {
     private var descriptionAccessible: String {
         switch ingredient.status {
         case .swapped:
-            return "\(ingredient.name), remplacé par \(ingredient.toName ?? ""). \(ingredient.reason ?? "")"
+            return "\(ingredient.name), replaced by \(ingredient.toName ?? ""). \(ingredient.reason ?? "")"
         case .omitted:
-            return "\(ingredient.name), retiré. \(ingredient.reason ?? "")"
+            return "\(ingredient.name), removed. \(ingredient.reason ?? "")"
         case .blocked:
             return "\(ingredient.name), no safe replacement."
         default:

@@ -118,5 +118,53 @@
         "la vision hésite sur : type of fish (cod, halibut, or other white fish), exact nature of crumble (breadcrumb, crushed cracker, or grain), liquid base (broth, sauce, or oil), onion variety (red onion or shallot)"
       ]
     }
+  },
+  "oatmeal-raisin-cookies": {
+    "fichier": "images/oatmeal-raisin-cookies-b0f94efd28b1.png",
+    "empreinte": "b0f94efd28b1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-26T18:37:25.382Z",
+      "detectes": [
+        "flour",
+        "egg",
+        "oat",
+        "cherry",
+        "yogurt"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : cherry (could be dried cherry or cooked cherry), yogurt (could be sour cream or cream)"
+      ]
+    }
+  },
+  "mac-and-cheese-with-hidden-squash": {
+    "fichier": "images/mac-and-cheese-with-hidden-squash-469210f77621.png",
+    "empreinte": "469210f77621",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-26T19:38:51.131Z",
+      "detectes": [
+        "rigatoni",
+        "butternut squash",
+        "cream cheese",
+        "butter",
+        "parmesan"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : cream cheese or butter (white cubes), parmesan or other hard cheese (grated flakes), pasta in blue bowl (rigatoni or pappardelle)"
+      ]
+    }
   }
 }

@@ -124,6 +124,7 @@ const CONSIGNE = [
   "Answer ONLY with this JSON object, with no text around it:",
   "{",
   '  "aliments": ["each food you can distinctly see, in English, singular"],',
+  '  "plat": "what the dish itself is, in two or three words: muffins, a stack of pancakes, a bowl of soup",',
   '  "lisible": true,',
   '  "incertitudes": ["anything you cannot identify with certainty"]',
   "}",
@@ -133,7 +134,10 @@ const CONSIGNE = [
   "- If you hesitate between two foods, put BOTH in aliments.",
   "- If the image is blurry, empty, or is not a dish, set lisible to false.",
   "- Invent nothing: name only what is visible.",
-  "- Use the plain everyday English word: oats, milk, egg, banana, carrot."
+  "- Use the plain everyday English word: oats, milk, egg, banana, carrot.",
+  "- For plat, describe the FORM of the dish, not its ingredients. A bowl of",
+  "  loose oats is \"a bowl of oats\", not \"muffins\", even if muffins are made",
+  "  from oats."
 ].join("\n");
 
 const anthropic = {
@@ -210,6 +214,7 @@ function lireDescription(texte) {
   try {
     const o = JSON.parse(t.slice(a, b + 1));
     return { aliments: Array.isArray(o.aliments) ? o.aliments : [],
+             plat: typeof o.plat === "string" ? o.plat : "",
              lisible: o.lisible !== false,
              incertitudes: Array.isArray(o.incertitudes) ? o.incertitudes : [] };
   } catch (e) {
@@ -256,7 +261,49 @@ function comparer(description, recette, donnees) {
     if (touches.length) erreurs.push("l'image montre un risque d'étouffement : " + risque);
   });
 
-  /* 3. The image has to look like the recipe: at least one main ingredient
+  /* 3. THE DISH ITSELF HAS TO MATCH.
+   *
+   *    A bowl of oats topped with a raw egg was accepted for a muffin recipe:
+   *    banana, oats and egg were all present, so the ingredient check passed.
+   *    Ingredients are not a dish. The form has to line up too.
+   *
+   *    The comparison is deliberately loose — "muffins" against "a tray of
+   *    muffins" must pass — but a bowl described where baked goods are
+   *    expected does not. */
+  if (description.plat) {
+    const platVu = normaliser(description.plat);
+    const platAttendu = normaliser(recette.name);
+    const motsAttendus = platAttendu.split(/\s+/).filter(function (w) { return w.length > 3; });
+    const seRecoupent = motsAttendus.some(function (w) {
+      const racine = w.length > 6 ? w.slice(0, 6) : w;
+      return platVu.indexOf(racine) !== -1;
+    });
+
+    /* Vessel words carry the shape. A dish described as a bowl when the recipe
+     * yields muffins is the exact failure this rule exists for. */
+    const FORMES = [
+      { mots: ["muffin"], attendu: /muffin/i },
+      { mots: ["pancake", "crepe", "crêpe"], attendu: /pancake|cr[eê]pe/i },
+      { mots: ["patty", "patties", "fritter"], attendu: /patt(y|ies)|galette/i },
+      { mots: ["cookie", "biscuit"], attendu: /cookie|biscuit/i },
+      { mots: ["loaf", "bread"], attendu: /loaf|bread/i },
+      { mots: ["bar", "bars"], attendu: /\bbars?\b/i },
+      { mots: ["nugget"], attendu: /nugget/i },
+      { mots: ["meatball"], attendu: /meatball/i }
+    ];
+    FORMES.forEach(function (f) {
+      const recetteVeutCetteForme = f.attendu.test(recette.name) ||
+        f.attendu.test(String(recette.servings || ""));
+      if (!recetteVeutCetteForme) return;
+      const imageMontreCetteForme = f.mots.some(function (m) { return platVu.indexOf(m) !== -1; });
+      if (!imageMontreCetteForme && !seRecoupent) {
+        erreurs.push("the recipe is " + recette.name + " but the image shows " +
+          description.plat + " — the dish does not match");
+      }
+    });
+  }
+
+  /* 4. The image has to look like the recipe: at least one main ingredient
    *    recognised, otherwise it may well be a picture of another dish. */
   const principaux = recette.ingredients.map(function (u) {
     const d = catalogue[u.id];

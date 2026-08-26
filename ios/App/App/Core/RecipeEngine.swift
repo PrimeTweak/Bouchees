@@ -23,15 +23,15 @@ enum EngineError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .contexteIndisponible:
-            return "Le moteur n’a pas pu démarrer."
+            return String(localized: "The engine could not start.")
         case .scriptIntrouvable(let n):
-            return "Fichier moteur manquant : \(n)"
+            return String(localized: "Engine file missing: \(n)")
         case .exception(let m):
-            return "Le moteur a signalé une error : \(m)"
+            return String(localized: "The engine reported an error: \(m)")
         case .reponseVide(let f):
-            return "Le moteur n’a rien retourné pour \(f)."
+            return String(localized: "The engine returned nothing for \(f).")
         case .decodage(let m):
-            return "Réponse du moteur illisible : \(m)"
+            return String(localized: "The engine's answer could not be read: \(m)")
         }
     }
 }
@@ -73,7 +73,7 @@ final class RecipeEngine {
             if let e = derniereException { throw EngineError.exception("\(name).js — \(e)") }
         }
         guard let p = context.objectForKeyedSubscript("PONT"), !p.isUndefined else {
-            throw EngineError.exception("PONT introuvable après isLoading")
+            throw EngineError.exception("PONT not found after loading")
         }
         pont = p
     }
@@ -99,7 +99,7 @@ final class RecipeEngine {
 
     @discardableResult
     private func appeler(_ methode: String, _ arguments: [Any]) throws -> String {
-        guard let pont else { throw EngineError.exception("pont non initialisé") }
+        guard let pont else { throw EngineError.exception("bridge not initialised") }
         derniereException = nil
         let retour = pont.invokeMethod(methode, withArguments: arguments)
         if let e = derniereException { throw EngineError.exception("\(methode) — \(e)") }
@@ -129,7 +129,7 @@ final class RecipeEngine {
     /// Adapts the whole corpus at once. One round trip into JS instead of
     /// thirty, and the result is cached for this profile.
     func adapter(_ recipes: [Recipe], pour profile: ChildProfile) throws -> [AdaptedRecipe] {
-        guard pret else { throw EngineError.exception("données non chargées") }
+        guard pret else { throw EngineError.exception("data not loaded") }
         let k = key(profile, recipes.count)
         if let deja = cache[k] { return deja }
 

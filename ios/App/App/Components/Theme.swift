@@ -134,8 +134,11 @@ struct RecipeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            /* Square, like the photos. The generated images are 1:1 — FLUX is
+             * trained square — so a 4:3 frame cropped a clean photo for no
+             * reason and made the drawings and the photos disagree. */
             RecipeVisual(recipe: recipe, result: result)
-                .aspectRatio(4/3, contentMode: .fill)
+                .aspectRatio(1, contentMode: .fill)
                 .frame(maxWidth: .infinity)
                 .clipped()
                 .saturation(estBloquee ? 0.35 : 1)
@@ -149,10 +152,14 @@ struct RecipeCard: View {
                     }
                 }
 
+            /* Two lines are RESERVED for the title whether it needs them or
+             * not, and the meta row is pushed to the bottom. Without that, a
+             * title that wraps makes its card taller than the one beside it
+             * and the grid stops lining up. */
             VStack(alignment: .leading, spacing: 5) {
                 Text(recipe.name)
                     .font(.headline)
-                    .lineLimit(2)
+                    .lineLimit(2, reservesSpace: true)
                     .multilineTextAlignment(.leading)
                     .foregroundStyle(.primary)
 
@@ -169,14 +176,19 @@ struct RecipeCard: View {
                     Text(bloquante.message)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(3)
+                        .lineLimit(2, reservesSpace: true)
                         .padding(.top, 4)
                 } else if let e = result.firstSwap {
                     SwapLine(de: e.de, to: e.to, autres: result.swapCount - 1)
                         .padding(.top, 4)
+                } else {
+                    /* Keeps the block the same height when there is nothing to
+                     * say, so a card with no swap sits level with one that has. */
+                    Color.clear.frame(height: 1).padding(.top, 4)
                 }
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, minHeight: 108, alignment: .topLeading)
             .padding(.horizontal, 13)
             .padding(.vertical, 12)
         }

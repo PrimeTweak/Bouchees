@@ -52,14 +52,14 @@ final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputO
         guard let appareil = AVCaptureDevice.default(for: .video),
               let input = try? AVCaptureDeviceInput(device: appareil),
               session.canAddInput(input) else {
-            error = "La caméra n’est pas disponible sur cet appareil."
+            error = String(localized: "The camera is not available on this device.")
             return
         }
         session.addInput(input)
 
         let out = AVCaptureMetadataOutput()
         guard session.canAddOutput(out) else {
-            error = "La lecture de codes-barres n’a pas pu démarrer."
+            error = String(localized: "Barcode reading could not start.")
             return
         }
         session.addOutput(out)

@@ -133,12 +133,12 @@ struct StarRating: View {
                         .contentTransition(.symbolEffect(.replace))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("\(i) étoile\(i > 1 ? "s" : "")")
+                .accessibilityLabel("\(i) star\(i > 1 ? "s" : "")")
                 .accessibilityAddTraits(note == i ? [.isSelected] : [])
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(note == nil ? "Not rated yet" : "Noté \(note!) sur 5")
+        .accessibilityLabel(note == nil ? String(localized: "Not rated yet") : "Rated \(note!) out of 5")
     }
 }
 
@@ -159,7 +159,7 @@ struct RatingBadge: View {
                 }
             }
             .foregroundStyle(Tint.courge)
-            .accessibilityLabel("Noté \(String(format: "%.1f", m)) sur 5 par \(votes) personne\(votes > 1 ? "s" : "")")
+            .accessibilityLabel("Rated \(String(format: "%.1f", m)) out of 5 by \(votes) \(votes > 1 ? "people" : "person")")
         }
     }
 }

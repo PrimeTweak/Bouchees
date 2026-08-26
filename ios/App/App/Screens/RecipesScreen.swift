@@ -230,8 +230,8 @@ struct FeaturedCard: View {
 
     private var pourquoi: String {
         result.status == .asIs
-            ? "Rien à changer : telle quelle, elle convient à \(firstName)."
-            : "\(result.swapCount) échange\(result.swapCount > 1 ? "s" : "") et c’est prêt pour \(firstName)."
+            ? "Nothing to change: as is, it works for \(firstName)."
+            : "\(result.swapCount) swap\(result.swapCount > 1 ? "s" : "") and it is ready for \(firstName)."
     }
 
     var body: some View {

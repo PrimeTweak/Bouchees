@@ -129,10 +129,10 @@ struct TopRatedScreen: View {
         if etat.topRated.isEmpty {
             EmptyState(symbol: "star",
                      title: "The ranking is building up",
-                     message: "Une recipe between ici dès que \(etat.ratingThreshold) personnes l’ont notée. Notez celles que vous essayez — c’est ce qui fait remonter les bonnes.")
+                     message: "A recipe lands here once \(etat.ratingThreshold) people have rated it. Rate the ones you try — that is what brings the good ones up.")
         } else {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Les recipes notées par au moins \(etat.ratingThreshold) personnes. Elles restent accessibles même une fois leur semaine passée.")
+                Text("Recipes rated by at least \(etat.ratingThreshold) people. They stay available once their week has passed.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 

@@ -24,7 +24,8 @@ struct ProfilesScreen: View {
                         } label: {
                             ProfileRow(profile: p,
                                         isOn: !etat.familyMode && p.id == etat.activeProfileID,
-                                        noms: etat.allergenNames(p.allergens))
+                                        noms: etat.allergenNames(p.allergens),
+                                        tally: etat.tally(for: p))
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -87,6 +88,7 @@ struct ProfileRow: View {
     let profile: ChildProfile
     let isOn: Bool
     let noms: [String]
+    var tally: AppState.ProfileTally? = nil
 
     private var avatarColor: Color {
         let teintes: [Color] = [Tint.betterave, Tint.pois, Tint.courge, Tint.canneberge]
@@ -122,6 +124,42 @@ struct ProfileRow: View {
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isOn ? [.isSelected] : [])
+
+        /* What a parent actually wants to know, on the screen that used to be
+         * empty below the first row: how much of the corpus this child can
+         * eat, and how much of it needs work. */
+        if let t = tally, t.total > 0 {
+            HStack(spacing: 16) {
+                TallyItem(count: t.asIs, label: "as is", color: Tint.pois)
+                TallyItem(count: t.adapted, label: "adapted", color: Tint.courge)
+                if t.blocked > 0 {
+                    TallyItem(count: t.blocked, label: "blocked", color: Tint.canneberge)
+                }
+                Spacer()
+            }
+            .padding(.top, 2)
+            .padding(.bottom, 4)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(t.asIs) recipes as is, \(t.adapted) adapted, \(t.blocked) blocked")
+        }
+    }
+}
+
+/// One figure with its label. Small, quiet, and the number carries the weight.
+private struct TallyItem: View {
+    let count: Int
+    let label: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text("\(count)")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(color)
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
@@ -167,7 +205,7 @@ struct ProfileEditor: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         if profile.name.trimmingCharacters(in: .whitespaces).isEmpty {
-                            profile.name = "Mon enfant"
+                            profile.name = String(localized: "My child")
                         }
                         etat.save(profile)
                         fermer()
@@ -347,8 +385,8 @@ struct PaywallScreen: View {
                     }
 
                     Text("""
-                    L’subscription se renouvelle automatiquement à moins d’être annulé au moins 24 h avant la fin de la période. \
-                    Le paiement est porté à votre compte Apple à la confirmation. Gérez ou annulez dans les réglages de votre compte Apple.
+                    The subscription renews automatically unless cancelled at least 24 hours before the period ends. \
+                    Payment is charged to your Apple account on confirmation. Manage or cancel it in your Apple account settings.
                     """)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)

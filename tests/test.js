@@ -515,7 +515,21 @@ test("validateur : refuse un id déjà pris et les superlatifs marketing", () =>
 
 /* --- D : images --- */
 
-test("images : le prompt décrit les ingrédients réels, en anglais", () => {
+test("images : le prompt NOMME le plat, pas seulement ses ingrédients", () => {
+  /* Le prompt disait « a breakfast dish served in an everyday bowl » puis
+   * listait les ingrédients bruts. FLUX obéissait : un bol de gruau avec un
+   * œuf cru, pour une recette de muffins. Il faut nommer le plat. */
+  const m = parId["banana-oat-muffins"];
+  const pm = Images.promptPour(m, donnees);
+  assert(pm.positif.toLowerCase().startsWith("homemade banana oat muffins"),
+    "le titre doit mener : " + pm.positif.slice(0, 60));
+  assert(/muffins in paper liners/.test(pm.positif),
+    "la forme doit venir de servings (12 muffins)");
+  assert.equal(pm.plat, m.name, "le nom du plat doit être transmis à la vision");
+
+  const pain = Images.promptPour(parId["banana-bread"], donnees);
+  assert(/a loaf on a board/.test(pain.positif), "1 loaf → un pain, pas un bol");
+
   const r = parId["squash-and-coconut-soup"];
   const p = Images.promptPour(r, donnees);
   /* Image models are trained on English captions: the prompt has to come out
@@ -524,8 +538,9 @@ test("images : le prompt décrit les ingrédients réels, en anglais", () => {
   assert(/coconut milk/i.test(p.positif));
   assert(!/courge|lait de coco/i.test(p.positif), "aucun mot français ne doit rester");
   assert(/no visible egg/.test(p.negatif), "les exclusions doivent être explicites");
-  /* The review list is for a human reader. */
-  assert(p.aVerifier.some((x) => /vérifier/.test(x)));
+  /* The review list is for a human reader, and it now names the dish first. */
+  assert(p.aVerifier[0].startsWith("the dish looks like"));
+  assert(p.aVerifier.some((x) => /^check:/.test(x)));
 });
 
 test("images : le cadrage varie mais reste stable pour une même recette", () => {
@@ -948,6 +963,40 @@ test("classement : trié, et la note d'autrui n'est jamais exposée", () => {
   for (let i = 1; i < cl.length; i++) assert(cl[i - 1].score >= cl[i].score);
   assert.equal(Ratings.aggregates(["presque"], "a@x.ca")["presque"].myRating, 5);
   assert.equal(Ratings.aggregates(["presque"], "unknown@x.ca")["presque"].myRating, null);
+});
+
+test("vision : le PLAT doit correspondre, pas seulement les ingrédients", async () => {
+  /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recette de
+   * muffins parce que banane, avoine et œuf étaient tous présents. Des
+   * ingrédients ne font pas un plat. */
+  const muffins = parId["banana-oat-muffins"];
+  const voit = (plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({
+      aliments: ["banana", "oats", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
+
+  const gruau = await Vision.verifier(Buffer.from("x"), muffins, donnees,
+    { moteur: voit("a bowl of oats with a raw egg") });
+  assert.equal(gruau.ok, false, "un bol de gruau n'est pas des muffins");
+  assert(/does not match/.test(gruau.erreurs.join(" ")));
+
+  const vrais = await Vision.verifier(Buffer.from("x"), muffins, donnees,
+    { moteur: voit("a tray of muffins") });
+  assert.equal(vrais.ok, true, vrais.erreurs.join(" / "));
+});
+
+test("vision : la forme vient aussi du champ servings", async () => {
+  const pain = parId["banana-bread"];
+  const voit = (plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({
+      aliments: ["banana", "wheat flour", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
+
+  const bol = await Vision.verifier(Buffer.from("x"), pain, donnees,
+    { moteur: voit("a bowl of porridge") });
+  assert.equal(bol.ok, false, "1 loaf ne se sert pas dans un bol");
+
+  const miche = await Vision.verifier(Buffer.from("x"), pain, donnees,
+    { moteur: voit("a sliced loaf on a board") });
+  assert.equal(miche.ok, true, miche.erreurs.join(" / "));
 });
 
 test("vision : une image qui ne ressemble à rien ET fait hésiter est rejetée", async () => {

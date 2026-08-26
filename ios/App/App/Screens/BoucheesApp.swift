@@ -132,7 +132,7 @@ struct OnboardingScreen: View {
                     .foregroundStyle(i <= step ? Tint.betterave : Color.primary.opacity(0.12))
             }
         }
-        .accessibilityLabel("Étape \(step + 1) sur 3")
+        .accessibilityLabel("Step \(step + 1) of 3")
     }
 
     // Step 1 — the first name
@@ -173,7 +173,7 @@ struct OnboardingScreen: View {
                     .tint(Tint.betterave)
                     .controlSize(.large)
                 Button("Skip for now") {
-                    draft.name = "Mon enfant"
+                    draft.name = String(localized: "My child")
                     step = 1
                 }
                 .foregroundStyle(.secondary)
@@ -187,7 +187,7 @@ struct OnboardingScreen: View {
 
     private var etapeAge: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Quel âge a \(firstName) ?")
+            Text("How old is \(firstName)?")
                 .font(.title2.weight(.bold))
             Text("This determines textures and safety guidance.")
                 .font(.subheadline)
@@ -244,7 +244,7 @@ struct OnboardingScreen: View {
 
     private func finish() {
         if draft.name.trimmingCharacters(in: .whitespaces).isEmpty {
-            draft.name = "Mon enfant"
+            draft.name = String(localized: "My child")
         }
         etat.save(draft)
     }

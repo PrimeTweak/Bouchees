@@ -110,9 +110,40 @@ const NOMS_EN = {
  * from before the conversion and every recipe fell through to the generic
  * fallback. */
 const PLATS_EN = {
-  "Breakfast": "breakfast dish", "Meal": "family meal",
+  "Breakfast": "breakfast", "Meal": "meal",
   "Snack": "snack", "Dessert": "dessert"
 };
+
+/* How the dish is PRESENTED, read off the servings field.
+ *
+ * The prompt used to say "a breakfast dish served in an everyday bowl" and
+ * then list raw ingredients. FLUX obeyed exactly: a bowl of oats with a raw
+ * egg on top, for a muffin recipe. It was never told what the dish IS.
+ *
+ * The servings field already carries the answer — "12 muffins", "10 patties",
+ * "1 loaf" — so the shape and the vessel are derived from it. */
+const PRESENTATION = [
+  [/muffins?/i,             "muffins in paper liners, cooling on a wire rack"],
+  [/cr[eê]pes?|pancakes?/i, "a stack of pancakes on a plate"],
+  [/patties|galettes?/i,    "browned patties on a plate"],
+  [/nuggets?|croquettes?/i, "baked nuggets on a plate"],
+  [/meatballs?|boulettes?/i,"meatballs on a plate"],
+  [/bites?|boules?/i,       "small round bites on a plate"],
+  [/cookies?|biscuits?/i,   "cookies on a wire rack"],
+  [/bars?|barres?/i,        "cut bars on parchment"],
+  [/loaf|loaves|pains?/i,   "a loaf on a board, one slice cut"],
+  [/frittatas?/i,           "mini frittatas in a muffin tin"],
+  [/glass|verres?/i,        "a tall glass on a table"],
+  [/\bml\b|cups?/i,        "a small serving bowl with a spoon"]
+];
+
+function presentationPour(recette) {
+  const p = String(recette.servings || "");
+  for (let i = 0; i < PRESENTATION.length; i++) {
+    if (PRESENTATION[i][0].test(p)) return PRESENTATION[i][1];
+  }
+  return "a shallow bowl on a table";
+}
 
 const EXCLUSIONS = {
   lait: "no visible cheese, cream or butter",
@@ -180,21 +211,30 @@ function promptPour(recette, donnees) {
    * Saying "only these foods and nothing else" is how FLUX is meant to be
    * driven, and the vision check remains the real guard: the prompt asks, the
    * verification decides. An intruder still gets the image rejected. */
+  /* THE RECIPE NAME LEADS, then how it is presented, then what it is made of.
+   * Naming the dish is what stops FLUX from drawing a bowl of loose
+   * ingredients: it renders what you name, and it was never named. */
   return {
     positif: [
-      "A homemade " + plat + " served in an everyday bowl on a kitchen table",
-      "the bowl contains only these foods and nothing else: " + visibles.join(", "),
+      "Homemade " + recette.name.toLowerCase(),
+      presentationPour(recette),
+      "made with " + visibles.join(", ") + " and nothing else",
       "no other ingredient appears anywhere in the frame",
       cadrage,
       moment,
       STYLE
     ].join(". "),
     negatif: NEGATIF + ", " + exclusions.join(", "),
+    /* Passed to the vision check so it can be asked whether the image looks
+     * like THIS dish, not merely whether the ingredients are present. */
+    plat: recette.name,
+    typePlat: plat,
     /* The review list is for a human reader, not for the model. */
     aVerifier: [
-      "les ingrédients visibles correspondent à la liste : " + visibles.join(", "),
-      "aucun ingrédient absent de la recette n'apparaît dans l'image"
-    ].concat(exclusions.map(function (x) { return "vérifier : " + x; }))
+      "the dish looks like: " + recette.name,
+      "the visible ingredients match: " + visibles.join(", "),
+      "no ingredient outside the recipe appears in the image"
+    ].concat(exclusions.map(function (x) { return "check: " + x; }))
   };
 }
 

@@ -48,10 +48,10 @@ enum RepositoryError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .missingResource(let n): return "Missing resource in the app: \(n)"
-        case .network(let c): return "Le serveur a répondu \(c)."
+        case .missingResource(let n): return String(localized: "Missing resource in the app: \(n)")
+        case .network(let c): return String(localized: "The server answered \(c).")
         case .subscriptionRequired: return "Ce lot demande un subscription."
-        case .unreadableResponse: return "Réponse du serveur illisible."
+        case .unreadableResponse: return String(localized: "The server's answer could not be read.")
         }
     }
 }
@@ -76,11 +76,15 @@ enum Settings {
     static var terms: URL { serverBase.appendingPathComponent("terms") }
     static var privacy: URL { serverBase.appendingPathComponent("privacy") }
 
-    static let medicalDisclaimer = """
-    Bouchées ne remplace pas un avis médical. Les échanges d’ingrédients et les repères d’âge \
-    viennent de tables déterministes, à faire valider par un professionnel. En cas d’allergie \
-    diagnostiquée, le plan de votre allergologue a toujours préséance.
-    """
+    /// Localised: the French build must read as French, not as a half-translated
+    /// app. The key is the English text, as everywhere else.
+    static var medicalDisclaimer: String {
+        String(localized: """
+        Bouchées is not medical advice. Ingredient swaps and age guidance come from \
+        deterministic tables that a professional should review. For a diagnosed allergy, \
+        your allergist's plan always takes precedence.
+        """)
+    }
 }
 
 // MARK: - Persistance locale

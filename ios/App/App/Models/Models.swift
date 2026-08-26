@@ -195,7 +195,7 @@ struct AdaptedIngredient: Codable, Hashable, Identifiable, Sendable {
     var displayQuantity: String {
         let q = qty.affichage
         var u = unit
-        if u == "unité", let v = qty.value, v > 1 { u = "unités" }
+        if u == "unit", let v = qty.value, v > 1 { u = String(localized: "units") }
         return q.isEmpty ? u : "\(q) \(u)"
     }
 }
@@ -266,7 +266,7 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
     var ageMonths: Int
     var allergens: [String]
 
-    static let defaut = ChildProfile(name: "Mon enfant", ageMonths: 9, allergens: [])
+    static let defaut = ChildProfile(name: String(localized: "My child"), ageMonths: 9, allergens: [])
 
     /// Profile resolved when several children eat the same dish: the youngest
     /// age and the union of the allergens. This is the hard case in a family,
