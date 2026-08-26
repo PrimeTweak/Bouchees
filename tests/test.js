@@ -594,7 +594,7 @@ test("images : un manifeste qui survit à la disparition du fichier ne publie ri
 
   const plan = Images.aGenerer([r], donnees, { [r.id]: entree });
   assert.equal(plan.length, 1, "la recette doit repasser au plan de génération");
-  assert.equal(plan[0].etat, "fichier absent");
+  assert.equal(plan[0].etat, "file missing");
 });
 
 /* --- F : droits et Stripe --- */

@@ -213,10 +213,10 @@ function aGenerer(corpus, donnees, manifeste, dossierImages) {
     const actuel = manifeste[r.id];
     /* The manifest says what was verified; the disk says what exists. */
     const surDisque = actuel && actuel.fichier && fs.existsSync(path.join(base, actuel.fichier));
-    const etat = !actuel ? "manquante"
-      : (!surDisque ? "fichier absent"
-      : (actuel.empreinte !== emp ? "périmée" : "à jour"));
-    if (etat === "à jour") return null;
+    const etat = !actuel ? "missing"
+      : (!surDisque ? "file missing"
+      : (actuel.empreinte !== emp ? "stale" : "current"));
+    if (etat === "current") return null;
 
     const p = promptPour(r, donnees);
     return {

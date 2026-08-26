@@ -85,6 +85,12 @@ jobs:
         # de build pour une faute qu'on peut voir sans Xcode.
         run: python3 tools/check-swift.py
 
+      - name: Check cross-module agreement
+        # Two modules that must use the same word, renamed on one side only.
+        # Four failures tonight had that exact shape, and none of them is a
+        # syntax error — both sides compile and the app breaks at runtime.
+        run: node tools/check-agreement.js
+
       - name: Check Swift decodes the real JSON
         # A required Swift field the JSON does not carry, or a bridge function
         # renamed on one side only: both compile, both install, and the app

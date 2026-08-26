@@ -156,8 +156,8 @@ async function cycleImages(donnees, options) {
   const plan = Images.aGenerer(corpus, donnees, manifeste);
   if (!plan.length) { console.log("  every image is up to date"); return journal; }
   console.log("  " + plan.length + " image(s) — " +
-    plan.filter((p) => p.etat === "manquante").length + " manquante(s), " +
-    plan.filter((p) => p.etat === "périmée").length + " périmée(s)");
+    plan.filter((p) => p.etat === "missing").length + " missing, " +
+    plan.filter((p) => p.etat === "stale").length + " stale");
 
   const mImage = options.moteurImage || MoteursImage.choisir();
   const mVision = options.moteurVision || Vision.choisir();
