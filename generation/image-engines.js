@@ -95,6 +95,9 @@ const drawthings = {
       console.log("--- end of request ---\n");
     }
 
+    /* Noted before the request so only a file written afterwards counts. */
+    const avant = Date.now();
+
     const rep = await fetch(base + "/sdapi/v1/txt2img", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,7 +113,68 @@ const drawthings = {
         (process.env.DRAWTHINGS_CFG ? ", cfg " + process.env.DRAWTHINGS_CFG : "") +
         (process.env.DRAWTHINGS_SAMPLER ? ", sampler " + process.env.DRAWTHINGS_SAMPLER : "") + ")");
     }
-    const octets = Buffer.from(d.images[0], "base64");
+    /* THE IMAGE COMES FROM THE FOLDER, NOT FROM THE RESPONSE.
+     *
+     * Measured, watching the app while the cycle runs: Draw Things renders a
+     * clean photo on screen and returns an embossed relief over the API. Same
+     * generation, two different results. Nothing in the request changes it —
+     * prompt, negative prompt, steps, sampler and size were each isolated and
+     * ruled out.
+     *
+     * The app writes the real image itself, through its "Save Generated Media
+     * to" setting. Reading that file is not a workaround: it is the only way
+     * to obtain what was actually generated.
+     *
+     * DRAWTHINGS_DOSSIER points at that folder. Unset, the API response is
+     * used as before — so a build where the API behaves is unaffected. */
+    let octets = Buffer.from(d.images[0], "base64");
+
+    const dossierApp = process.env.DRAWTHINGS_DOSSIER;
+    if (dossierApp) {
+      const fsApp = require("fs");
+      const pathApp = require("path");
+
+      /* The app writes its file AFTER answering, so we wait for one to appear
+       * that is newer than the moment the request went out. Matching on the
+       * name is brittle — the app names files after the prompt — but a
+       * timestamp is not. */
+      function plusRecent() {
+        let trouve = null;
+        fsApp.readdirSync(dossierApp)
+          .filter(function (f) { return /\.(png|jpe?g|webp)$/i.test(f); })
+          .forEach(function (f) {
+            const st = fsApp.statSync(pathApp.join(dossierApp, f));
+            if (st.mtimeMs <= avant) return;
+            if (!trouve || st.mtimeMs > trouve.t) trouve = { f: f, t: st.mtimeMs, taille: st.size };
+          });
+        return trouve;
+      }
+
+      let recent = null;
+      const limite = Date.now() + 8 * 60 * 1000;   /* a large image can take minutes */
+      while (Date.now() < limite) {
+        try { recent = plusRecent(); }
+        catch (e) {
+          throw new Error("DRAWTHINGS_DOSSIER points at " + dossierApp +
+            " which cannot be read: " + e.message);
+        }
+        /* Wait for the size to settle: a file caught mid-write is truncated. */
+        if (recent) {
+          await new Promise(function (r) { setTimeout(r, 1500); });
+          const st = fsApp.statSync(pathApp.join(dossierApp, recent.f));
+          if (st.size === recent.taille && st.size > 0) break;
+          recent = null;
+        }
+        await new Promise(function (r) { setTimeout(r, 1000); });
+      }
+
+      if (!recent) {
+        throw new Error("no new image appeared in " + dossierApp + " — check that " +
+          "Save Generated Media is enabled in Draw Things and points there");
+      }
+      octets = fsApp.readFileSync(pathApp.join(dossierApp, recent.f));
+      if (process.env.DRAWTHINGS_TRACE) console.log("      taken from " + recent.f);
+    }
 
     /* Read the size FROM THE PNG, never from what we asked for.
      *
