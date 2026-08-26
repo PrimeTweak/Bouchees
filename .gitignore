@@ -23,3 +23,6 @@ sortie/
 # Ressources embarquées au moment du build (moteur JS, tables, lots libres).
 # Le workflow les copie avant XcodeGen — rien à suivre ici.
 ios/App/App/Bundled/
+
+# Rejected images: written for inspection, never published.
+images/rejected/

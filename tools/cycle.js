@@ -200,9 +200,19 @@ async function cycleImages(donnees, options) {
 
     const verdict = await Vision.verifier(img.octets, recette, donnees, { moteur: mVision, typeMime: "image/png" });
     if (!verdict.ok) {
-      journal.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "), detectes: verdict.detectes });
+      /* Write the rejected image to disk. Otherwise a rejection is a sentence
+       * with nothing behind it: "no ingredient recognisable" reads the same
+       * whether the model drew the wrong dish or the API returned a broken
+       * render. Seeing the file tells the two apart in one look. */
+      const dossierRejets = path.join(racine, "images", "rejected");
+      fs.mkdirSync(dossierRejets, { recursive: true });
+      const chemin = path.join(dossierRejets, p.id + ".png");
+      fs.writeFileSync(chemin, img.octets);
+
+      journal.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "),
+                              detectes: verdict.detectes, fichier: "images/rejected/" + p.id + ".png" });
       console.log("  x  " + p.name + " — " + verdict.erreurs[0]);
-      console.log("      → l'app garde son illustration pour cette recette");
+      console.log("      the app keeps its drawing · look at images/rejected/" + p.id + ".png");
       continue;
     }
     if (options.sec) { console.log("  ok [dry run] " + p.name); journal.acceptees++; continue; }

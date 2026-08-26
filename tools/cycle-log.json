@@ -1,14 +1,37 @@
 {
-  "le": "2026-08-26T01:06:20.341Z",
+  "le": "2026-08-26T07:32:24.463Z",
   "recettes": null,
   "images": {
-    "generees": 1,
+    "generees": 3,
     "acceptees": 0,
     "rejetees": [
       {
         "id": "banana-oat-muffins",
-        "reason": "image jugée illisible par la vision : l'image semble être une vue aérienne ou satellite d'un terrain, pas un plat culinaire, les formes visibles ressemblent à des structures au sol ou un relief topographique",
-        "detectes": []
+        "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
+        "detectes": [
+          "œuf cru",
+          "flocon d'avoine"
+        ]
+      },
+      {
+        "id": "fluffy-pancakes",
+        "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
+        "detectes": [
+          "œuf",
+          "farine",
+          "lait"
+        ]
+      },
+      {
+        "id": "lentil-and-carrot-patties",
+        "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
+        "detectes": [
+          "lentille",
+          "carotte",
+          "courge",
+          "jaune d'œuf",
+          "œuf"
+        ]
       }
     ]
   }
