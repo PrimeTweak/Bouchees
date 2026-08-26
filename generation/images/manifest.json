@@ -1,1 +1,24 @@
-{}
+{
+  "banana-oat-muffins": {
+    "fichier": "images/banana-oat-muffins-afa858dedf07.png",
+    "empreinte": "afa858dedf07",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-26T19:52:51.922Z",
+      "detectes": [
+        "oat",
+        "banana",
+        "nut"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : type of nut on top (could be peanut, cashew, or oat flake)"
+      ]
+    }
+  }
+}

@@ -1,176 +1,27 @@
 {
-  "le": "2026-08-26T19:41:50.428Z",
+  "le": "2026-08-26T19:57:37.991Z",
   "recettes": null,
   "images": {
-    "generees": 14,
-    "acceptees": 7,
+    "generees": 3,
+    "acceptees": 1,
     "rejetees": [
       {
         "id": "fluffy-pancakes",
-        "reason": "only one ingredient recognised out of 5, and the vision hedges — the image does not look enough like the recipe",
+        "reason": "no ingredient from the recipe is recognisable in the image",
         "detectes": [
-          "egg",
-          "flour"
+          "pancake",
+          "butter",
+          "syrup",
+          "berry",
+          "whipped cream"
         ],
         "fichier": "images/rejected/fluffy-pancakes.png"
       },
       {
         "id": "lentil-and-carrot-patties",
-        "reason": "the vision judged the image unreadable: the image appears to be a heavily filtered, embossed or relief-processed photo making food identification impossible, a pan or wok shape is vaguely distinguishable, some elongated food items possibly visible but unidentifiable",
+        "reason": "the vision judged the image unreadable: image appears to be a heavily filtered or embossed version of a food photo, making individual ingredients impossible to identify with certainty, possible plate or bowl shape visible, possible round food item on plate",
         "detectes": [],
         "fichier": "images/rejected/lentil-and-carrot-patties.png"
-      },
-      {
-        "id": "date-energy-bites",
-        "reason": "the image shows \"sesame seed\" while the recipe contains no sesame",
-        "detectes": [
-          "date",
-          "peanut butter",
-          "oat",
-          "sesame seed"
-        ],
-        "fichier": "images/rejected/date-energy-bites.png"
-      },
-      {
-        "id": "silky-hummus",
-        "reason": "the image shows \"cream\" while the recipe contains no milk ; only one ingredient recognised out of 6, and the vision hedges — the image does not look enough like the recipe",
-        "detectes": [
-          "chickpea",
-          "cream",
-          "broth"
-        ],
-        "fichier": "images/rejected/silky-hummus.png"
-      },
-      {
-        "id": "banana-bread",
-        "reason": "no ingredient from the recipe is recognisable in the image",
-        "detectes": [
-          "egg yolk",
-          "egg white",
-          "cottage cheese",
-          "cream cheese",
-          "egg"
-        ],
-        "fichier": "images/rejected/banana-bread.png"
-      },
-      {
-        "id": "mini-vegetable-frittatas",
-        "reason": "the image shows \"tofu\" while the recipe contains no soy",
-        "detectes": [
-          "egg yolk",
-          "egg white",
-          "spinach",
-          "tofu",
-          "olive oil",
-          "cream"
-        ],
-        "fichier": "images/rejected/mini-vegetable-frittatas.png"
-      },
-      {
-        "id": "squash-and-coconut-soup",
-        "reason": "only one ingredient recognised out of 5, and the vision hedges — the image does not look enough like the recipe",
-        "detectes": [
-          "pumpkin",
-          "dumpling",
-          "broth"
-        ],
-        "fichier": "images/rejected/squash-and-coconut-soup.png"
-      },
-      {
-        "id": "turkey-and-apple-meatballs",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "vanilla-rice-pudding",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "mango-banana-smoothie",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "chewy-granola-bars",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "vanilla-chia-pudding",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "yogurt-dip-with-vegetable-sticks",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "chicken-couscous",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "creamy-shrimp-and-pea-risotto",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "soft-apricot-granola",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "mild-chicken-quesadillas",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "tomato-alphabet-soup",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "crispy-tofu-with-sweet-maple-sauce",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "carrot-and-maple-muffins",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "creamy-salmon-pasta",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "banana-oat-pancakes",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "vegetable-fried-rice",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "coconut-rice-pudding-with-mango",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "apple-and-date-cinnamon-sauce",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "lentil-squash-and-carrot-puree",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "chicken-sweet-potato-and-green-peas",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "roasted-sweet-potato-sticks",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "soft-banana-oat-patties",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "creamy-mango-oatmeal",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "tender-rice-flour-crepes",
-        "reason": "génération : Draw Things refused the request: 200  (asked for 1408x1408, 8 steps)"
       }
     ]
   }
