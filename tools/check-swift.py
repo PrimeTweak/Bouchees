@@ -150,6 +150,37 @@ def check():
             problems.append(f"{filename}:{line}: bare “{m.group(1)}(” — ambiguous between "
                           f"CoreGraphics and the standard library; use a typed wrapper")
 
+    # 7b. an optional property called without unwrapping it.
+    #     Not a general type check — the checker has no compiler — but this
+    #     exact shape cost a build. Scanned line by line: a call on an optional
+    #     with no guard, if let, ?. or !. in the twelve lines above it.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        # Only optionals declared at the top of a type, and only names that are
+        # never re-declared as a non-optional elsewhere in the file — a `let x:
+        # T` parameter in another struct shadows the property and is not the
+        # same variable. Scope is what a real compiler tracks and this cannot.
+        optionnels = set(re.findall(r"(?:private\s+)?var\s+(\w+)\s*:\s*\w+\?", code))
+        redeclares = set(re.findall(r"\blet\s+(\w+)\s*:\s*\w+(?!\?)", code))
+        optionnels -= redeclares
+        for nom in optionnels:
+            for i, l in enumerate(lignes):
+                if not re.search(r"(?<![\w.?!])" + nom + r"\.\w", l):
+                    continue
+                if re.search(r"(?:guard|if)\s+let\s+" + nom + r"\b", l):
+                    continue
+                if re.search(r"\b" + nom + r"[?!]\.", l):
+                    continue
+                # a guard in the surrounding lines counts
+                contexte = "\n".join(lignes[max(0, i - 12):i + 1])
+                if re.search(r"(?:guard|if)\s+let\s+" + nom + r"\b", contexte):
+                    continue
+                if re.search(r"\bself\." + nom + r"\s*=", contexte):
+                    continue
+                problems.append(f"{filename}:{i + 1}: '{nom}' is optional and is called "
+                                f"as '{nom}.…' with no guard let, if let, ?. or !")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

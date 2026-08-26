@@ -31,7 +31,8 @@ final class AppState {
 
     func tally(for profile: ChildProfile) -> ProfileTally {
         var t = ProfileTally()
-        guard let results = try? moteur.adapter(recipes, pour: profile) else { return t }
+        guard let moteur, moteur.pret, !recipes.isEmpty,
+              let results = try? moteur.adapter(recipes, pour: profile) else { return t }
         for r in results {
             switch r.status {
             case .asIs: t.asIs += 1
