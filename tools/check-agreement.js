@@ -120,6 +120,23 @@ readJSON("data/base.json").ageRules.forEach(function (r) {
 });
 checked.push("age rules");
 
+/* ---------- 7. image aspect ratio: FLUX is trained square ------------------ */
+const engineSrc = read("generation/image-engines.js");
+const w = (engineSrc.match(/DRAWTHINGS_LARGEUR \|\| (\d+)/) || [])[1];
+const h = (engineSrc.match(/DRAWTHINGS_HAUTEUR \|\| (\d+)/) || [])[1];
+checked.push("image aspect");
+if (w && h && w !== h) {
+  problems.push("image aspect: the default is " + w + "x" + h + ", which is not square. " +
+    "FLUX schnell is trained at 1:1 and a forced 3:2 frame comes back as an " +
+    "embossed relief through the API. Measured, at length. Keep width and " +
+    "height equal.");
+}
+/* And wide enough that a card crop is not upscaled on an iPhone Pro Max. */
+if (w && Number(w) < 1320) {
+  problems.push("image aspect: " + w + " px is below the 1320 px an iPhone Pro Max " +
+    "needs, so every card would be upscaled on screen");
+}
+
 /* ---------- report -------------------------------------------------------- */
 if (!problems.length) {
   console.log("Agreement check passed — " + checked.length + " vocabularies line up: " +

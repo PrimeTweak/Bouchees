@@ -69,8 +69,8 @@ const drawthings = {
      * are off by default now. */
     const corps = Object.assign({
       prompt: spec.prompt,
-      width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
-      height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104)
+      width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+      height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
     },
       /* NO negative_prompt on FLUX.
        *
@@ -183,8 +183,8 @@ const drawthings = {
      * 1664 px while the file on disk was far smaller — and the size gate,
      * reading the manifest, waved it through. Measure the artifact. */
     const reelle = tailleImage(octets);
-    const demandee = { largeur: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
-                       hauteur: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104) };
+    const demandee = { largeur: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+                       hauteur: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1408) };
     if (reelle && reelle.largeur < demandee.largeur) {
       console.log("      Draw Things returned " + reelle.largeur + "x" + reelle.hauteur +
                   " for a request of " + demandee.largeur + "x" + demandee.hauteur +

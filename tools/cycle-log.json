@@ -1,15 +1,18 @@
 {
-  "le": "2026-08-26T17:17:19.310Z",
+  "le": "2026-08-26T17:38:44.911Z",
   "recettes": null,
   "images": {
-    "generees": 1,
-    "acceptees": 0,
+    "generees": 2,
+    "acceptees": 1,
     "rejetees": [
       {
-        "id": "banana-oat-muffins",
-        "reason": "the vision judged the image unreadable: the image appears to be an embossed or relief logo/brand mark on fabric or leather, not a food dish - possibly a Timberland logo on clothing or an accessory",
-        "detectes": [],
-        "fichier": "images/rejected/banana-oat-muffins.png"
+        "id": "fluffy-pancakes",
+        "reason": "only one ingredient recognised out of 5, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "egg",
+          "flour"
+        ],
+        "fichier": "images/rejected/fluffy-pancakes.png"
       }
     ]
   }

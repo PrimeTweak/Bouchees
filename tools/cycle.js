@@ -175,24 +175,24 @@ async function cycleImages(donnees, options) {
   for (const p of plan.slice(0, limite)) {
     const recette = corpus.find((r) => r.id === p.id);
     let img;
-    /* 1664x1104 by default, and the arithmetic behind it:
+    /* SQUARE, and that is the whole point.
      *
-     *   iPhone 16 Pro      402pt x 3  = 1206 px wide
-     *   iPhone 16 Pro Max  440pt x 3  = 1320 px wide
-     *   iPad 11"           820pt x 2  = 1640 px wide
+     * Measured: the identical request at 1664x1104 comes back as an embossed
+     * relief; at 1:1 it comes back as a clean photo. FLUX schnell is trained
+     * square, and forcing a 3:2 frame through the API degrades the render.
      *
-     * The view uses scaledToFill, which CROPS: whatever survives the crop is
-     * then blown up to fill. At 1216 px there was 1% of headroom on a Pro and
-     * a deficit on a Pro Max, so every card was quietly upscaled. 1664 covers
-     * the iPad and leaves real room for the crop.
+     * Every other suspect was isolated and ruled out first — prompt, negative
+     * prompt, steps, sampler, seed, transport. It was the aspect ratio.
      *
-     * A 3:2 ratio still crops cleanly to both 4:3 (cards) and 16:10 (hero).
-     * Adjustable through DRAWTHINGS_LARGEUR and DRAWTHINGS_HAUTEUR. */
+     * 1408 rather than 1024: still square, still native to the model, and wide
+     * enough that a card crop is not upscaled on an iPhone Pro Max (1320 px).
+     * Adjustable through DRAWTHINGS_LARGEUR and DRAWTHINGS_HAUTEUR, but keep
+     * them equal. */
     try {
       img = await mImage.generer({
         prompt: p.prompt, negatif: p.negatif,
-        largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1664),
-        hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1104)
+        largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+        hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
       });
     }
     catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  x  " + p.name + " — " + e.message); continue; }
