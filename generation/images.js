@@ -170,16 +170,21 @@ function promptPour(recette, donnees) {
   const moment = MOMENTS[Math.floor(g / CADRAGES.length) % MOMENTS.length];
   const plat = PLATS_EN[recette.category] || "home-cooked dish";
 
-  /* The exclusions live in the NEGATIVE prompt, and they stay there.
+  /* The exclusions are stated POSITIVELY, in the prompt itself.
    *
-   * Measured side by side on the same request: with the negative prompt the
-   * photo is clean, without it Draw Things returns an embossed anaglyph. I had
-   * removed it on a hunch and moved the exclusions into the positive prompt;
-   * the comparison says the hunch was wrong. */
+   * Proven by isolation on FLUX schnell: the identical request with a negative
+   * prompt returns an embossed relief, without it a clean photo. FLUX is
+   * distilled without negative guidance, so the negative is subtracted rather
+   * than steered away from.
+   *
+   * Saying "only these foods and nothing else" is how FLUX is meant to be
+   * driven, and the vision check remains the real guard: the prompt asks, the
+   * verification decides. An intruder still gets the image rejected. */
   return {
     positif: [
       "A homemade " + plat + " served in an everyday bowl on a kitchen table",
-      "clearly visible: " + visibles.join(", "),
+      "the bowl contains only these foods and nothing else: " + visibles.join(", "),
+      "no other ingredient appears anywhere in the frame",
       cadrage,
       moment,
       STYLE

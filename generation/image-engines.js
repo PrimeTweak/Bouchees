@@ -54,19 +54,39 @@ const drawthings = {
   disponible: function () { return !!(process.env.DRAWTHINGS_URL || process.env.DRAWTHINGS_ACTIF); },
   generer: async function (spec) {
     const base = process.env.DRAWTHINGS_URL || "http://127.0.0.1:7860";
-    /* The request body is built first, so DRAWTHINGS_TRACE=1 can print exactly
-     * what goes on the wire. Guessing which field differs from a curl that
-     * works cost several rounds; printing it costs one line. */
+    /* SEND THE PROMPT AND THE SIZE. NOTHING ELSE.
+     *
+     * Draw Things knows what its own model needs — "Try recommended settings"
+     * fills them in. For FLUX.1 schnell that is 4 steps, Euler A Trailing,
+     * guidance 4.5. I was overriding all three from here with SDXL values
+     * (30 steps, DPM++ 2M Karras, cfg 6), and a distilled 4-step model driven
+     * by an SDXL solver never finishes denoising. The result is the embossed
+     * anaglyph, every time.
+     *
+     * So: steps, sampler and guidance are no longer sent. Whatever is set in
+     * the app is what runs, which is the configuration that works. The three
+     * environment variables still exist for a deliberate override, but they
+     * are off by default now. */
     const corps = Object.assign({
       prompt: spec.prompt,
-      negative_prompt: spec.negatif,
       width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1664),
-      height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104),
-      steps: Number(process.env.DRAWTHINGS_ETAPES || 8)
+      height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1104)
     },
-      spec.graine !== undefined ? { seed: spec.graine } : {},
+      /* NO negative_prompt on FLUX.
+       *
+       * Proven by isolation: same transport, same prompt, same size. With the
+       * negative prompt the response is an embossed relief; without it the
+       * photo is clean. FLUX schnell is distilled without negative guidance,
+       * and Draw Things ends up SUBTRACTING the negative instead of steering
+       * away from it.
+       *
+       * Set DRAWTHINGS_NEGATIF=1 to send it on a model that supports one
+       * (SDXL does). Off by default. */
+      process.env.DRAWTHINGS_NEGATIF && spec.negatif ? { negative_prompt: spec.negatif } : {},
+      process.env.DRAWTHINGS_ETAPES ? { steps: Number(process.env.DRAWTHINGS_ETAPES) } : {},
       process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
-      process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {}
+      process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {},
+      spec.graine !== undefined ? { seed: spec.graine } : {}
     );
 
     if (process.env.DRAWTHINGS_TRACE) {

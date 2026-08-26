@@ -1,5 +1,5 @@
 {
-  "le": "2026-08-25T00:15:20.300Z",
+  "le": "2026-08-26T01:06:20.341Z",
   "recettes": null,
   "images": {
     "generees": 1,
@@ -7,7 +7,7 @@
     "rejetees": [
       {
         "id": "banana-oat-muffins",
-        "reason": "la vision a échoué : API key is invalid.",
+        "reason": "image jugée illisible par la vision : l'image semble être une vue aérienne ou satellite d'un terrain, pas un plat culinaire, les formes visibles ressemblent à des structures au sol ou un relief topographique",
         "detectes": []
       }
     ]
