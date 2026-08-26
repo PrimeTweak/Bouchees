@@ -21,22 +21,22 @@ const path = require("path");
 const VOCABULAIRE = {
   milk: ["fromage", "cheddar", "mozzarella", "parmesan", "crème", "creme", "beurre", "yogourt", "yaourt",
          "lait", "cheese", "butter", "cream", "yogurt", "milk", "gratin", "béchamel"],
-  egg: ["œuf", "oeuf", "jaune d'œuf", "blanc d'œuf", "omelette", "egg", "frittata", "meringue"],
+  egg: ["egg", "egg yolk", "egg white", "fried egg", "poached egg", "œuf", "oeuf", "jaune d'œuf", "blanc d'œuf", "omelette", "egg", "frittata", "meringue"],
   peanut: ["arachide", "cacahuète", "cacahuete", "peanut", "beurre d'arachide"],
   tree_nut: ["noix", "amande", "pacane", "noisette", "pistache", "cajou", "walnut", "almond", "pecan",
          "hazelnut", "cashew", "pistachio"],
   /* "batter" on its own is too broad: baking powder is not wheat. The real
    * forms are named instead. */
-  wheat: ["pain", "croûton", "crouton", "chapelure", "biscuit", "bread", "breadcrumb",
+  wheat: ["bread", "breadcrumbs", "toast", "biscuit", "cookie", "wheat flour", "noodle", "pain", "croûton", "crouton", "chapelure", "biscuit", "bread", "breadcrumb",
         "pasta", "cracker", "tortilla de blé", "pâtes", "pâte à pizza", "pâte brisée", "pâte feuilletée",
         "pâte à tarte", "farine de blé", "couscous", "spaghetti", "macaroni", "penne", "baguette"],
   soy: ["sauce soya", "sauce soja", "tofu", "edamame", "soy sauce", "soybean"],
-  sesame: ["sésame", "sesame", "tahini", "graines de sésame"],
+  sesame: ["sesame", "sesame seed", "sesame seeds", "sésame", "tahini", "graines de sésame"],
   fish: ["poisson", "saumon", "thon", "morue", "fish", "salmon", "tuna", "cod", "anchois"],
   shellfish: ["crevette", "crabe", "homard", "moule", "palourde", "shrimp", "crab",
                          "lobster", "mussel", "clam", "calmar"],
   mustard: ["moutarde", "mustard", "dijon"],
-  sulphites: ["abricot séché", "raisin doré", "fruits séchés orange", "dried apricot"]
+  sulphites: ["dried apricot", "dried apricots", "golden raisin", "abricot séché", "raisin doré", "fruits séchés orange", "dried apricot"]
 };
 
 /* Choking hazards an image must not show to a toddler audience, whatever the
@@ -111,21 +111,29 @@ function famillesDe(alimentNormalise) {
   return out;
 }
 
+/* The answer comes back in ENGLISH, because the catalogue is English.
+ *
+ * This asked for French food names while the ingredient catalogue had been
+ * translated. The model would say "flocons d'avoine, banane, oeuf", the code
+ * would compare against "rolled oats, mashed banana, egg", find nothing in
+ * common, and reject a perfectly good photo with "no ingredient recognisable".
+ * The two sides have to name food in the same language. */
 const CONSIGNE = [
-  "Tu décris une photo de plat. Tu ne juges rien, tu ne conclus rien : tu listes.",
+  "You describe a photo of a dish. You judge nothing, you conclude nothing: you list.",
   "",
-  "Réponds UNIQUEMENT avec cet objet JSON, sans texte autour :",
+  "Answer ONLY with this JSON object, with no text around it:",
   "{",
-  '  "aliments": ["chaque aliment que tu vois distinctement, en français, au singulier"],',
+  '  "aliments": ["each food you can distinctly see, in English, singular"],',
   '  "lisible": true,',
-  '  "incertitudes": ["ce que tu n\'arrives pas à identifier avec certitude"]',
+  '  "incertitudes": ["anything you cannot identify with certainty"]',
   "}",
   "",
-  "Règles :",
-  "- Nomme chaque aliment visible, même en petite quantité, même en garniture.",
-  "- Si tu hésites entre deux aliments, mets les DEUX dans aliments.",
-  "- Si l'image est floue, vide, ou n'est pas un plat, mets lisible à false.",
-  "- N'invente rien : ne nomme que ce qui est visible."
+  "Rules:",
+  "- Name every visible food, even in small quantity, even as a garnish.",
+  "- If you hesitate between two foods, put BOTH in aliments.",
+  "- If the image is blurry, empty, or is not a dish, set lisible to false.",
+  "- Invent nothing: name only what is visible.",
+  "- Use the plain everyday English word: oats, milk, egg, banana, carrot."
 ].join("\n");
 
 const anthropic = {
@@ -181,7 +189,7 @@ const absent = {
   disponible: function () { return true; },
   decrire: async function () {
     return JSON.stringify({ aliments: [], lisible: false,
-      incertitudes: ["aucun modèle de vision configuré"] });
+      incertitudes: ["no vision model configured"] });
   }
 };
 
@@ -198,14 +206,14 @@ function choisir(name) {
 function lireDescription(texte) {
   const t = String(texte).replace(/```json|```/g, "").trim();
   const a = t.indexOf("{"), b = t.lastIndexOf("}");
-  if (a === -1 || b < a) return { aliments: [], lisible: false, incertitudes: ["réponse illisible"] };
+  if (a === -1 || b < a) return { aliments: [], lisible: false, incertitudes: ["unreadable answer"] };
   try {
     const o = JSON.parse(t.slice(a, b + 1));
     return { aliments: Array.isArray(o.aliments) ? o.aliments : [],
              lisible: o.lisible !== false,
              incertitudes: Array.isArray(o.incertitudes) ? o.incertitudes : [] };
   } catch (e) {
-    return { aliments: [], lisible: false, incertitudes: ["JSON invalide"] };
+    return { aliments: [], lisible: false, incertitudes: ["invalid JSON"] };
   }
 }
 
@@ -217,7 +225,7 @@ function comparer(description, recette, donnees) {
   const erreurs = [], avertissements = [];
 
   if (!description.lisible) {
-    return { ok: false, erreurs: ["image jugée illisible par la vision : " +
+    return { ok: false, erreurs: ["the vision judged the image unreadable: " +
       (description.incertitudes.join(", ") || "sans détail")], avertissements: [], detectes: [] };
   }
   if (!description.aliments.length) {
@@ -233,7 +241,7 @@ function comparer(description, recette, donnees) {
     famillesDe(aliment).forEach(function (famille) {
       if (presentes.indexOf(famille) !== -1) return;
       const name = donnees.base.allergens.find(function (a) { return a.id === famille; });
-      const msg = "l'image montre « " + description.aliments[i] + " » alors que la recette ne contient pas de " +
+      const msg = "the image shows \"" + description.aliments[i] + "\" while the recipe contains no " +
         (name ? name.name.toLowerCase() : famille);
       if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
     });
@@ -259,7 +267,7 @@ function comparer(description, recette, donnees) {
     return vus.some(function (v) { return mots.some(function (w) { return v.indexOf(w) !== -1 || w.indexOf(v) !== -1; }); });
   });
   if (!reconnus.length) {
-    erreurs.push("aucun ingrédient de la recette n'est reconnaissable dans l'image");
+    erreurs.push("no ingredient from the recipe is recognisable in the image");
   } else if (reconnus.length < 2 && principaux.length >= 4) {
     /* One ingredient recognised is sometimes legitimate: in a photo of
      * muffins on voit « muffin », pas la banane ni l'avoine. Mais si la
@@ -270,10 +278,10 @@ function comparer(description, recette, donnees) {
      * One ingredient recognised AND no hedging: accept.
      * One ingredient recognised AND hedging: reject. */
     if (description.incertitudes.length) {
-      erreurs.push("un seul ingrédient reconnu sur " + principaux.length +
-        ", et la vision hésite — l'image ne ressemble pas assez à la recette");
+      erreurs.push("only one ingredient recognised out of " + principaux.length +
+        ", and the vision hedges — the image does not look enough like the recipe");
     } else {
-      avertissements.push("un seul ingrédient reconnu sur " + principaux.length + " — ressemblance faible");
+      avertissements.push("only one ingredient recognised out of " + principaux.length + " — weak resemblance");
     }
   }
 
@@ -290,7 +298,7 @@ async function verifier(octets, recette, donnees, options) {
   let brut;
   try { brut = await moteur.decrire(octets, options.typeMime || "image/png"); }
   catch (e) {
-    return { ok: false, moteur: moteur.name, erreurs: ["la vision a échoué : " + e.message],
+    return { ok: false, moteur: moteur.name, erreurs: ["the vision check failed: " + e.message],
              avertissements: [], detectes: [] };
   }
   const description = lireDescription(brut);

@@ -695,9 +695,9 @@ test("vision : un risque d'étouffement fait rejeter, même sans allergène", as
 test("vision : une image d'un autre plat est rejetée", async () => {
   const r = parId["squash-and-coconut-soup"];
   const v = await Vision.verifier(Buffer.from("x"), r, donnees,
-    { moteur: visionQuiVoit(["spaghetti", "boulettes"]) });
+    { moteur: visionQuiVoit(["spaghetti", "meatballs"]) });
   assert.equal(v.ok, false);
-  assert(/reconnaissable/.test(v.erreurs.join(" ")));
+  assert(/recognisable/.test(v.erreurs.join(" ")));
 });
 
 test("manifeste : une révision automatique sans verdict de vision ne publie pas", () => {
@@ -960,7 +960,7 @@ test("vision : une image qui ne ressemble à rien ET fait hésiter est rejetée"
     incertitudes: ["pourrait être du couscous, de la polenta ou du curcuma"] }) };
   const v = await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: hesitant });
   assert.equal(v.ok, false, "hésitation + un seul ingrédient doit rejeter");
-  assert(v.erreurs.some((e) => /ne ressemble pas assez/.test(e)));
+  assert(v.erreurs.some((e) => /does not look enough like/.test(e)));
 });
 
 test("vision : un seul ingrédient recognized SANS hésitation reste accepté", async () => {
@@ -971,7 +971,7 @@ test("vision : un seul ingrédient recognized SANS hésitation reste accepté", 
     aliments: ["banana"], lisible: true, incertitudes: [] }) };
   const v = await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: net });
   assert.equal(v.ok, true, v.erreurs.join(" / "));
-  assert(v.avertissements.some((a) => /ressemblance faible/.test(a)));
+  assert(v.avertissements.some((a) => /weak resemblance/.test(a)));
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

@@ -1,5 +1,5 @@
 {
-  "le": "2026-08-26T07:32:24.463Z",
+  "le": "2026-08-26T13:57:07.051Z",
   "recettes": null,
   "images": {
     "generees": 3,
@@ -10,28 +10,35 @@
         "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
         "detectes": [
           "œuf cru",
-          "flocon d'avoine"
-        ]
+          "flocon d'avoine",
+          "banane",
+          "miel"
+        ],
+        "fichier": "images/rejected/banana-oat-muffins.png"
       },
       {
         "id": "fluffy-pancakes",
         "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
         "detectes": [
-          "œuf",
-          "farine",
-          "lait"
-        ]
+          "œuf cru",
+          "blanc d'œuf",
+          "jaune d'œuf"
+        ],
+        "fichier": "images/rejected/fluffy-pancakes.png"
       },
       {
         "id": "lentil-and-carrot-patties",
-        "reason": "aucun ingrédient de la recette n'est reconnaissable dans l'image",
+        "reason": "un seul ingrédient reconnu sur 7, et la vision hésite — l'image ne ressemble pas assez à la recette",
         "detectes": [
-          "lentille",
+          "haricot blanc",
+          "haricot noir",
           "carotte",
-          "courge",
-          "jaune d'œuf",
-          "œuf"
-        ]
+          "œuf poché",
+          "persil",
+          "huile d'olive",
+          "bouillon"
+        ],
+        "fichier": "images/rejected/lentil-and-carrot-patties.png"
       }
     ]
   }
