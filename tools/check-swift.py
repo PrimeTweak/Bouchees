@@ -194,6 +194,50 @@ def check():
                 problems.append(f"{filename}:{i}: style ternary mixes '{m.group(3).strip()}' "
                                 f"with '{m.group(4)}' — give both branches the same type")
 
+    # 7d. a `-> some View` whose body is an `if` with no `else` and no `return`.
+    #     That only compiles under @ViewBuilder, and the error Swift emits —
+    #     "no return statements in its body" — points at the declaration
+    #     without saying the attribute is what is missing.
+    #
+    #     It cost a build: an insertion landed between an @ViewBuilder line and
+    #     the func below it, silently moving the attribute onto the wrong
+    #     function. Nothing in the diff looked wrong.
+    #
+    #     Signatures wrap, so the `func` line and the `-> some View` line are
+    #     often different lines: the search starts from `func`, not from the
+    #     return type.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        for i, l in enumerate(lignes):
+            if not re.search(r"\bfunc\s+\w+", l):
+                continue
+            # gather the declaration up to its opening brace
+            decl, j = l, i
+            while "{" not in decl and j + 1 < len(lignes) and j - i < 5:
+                j += 1
+                decl += " " + lignes[j]
+            if "-> some View" not in decl:
+                continue
+            avant = [x.strip() for x in lignes[max(0, i - 6):i]]
+            if any(x.startswith("@ViewBuilder") for x in avant):
+                continue
+            indent = len(l) - len(l.lstrip())
+            corps = []
+            for k in range(j + 1, min(j + 60, len(lignes))):
+                if lignes[k].strip() == "}" and (len(lignes[k]) - len(lignes[k].lstrip())) == indent:
+                    break
+                corps.append(lignes[k])
+            texte = "\n".join(corps)
+            if not texte.strip():
+                continue
+            if re.search(r"^\s*return\b", texte, re.M):
+                continue
+            premier = next((x for x in corps if x.strip()), "")
+            if re.match(r"\s*(if|switch)\b", premier):
+                problems.append(f"{filename}:{i + 1}: '-> some View' with an if/switch body and "
+                                f"no return — it needs @ViewBuilder directly above the func")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

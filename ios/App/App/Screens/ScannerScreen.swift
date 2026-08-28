@@ -311,17 +311,17 @@ struct ProductVerdictBanner: View {
 
     private var color: Color {
         switch verdict.status {
-        case .sur: return Tint.pois
-        case .aEviter: return Tint.canneberge
-        case .incertain: return Tint.courge
+        case .safe: return Tint.pois
+        case .avoid: return Tint.canneberge
+        case .uncertain: return Tint.courge
         }
     }
 
     private var symbol: String {
         switch verdict.status {
-        case .sur: return "checkmark.circle.fill"
-        case .aEviter: return "xmark.octagon.fill"
-        case .incertain: return "questionmark.circle.fill"
+        case .safe: return "checkmark.circle.fill"
+        case .avoid: return "xmark.octagon.fill"
+        case .uncertain: return "questionmark.circle.fill"
         }
     }
 

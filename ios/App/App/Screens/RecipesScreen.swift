@@ -187,7 +187,6 @@ struct RecipesScreen: View {
         .scrollClipDisabled()
     }
 
-    @ViewBuilder
     /// A grid with no section header: the chosen segment already said what
     /// this list is.
     private func grid(_ items: [(recipe: Recipe, result: AdaptedRecipe)]) -> some View {
@@ -203,6 +202,11 @@ struct RecipesScreen: View {
         }
     }
 
+    /* @ViewBuilder, and it has to stay directly above the func: an `if` with
+     * no `else` and no `return` only compiles under it. My grid() insertion
+     * landed between the attribute and this declaration, which silently moved
+     * it onto the wrong function. */
+    @ViewBuilder
     private func section(_ title: String,
                          _ items: [(recipe: Recipe, result: AdaptedRecipe)]) -> some View {
         if !items.isEmpty {

@@ -237,11 +237,16 @@ struct AdaptedRecipe: Codable, Sendable {
 // MARK: - Verdict on a scanned product
 
 struct ProductVerdict: Codable, Sendable {
+    /* The bridge emits safe / avoid / uncertain. This declared sur / a_eviter /
+     * incertain, so EVERY scanned product fell through to the fallback and came
+     * back "uncertain" — the scanner has been silently broken since the
+     * conversion, and nothing could see it: the fallback is deliberate, so
+     * nothing crashed and nothing complained. */
     enum Statut: String, Codable, Sendable {
-        case sur, aEviter = "a_eviter", incertain
+        case safe, avoid, uncertain
         init(from decoder: Decoder) throws {
             let brut = try decoder.singleValueContainer().decode(String.self)
-            self = Statut(rawValue: brut) ?? .incertain
+            self = Statut(rawValue: brut) ?? .uncertain
         }
     }
     let status: Statut

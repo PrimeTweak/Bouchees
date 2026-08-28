@@ -516,9 +516,9 @@ test("validateur : refuse un id déjà pris et les superlatifs marketing", () =>
 /* --- D : images --- */
 
 test("images : le prompt NOMME le plat, pas seulement ses ingrédients", () => {
-  /* Le prompt disait « a breakfast dish served in an everyday bowl » puis
-   * listait les ingrédients bruts. FLUX obéissait : un bol de gruau avec un
-   * œuf cru, pour une recette de muffins. Il faut nommer le plat. */
+  /* The prompt said "a breakfast dish served in an everyday bowl" and then
+   * listed raw ingredients. FLUX obeyed: a bowl of oats with a raw egg, for a
+   * muffin recipe. The dish has to be named. */
   const m = parId["banana-oat-muffins"];
   const pm = Images.promptPour(m, donnees);
   assert(pm.positif.toLowerCase().startsWith("homemade banana oat muffins"),
@@ -584,9 +584,9 @@ test("images : une empreinte périmée invalide la photo (les ingrédients ont c
 });
 
 test("images : une photo sous la largeur d'affichage est refusée", () => {
-  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre avant
-   * de remplir. Une image plus petite est agrandie à l'écran — c'est comme ça
-   * qu'un lot de photos molles s'est retrouvé livré. */
+  /* The display needs 1320 px on an iPhone Pro Max, and the view crops before
+   * it fills. A smaller image is upscaled on screen — which is how a batch of
+   * soft photos got shipped once. */
   const r = parId["fluffy-pancakes"];
   const base = { fichier: "images/x.png", empreinte: Images.empreinte(r),
                  revisePar: "François" };
@@ -966,10 +966,10 @@ test("classement : trié, et la note d'autrui n'est jamais exposée", () => {
 });
 
 test("vision : un plat cuit n'a pas à montrer ses ingrédients bruts", async () => {
-  /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
-   * Exiger un ingrédient brut rejetait TOUT plat transformé, c'est-à-dire
-   * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
-   * forte que l'ingrédient repéré. */
+  /* On a photo of pancakes you see pancakes — not flour, not milk, not egg.
+   * Requiring a raw ingredient rejected EVERY transformed dish, which is most
+   * of the corpus. The dish being correctly identified is stronger evidence
+   * than spotting an ingredient. */
   const crepes = parId["fluffy-pancakes"];
   const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
@@ -980,15 +980,15 @@ test("vision : un plat cuit n'a pas à montrer ses ingrédients bruts", async ()
   assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
     "l'absence d'ingrédient brut doit être notée, pas fatale");
 
-  /* Mais sans ingrédient ET sans le bon plat, on rejette toujours. */
+  /* But with no ingredient AND the wrong dish, it is still rejected. */
   const rien = await Vision.verifier(Buffer.from("x"), crepes, donnees,
     { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
   assert.equal(rien.ok, false);
 });
 
 test("images : le prompt reste court et nomme l'état cuit", () => {
-  /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
-   * pesaient autant que les deux mots qui disent quel est le plat. */
+  /* A 780-character prompt drowned the subject: twenty adjectives about
+   * lighting weighed as much as the two words naming the dish. */
   const p = Images.promptPour(parId["fluffy-pancakes"], donnees).positif;
   assert(p.length < 500, "prompt trop long : " + p.length + " caractères");
   assert(/cooked and ready to eat/.test(p),
@@ -997,9 +997,9 @@ test("images : le prompt reste court et nomme l'état cuit", () => {
 });
 
 test("vision : le PLAT doit correspondre, pas seulement les ingrédients", async () => {
-  /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recette de
-   * muffins parce que banane, avoine et œuf étaient tous présents. Des
-   * ingrédients ne font pas un plat. */
+  /* The real case: a bowl of oats with a raw egg, accepted for a muffin
+   * recipe because banana, oats and egg were all present. Ingredients do not
+   * make a dish. */
   const muffins = parId["banana-oat-muffins"];
   const voit = (plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({

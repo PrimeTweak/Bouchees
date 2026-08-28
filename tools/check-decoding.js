@@ -142,6 +142,33 @@ called.forEach(function (nameCalled) {
   }
 });
 
+/* ---------- the scanner verdict, nested inside a struct ------------------- */
+/* The enum walk above only finds TOP-LEVEL enums, so ProductVerdict.Statut
+ * escaped it — and it had drifted exactly like the others: the bridge emits
+ * safe/avoid/uncertain while Swift declared sur/a_eviter/incertain. Every
+ * scanned product fell through to the fallback and came back "uncertain".
+ * Nothing crashed, because the fallback is deliberate. */
+const bridgeSrc = fs.readFileSync(path.join(root, "engine/native-bridge.js"), "utf8");
+const statutsEmis = Array.from(new Set(
+  (bridgeSrc.match(/status\s*=\s*"(\w+)"/g) || []).map(function (m) { return m.match(/"(\w+)"/)[1]; })
+));
+const blocStatut = swift.match(/enum Statut[^{]*\{((?:.|\n)*?)\n\s*\}/);
+if (!blocStatut) {
+  problems.push("enum Statut not found in Models.swift");
+} else {
+  const declares = blocStatut[1]
+    .split("\n").filter(function (l) { return /^\s*case\s/.test(l); }).join(" ")
+    .replace(/case|=/g, " ").split(/[\s,]+/)
+    .map(function (w) { return w.replace(/"/g, "").trim(); }).filter(Boolean);
+  statutsEmis.forEach(function (v) {
+    if (declares.indexOf(v) === -1) {
+      problems.push('scanner verdict: the bridge emits "' + v + '" which ProductVerdict.Statut ' +
+        "does not declare  (it declares: " + declares.join(", ") + ") — every scan would " +
+        "fall through to the fallback");
+    }
+  });
+}
+
 if (!problems.length) {
   console.log("Decoding check passed — " + CASES.length + " structs match the JSON, " +
     exposed.length + " bridge functions match the Swift calls.");
