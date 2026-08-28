@@ -293,9 +293,14 @@ struct CountedSegments: View {
             }
             .frame(minWidth: 62)
             .padding(.vertical, 7)
-            .background(on ? Color.primary : Tint.background.opacity(0.9),
+            /* Both branches of each ternary are the same concrete type.
+             * `on ? Color(.systemBackground) : .secondary` asks the compiler to
+             * unify a Color with a HierarchicalShapeStyle, which it will not
+             * do — and the error it emits points at the whole expression
+             * rather than the line. */
+            .background(on ? Color.primary : Color(.secondarySystemBackground),
                         in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .foregroundStyle(on ? Color(.systemBackground) : .secondary)
+            .foregroundStyle(on ? Color(.systemBackground) : Color.secondary)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(on ? [.isSelected] : [])

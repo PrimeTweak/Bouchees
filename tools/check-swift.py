@@ -181,6 +181,19 @@ def check():
                 problems.append(f"{filename}:{i + 1}: '{nom}' is optional and is called "
                                 f"as '{nom}.…' with no guard let, if let, ?. or !")
 
+    # 7c. a style ternary whose two branches are different types.
+    #     `on ? Color(.systemBackground) : .secondary` asks the compiler to
+    #     unify a Color with a HierarchicalShapeStyle. It refuses, and the
+    #     error it emits points at the whole expression rather than the line —
+    #     which is why a build can fail with nothing useful in the log.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(code.split("\n"), 1):
+            m = re.search(r"\.(foregroundStyle|background|tint|fill)\((\w+) \? ([^:]+) : (\.[a-z]\w*)", l)
+            if m and "Color" in m.group(3):
+                problems.append(f"{filename}:{i}: style ternary mixes '{m.group(3).strip()}' "
+                                f"with '{m.group(4)}' — give both branches the same type")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

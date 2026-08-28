@@ -1,17 +1,27 @@
 name: Unsigned IPA (sideload)
 
-# Produit un .ipa NON SIGNÉ. Feather le signe ensuite avec ton certificat.
-# Aucun compte développeur Apple requis : le runner macOS de GitHub a déjà
-# Xcode, et XcodeGen fabrique le projet à partir de ios/project.yml.
-# Aucun certificat ni clé ne transite par GitHub.
+# Produces an UNSIGNED .ipa. Feather signs it afterwards with your certificate.
+# No Apple developer account required: GitHub's macOS runner already has Xcode,
+# and XcodeGen builds the project from ios/project.yml.
+# No certificate and no key ever passes through GitHub.
 
+# ON DEMAND ONLY.
+#
+# This used to run on every push to main, which meant a fifteen-minute macOS
+# build for a comment change or a data tweak. The IPA is only worth producing
+# when you actually intend to install one.
+#
+# To build: Actions -> Unsigned IPA (sideload) -> Run workflow.
+#
+# The guards that matter still run on every push, in checks.yml — repository
+# integrity, the engine tests, the Swift sources, cross-module agreement and
+# decoding. Those take under a minute on a Linux runner and catch the class of
+# mistake that costs an evening.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       bundle_id:
-        description: "Identifiant de bundle (vide = ca.bouchees.app)"
+        description: "Bundle identifier (empty = ca.bouchees.app)"
         required: false
         default: ""
 
@@ -132,7 +142,12 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=NO \
-            clean build 2>&1 | tail -60
+            clean build 2>&1 | tee /tmp/build.log | tail -60
+          # tail alone truncates the compiler errors: xcodebuild prints them
+          # first, then hundreds of lines of build commands. Show the errors
+          # again at the end, where they can be read.
+          echo "--- errors and warnings ---"
+          grep -E "error:|warning: .*never used" /tmp/build.log | head -40 || true
 
       - name: Package as .ipa
         # zip, exactly as in the build that installs.

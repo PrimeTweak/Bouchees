@@ -280,33 +280,7 @@ struct OnboardingScreen: View {
                     .padding(.top, 14)
             }
 
-            /* THE RELIEF, BEFORE THEY ASK FOR IT.
-             *
-             * A parent who has just entered three allergens expects a
-             * shortened list. Measured on the corpus: whatever the profile,
-             * the engine finds a way — 38 out of 38 even with five allergens
-             * avoided. Showing that here is the moment the app earns its
-             * place, and it costs one line of arithmetic. */
-            let compte = etat.tally(for: draft)
-            if compte.total > 0 {
-                HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(Tint.pois)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("\(compte.total) recipes for \(firstName)")
-                            .font(.subheadline.weight(.semibold))
-                        Text("\(compte.asIs) with nothing to change, \(compte.adapted) with a swap or two.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Tint.pois.opacity(0.09),
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .padding(.top, 22)
-            }
+            relief
 
             HStack(spacing: 14) {
                 Button("See the recipes") { finish() }
@@ -315,6 +289,40 @@ struct OnboardingScreen: View {
                     .controlSize(.large)
                 Button("Back") { step = 2 }.foregroundStyle(.secondary)
             }
+            .padding(.top, 22)
+        }
+    }
+
+    /// THE RELIEF, BEFORE THEY ASK FOR IT.
+    ///
+    /// A parent who has just entered three allergens expects a shortened list.
+    /// Measured on the corpus: whatever the profile, the engine finds a way —
+    /// 38 out of 38 even with five allergens avoided. Showing that here is the
+    /// moment the app earns its place.
+    ///
+    /// Its own property rather than a `let` inside the step's ViewBuilder: a
+    /// local binding in the middle of a view body is exactly the kind of thing
+    /// that compiles in one Swift version and not the next.
+    @ViewBuilder
+    private var relief: some View {
+        let compte = etat.tally(for: draft)
+        if compte.total > 0 {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(Tint.pois)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("\(compte.total) recipes for \(firstName)")
+                        .font(.subheadline.weight(.semibold))
+                    Text("\(compte.asIs) with nothing to change, \(compte.adapted) with a swap or two.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Tint.pois.opacity(0.09),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .padding(.top, 22)
         }
     }
@@ -359,7 +367,7 @@ struct AgePicker: View {
                             .frame(width: 82, alignment: .leading)
                         Text(LocalizedStringKey(stage.texte))
                             .font(.footnote)
-                            .foregroundStyle(isOn ? Tint.betterave : .secondary)
+                            .foregroundStyle(isOn ? Tint.betterave : Color.secondary)
                             .multilineTextAlignment(.leading)
                         Spacer(minLength: 0)
                     }

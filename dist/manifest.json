@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-26",
+  "version": "2026-08-28",
   "safetyChecksum": "23bb22d5cc42",
   "batches": [
     {
@@ -9,7 +9,7 @@
       "access": "free",
       "note": "The foundation: a full week of eating, whatever the profile.",
       "count": 8,
-      "checksum": "c54ae230fa08",
+      "checksum": "44699c698a6a",
       "weekly": false,
       "inWindow": true
     },

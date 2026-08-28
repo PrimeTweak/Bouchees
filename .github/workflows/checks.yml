@@ -1,0 +1,51 @@
+name: Checks
+
+# Runs on every push, in under a minute, on a Linux runner.
+#
+# The IPA build is on demand now — a fifteen-minute macOS job for a comment
+# change was not worth it. But the guards are, and they are cheap: they catch
+# the class of mistake that does not show up until the app is on a phone.
+#
+# Each one exists because of a failure that cost a full round:
+#   check-repo       a folder dropped in the Finder replaced instead of merged
+#   check-agreement  two modules renamed on one side only
+#   check-decoding   a Swift field the JSON does not carry
+#   check-swift      an optional called without unwrapping, a shadowed member
+#   tests            the substitution engine, 108 of them
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Repository integrity
+        run: node tools/check-repo.js
+
+      - name: Engine tests
+        run: node tests/test.js
+
+      - name: Cross-module agreement
+        run: node tools/check-agreement.js
+
+      - name: Swift decodes the real JSON
+        run: node tools/check-decoding.js
+
+      - name: Swift sources
+        run: python3 tools/check-swift.py
+
+      - name: Publishing still works
+        run: |
+          node tools/publish.js
+          node tools/weeks.js

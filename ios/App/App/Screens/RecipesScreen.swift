@@ -327,7 +327,7 @@ struct FilterPill: View {
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 9)
-                .foregroundStyle(isOn ? Color(.systemBackground) : .primary)
+                .foregroundStyle(isOn ? Color(.systemBackground) : Color.primary)
                 .background(isOn ? Color.primary : Color(.secondarySystemGroupedBackground), in: Capsule())
                 .overlay(Capsule().strokeBorder(Color.primary.opacity(isOn ? 0 : 0.1), lineWidth: 1.5))
         }
