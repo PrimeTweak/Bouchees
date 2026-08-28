@@ -38,27 +38,28 @@ struct RootView: View {
         .animation(.easeInOut(duration: 0.25), value: etat.needsOnboarding)
     }
 
+    /// THREE TABS, NOT FIVE.
+    ///
+    /// "Best" was a permanent tab showing "come back later" until five people
+    /// had rated something — expensive in trust for a screen that is empty at
+    /// launch. It is now a filter of the one list.
+    ///
+    /// "Children" was a tab you had to visit to learn who the app was filtering
+    /// for. It is now the context header, in view on every screen, because
+    /// knowing who you are cooking for is a state, not a destination.
     private var onglets: some View {
         TabView(selection: $tab) {
             RecipesScreen()
-                .tabItem { Label("Recipes", systemImage: "fork.knife") }
+                .tabItem { Label("Cook", systemImage: "fork.knife") }
                 .tag(0)
 
-            TopRatedScreen()
-                .tabItem { Label("Best", systemImage: "star") }
-                .tag(1)
-
-            ScannerScreen()
+            ScannerScreen(tab: $tab)
                 .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
-                .tag(2)
-
-            ProfilesScreen()
-                .tabItem { Label("Children", systemImage: "person.2") }
-                .tag(3)
+                .tag(1)
 
             SettingsScreen()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(4)
+                .tag(2)
         }
         .tint(Tint.betterave)
     }
@@ -102,7 +103,7 @@ struct OnboardingScreen: View {
 
     private var firstName: String {
         let n = draft.name.trimmingCharacters(in: .whitespaces)
-        return n.isEmpty ? "votre enfant" : n
+        return n.isEmpty ? String(localized: "your child") : n
     }
 
     var body: some View {
@@ -111,8 +112,9 @@ struct OnboardingScreen: View {
                 progressBar.padding(.bottom, 28)
 
                 switch step {
-                case 0: etapePrenom
-                case 1: etapeAge
+                case 0: etapeConfiance
+                case 1: etapePrenom
+                case 2: etapeAge
                 default: etapeAllergenes
                 }
             }
@@ -126,13 +128,60 @@ struct OnboardingScreen: View {
 
     private var progressBar: some View {
         HStack(spacing: 6) {
-            ForEach(0..<3, id: \.self) { i in
+            ForEach(0..<4, id: \.self) { i in
                 Capsule()
                     .frame(height: 4)
                     .foregroundStyle(i <= step ? Tint.betterave : Color.primary.opacity(0.12))
             }
         }
-        .accessibilityLabel("Step \(step + 1) of 3")
+        .accessibilityLabel("Step \(step + 1) of 4")
+    }
+
+    /// STEP 0 — WHAT THIS IS, BEFORE ASKING FOR ANYTHING.
+    ///
+    /// On a food-safety app, earning trust comes before collecting data. A
+    /// parent about to hand over their child's allergen list deserves to know
+    /// what decides the swaps — and that it is versioned tables, not a model
+    /// guessing. The medical disclaimer belongs here, read, rather than at the
+    /// bottom of Settings where nobody sees it.
+    private var etapeConfiance: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Before we start")
+                .font(.largeTitle.weight(.bold))
+
+            VStack(alignment: .leading, spacing: 14) {
+                pointDeConfiance("checkmark.seal",
+                    "Swaps come from versioned tables",
+                    "Not from a model guessing. Every substitution has a reason you can read.")
+                pointDeConfiance("lock",
+                    "Your children's profiles stay on this device",
+                    "No server ever receives them.")
+                pointDeConfiance("stethoscope",
+                    "This is not medical advice",
+                    "For a diagnosed allergy, your allergist's plan always takes precedence.")
+            }
+
+            Button("Continue") { step = 1 }
+                .buttonStyle(.borderedProminent)
+                .tint(Tint.betterave)
+                .controlSize(.large)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 6)
+        }
+    }
+
+    private func pointDeConfiance(_ symbole: String, _ titre: LocalizedStringKey,
+                                  _ detail: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: symbole)
+                .font(.title3)
+                .foregroundStyle(Tint.betterave)
+                .frame(width: 26)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(titre).font(.subheadline.weight(.semibold))
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+        }
     }
 
     // Step 1 — the first name
@@ -165,16 +214,16 @@ struct OnboardingScreen: View {
                             in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .focused($champNomActif)
                 .submitLabel(.next)
-                .onSubmit { step = 1 }
+                .onSubmit { step = 2 }
 
             HStack(spacing: 14) {
-                Button("Continue") { step = 1 }
+                Button("Continue") { step = 2 }
                     .buttonStyle(.borderedProminent)
                     .tint(Tint.betterave)
                     .controlSize(.large)
                 Button("Skip for now") {
                     draft.name = String(localized: "My child")
-                    step = 1
+                    step = 2
                 }
                 .foregroundStyle(.secondary)
             }
@@ -198,11 +247,11 @@ struct OnboardingScreen: View {
             AgePicker(ageMonths: $draft.ageMonths)
 
             HStack(spacing: 14) {
-                Button("Continue") { step = 2 }
+                Button("Continue") { step = 3 }
                     .buttonStyle(.borderedProminent)
                     .tint(Tint.betterave)
                     .controlSize(.large)
-                Button("Back") { step = 0 }.foregroundStyle(.secondary)
+                Button("Back") { step = 1 }.foregroundStyle(.secondary)
             }
             .padding(.top, 28)
         }
@@ -231,14 +280,42 @@ struct OnboardingScreen: View {
                     .padding(.top, 14)
             }
 
+            /* THE RELIEF, BEFORE THEY ASK FOR IT.
+             *
+             * A parent who has just entered three allergens expects a
+             * shortened list. Measured on the corpus: whatever the profile,
+             * the engine finds a way — 38 out of 38 even with five allergens
+             * avoided. Showing that here is the moment the app earns its
+             * place, and it costs one line of arithmetic. */
+            let compte = etat.tally(for: draft)
+            if compte.total > 0 {
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(Tint.pois)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("\(compte.total) recipes for \(firstName)")
+                            .font(.subheadline.weight(.semibold))
+                        Text("\(compte.asIs) with nothing to change, \(compte.adapted) with a swap or two.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Tint.pois.opacity(0.09),
+                            in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .padding(.top, 22)
+            }
+
             HStack(spacing: 14) {
                 Button("See the recipes") { finish() }
                     .buttonStyle(.borderedProminent)
                     .tint(Tint.betterave)
                     .controlSize(.large)
-                Button("Back") { step = 1 }.foregroundStyle(.secondary)
+                Button("Back") { step = 2 }.foregroundStyle(.secondary)
             }
-            .padding(.top, 28)
+            .padding(.top, 22)
         }
     }
 

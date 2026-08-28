@@ -266,6 +266,12 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
     var ageMonths: Int
     var allergens: [String]
 
+    /// What the header says. A first name is what a parent recognises at a
+    /// glance; the full stored name may carry more than that.
+    var firstName: String {
+        name.split(separator: " ").first.map(String.init) ?? name
+    }
+
     static let defaut = ChildProfile(name: String(localized: "My child"), ageMonths: 9, allergens: [])
 
     /// Profile resolved when several children eat the same dish: the youngest

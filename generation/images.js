@@ -24,15 +24,15 @@ const crypto = require("crypto");
 const racine = path.join(__dirname, "..");
 const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
+/* Short on purpose. A 700-character style buries the subject: FLUX weighs the
+ * whole prompt, so twenty adjectives about lighting compete with the two words
+ * that say what the dish is. The subject leads, the style supports. */
 const STYLE = [
   "candid home food photography",
-  "shot in a real family kitchen, not a studio",
-  "soft natural window light, warm and slightly uneven",
-  "worn wooden table or kitchen counter, everyday ceramic dishware",
-  "shallow depth of field, 50mm lens, gentle background blur",
-  "a few crumbs and a rumpled dish towel nearby, lived-in and unstyled",
-  "realistic toddler-sized portion, honest home cooking",
-  "natural colours, no colour grading, no glossy magazine styling"
+  "soft natural window light",
+  "worn wooden table, everyday ceramic",
+  "shallow depth of field, 50mm",
+  "unstyled and lived-in, sharp focus on the food"
 ].join(", ");
 
 const CADRAGES = [
@@ -216,10 +216,12 @@ function promptPour(recette, donnees) {
    * ingredients: it renders what you name, and it was never named. */
   return {
     positif: [
-      "Homemade " + recette.name.toLowerCase(),
+      /* The dish, cooked and finished. Saying "cooked and ready to eat" stops
+       * FLUX from laying out raw ingredients, which is what a list of them
+       * invites — it drew a bowl of loose oats for a muffin recipe. */
+      "Homemade " + recette.name.toLowerCase() + ", cooked and ready to eat",
       presentationPour(recette),
-      "made with " + visibles.join(", ") + " and nothing else",
-      "no other ingredient appears anywhere in the frame",
+      "made with " + visibles.slice(0, 4).join(", "),
       cadrage,
       moment,
       STYLE

@@ -8,6 +8,7 @@ import SwiftUI
 
 struct RecipesScreen: View {
     @Environment(AppState.self) private var etat
+    @State private var filter: RecipeFilter = .all
     @State private var searchText = ""
     @State private var category = "All"
     @State private var quickOnly = false
@@ -56,47 +57,78 @@ struct RecipesScreen: View {
         return pairs.filter { $0.recipe.id != hero.recipe.id }
     }
 
+    /// Saved and top rated stopped being tabs; they are two more ways to
+    /// narrow this one list.
+    private var filtered: [(recipe: Recipe, result: AdaptedRecipe)] {
+        switch filter {
+        case .all:   return pairs
+        case .ready: return pairs.filter { $0.result.status == .asIs }
+        case .swaps: return pairs.filter { $0.result.status == .adapted }
+        case .saved:
+            let ids = Set(etat.saved.recipes.map(\.id))
+            return pairs.filter { ids.contains($0.recipe.id) }
+        }
+    }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 22, pinnedViews: []) {
-                    header
+            VStack(spacing: 0) {
+                /* Who you are cooking for, above everything, on every scroll
+                 * position. It is not part of the scrolling content because a
+                 * parent must never have to scroll up to check it. */
+                CookingContextHeader()
+                    .background(.regularMaterial)
 
-                    if let message = etat.syncMessage {
-                        MessageBanner(texte: message)
+                CountedSegments(selection: $filter,
+                                tally: etat.tally(for: profile),
+                                savedCount: etat.saved.recipes.count)
+                    .padding(.bottom, 10)
+                    .background(.regularMaterial)
+
+                Divider()
+
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 22, pinnedViews: []) {
+                        if let message = etat.syncMessage {
+                            MessageBanner(texte: message)
+                        }
+
+                        if filter == .all, let hero {
+                            FeaturedCard(recipe: hero.recipe, result: hero.result, firstName: profile.firstName)
+                                .onTapGesture { openRecipeID = hero.recipe.id }
+                        }
+
+                        filters
+
+                        if filtered.isEmpty {
+                            EmptyState(symbol: "magnifyingglass",
+                                     title: "Nothing matches",
+                                     message: "Try another word, or remove a filter.")
+                        } else if filter == .all {
+                            section(String(localized: "Ready as is"), others.filter { $0.result.status == .asIs })
+                            section(String(localized: "With a few swaps"), others.filter { $0.result.status == .adapted })
+                            section(String(localized: "Not this time"), others.filter { $0.result.status == .notAdaptable })
+                        } else {
+                            /* A chosen filter needs no section headers: the
+                             * segment already said what this list is. */
+                            grid(filtered)
+                        }
+
+                        lockedBatches
+                        footer
                     }
-
-                    if let hero {
-                        FeaturedCard(recipe: hero.recipe, result: hero.result, firstName: profile.name)
-                            .onTapGesture { openRecipeID = hero.recipe.id }
-                    }
-
-                    filters
-
-                    if pairs.isEmpty {
-                        EmptyState(symbol: "magnifyingglass",
-                                 title: "Nothing matches",
-                                 message: "Try another word, or remove a filter.")
-                    } else {
-                        section(String(localized: "Ready as is"), others.filter { $0.result.status == .asIs })
-                        section(String(localized: "With a few swaps"), others.filter { $0.result.status == .adapted })
-                        section(String(localized: "Not this time"), others.filter { $0.result.status == .notAdaptable })
-                    }
-
-                    lockedBatches
-                    footer
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 32)
                 }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 32)
             }
             .background(Tint.background.ignoresSafeArea())
-            .navigationTitle("Recipes")
+            .navigationTitle("Cook")
             .navigationBarTitleDisplayMode(.inline)
             .refreshable { await etat.sync() }
             .searchable(text: $searchText, prompt: "Search — chicken, muffins, squash…")
             .navigationDestination(item: $openRecipeID) { id in
                 if let r = etat.recipe(pour: id), let res = etat.result(pour: id) {
-                    RecipeDetailScreen(recipe: r, result: res, firstName: profile.name)
+                    RecipeDetailScreen(recipe: r, result: res, firstName: profile.firstName)
                 }
             }
             .sheet(isPresented: $showPaywall) { PaywallScreen() }
@@ -156,6 +188,21 @@ struct RecipesScreen: View {
     }
 
     @ViewBuilder
+    /// A grid with no section header: the chosen segment already said what
+    /// this list is.
+    private func grid(_ items: [(recipe: Recipe, result: AdaptedRecipe)]) -> some View {
+        LazyVGrid(columns: Grid.colonnes, spacing: 14) {
+            ForEach(items, id: \.recipe.id) { paire in
+                Button {
+                    openRecipeID = paire.recipe.id
+                } label: {
+                    RecipeCard(recipe: paire.recipe, result: paire.result)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
     private func section(_ title: String,
                          _ items: [(recipe: Recipe, result: AdaptedRecipe)]) -> some View {
         if !items.isEmpty {

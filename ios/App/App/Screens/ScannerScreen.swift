@@ -106,6 +106,9 @@ struct CameraPreview: UIViewRepresentable {
 // MARK: - Écran
 
 struct ScannerScreen: View {
+    /// Bound to the tab bar so a refusal can hand the parent back to Cook with
+    /// something they CAN make.
+    var tab: Binding<Int>? = nil
     @Environment(AppState.self) private var etat
     @StateObject private var scanner = BarcodeSession()
 
@@ -140,9 +143,15 @@ struct ScannerScreen: View {
 
             if isWorking || product != nil || messageErreur != nil {
                 ProductSheet(product: product, verdict: verdict,
-                             isWorking: isWorking, error: messageErreur) {
-                    reset()
-                }
+                             isWorking: isWorking, error: messageErreur,
+                             onDismiss: { reset() },
+                             onFindAlternatives: {
+                                 /* Back to Cook, filtered to what is ready as
+                                  * is. The parent asked a question and gets an
+                                  * answer, not a refusal. */
+                                 reset()
+                                 tab?.wrappedValue = 0
+                             })
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -226,6 +235,7 @@ struct ProductSheet: View {
     let isWorking: Bool
     let error: String?
     let onDismiss: () -> Void
+    var onFindAlternatives: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -255,11 +265,39 @@ struct ProductSheet: View {
                 }
             }
 
-            Button("Scan another product", action: onDismiss)
+            /* A refusal is never the end of the journey.
+             *
+             * A parent standing in an aisle who is told "not for your child"
+             * has learned something useful and been left with nothing to do.
+             * The engine already knows what they CAN cook — offering it here
+             * turns a dead end into an answer. */
+            if verdict?.status == .avoid {
+                Button {
+                    onFindAlternatives()
+                } label: {
+                    Label("See recipes that replace this", systemImage: "fork.knife")
+                        .frame(maxWidth: .infinity)
+                }
                 .buttonStyle(.borderedProminent)
                 .tint(Tint.betterave)
                 .controlSize(.large)
-                .frame(maxWidth: .infinity)
+            }
+
+            /* Secondary once there is an alternative to offer: the useful
+             * action leads, scanning again follows. */
+            if verdict?.status == .avoid {
+                Button("Scan another product", action: onDismiss)
+                    .buttonStyle(.bordered)
+                    .tint(Tint.betterave)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+            } else {
+                Button("Scan another product", action: onDismiss)
+                    .buttonStyle(.borderedProminent)
+                    .tint(Tint.betterave)
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+            }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)

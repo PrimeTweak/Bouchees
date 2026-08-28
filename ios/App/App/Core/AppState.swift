@@ -74,6 +74,10 @@ final class AppState {
         return profiles.first { $0.id == activeProfileID } ?? profiles.first ?? .defaut
     }
 
+    /// The profile family mode resolves to, exposed so the picker can show its
+    /// numbers alongside each child's.
+    var familyProfile: ChildProfile { ChildProfile.famille(profiles) }
+
     var needsOnboarding: Bool { profiles.isEmpty }
 
     // MARK: - Startup
@@ -208,6 +212,11 @@ final class AppState {
     func select(_ id: String) {
         activeProfileID = id
         familyMode = false
+        recompute()
+    }
+
+    func toggleFamilyMode(_ on: Bool) {
+        familyMode = on
         recompute()
     }
 

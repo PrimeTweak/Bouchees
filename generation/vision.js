@@ -313,8 +313,27 @@ function comparer(description, recette, donnees) {
     const mots = p.split(/\s+/).filter(function (w) { return w.length > 3; });
     return vus.some(function (v) { return mots.some(function (w) { return v.indexOf(w) !== -1 || w.indexOf(v) !== -1; }); });
   });
-  if (!reconnus.length) {
-    erreurs.push("no ingredient from the recipe is recognisable in the image");
+  /* A cooked dish hides its ingredients. On a photo of pancakes you see
+   * pancakes and a plate — not flour, not milk, not egg. Requiring a raw
+   * ingredient rejected every transformed dish, which is most of the corpus.
+   *
+   * The dish being correctly identified is STRONGER evidence than spotting an
+   * ingredient: "a stack of pancakes" for a recipe called Fluffy pancakes says
+   * the image is right, whatever survived the cooking. */
+  const platReconnu = description.plat &&
+    normaliser(recette.name).split(/\s+/)
+      .filter(function (w) { return w.length > 3; })
+      .some(function (w) {
+        const racine = w.length > 6 ? w.slice(0, 6) : w;
+        return normaliser(description.plat).indexOf(racine) !== -1;
+      });
+
+  if (!reconnus.length && !platReconnu) {
+    erreurs.push("no ingredient from the recipe is recognisable in the image, " +
+      "and the dish itself was not identified as " + recette.name);
+  } else if (!reconnus.length && platReconnu) {
+    avertissements.push("no raw ingredient visible — normal for a cooked dish, " +
+      "the dish itself was identified");
   } else if (reconnus.length < 2 && principaux.length >= 4) {
     /* One ingredient recognised is sometimes legitimate: in a photo of
      * muffins on voit « muffin », pas la banane ni l'avoine. Mais si la

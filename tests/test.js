@@ -965,6 +965,37 @@ test("classement : trié, et la note d'autrui n'est jamais exposée", () => {
   assert.equal(Ratings.aggregates(["presque"], "unknown@x.ca")["presque"].myRating, null);
 });
 
+test("vision : un plat cuit n'a pas à montrer ses ingrédients bruts", async () => {
+  /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
+   * Exiger un ingrédient brut rejetait TOUT plat transformé, c'est-à-dire
+   * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
+   * forte que l'ingrédient repéré. */
+  const crepes = parId["fluffy-pancakes"];
+  const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
+
+  const cuit = await Vision.verifier(Buffer.from("x"), crepes, donnees,
+    { moteur: voit(["pancakes", "plate", "butter"], "a stack of pancakes") });
+  assert.equal(cuit.ok, true, cuit.erreurs.join(" / "));
+  assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
+    "l'absence d'ingrédient brut doit être notée, pas fatale");
+
+  /* Mais sans ingrédient ET sans le bon plat, on rejette toujours. */
+  const rien = await Vision.verifier(Buffer.from("x"), crepes, donnees,
+    { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
+  assert.equal(rien.ok, false);
+});
+
+test("images : le prompt reste court et nomme l'état cuit", () => {
+  /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
+   * pesaient autant que les deux mots qui disent quel est le plat. */
+  const p = Images.promptPour(parId["fluffy-pancakes"], donnees).positif;
+  assert(p.length < 500, "prompt trop long : " + p.length + " caractères");
+  assert(/cooked and ready to eat/.test(p),
+    "l'état cuit doit être dit, sinon FLUX étale les ingrédients crus");
+  assert(p.toLowerCase().startsWith("homemade fluffy pancakes"));
+});
+
 test("vision : le PLAT doit correspondre, pas seulement les ingrédients", async () => {
   /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recette de
    * muffins parce que banane, avoine et œuf étaient tous présents. Des

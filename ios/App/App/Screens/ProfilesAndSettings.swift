@@ -243,6 +243,34 @@ struct SettingsScreen: View {
     var body: some View {
         NavigationStack {
             List {
+                /* Children come first: it is what gets edited most — a
+                 * birthday, a newly diagnosed allergen. The tab is gone, so
+                 * this is where the screen now lives. */
+                Section("Children") {
+                    ForEach(etat.profiles) { p in
+                        NavigationLink {
+                            ProfilesScreen()
+                        } label: {
+                            HStack(spacing: 10) {
+                                ProfileAvatar(profile: p, size: 30)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(p.firstName).font(.subheadline.weight(.medium))
+                                    Text(etat.allergenNames(p.allergens).isEmpty
+                                         ? Format.age(p.ageMonths)
+                                         : "\(Format.age(p.ageMonths)) · \(etat.allergenNames(p.allergens).count) allergens")
+                                        .font(.caption2).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    NavigationLink {
+                        ProfilesScreen()
+                    } label: {
+                        Label("Add a child", systemImage: "plus")
+                            .foregroundStyle(Tint.betterave)
+                    }
+                }
+
                 Section("Subscription") {
                     HStack {
                         Text(etat.subscribed ? "Active" : "No subscription")

@@ -198,7 +198,37 @@ async function cycleImages(donnees, options) {
     catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  x  " + p.name + " — " + e.message); continue; }
     journal.generees++;
 
-    const verdict = await Vision.verifier(img.octets, recette, donnees, { moteur: mVision, typeMime: "image/png" });
+    let verdict = await Vision.verifier(img.octets, recette, donnees, { moteur: mVision, typeMime: "image/png" });
+
+    /* One retry when the render itself failed, not when the content is wrong.
+     *
+     * The embossed relief comes back intermittently from Draw Things — the
+     * same request that fails once succeeds on the next call. Rejecting it
+     * outright throws away a recipe over a transient fault, and the image
+     * costs three minutes, not three hours.
+     *
+     * A wrong dish or an intruding allergen is NOT retried: that is the model
+     * doing what it was asked, and asking again would only reroll the dice on
+     * a decision the guard is supposed to make. */
+    const rendudRate = !verdict.ok && verdict.erreurs.some(function (e) {
+      return /unreadable|embossed|relief|filtered/i.test(e);
+    });
+    if (rendudRate) {
+      console.log("      the render came back broken — one retry");
+      try {
+        const img2 = await mImage.generer({
+          prompt: p.prompt, negatif: p.negatif,
+          largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+          hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
+        });
+        const v2 = await Vision.verifier(img2.octets, recette, donnees,
+          { moteur: mVision, typeMime: "image/png" });
+        if (v2.ok) { img = img2; verdict = v2; }
+      } catch (e) {
+        console.log("      retry failed: " + e.message);
+      }
+    }
+
     if (!verdict.ok) {
       /* Write the rejected image to disk. Otherwise a rejection is a sentence
        * with nothing behind it: "no ingredient recognisable" reads the same

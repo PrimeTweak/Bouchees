@@ -77,17 +77,22 @@ struct Verdict {
         }
     }
 
-    /// Version courte pour une carte.
+    /// The short form on a card.
+    ///
+    /// Parent words, not engine words. "As is" and "Adapted" describe what the
+    /// engine did; "Ready" and "2 swaps" describe what the parent has to do.
+    /// A card is scanned by eye — the badge has to answer "how much work is
+    /// this" in one glance.
     static func token(_ result: AdaptedRecipe) -> String {
         switch result.status {
-        case .asIs: return String(localized: "As is")
+        case .asIs: return String(localized: "Ready")
         case .adapted:
             let n = result.swapCount
             let modele = n > 1
-                ? String(localized: "Yes — with %lld swaps")
-                : String(localized: "Yes — with %lld swap")
+                ? String(localized: "%lld swaps")
+                : String(localized: "%lld swap")
             return String(format: modele, n)
-        case .notAdaptable: return String(localized: "Not this time")
+        case .notAdaptable: return String(localized: "Not this one")
         case .unknown: return String(localized: "Needs checking")
         }
     }
