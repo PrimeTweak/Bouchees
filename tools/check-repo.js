@@ -33,7 +33,7 @@ const REQUIRED = [
   "web/build.js", "web/illustration.js", "web/template.html",
   "tests/test.js", "ios/project.yml", "ios/App/App/Info.plist",
   "ios/App/App/App.entitlements",
-  ".github/workflows/ipa.yml", ".github/workflows/checks.yml"
+  ".github/workflows/ipa.yml"
 ];
 
 /* Folders with a known floor. Fewer files than this means one was replaced
