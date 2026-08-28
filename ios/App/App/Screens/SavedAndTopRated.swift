@@ -262,7 +262,8 @@ struct RatingBlock: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else if let a = summary, a.votes > 0, a.votes < etat.ratingThreshold {
-                Text("\(etat.ratingThreshold - a.votes) note\(etat.ratingThreshold - a.votes > 1 ? "s" : "") de plus et cette recipe peut entrer au ranking.")
+                Text(String(format: String(localized: "%lld more ratings and this recipe can enter the ranking."),
+                            etat.ratingThreshold - a.votes))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

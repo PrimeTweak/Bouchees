@@ -28,11 +28,13 @@ struct CookingContextHeader: View {
                 ProfileAvatar(profile: etat.activeProfile, familyMode: etat.familyMode)
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(etat.familyMode
-                         ? String(localized: "Cooking for everyone")
-                         : "Cooking for \(etat.activeProfile.firstName)")
+                    /* Built as a String first. A ternary inside Text() leaves
+                     * the compiler choosing between Text(String) and
+                     * Text(LocalizedStringKey), and that ambiguity produces an
+                     * error that names the expression rather than the line. */
+                    Text(titleLine)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(Color.primary)
 
                     Text(contextLine)
                         .font(.caption2)
@@ -51,17 +53,24 @@ struct CookingContextHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Cooking for \(etat.activeProfile.firstName). \(contextLine). Tap to switch.")
+        .accessibilityLabel(Text(titleLine + ". " + contextLine))
         .sheet(isPresented: $showPicker) { ChildPickerSheet() }
+    }
+
+    private var titleLine: String {
+        if etat.familyMode { return String(localized: "Cooking for everyone") }
+        return String(format: String(localized: "Cooking for %@"), etat.activeProfile.firstName)
     }
 
     private var contextLine: String {
         let profile = etat.activeProfile
         let noms = etat.allergenNames(profile.allergens)
         if noms.isEmpty {
-            return "\(Format.age(profile.ageMonths)) — no allergen avoided"
+            return String(format: String(localized: "%@ — no allergen avoided"),
+                          Format.age(profile.ageMonths))
         }
-        return "\(Format.age(profile.ageMonths)) — no \(Format.liste(noms))"
+        return String(format: String(localized: "%@ — no %@"),
+                      Format.age(profile.ageMonths), Format.liste(noms))
     }
 }
 
@@ -153,6 +162,15 @@ private struct ChildPickerRow: View {
     let tally: AppState.ProfileTally
     let isOn: Bool
 
+    private var sousTitre: String {
+        if noms.isEmpty {
+            return String(format: String(localized: "%@ — no allergen avoided"),
+                          Format.age(profile.ageMonths))
+        }
+        return String(format: String(localized: "%@ — no %@"),
+                      Format.age(profile.ageMonths), Format.liste(noms))
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             ProfileAvatar(profile: profile, size: 38)
@@ -162,9 +180,7 @@ private struct ChildPickerRow: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
 
-                Text(noms.isEmpty
-                     ? "\(Format.age(profile.ageMonths)) — no allergen avoided"
-                     : "\(Format.age(profile.ageMonths)) — no \(Format.liste(noms))")
+                Text(sousTitre)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -208,7 +224,8 @@ private struct FamilyModeRow: View {
                 /* Named and explained. This is the hard case in a real family,
                  * and it has to be strict by construction: the youngest age and
                  * the union of every allergen. */
-                Text("The youngest age (\(Format.age(age))) and everything any of them avoids")
+                Text(String(format: String(localized: "The youngest age (%@) and everything any of them avoids"),
+                            Format.age(age)))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)

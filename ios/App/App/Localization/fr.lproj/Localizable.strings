@@ -258,3 +258,4 @@
 "Step %lld of 4" = "Étape %lld sur 4";
 "See recipes that replace this" = "Voir des recettes qui remplacent ça";
 "%@ · %lld allergens" = "%@ · %lld allergènes";
+"%lld more ratings and this recipe can enter the ranking." = "Encore %lld notes et cette recette peut entrer au classement.";

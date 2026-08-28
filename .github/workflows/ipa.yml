@@ -142,12 +142,25 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=NO \
-            clean build 2>&1 | tee /tmp/build.log | tail -60
-          # tail alone truncates the compiler errors: xcodebuild prints them
-          # first, then hundreds of lines of build commands. Show the errors
-          # again at the end, where they can be read.
-          echo "--- errors and warnings ---"
-          grep -E "error:|warning: .*never used" /tmp/build.log | head -40 || true
+            clean build 2>&1 | tee /tmp/build.log | tail -60 || true
+
+          # The pipeline above ends in `tail`, which succeeds even when
+          # xcodebuild fails — so the step used to stop before reaching this
+          # block and the errors were never shown. PIPESTATUS carries the real
+          # exit code, and the errors print BEFORE we act on it.
+          #
+          # xcodebuild prints its errors first, then hundreds of lines of build
+          # commands, which is why `tail` alone shows a file list and nothing
+          # useful.
+          echo ""
+          echo "======== errors ========"
+          grep -E "error:" /tmp/build.log | head -40 || echo "(none matched)"
+          echo "======== end ========"
+
+          if grep -q "BUILD FAILED" /tmp/build.log; then
+            echo "Build failed — see the errors above."
+            exit 1
+          fi
 
       - name: Package as .ipa
         # zip, exactly as in the build that installs.
