@@ -70,6 +70,9 @@ private struct LiveDemoStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
+                BoucheesMark(size: 34)
+                    .padding(.bottom, 18)
+
                 Text("No account. No network.")
                     .font(Type.label)
                     .foregroundStyle(Tone.brand)
@@ -195,32 +198,49 @@ private struct AllergenPad: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
             ForEach(families) { a in
-                let on = selected.contains(a.id)
-                Button {
-                    if on { selected.removeAll { $0 == a.id } }
-                    else { selected.append(a.id) }
-                } label: {
-                    VStack(spacing: 5) {
-                        AllergenGlyph(id: a.id)
-                            .frame(width: 20, height: 20)
-                        Text(a.name)
-                            .font(.system(size: 10, weight: .semibold))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 66)
-                    .background(on ? Tone.brand : Tone.surface,
-                                in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(on ? Color.clear : Tone.hairline, lineWidth: 1))
-                    .foregroundStyle(on ? Color.white : Tone.textSecondary)
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(on ? [.isSelected] : [])
+                AllergenTile(allergen: a,
+                             isOn: selected.contains(a.id),
+                             toggle: { toggle(a.id) })
             }
         }
         .animation(.smooth(duration: 0.22), value: selected)
+    }
+
+    private func toggle(_ id: String) {
+        if selected.contains(id) { selected.removeAll { $0 == id } }
+        else { selected.append(id) }
+    }
+}
+
+/* Its own View rather than a closure with a `let` inside a ViewBuilder. That
+ * shape makes the compiler give up on the content and fall back to another
+ * ForEach overload, and the error it prints names the Binding it tried, not
+ * the line that actually failed. */
+private struct AllergenTile: View {
+    let allergen: Allergen
+    let isOn: Bool
+    let toggle: () -> Void
+
+    var body: some View {
+        Button(action: toggle) {
+            VStack(spacing: 5) {
+                AllergenGlyph(id: allergen.id)
+                    .frame(width: 20, height: 20)
+                Text(allergen.name)
+                    .font(.system(size: 10, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 66)
+            .background(isOn ? Tone.brand : Tone.surface,
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(isOn ? Color.clear : Tone.hairline, lineWidth: 1))
+            .foregroundStyle(isOn ? Color.white : Tone.textSecondary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isOn ? [.isSelected] : [])
     }
 }
 

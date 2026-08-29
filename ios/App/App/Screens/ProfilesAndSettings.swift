@@ -274,7 +274,9 @@ struct SettingsScreen: View {
                 /* Appearance sits high because it is the setting a person
                  * changes on the first evening and then never again. Burying
                  * it makes them hunt. */
-                Section("Appearance") {
+                /* Section(_:) with a String title has no footer overload —
+                 * the header goes in its own builder when a footer is present. */
+                Section {
                     Picker("Theme", selection: Binding(
                         get: { etat.theme },
                         set: { etat.theme = $0 }
@@ -285,6 +287,8 @@ struct SettingsScreen: View {
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
+                } header: {
+                    Text("Appearance")
                 } footer: {
                     Text("Match iPhone follows your system setting, including the automatic switch at sunset.")
                 }

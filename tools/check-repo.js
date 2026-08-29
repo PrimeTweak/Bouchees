@@ -22,7 +22,7 @@ const REQUIRED = [
   "data/recipes.json", "data/publishing.json",
   "data/imported/imported-recipes.json", "data/generated/generated-recipes.json",
   "tools/gaps.js", "tools/publish.js", "tools/weeks.js", "tools/cycle.js",
-  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "tools/check-agreement.js", "tools/image-sizes.js", "tools/probe-drawthings.js", "tools/check-bundle-names.js",
+  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "BUILD.json", "tools/check-agreement.js", "tools/image-sizes.js", "tools/probe-drawthings.js", "tools/check-bundle-names.js",
   "server/server.js", "server/ratings.js", "server/apple.js", "server/stripe.js",
   "server/legal-pages.js",
   "ingest/importer.js", "ingest/adapters.js", "ingest/normalizer.js",
@@ -86,7 +86,20 @@ if (reserved.length) {
 }
 
 if (!missing.length && !thin.length) {
-  console.log("Repository complete — " + REQUIRED.length + " required files, all folders above their floor.");
+  /* Which delivery this working copy came from.
+ *
+ * Three builds in a row failed on errors that were already fixed, because the
+ * zip had not been applied — emptying the folder in the Finder leaves .github
+ * and other hidden files behind, and nothing said so. One line here saves a
+ * fifteen-minute build. */
+try {
+  const b = JSON.parse(fs.readFileSync(path.join(root, "BUILD.json"), "utf8"));
+  console.log("Build " + b.build + " — " + b.date);
+} catch (e) {
+  console.log("Build unknown — BUILD.json missing");
+}
+
+console.log("Repository complete — " + REQUIRED.length + " required files, all folders above their floor.");
   process.exit(0);
 }
 

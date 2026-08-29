@@ -34,7 +34,10 @@ struct RootView: View {
             if let error = etat.fatalError {
                 FatalErrorScreen(message: error)
             } else if etat.isLoading && etat.recipes.isEmpty {
-                ProgressView("Getting ready…").controlSize(.large)
+                /* The mark on the theme's canvas, rather than a spinner on
+                 * white. It removes the flash between launch and first frame,
+                 * and it is the first thing the app says about itself. */
+                LaunchView()
             } else if etat.needsOnboarding {
                 OnboardingFlow()
             } else {
