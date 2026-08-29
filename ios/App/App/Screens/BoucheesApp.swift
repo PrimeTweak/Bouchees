@@ -14,6 +14,12 @@ struct BoucheesApp: App {
         WindowGroup {
             RootView()
                 .environment(etat)
+                /* nil hands the decision back to iOS, which is the default:
+                 * the parent already chose light or dark once, at the system
+                 * level, and an app that ignores that is an app that fights
+                 * its user. */
+                .preferredColorScheme(etat.theme.colorScheme)
+                .tint(Tone.brand)
                 .task { await etat.start() }
         }
     }
@@ -30,7 +36,7 @@ struct RootView: View {
             } else if etat.isLoading && etat.recipes.isEmpty {
                 ProgressView("Getting ready…").controlSize(.large)
             } else if etat.needsOnboarding {
-                OnboardingScreen()
+                OnboardingFlow()
             } else {
                 onglets
             }
@@ -93,247 +99,6 @@ struct FatalErrorScreen: View {
 }
 
 // MARK: - Guided onboarding
-
-struct OnboardingScreen: View {
-    @Environment(AppState.self) private var etat
-    @State private var step = 0
-    @State private var draft = ChildProfile(name: "", ageMonths: 9, allergens: [])
-    @State private var showAllAllergens = false
-    @FocusState private var champNomActif: Bool
-
-    private var firstName: String {
-        let n = draft.name.trimmingCharacters(in: .whitespaces)
-        return n.isEmpty ? String(localized: "your child") : n
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                progressBar.padding(.bottom, 28)
-
-                switch step {
-                case 0: etapeConfiance
-                case 1: etapePrenom
-                case 2: etapeAge
-                default: etapeAllergenes
-                }
-            }
-            .padding(22)
-            .frame(maxWidth: 560)
-            .frame(maxWidth: .infinity)
-        }
-        .background(Tint.background.ignoresSafeArea())
-        .animation(.easeInOut(duration: 0.2), value: step)
-    }
-
-    private var progressBar: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<4, id: \.self) { i in
-                Capsule()
-                    .frame(height: 4)
-                    .foregroundStyle(i <= step ? Tint.betterave : Color.primary.opacity(0.12))
-            }
-        }
-        .accessibilityLabel("Step \(step + 1) of 4")
-    }
-
-    /// STEP 0 — WHAT THIS IS, BEFORE ASKING FOR ANYTHING.
-    ///
-    /// On a food-safety app, earning trust comes before collecting data. A
-    /// parent about to hand over their child's allergen list deserves to know
-    /// what decides the swaps — and that it is versioned tables, not a model
-    /// guessing. The medical disclaimer belongs here, read, rather than at the
-    /// bottom of Settings where nobody sees it.
-    private var etapeConfiance: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Before we start")
-                .font(.largeTitle.weight(.bold))
-
-            VStack(alignment: .leading, spacing: 14) {
-                pointDeConfiance("checkmark.seal",
-                    "Swaps come from versioned tables",
-                    "Not from a model guessing. Every substitution has a reason you can read.")
-                pointDeConfiance("lock",
-                    "Your children's profiles stay on this device",
-                    "No server ever receives them.")
-                pointDeConfiance("stethoscope",
-                    "This is not medical advice",
-                    "For a diagnosed allergy, your allergist's plan always takes precedence.")
-            }
-
-            Button("Continue") { step = 1 }
-                .buttonStyle(.borderedProminent)
-                .tint(Tint.betterave)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 6)
-        }
-    }
-
-    private func pointDeConfiance(_ symbole: String, _ titre: LocalizedStringKey,
-                                  _ detail: LocalizedStringKey) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: symbole)
-                .font(.title3)
-                .foregroundStyle(Tint.betterave)
-                .frame(width: 26)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(titre).font(.subheadline.weight(.semibold))
-                Text(detail).font(.caption).foregroundStyle(.secondary)
-            }
-        }
-    }
-
-    // Step 1 — the first name
-
-    private var etapePrenom: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            (Text("Bouchées") + Text(".").foregroundColor(Tint.betterave))
-                .font(.system(size: 34, weight: .heavy, design: .rounded))
-
-            Text("The everyday question: “can he eat this?” We answer it — and we show you exactly what we change.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .padding(.top, 8)
-                .padding(.bottom, 32)
-
-            Text("Who are we cooking for?")
-                .font(.title2.weight(.bold))
-            Text("Just a first name. It personalises every answer.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .padding(.top, 4)
-                .padding(.bottom, 20)
-
-            TextField("First name", text: $draft.name)
-                .textInputAutocapitalization(.words)
-                .autocorrectionDisabled()
-                .font(.title3.weight(.semibold))
-                .padding(15)
-                .background(Color(.secondarySystemGroupedBackground),
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .focused($champNomActif)
-                .submitLabel(.next)
-                .onSubmit { step = 2 }
-
-            HStack(spacing: 14) {
-                Button("Continue") { step = 2 }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Tint.betterave)
-                    .controlSize(.large)
-                Button("Skip for now") {
-                    draft.name = String(localized: "My child")
-                    step = 2
-                }
-                .foregroundStyle(.secondary)
-            }
-            .padding(.top, 28)
-        }
-        .onAppear { champNomActif = true }
-    }
-
-    // Step 2 — the age
-
-    private var etapeAge: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("How old is \(firstName)?")
-                .font(.title2.weight(.bold))
-            Text("This determines textures and safety guidance.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .padding(.top, 4)
-                .padding(.bottom, 20)
-
-            AgePicker(ageMonths: $draft.ageMonths)
-
-            HStack(spacing: 14) {
-                Button("Continue") { step = 3 }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Tint.betterave)
-                    .controlSize(.large)
-                Button("Back") { step = 1 }.foregroundStyle(.secondary)
-            }
-            .padding(.top, 28)
-        }
-    }
-
-    // Step 3 — the allergens
-
-    private var etapeAllergenes: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("What are we avoiding for \(firstName)?")
-                .font(.title2.weight(.bold))
-            Text("We remove these ingredients from every recipe and suggest a replacement.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .padding(.top, 4)
-                .padding(.bottom, 20)
-
-            AllergenGrid(selection: $draft.allergens,
-                             showAllAllergens: $showAllAllergens,
-                             allergens: etat.knownAllergens)
-
-            if draft.allergens.isEmpty {
-                Text("None for now — that’s fine, you can change it any time.")
-                    .font(.footnote)
-                    .foregroundStyle(.tertiary)
-                    .padding(.top, 14)
-            }
-
-            relief
-
-            HStack(spacing: 14) {
-                Button("See the recipes") { finish() }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Tint.betterave)
-                    .controlSize(.large)
-                Button("Back") { step = 2 }.foregroundStyle(.secondary)
-            }
-            .padding(.top, 22)
-        }
-    }
-
-    /// THE RELIEF, BEFORE THEY ASK FOR IT.
-    ///
-    /// A parent who has just entered three allergens expects a shortened list.
-    /// Measured on the corpus: whatever the profile, the engine finds a way —
-    /// 38 out of 38 even with five allergens avoided. Showing that here is the
-    /// moment the app earns its place.
-    ///
-    /// Its own property rather than a `let` inside the step's ViewBuilder: a
-    /// local binding in the middle of a view body is exactly the kind of thing
-    /// that compiles in one Swift version and not the next.
-    @ViewBuilder
-    private var relief: some View {
-        let compte = etat.tally(for: draft)
-        if compte.total > 0 {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
-                    .foregroundStyle(Tint.pois)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("\(compte.total) recipes for \(firstName)")
-                        .font(.subheadline.weight(.semibold))
-                    Text("\(compte.asIs) with nothing to change, \(compte.adapted) with a swap or two.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Tint.pois.opacity(0.09),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .padding(.top, 22)
-        }
-    }
-
-    private func finish() {
-        if draft.name.trimmingCharacters(in: .whitespaces).isEmpty {
-            draft.name = String(localized: "My child")
-        }
-        etat.save(draft)
-    }
-}
 
 // MARK: - Age picker
 

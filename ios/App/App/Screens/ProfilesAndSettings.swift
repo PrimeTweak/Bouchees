@@ -271,6 +271,24 @@ struct SettingsScreen: View {
                     }
                 }
 
+                /* Appearance sits high because it is the setting a person
+                 * changes on the first evening and then never again. Burying
+                 * it makes them hunt. */
+                Section("Appearance") {
+                    Picker("Theme", selection: Binding(
+                        get: { etat.theme },
+                        set: { etat.theme = $0 }
+                    )) {
+                        ForEach(AppTheme.allCases, id: \.self) { t in
+                            Label(t.label, systemImage: t.symbol).tag(t)
+                        }
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                } footer: {
+                    Text("Match iPhone follows your system setting, including the automatic switch at sunset.")
+                }
+
                 Section("Subscription") {
                     HStack {
                         Text(etat.subscribed ? "Active" : "No subscription")

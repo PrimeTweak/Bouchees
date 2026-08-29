@@ -261,3 +261,9 @@
 "See recipes that replace this" = "See recipes that replace this";
 "%@ · %lld allergens" = "%@ · %lld allergens";
 "%lld more ratings and this recipe can enter the ranking." = "%lld more ratings and this recipe can enter the ranking.";
+"Appearance" = "Appearance";
+"Theme" = "Theme";
+"Match iPhone" = "Match iPhone";
+"Light" = "Light";
+"Dark" = "Dark";
+"Match iPhone follows your system setting, including the automatic switch at sunset." = "Match iPhone follows your system setting, including the automatic switch at sunset.";

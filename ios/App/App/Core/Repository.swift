@@ -120,6 +120,21 @@ final class LocalStore {
         try? d.write(to: profilesFile, options: .atomic)
     }
 
+    // Appearance — a single stored word, in UserDefaults rather than a file:
+    // it is read before the first frame, and a file read there would flash.
+
+    private static let themeKey = "appearance"
+
+    func readTheme() -> AppTheme {
+        guard let raw = UserDefaults.standard.string(forKey: Self.themeKey),
+              let t = AppTheme(rawValue: raw) else { return .system }
+        return t
+    }
+
+    func writeTheme(_ t: AppTheme) {
+        UserDefaults.standard.set(t.rawValue, forKey: Self.themeKey)
+    }
+
     // Downloaded corpus — what makes offline work possible.
 
     func readRecipes() -> [Recipe]? {

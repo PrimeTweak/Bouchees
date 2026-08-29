@@ -16,6 +16,11 @@ final class AppState {
     var activeProfileID: String?
     var familyMode = false
 
+    /// Light, dark, or whatever the phone is set to. System is the default.
+    var theme: AppTheme = .system {
+        didSet { local.writeTheme(theme) }
+    }
+
     private(set) var recipes: [Recipe] = []
     private(set) var adapted: [AdaptedRecipe] = []
 
@@ -27,6 +32,14 @@ final class AppState {
         var adapted = 0
         var blocked = 0
         var total: Int { asIs + adapted + blocked }
+    }
+
+    /// Adapt one recipe for a profile that is not the active one — what the
+    /// onboarding demo runs on. The engine is local and takes under a
+    /// millisecond, so this is cheap enough to recompute on every tap.
+    func adaptPreview(_ recipe: Recipe, for profile: ChildProfile) -> AdaptedRecipe? {
+        guard let moteur, moteur.pret else { return nil }
+        return try? moteur.adapter([recipe], pour: profile).first
     }
 
     func tally(for profile: ChildProfile) -> ProfileTally {
@@ -86,6 +99,7 @@ final class AppState {
         isLoading = true
         defer { isLoading = false }
 
+        theme = local.readTheme()
         profiles = local.readProfiles()
         activeProfileID = profiles.first?.id
 
