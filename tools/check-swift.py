@@ -808,6 +808,50 @@ def check():
                 problems.append(f"{filename}:{i}: a canvas fade with horizontal padding — "
                                 f"its edges draw a box; a fade must span the screen")
 
+    # 7y. a .sheet attached to the Button that triggers it.
+    #     The child pill and the search island both did this. They live in a
+    #     top bar that SwiftUI rebuilds whenever the layout shifts — and it
+    #     shifts as soon as content scrolls under it. So the first tap set the
+    #     flag, the view was recreated, the fresh @State came back false, and
+    #     the sheet never opened. The second tap landed before the rebuild.
+    #
+    #     A sheet belongs on an ancestor that does not get rebuilt.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        for i, l in enumerate(lignes, 1):
+            if ".sheet(isPresented:" not in l and ".sheet(item:" not in l:
+                continue
+            # Walk back over the UNBROKEN modifier chain — consecutive lines
+            # starting with a dot — and look at what it hangs off.
+            j = i - 2
+            while j >= 0 and lignes[j].strip().startswith("."):
+                j -= 1
+            if j < 0:
+                continue
+
+            # The chain belongs to a Button when a `Button {` opened at the
+            # same indentation as the brace that closes it. More closing
+            # braces than that means a List or a Section ended, and the sheet
+            # correctly belongs to the screen.
+            creux = len(lignes[j]) - len(lignes[j].lstrip())
+            if not lignes[j].strip().startswith("}"):
+                continue
+            proprietaire = None
+            for k in range(j - 1, max(-1, j - 30), -1):
+                indent = len(lignes[k]) - len(lignes[k].lstrip())
+                if indent == creux and re.match(r"\s*Button\s*[({]", lignes[k]):
+                    proprietaire = k
+                    break
+                if indent < creux:
+                    break
+            if proprietaire is None:
+                continue
+
+            problems.append(f"{filename}:{i}: a .sheet on the Button that opens it — "
+                            f"if that button gets rebuilt the flag is lost and the "
+                            f"first tap does nothing; move it to a stable ancestor")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

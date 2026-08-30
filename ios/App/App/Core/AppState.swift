@@ -138,6 +138,24 @@ final class AppState {
         return (try? m.shoppingList(plats, pour: activeProfile)) ?? []
     }
 
+    /// Queries the parent has run more than once.
+    ///
+    /// A threshold rather than a log: every reference on zero-state search
+    /// says a term should be searched several times before it is offered
+    /// back, or the list fills with typos and one-offs.
+    private(set) var recentSearches: [String] = []
+    @ObservationIgnored private var searchCounts: [String: Int] = [:]
+
+    func rememberSearch(_ brut: String) {
+        let q = brut.trimmingCharacters(in: .whitespaces).lowercased()
+        guard q.count > 1 else { return }
+        searchCounts[q, default: 0] += 1
+        guard searchCounts[q]! >= 2 else { return }
+        recentSearches.removeAll { $0 == q }
+        recentSearches.insert(q, at: 0)
+        if recentSearches.count > 6 { recentSearches.removeLast() }
+    }
+
     var shoppingList: [ShoppingItem] {
         guard let moteur, moteur.pret else { return [] }
         return (try? moteur.shoppingList(weekRecipes, pour: activeProfile)) ?? []

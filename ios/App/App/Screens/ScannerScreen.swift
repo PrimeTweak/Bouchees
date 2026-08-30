@@ -13,29 +13,17 @@
 import SwiftUI
 import AVFoundation
 import UIKit
-/* On-device text recognition. The reason it is here: for Canada, Open Food
- * Facts has 124,088 products and complete ingredients for 21,918 of them.
- * The ingredient list is printed on the package, in front of the camera,
- * and it is the source that legally governs. */
-import Vision
 
 // MARK: - Capture
 
 @MainActor
 final class BarcodeSession: NSObject, ObservableObject,
-                            AVCaptureMetadataOutputObjectsDelegate,
-                            AVCaptureVideoDataOutputSampleBufferDelegate {
+                            AVCaptureMetadataOutputObjectsDelegate {
     @Published var code: String?
     @Published var error: String?
 
     let session = AVCaptureSession()
     private var configured = false
-    private let fileVideo = DispatchQueue(label: "ca.bouchees.frames", qos: .userInitiated)
-
-    /// Set while the label mode is active. Off, frames are ignored entirely
-    /// so the camera costs nothing extra when scanning barcodes.
-    var readingLabel = false
-    let reader = LabelReader()
     private var lastCode: String?
 
     func start() {
@@ -77,16 +65,6 @@ final class BarcodeSession: NSObject, ObservableObject,
         }
         session.addOutput(out)
         out.setMetadataObjectsDelegate(self, queue: .main)
-
-        /* A second output, for reading the label. Frames are dropped while a
-         * recognition is in flight — Vision on `.accurate` takes longer than
-         * a frame interval, and queueing them would grow without bound. */
-        let video = AVCaptureVideoDataOutput()
-        video.alwaysDiscardsLateVideoFrames = true
-        if session.canAddOutput(video) {
-            session.addOutput(video)
-            video.setSampleBufferDelegate(self, queue: fileVideo)
-        }
         /* Everything a grocery item can carry.
          *
          * ITF-14 is on cartons and multipacks, Data Matrix and QR on newer
@@ -152,15 +130,8 @@ struct ScannerScreen: View {
     @State private var messageErreur: String?
     @State private var canContribute = false
 
-    /// Barcode, or read the label directly.
-    ///
-    /// Two modes because the databases cover one product in six here. The
-    /// second is not a fallback bolted on — it is the mode that works in a
-    /// grocery basement with no signal, on a product nobody catalogued.
-    @State private var mode: ScanMode = .barcode
-    /// Where a verdict came from. A parent deciding for their child has to
-    /// know whether a database said it or the package did.
-    @State private var source: VerdictSource = .database
+    /// The product sheet, when the parent asks for the reasoning.
+    @State private var showDetails = false
 
     var body: some View {
         Group {
@@ -187,25 +158,22 @@ struct ScannerScreen: View {
             CameraPreview(session: scanner.session)
                 .ignoresSafeArea()
 
-            ViewfinderFrame(wide: mode == .label)
+            ViewfinderFrame()
                 .allowsHitTesting(false)
 
-            VStack {
-                modePicker
-                    .padding(.top, 48)
-                Spacer(minLength: 0)
-            }
 
         }
-        .onChange(of: scanner.reader.text) { _, texte in
-            guard let t = texte, mode == .label else { return }
-            evaluerEtiquette(t)
+        .sheet(isPresented: $showDetails) {
+            if let p = product, let v = verdict {
+                ProductDetailSheet(product: p, verdict: v)
+            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if isWorking || product != nil || messageErreur != nil {
                 ProductSheet(product: product, verdict: verdict,
                              isWorking: isWorking, error: messageErreur,
                              onDismiss: { reset() },
+                             onDetails: { showDetails = true },
                              onFindAlternatives: {
                                  /* Back to Cook, filtered to what is ready as
                                   * is. The parent asked a question and gets an
@@ -282,56 +250,13 @@ struct ScannerScreen: View {
         }
     }
 
-    /// Barcode or label, one tap.
-    private var modePicker: some View {
-        HStack(spacing: 3) {
-            ForEach([ScanMode.barcode, .label], id: \.self) { m in
-                Button {
-                    withAnimation(.smooth(duration: 0.22)) {
-                        mode = m
-                        scanner.readingLabel = (m == .label)
-                        reset()
-                    }
-                } label: {
-                    Text(m == .barcode ? "Barcode" : "Ingredients")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(mode == m ? Color.black : Color.white.opacity(0.66))
-                        .padding(.horizontal, 13)
-                        .padding(.vertical, 6)
-                        .background(mode == m ? AnyShapeStyle(Color.white)
-                                              : AnyShapeStyle(Color.clear),
-                                    in: Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(3)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay { Capsule().strokeBorder(.white.opacity(0.24), lineWidth: 0.5) }
-    }
 
-    /// Runs the label text through the same engine a database result goes
-    /// through. Same 603 terms, same rules, same refusal to guess.
-    private func evaluerEtiquette(_ texte: String) {
-        source = .label
-        product = nil
-        messageErreur = nil
-        do {
-            verdict = try etat.evaluateLabel(texte)
-            UINotificationFeedbackGenerator().notificationOccurred(
-                verdict?.status == .avoid ? .warning : .success)
-        } catch {
-            messageErreur = String(localized:
-                "I could not read enough of the label. Try holding it flatter, in better light.")
-        }
-    }
 
     private func reset() {
         product = nil
         verdict = nil
         messageErreur = nil
         canContribute = false
-        scanner.reader.reset()
         scanner.rearm()
     }
 }
@@ -434,34 +359,37 @@ struct ProductSheet: View {
                 }
             }
 
-            /* A refusal always opens a door. A parent in an aisle told "no" has
-             * learned something useful and been left with nothing to do. */
-            if verdict?.status == .avoid {
-                Button(action: onFindAlternatives) {
-                    Text("See recipes that replace this")
-                        .font(Type.secondary.weight(.semibold))
-                        .foregroundStyle(background)
+            /* TWO ACTIONS, SIDE BY SIDE.
+             *
+             * In an aisle with a stroller there are exactly two things to do:
+             * understand why, or move on. Stacking them made the card tall
+             * enough to reach the tab bar. */
+            HStack(spacing: 8) {
+                if product != nil && verdict != nil {
+                    Button { onDetails() } label: {
+                        Text("See details")
+                            .font(Type.secondary.weight(.semibold))
+                            .foregroundStyle(background)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: Layout.tapTarget)
+                            .background(.white, in: RoundedRectangle(cornerRadius: 13,
+                                                                     style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Button(action: onDismiss) {
+                    Text("Scan another")
+                        .font(Type.secondary.weight(.medium))
+                        .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: Layout.tapTarget + 2)
-                        .background(.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .frame(height: Layout.tapTarget)
+                        .background(Color.white.opacity(0.18),
+                                    in: RoundedRectangle(cornerRadius: 13, style: .continuous))
                 }
                 .buttonStyle(.plain)
-                .padding(.top, 17)
             }
-
-            Button(action: onDismiss) {
-                Text("Scan another product")
-                    .font(Type.secondary.weight(verdict?.status == .avoid ? .medium : .semibold))
-                    .foregroundStyle(verdict?.status == .avoid ? Color.white : background)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Layout.tapTarget + 2)
-                    .background(
-                        verdict?.status == .avoid
-                            ? AnyShapeStyle(Color.white.opacity(0.18))
-                            : AnyShapeStyle(Color.white),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            }
-            .buttonStyle(.plain)
+            .padding(.top, 15)
             .padding(.top, 9)
         }
         .padding(.horizontal, 22)
@@ -679,133 +607,330 @@ struct ProductVerdictBanner: View {
     }
 }
 
-/// What the camera is looking for.
-enum ScanMode: Hashable {
-    case barcode
-    case label
-}
 
-/// Where a verdict came from.
-enum VerdictSource: Hashable {
-    case database
-    case label
-}
 
-// MARK: - Reading the label
+// MARK: - Product details
 
-/// Reads an ingredient list off the package with on-device text recognition.
+/// Why the verdict says what it says.
 ///
-/// WHY THIS EXISTS. A coverage study of April 2026 measured Open Food Facts at
-/// 124,088 Canadian products with complete ingredients for 21,918 — roughly
-/// one in six. USDA holds 2,319 Canadian barcodes out of two million. Stacking
-/// more databases does not fix a product that was never entered, and small
-/// Quebec producers rarely are.
+/// NO SCORE OUT OF 100. A single number folds nutrition, additives and
+/// allergens into one value — and for an allergic child only the last one
+/// matters. A score would read "64" on a product that could send Livia to
+/// hospital.
 ///
-/// The list is printed on the package. Vision reads it on the device: offline,
-/// free, private, and it works on a product nobody has ever catalogued.
-@MainActor
-@Observable
-final class LabelReader {
+/// One card per allergen on the profile instead, in three states. "May
+/// contain" is not "contains", and a parent decides differently on each.
+struct ProductDetailSheet: View {
+    let product: GroceryProduct
+    let verdict: ProductVerdict
+    @Environment(AppState.self) private var etat
+    @Environment(\.dismiss) private var dismiss
 
-    private(set) var text: String?
-    private(set) var reading = false
+    @State private var showFullList = false
 
-    /// Everything Vision saw, so the parent can check what was read rather
-    /// than trust it. OCR misreads, and a misread on an allergen matters.
-    private(set) var lines: [String] = []
+    private var profile: ChildProfile { etat.activeProfile }
 
-    func reset() {
-        text = nil
-        lines = []
-        reading = false
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                head
+                ForEach(profile.allergens, id: \.self) { allergen in
+                    AllergenCard(name: etat.allergenNames([allergen]).first ?? allergen,
+                                 state: state(for: allergen))
+                        .padding(.horizontal, Layout.gutter)
+                        .padding(.top, 11)
+                }
+                ingredientCard
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.top, 11)
+                alternatives
+                attribution
+            }
+            .padding(.bottom, 30)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .presentationDragIndicator(.visible)
     }
 
-    /// Recognises text in one frame.
-    ///
-    /// `.accurate` rather than `.fast`: a curved bottle in grocery lighting is
-    /// exactly where the fast path drops words, and a dropped word on an
-    /// ingredient list is the failure this app exists to prevent.
-    func read(_ buffer: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
-        guard !reading else { return }
-        reading = true
+    private var head: some View {
+        HStack(alignment: .top, spacing: 13) {
+            ProductThumb(url: product.image)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(product.name ?? String(localized: "Unnamed product"))
+                    .font(.system(size: 17, weight: .bold))
+                    .kerning(-0.35)
+                    .foregroundStyle(Tone.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let brand = product.brand {
+                    Text(brand)
+                        .font(.system(size: 11.5))
+                        .foregroundStyle(Tone.text2)
+                }
+                Text(product.code)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(Tone.text3)
 
-        let requete = VNRecognizeTextRequest { [weak self] requete, _ in
-            guard let obs = requete.results as? [VNRecognizedTextObservation] else { return }
-            /* Several candidates, not one. Vision returns them ordered by
-             * confidence, and asking for more than one measurably improves
-             * reading order on multi-line labels. */
-            let lues = obs.compactMap { $0.topCandidates(3).first?.string }
-            Task { @MainActor [weak self] in
-                self?.finish(lues)
+                VerdictBadge(status: verdict.status, firstName: profile.firstName)
+                    .padding(.top, 8)
             }
         }
-        requete.recognitionLevel = .accurate
-        requete.usesLanguageCorrection = true
-        /* A Quebec package is bilingual, and the French half is often the
-         * fuller one. */
-        requete.recognitionLanguages = ["fr-CA", "fr-FR", "en-CA", "en-US"]
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 20)
+    }
 
-        let handler = VNImageRequestHandler(cvPixelBuffer: buffer,
-                                            orientation: orientation, options: [:])
-        Task.detached(priority: .userInitiated) {
-            try? handler.perform([requete])
+    /// Contains, traces, or clear — derived from the ingredient list, never
+    /// from the database's own allergen tags.
+    private func state(for allergen: String) -> AllergenState {
+        if verdict.allergensFound.contains(where: {
+            $0.caseInsensitiveCompare(allergen) == .orderedSame
+        }) { return .contains }
+        if product.traceTags.contains(where: { $0.contains(allergen) }) { return .traces }
+        return .clear
+    }
+
+    private var ingredientCard: some View {
+        Button { showFullList.toggle() } label: {
+            HStack(spacing: 11) {
+                Image(systemName: "list.bullet")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 27, height: 27)
+                    .background(Tone.text.opacity(0.7),
+                                in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Full ingredient list")
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .foregroundStyle(Tone.text)
+                    Text(String(format: String(localized: "%lld read, %lld recognised"),
+                                readCount, readCount - verdict.unknownIngredients.count))
+                        .font(.system(size: 10.5))
+                        .foregroundStyle(Tone.text2)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: showFullList ? "chevron.up" : "chevron.down")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(13)
+            .background(Tone.text.opacity(0.035),
+                        in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .strokeBorder(Tone.hairline, lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .overlay(alignment: .bottom) {
+            if showFullList, let texte = product.ingredientsText {
+                Text(texte)
+                    .font(.system(size: 11))
+                    .foregroundStyle(Tone.text2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(13)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Tone.text.opacity(0.03),
+                                in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+                    .offset(y: 0)
+                    .alignmentGuide(.bottom) { $0[.top] - 9 }
+            }
         }
     }
 
-    private func finish(_ lues: [String]) {
-        reading = false
-        guard !lues.isEmpty else { return }
-
-        lines = lues
-        /* Keep only what follows an "ingredients" heading when there is one.
-         * A nutrition table above it would otherwise be read as ingredients,
-         * and "sodium 5 mg" is not an ingredient. */
-        let joint = lues.joined(separator: " ")
-        text = Self.ingredientSection(in: joint) ?? joint
+    private var readCount: Int {
+        (product.ingredientsText ?? "")
+            .split(whereSeparator: { ",;()".contains($0) })
+            .filter { $0.trimmingCharacters(in: .whitespaces).count > 1 }
+            .count
     }
 
-    /// The ingredient list within everything the camera saw.
+    /// A recipe, not another product.
     ///
-    /// Both languages, because a Canadian package prints both and either may
-    /// be the one in focus.
-    static func ingredientSection(in texte: String) -> String? {
-        let bas = texte.lowercased()
-        let entetes = ["ingredients:", "ingredients :", "ingredients",
-                       "ingrédients:", "ingrédients :", "ingrédients"] // label text
-        for e in entetes {
-            guard let r = bas.range(of: e) else { continue }
-            var suite = String(texte[r.upperBound...])
-            /* Stop at whatever follows the list on a package. */
-            for fin in ["nutrition facts", "contains:", "may contain", "produced in",
-                        "keep refrigerated", "best before",
-                        "valeur nutritive", "contient:", "peut contenir",
-                        "produit en", "garder au froid", "meilleur avant"] { // label text
-                if let f = suite.lowercased().range(of: fin) {
-                    suite = String(suite[..<f.lowerBound])
+    /// Competitors offer a different bar. This app can offer something the
+    /// parent can actually make tonight, already adapted to this child —
+    /// which nobody else is in a position to do.
+    @ViewBuilder
+    private var alternatives: some View {
+        if verdict.status == .avoid {
+            let pool = etat.weekRecipes.prefix(2).compactMap { r in
+                etat.resultFor(r).map { (recipe: r, result: $0) }
+            }
+            if !pool.isEmpty {
+                Text("She can have these tonight").eyebrow()
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.top, 24)
+                ForEach(pool, id: \.recipe.id) { pair in
+                    RecipeRow(recipe: pair.recipe, result: pair.result)
                 }
             }
-            let propre = suite.trimmingCharacters(in: .whitespacesAndNewlines)
-            if propre.count > 8 { return propre }
         }
-        return nil
+    }
+
+    private var attribution: some View {
+        Text("From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.")
+            .font(.system(size: 10))
+            .foregroundStyle(Tone.text3)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 22)
     }
 }
 
-// MARK: - Frames
+/// Contains, traces, or clear.
+enum AllergenState {
+    case contains
+    case traces
+    case clear
+}
 
-extension BarcodeSession {
-    /// Hands one frame to the reader, and only when the label mode is on.
-    ///
-    /// Nonisolated because AVFoundation calls this on its own queue; the hop
-    /// to the main actor happens once, with the pixel buffer, rather than for
-    /// every frame.
-    nonisolated func captureOutput(_ output: AVCaptureOutput,
-                                   didOutput sampleBuffer: CMSampleBuffer,
-                                   from connection: AVCaptureConnection) {
-        guard let pixels = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        Task { @MainActor [weak self] in
-            guard let self, self.readingLabel else { return }
-            self.reader.read(pixels, orientation: .right)
+private struct AllergenCard: View {
+    let name: String
+    let state: AllergenState
+
+    var body: some View {
+        HStack(spacing: 11) {
+            Image(systemName: symbol)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 27, height: 27)
+                .background(tint, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(name.capitalized)
+                    .font(.system(size: 12.5, weight: .semibold))
+                    .foregroundStyle(Tone.text)
+                Text(detail)
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(Tone.text2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+
+            Text(badge)
+                .font(.system(size: 9.5, weight: .bold))
+                .foregroundStyle(tint)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(tint.opacity(0.12), in: Capsule())
+        }
+        .padding(13)
+        .background(Tone.text.opacity(0.035),
+                    in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
+    }
+
+    private var symbol: String {
+        switch state {
+        case .contains: return "exclamationmark.triangle.fill"
+        case .traces: return "exclamationmark.circle.fill"
+        case .clear: return "checkmark"
+        }
+    }
+
+    private var tint: Color {
+        switch state {
+        case .contains: return Tone.no
+        case .traces: return Tone.swap
+        case .clear: return Tone.yes
+        }
+    }
+
+    private var badge: LocalizedStringKey {
+        switch state {
+        case .contains: return "Contains"
+        case .traces: return "Traces"
+        case .clear: return "Clear"
+        }
+    }
+
+    private var detail: LocalizedStringKey {
+        switch state {
+        case .contains: return "Listed in the ingredients."
+        case .traces: return "“May contain” — shared equipment."
+        case .clear: return "Not present, and no trace warning."
+        }
+    }
+}
+
+/// The package, when the database has a photo of it.
+///
+/// A placeholder rather than a blank when it does not — recognising the box
+/// you are holding is half of trusting the verdict.
+private struct ProductThumb: View {
+    let url: String?
+
+    var body: some View {
+        Group {
+            if let url, let u = URL(string: url) {
+                AsyncImage(url: u) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    placeholder
+                }
+            } else {
+                placeholder
+            }
+        }
+        .frame(width: 64, height: 78)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
+    }
+
+    private var placeholder: some View {
+        LinearGradient(colors: [Tone.cardTop, Tone.cardBottom],
+                       startPoint: .topLeading, endPoint: .bottomTrailing)
+            .overlay {
+                Image(systemName: "shippingbox")
+                    .font(.system(size: 19))
+                    .foregroundStyle(Tone.text3)
+            }
+    }
+}
+
+/// The verdict, in one line, with the child's name in it.
+private struct VerdictBadge: View {
+    let status: ProductStatus
+    let firstName: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: symbol)
+                .font(.system(size: 10, weight: .bold))
+            Text(phrase)
+                .font(.system(size: 11.5, weight: .bold))
+        }
+        .foregroundStyle(tint)
+        .padding(.horizontal, 11)
+        .padding(.vertical, 5)
+        .background(tint.opacity(0.1), in: Capsule())
+    }
+
+    private var symbol: String {
+        switch status {
+        case .safe: return "checkmark"
+        case .avoid: return "exclamationmark.triangle.fill"
+        case .uncertain: return "questionmark"
+        }
+    }
+
+    private var tint: Color {
+        switch status {
+        case .safe: return Tone.yes
+        case .avoid: return Tone.no
+        case .uncertain: return Tone.swap
+        }
+    }
+
+    private var phrase: String {
+        switch status {
+        case .safe: return String(format: String(localized: "Good for %@"), firstName)
+        case .avoid: return String(format: String(localized: "Not for %@"), firstName)
+        case .uncertain: return String(localized: "I am not sure")
         }
     }
 }

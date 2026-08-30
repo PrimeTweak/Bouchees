@@ -1,12 +1,14 @@
 {
-  "build": 79,
+  "build": 80,
   "date": "2026-08-29",
   "carries": [
-    "GlassGroup spacing 14 merged two pieces 10pt apart \u2014 that blob was the outline",
-    "the Start cooking fade was the BUTTON background, so it drew a box",
-    "ignoresSafeArea applied to the whole ZStack pushed the pill under the Dynamic Island",
-    "Shopping now carries Type.display in content, like Settings",
-    "scope picker above the days, two segments not a toggle",
-    "two checker rules: guessed top inset, fade with horizontal margins"
+    "both sheets moved to the root \u2014 attached to their own button, the first tap was lost",
+    "the child picker no longer asks who you are cooking for",
+    "hold the tab bar and slide: bubble, haptics per crossing",
+    "search opens with the keyboard up and three groups of suggestions",
+    "scanner: the Ingredients mode is gone \u2014 if I have to read the label, so can you",
+    "product detail: one card per allergen, Contains/Traces/Clear, no score out of 100",
+    "shopping pill is a ToolbarItem; the 56pt reserve is gone",
+    "checker rule: a .sheet on the Button that opens it"
   ]
 }

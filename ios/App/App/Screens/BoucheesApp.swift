@@ -31,6 +31,7 @@ struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
     @State private var path = NavigationPath()
+    @State private var sheet: AppSheet?
 
     var body: some View {
         Group {
@@ -134,6 +135,14 @@ struct RootView: View {
         }
         .ignoresSafeArea(.keyboard)
         .environment(\.navigate, NavigateAction { route in path.append(route) })
+        .environment(\.presentSheet, PresentSheetAction { sheet = $0 })
+        /* On the root, which never gets rebuilt by a scrolling layout. */
+        .sheet(item: $sheet) { quoi in
+            switch quoi {
+            case .childPicker: ChildPickerSheet()
+            case .search: SearchSheet()
+            }
+        }
     }
 
 }
@@ -319,5 +328,36 @@ extension EnvironmentValues {
     var navigate: NavigateAction {
         get { self[NavigateKey.self] }
         set { self[NavigateKey.self] = newValue }
+    }
+}
+
+// MARK: - Sheets
+
+/// Everything the root can present.
+///
+/// A `.sheet` attached to the button that triggers it dies with that button.
+/// The child pill and the search island both live inside a top bar that
+/// SwiftUI rebuilds on every layout shift, so their state was gone before the
+/// sheet could open — which is why both needed two taps.
+enum AppSheet: String, Identifiable {
+    case childPicker
+    case search
+
+    var id: String { rawValue }
+}
+
+struct PresentSheetAction {
+    let show: (AppSheet) -> Void
+    func callAsFunction(_ sheet: AppSheet) { show(sheet) }
+}
+
+private struct PresentSheetKey: EnvironmentKey {
+    static let defaultValue = PresentSheetAction { _ in }
+}
+
+extension EnvironmentValues {
+    var presentSheet: PresentSheetAction {
+        get { self[PresentSheetKey.self] }
+        set { self[PresentSheetKey.self] = newValue }
     }
 }

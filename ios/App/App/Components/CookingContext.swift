@@ -23,8 +23,11 @@ struct FloatingTabBar: View {
 
     @Binding var selection: Int
 
-    @State private var searching = false
+    @Environment(\.presentSheet) private var present
     @Namespace private var glassSpace
+
+    /// True while the finger is down on the bar. Grows the selection bubble.
+    @State private var held = false
 
     /* Four, not three. Shopping is the second gesture of the week — after
      * "what do I cook", "what do I buy" — and it deserves a destination
@@ -58,22 +61,61 @@ struct FloatingTabBar: View {
              * behaviour here: one capsule, animated from tab to tab, so the
              * bar reads as a single piece of glass with light travelling
              * across it. */
-            HStack(spacing: 0) {
-                ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
-                    TabItem(icon: item.icon, label: item.label,
-                            selected: selection == i,
-                            namespace: glassSpace) {
-                        withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
-                            selection = i
+            /* HOLD AND SLIDE.
+             *
+             * iOS 26 turns the selection highlight into a bubble on a long
+             * press and lets you slide it across the bar. The system version
+             * adds lensing and chromatic aberration, which is a renderer, not
+             * an API — so this is the geometry and the haptics without the
+             * optics. MacStories on the original: "pretty cool, pretty
+             * useless" — the part that earns its place is the SLIDE, which
+             * moves between tabs without lifting a finger. */
+            GeometryReader { geo in
+                let largeur = geo.size.width / CGFloat(Self.items.count)
+                HStack(spacing: 0) {
+                    ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
+                        TabItem(icon: item.icon, label: item.label,
+                                selected: selection == i,
+                                held: held,
+                                namespace: glassSpace) {
+                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
+                                selection = i
+                            }
                         }
                     }
                 }
+                .contentShape(.rect)
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.28)
+                        .onEnded { _ in
+                            withAnimation(.smooth(duration: 0.2, extraBounce: 0.3)) {
+                                held = true
+                            }
+                            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                        }
+                        .sequenced(before: DragGesture(minimumDistance: 0))
+                        .onChanged { valeur in
+                            guard case .second(_, let drag?) = valeur else { return }
+                            let sous = Int(drag.location.x / largeur)
+                            let borne = max(0, min(Self.items.count - 1, sous))
+                            guard borne != selection else { return }
+                            withAnimation(.smooth(duration: 0.22)) { selection = borne }
+                            /* One tick per crossing — the bar reads as a
+                             * physical track rather than a set of buttons. */
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                        .onEnded { _ in
+                            withAnimation(.smooth(duration: 0.26)) { held = false }
+                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                        }
+                )
             }
+            .frame(height: 46)
             .padding(.horizontal, 5)
             .padding(.vertical, 6)
             .glass(Capsule())
 
-            Button { searching = true } label: {
+            Button { present(.search) } label: {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 19, weight: .medium))
                     /* .primary, not a fixed colour: SwiftUI gives text on
@@ -93,7 +135,6 @@ struct FloatingTabBar: View {
         /* No background band. The gradient I put here rendered as a visible
          * strip under the capsule. A scroll-edge fade belongs to the content
          * that scrolls, not to the bar that floats over it. */
-        .sheet(isPresented: $searching) { SearchSheet() }
     }
 }
 
@@ -101,6 +142,8 @@ private struct TabItem: View {
     let icon: String
     let label: LocalizedStringKey
     let selected: Bool
+    /// The finger is down on the bar: the indicator becomes the bubble.
+    var held: Bool = false
     let namespace: Namespace.ID
     let tap: () -> Void
 
@@ -119,12 +162,21 @@ private struct TabItem: View {
             .background {
                 if selected {
                     /* The lit shape that travels between destinations. It is
-                     * one view, moved — not three views recoloured. */
+                     * one view, moved — not three views recoloured.
+                     *
+                     * Held, it becomes the bubble: brighter, slightly larger,
+                     * lifted off the bar. That is the readable half of what
+                     * iOS does; the refraction is the system's own renderer. */
                     Capsule()
-                        .fill(Tone.brand.opacity(0.14))
+                        .fill(held ? AnyShapeStyle(.regularMaterial)
+                                   : AnyShapeStyle(Tone.brand.opacity(0.14)))
                         .overlay {
-                            Capsule().stroke(Tone.brand.opacity(0.22), lineWidth: 0.75)
+                            Capsule().stroke(Tone.brand.opacity(held ? 0.34 : 0.22),
+                                             lineWidth: held ? 1 : 0.75)
                         }
+                        .shadow(color: .black.opacity(held ? 0.16 : 0),
+                                radius: held ? 8 : 0, y: held ? 3 : 0)
+                        .scaleEffect(held ? 1.1 : 1)
                         .matchedGeometryEffect(id: "tabIndicator", in: namespace)
                 }
             }
@@ -149,11 +201,20 @@ struct CookingContextHeader: View {
     var compact: Bool = false
 
     @Environment(AppState.self) private var etat
-    @State private var picking = false
+    /* THE SHEET IS NOT OURS TO OWN.
+     *
+     * `.sheet` used to hang off this button. The button lives in the top
+     * bar's overlay, which SwiftUI rebuilds whenever the layout shifts — and
+     * it shifts as soon as content scrolls under it. So the first tap set the
+     * flag, the view was recreated, the fresh state came back false, and the
+     * sheet never opened. The second tap landed before the rebuild.
+     *
+     * The screen owns it now. This only asks. */
+    @Environment(\.presentSheet) private var present
     var onDark: Bool = true
 
     var body: some View {
-        Button { picking = true } label: {
+        Button { present(.childPicker) } label: {
             HStack(spacing: 9) {
                 ProfileAvatar(profile: etat.activeProfile,
                               familyMode: etat.familyMode, size: 30)
@@ -180,7 +241,6 @@ struct CookingContextHeader: View {
             .glass(Capsule())
         }
         .buttonStyle(.plain)
-        .sheet(isPresented: $picking) { ChildPickerSheet() }
         .accessibilityLabel("\(title). \(subtitle). Tap to switch.")
     }
 
@@ -243,20 +303,19 @@ struct ChildPickerSheet: View {
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
 
-    /// Header, one row per child, plus family mode when there are two.
+    /// One row per child, plus family mode when there are two.
+    ///
+    /// No title. "Who are you cooking for?" asked a question the parent had
+    /// already answered by tapping the pill — and it reserved 60pt to do it.
     private var sheetHeight: CGFloat {
         let rows = CGFloat(etat.profiles.count) * 92
         let family: CGFloat = etat.profiles.count > 1 ? 138 : 0
-        return min(150 + rows + family, 620)
+        return min(76 + rows + family, 620)
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Who are you cooking for?")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(Tone.text)
-                    .padding(.top, 4)
 
                 VStack(spacing: 0) {
                     ForEach(Array(etat.profiles.enumerated()), id: \.element.id) { i, p in
@@ -411,43 +470,216 @@ struct TallyLine: View {
 
 // MARK: - Search
 
+/// Search, with the keyboard already up and the empty state doing work.
+///
+/// Three things every 2026 reference agrees on: the keyboard rises with the
+/// sheet, the zero state is never blank, and five to eight suggestions is the
+/// ceiling. An empty screen with a cursor asks the parent to invent a query.
 struct SearchSheet: View {
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
-    @State private var query = ""
+    @Environment(\.navigate) private var navigate
 
-    private var hits: [(recipe: Recipe, result: AdaptedRecipe)] {
-        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
-        return etat.pairs.filter { p in
-            p.recipe.name.lowercased().contains(q)
-                || p.recipe.category.lowercased().contains(q)
-                || p.recipe.ingredients.contains { u in
-                    (etat.definition(u.id)?.name ?? "").lowercased().contains(q)
+    @State private var query = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Search")
+                    .font(.system(size: 21, weight: .bold))
+                    .kerning(-0.5)
+                    .foregroundStyle(Tone.text)
+                Spacer(minLength: 0)
+                Button("Cancel") { dismiss() }
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Tone.brand)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 18)
+
+            field
+                .padding(.horizontal, Layout.gutter)
+                .padding(.top, 13)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    if query.isEmpty {
+                        zeroState
+                    } else if results.isEmpty {
+                        noResults
+                    } else {
+                        resultList
+                    }
                 }
+                .padding(.bottom, 24)
+            }
+            .scrollDismissesKeyboard(.interactively)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .presentationDragIndicator(.visible)
+        .task {
+            /* The keyboard rises with the sheet. A search that needs a second
+             * tap on the field has already lost the gesture. */
+            try? await Task.sleep(for: .milliseconds(120))
+            focused = true
         }
     }
 
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(hits, id: \.recipe.id) { p in
-                        RecipeRow(recipe: p.recipe, result: p.result)
-                        Divider().overlay(Tone.hairline)
-                            .padding(.leading, Layout.gutter + Layout.thumb + 15)
-                    }
+    private var field: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Tone.text3)
+            TextField("Recipes and ingredients", text: $query)
+                .font(.system(size: 14))
+                .foregroundStyle(Tone.text)
+                .focused($focused)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+            if !query.isEmpty {
+                Button { query = "" } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Tone.text3)
                 }
+                .buttonStyle(.plain)
             }
-            .background(Tone.canvas)
-            .searchable(text: $query, prompt: Text("A recipe or an ingredient"))
-            .navigationTitle("Search")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+        }
+        .padding(.horizontal, 13)
+        .padding(.vertical, 10)
+        .background(Tone.text.opacity(0.055),
+                    in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+    }
+
+    /// Three groups, never more than eight rows in view.
+    ///
+    /// "This week" is the group nothing else can offer: seven recipes is small
+    /// enough that "ready as is" is a complete answer rather than a filter.
+    @ViewBuilder
+    private var zeroState: some View {
+        if !etat.recentSearches.isEmpty {
+            Text("Recent").eyebrow()
+                .padding(.horizontal, Layout.gutter).padding(.top, 20)
+            chips(etat.recentSearches.prefix(3).map { ($0, false) })
+        }
+
+        Text("This week").eyebrow()
+            .padding(.horizontal, Layout.gutter).padding(.top, 20)
+        chips(weekCuts, hot: true)
+
+        Text("Browse").eyebrow()
+            .padding(.horizontal, Layout.gutter).padding(.top, 20)
+        chips([("Snacks", false), ("Meals", false),
+               ("Breakfast", false), ("Saved", false)])
+    }
+
+    /// Cuts of this week that are worth one tap, with their counts.
+    private var weekCuts: [(String, Bool)] {
+        let semaine = etat.weekRecipes
+        var out: [(String, Bool)] = []
+
+        let pretes = semaine.filter { etat.resultFor($0)?.status == .asIs }.count
+        if pretes > 0 { out.append(("Ready as is · \(pretes)", true)) }
+
+        let rapides = semaine.filter { ($0.timeMinutes ?? 99) <= 20 }.count
+        if rapides > 0 { out.append(("Under 20 min · \(rapides)", true)) }
+
+        let dej = semaine.filter { $0.category == "breakfast" }.count
+        if dej > 0 { out.append(("Breakfast · \(dej)", true)) }
+
+        return out
+    }
+
+    private func chips(_ items: [(String, Bool)], hot: Bool = false) -> some View {
+        WrappingRow(spacing: 6, lineSpacing: 6) {
+            ForEach(items, id: \.0) { texte, _ in
+                Button { query = texte.components(separatedBy: " · ").first ?? texte } label: {
+                    Text(texte)
+                        .font(.system(size: 11.5, weight: .semibold))
+                        .foregroundStyle(hot ? Tone.brand : Tone.text)
+                        .padding(.horizontal, 11)
+                        .padding(.vertical, 6)
+                        .background(hot ? AnyShapeStyle(Tone.brand.opacity(0.08))
+                                        : AnyShapeStyle(Tone.text.opacity(0.05)),
+                                    in: Capsule())
+                        .overlay {
+                            Capsule().strokeBorder(hot ? Tone.brand.opacity(0.16)
+                                                       : Tone.hairline, lineWidth: 1)
+                        }
                 }
+                .buttonStyle(.plain)
             }
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 8)
+    }
+
+    private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
+        let q = query.lowercased().trimmingCharacters(in: .whitespaces)
+        guard q.count > 1 else { return [] }
+        return etat.recipes.filter { r in
+            r.name.lowercased().contains(q)
+                || r.ingredients.contains { $0.id.lowercased().contains(q) }
+        }
+        .prefix(20)
+        .compactMap { r in etat.resultFor(r).map { (recipe: r, result: $0) } }
+    }
+
+    private var resultList: some View {
+        ForEach(results, id: \.recipe.id) { pair in
+            Button {
+                etat.rememberSearch(query)
+                dismiss()
+                navigate(.recipe(pair.recipe.id))
+            } label: {
+                RecipeRow(recipe: pair.recipe, result: pair.result)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Never a dead end.
+    ///
+    /// The query is repeated so the parent sees what was searched, the
+    /// closest recipes are offered, and there are terms to try. A blank "no
+    /// results" is the one thing every reference calls out.
+    @ViewBuilder
+    private var noResults: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(String(format: String(localized: "Nothing for “%@” this week"), query))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Tone.text)
+            Text("It may arrive in a later week. Meanwhile, these are close.")
+                .font(.system(size: 12))
+                .foregroundStyle(Tone.text2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 22)
+
+        Text("Closest").eyebrow()
+            .padding(.horizontal, Layout.gutter).padding(.top, 20)
+
+        ForEach(closest, id: \.recipe.id) { pair in
+            Button {
+                dismiss()
+                navigate(.recipe(pair.recipe.id))
+            } label: {
+                RecipeRow(recipe: pair.recipe, result: pair.result)
+            }
+            .buttonStyle(.plain)
+        }
+
+        Text("Try instead").eyebrow()
+            .padding(.horizontal, Layout.gutter).padding(.top, 20)
+        chips([("Snacks", false), ("Meals", false), ("Breakfast", false)])
+    }
+
+    /// The week's recipes, so a miss still ends on something cookable.
+    private var closest: [(recipe: Recipe, result: AdaptedRecipe)] {
+        etat.weekRecipes.prefix(2).compactMap { r in
+            etat.resultFor(r).map { (recipe: r, result: $0) }
         }
     }
 }

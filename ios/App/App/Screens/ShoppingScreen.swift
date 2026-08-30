@@ -41,8 +41,6 @@ struct ShoppingScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                /* Clears the bar, which holds the pill only. */
-                Color.clear.frame(height: 56)
                 header
                 HStack {
                     scopePicker
@@ -85,10 +83,24 @@ struct ShoppingScreen: View {
             .padding(.bottom, 24)
         }
         .background(Tone.canvas.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
+        /* The bar is visible but transparent: it carries the pill and lets
+         * iOS 26 apply the scroll edge effect, which is what keeps the status
+         * bar legible over a scrolling list. */
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.inline)
         /* Who you are shopping for matters as much as who you are cooking
          * for — the list is adapted to them. */
-        .softTopBar(height: 96) { bar }
+        .toolbar {
+            /* A ToolbarItem, not a floating bar.
+             *
+             * The floating version needed 56pt of clear space reserved above
+             * the title — a reserve Settings does not have, which is exactly
+             * why the two titles sat at different heights. In the system bar
+             * it costs nothing, and the title starts where Settings' does. */
+            ToolbarItem(placement: .topBarTrailing) {
+                CookingContextHeader(compact: true)
+            }
+        }
         /* Below iOS 26 there is no scroll edge effect, so the last row
          * would read through the floating bar. Harmless where the effect
          * exists. */
@@ -101,18 +113,6 @@ struct ShoppingScreen: View {
 
     // MARK: - Pieces
 
-    /// The bar holds the child pill alone, on the right.
-    ///
-    /// The title used to live here at 20pt while Settings carried
-    /// `Type.display` in its content — two systems for the same job on two
-    /// screens of the same rank.
-    private var bar: some View {
-        HStack {
-            Spacer(minLength: 0)
-            CookingContextHeader(compact: true)
-        }
-        .padding(.horizontal, Layout.gutter)
-    }
 
     /// The title, in the content, at the same size and place as Settings.
     ///
