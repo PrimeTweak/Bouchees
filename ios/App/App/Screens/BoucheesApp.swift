@@ -18,7 +18,9 @@ struct BoucheesApp: App {
                  * the parent already chose light or dark once, at the system
                  * level, and an app that ignores that is an app that fights
                  * its user. */
-                .preferredColorScheme(etat.theme.colorScheme)
+                /* Not preferredColorScheme: it cannot return to Auto once
+                 * set, and sheets do not inherit it. See ThemeWindow.swift. */
+                .appTheme(etat.theme)
                 .tint(Tone.brand)
                 .task { await etat.start() }
         }

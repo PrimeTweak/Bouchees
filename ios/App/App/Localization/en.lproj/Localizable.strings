@@ -306,3 +306,10 @@
 "Start cooking" = "Start cooking";
 "recipes for %@ today" = "recipes for %@ today";
 "A product at the store" = "A product at the store";
+"Ingredients for %@" = "Ingredients for %@";
+"REPLACES %@" = "REPLACES %@";
+"Why" = "Why";
+"Ratio" = "Ratio";
+"Every option in the table" = "Every option in the table";
+"%lld m+" = "%lld m+";
+"These tables ship with the app and work offline. They are free for everyone, subscribed or not." = "These tables ship with the app and work offline. They are free for everyone, subscribed or not.";

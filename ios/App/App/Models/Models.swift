@@ -338,3 +338,23 @@ struct RecipesResponse: Codable, Sendable {
     let batches: [String]?
     let recipes: [Recipe]
 }
+
+// MARK: - Substitution table, for display
+
+/// The shape of substitutions.json, decoded so the app can SHOW the rule that
+/// produced a swap — every option, in order, with its ratio and minimum age.
+///
+/// The engine reads its own copy through the bridge. This one exists purely so
+/// a parent can open a swap and see the reasoning behind it.
+struct SubstitutionEntry: Codable, Sendable {
+    let role: String
+    let target: String
+    let options: [SubstitutionOptionRaw]
+}
+
+struct SubstitutionOptionRaw: Codable, Sendable {
+    let id: String
+    let ratio: String?
+    let note: String?
+    let minAgeMonths: Int?
+}

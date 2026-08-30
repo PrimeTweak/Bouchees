@@ -73,8 +73,10 @@ enum Tone {
     // ---- brand ----
     // Actions, selection, the active tab. NEVER a verdict.
 
-    static let brand = dyn(light: 0xD8365C, dark: 0xFF8FA5)
-    static let brandDeep = dyn(light: 0xB02547, dark: 0xC4224C)
+    static let brand = dyn(light: 0xE8593A, dark: 0xFF7A5C)
+    /// The label over a photo. Brighter than brand so it survives the veil.
+    static let heroAccent = Color(red: 1, green: 0.66, blue: 0.56)
+    static let brandDeep = dyn(light: 0xC0421F, dark: 0xD8452C)
 
     /// The gradient on a primary button. Two stops, top-lit.
     static var brandGradient: LinearGradient {
@@ -159,7 +161,7 @@ enum Layout {
     static var tapTarget: CGFloat { tap }
 
     /// Photo heights, measured off the comp.
-    static let heroPhoto: CGFloat = 420
+    static let heroPhoto: CGFloat = 430
     static let detailPhoto: CGFloat = 430
     /// How far the photo fades into the canvas.
     static let photoFade: CGFloat = 290
@@ -171,8 +173,8 @@ enum Layout {
     /// than rectangular.
     static let tileRadius: CGFloat = 30
     static let sheetRadius: CGFloat = 30
-    static let thumb: CGFloat = 62
-    static let thumbRadius: CGFloat = 17
+    static let thumb: CGFloat = 66
+    static let thumbRadius: CGFloat = 20
 }
 
 // MARK: - Liquid Glass

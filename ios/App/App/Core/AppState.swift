@@ -37,6 +37,38 @@ final class AppState {
     /// Adapt one recipe for a profile that is not the active one — what the
     /// onboarding demo runs on. The engine is local and takes under a
     /// millisecond, so this is cheap enough to recompute on every tap.
+    /// Every replacement the table holds for an ingredient, in the order the
+    /// engine ranks them, with the one actually used marked.
+    ///
+    /// This is the payoff of a deterministic engine: the reasoning can be
+    /// shown because it exists. A generated recommendation has nothing to
+    /// open.
+    struct SubstitutionOption: Sendable {
+        let name: String
+        let detail: String
+        let chosen: Bool
+    }
+
+    func substitutionOptions(for ingredientName: String) -> [SubstitutionOption] {
+        /* Read from the table the app already carries rather than crossing the
+         * bridge: the data is local, small, and this is a display concern. */
+        guard let table = substitutionTable else { return [] }
+        guard let entry = table.first(where: { e in
+            definition(e.target)?.name.caseInsensitiveCompare(ingredientName) == .orderedSame
+                || e.target.caseInsensitiveCompare(ingredientName) == .orderedSame
+        }) else { return [] }
+
+        return entry.options.map { o in
+            let nom = definition(o.id)?.name ?? o.id
+            var detail = o.ratio ?? ""
+            if let age = o.minAgeMonths, age > 0 {
+                detail += detail.isEmpty ? "" : " · "
+                detail += String(format: String(localized: "%lld m+"), age)
+            }
+            return SubstitutionOption(name: nom, detail: detail, chosen: false)
+        }
+    }
+
     func adaptPreview(_ recipe: Recipe, for profile: ChildProfile) -> AdaptedRecipe? {
         guard let moteur, moteur.pret else { return nil }
         return try? moteur.adapter([recipe], pour: profile).first
@@ -70,6 +102,10 @@ final class AppState {
 
     private var moteur: RecipeEngine?
     private let local = LocalStore()
+
+    /// The substitution table, decoded once for display. The engine uses its
+    /// own copy through the bridge; this is only for showing the reasoning.
+    private(set) var substitutionTable: [SubstitutionEntry]?
     private let serveur = RemoteStore()
     let subscription = Subscription()
     let saved = SavedRecipes()
@@ -119,8 +155,14 @@ final class AppState {
                 substitutions: try Resources.data("substitutions", "json"),
                 base: try Resources.data("base", "json"))
             moteur = m
+            /* The same bytes the engine just loaded, decoded a second time for
+             * display. Cheap, and it keeps the rule sheet honest: what it
+             * shows is what the engine used. */
+            if let d = try? Resources.data("substitutions", "json") {
+                substitutionTable = try? JSONDecoder().decode([SubstitutionEntry].self, from: d)
+            }
         } catch {
-            // Sans moteur, l'app ne peut rien affirmer. On le dit franchement
+            // With no engine the app can assert nothing. Say so plainly
             // rather than showing recipes that were never verified.
             fatalError = error.localizedDescription
             return

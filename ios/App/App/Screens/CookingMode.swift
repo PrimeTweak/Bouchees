@@ -34,8 +34,9 @@ struct CookingMode: View {
             progress
             stepLabel
             stepText
+            stepPhoto
             swapReminder
-            Spacer(minLength: 20)
+            Spacer(minLength: 16)
             timerCard
             controls
         }
@@ -81,6 +82,18 @@ struct CookingMode: View {
             .padding(.top, 15)
             .contentTransition(.opacity)
             .id(step)
+    }
+
+    /// The dish, small, so you can see what it should look like while you make
+    /// it. It is a recipe app: the picture belongs on every screen where the
+    /// parent is deciding whether they got it right.
+    private var stepPhoto: some View {
+        RecipeVisual(recipe: recipe, result: result)
+            .frame(height: 130)
+            .frame(maxWidth: .infinity)
+            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .padding(.top, 24)
     }
 
     /// The swaps that matter for THIS step, with their ratios. Without the

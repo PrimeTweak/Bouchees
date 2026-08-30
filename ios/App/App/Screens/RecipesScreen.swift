@@ -27,7 +27,8 @@ struct RecipesScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    bento
+                    hero
+                    counts
                     if let message = etat.syncMessage {
                         MessageBanner(texte: message)
                             .padding(.horizontal, Layout.gutter)
@@ -56,157 +57,95 @@ struct RecipesScreen: View {
         }
     }
 
-    // MARK: - Bento
+    // MARK: - Hero
 
-    /* A SINGLE COLUMN FORCES FOUR QUESTIONS INTO A SEQUENCE.
+    /* THE PHOTO LEADS. It is the essence of a recipe app, and it is also the
+     * one thing here nobody else can produce: the image is generated from the
+     * ADAPTED ingredient list, so a milk-free recipe shows a milk-free dish.
      *
-     * Who am I cooking for, how many recipes work, what do I make tonight,
-     * can I scan something. A bento answers all four at a glance, with size
-     * as the hierarchy — the pattern 2026 settled on, measured at 23% more
-     * scroll depth than a uniform grid.
-     *
-     * And the name is not decoration: a bento is a lunch box with
-     * compartments. For an app about children's meals it is the right
-     * metaphor before it is the right layout.
-     */
-    private var bento: some View {
-        VStack(spacing: 11) {
-            heroTile
-            HStack(spacing: 11) {
-                countTile
-                scanTile
-            }
-            childStrip
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 66)
-    }
-
+     * 430pt, fading into the canvas with no seam. The child picker and the
+     * verdict float on glass over it — the only two glass elements on this
+     * screen, both in the navigation layer where the material belongs. */
     @ViewBuilder
-    private var heroTile: some View {
+    private var hero: some View {
         if let h = heroPair {
             Button { openRecipeID = h.recipe.id } label: {
                 ZStack(alignment: .bottomLeading) {
                     RecipeVisual(recipe: h.recipe, result: h.result)
-                        .frame(height: 300)
+                        .frame(height: Layout.heroPhoto)
                         .frame(maxWidth: .infinity)
                         .clipped()
 
                     LinearGradient(
-                        stops: [.init(color: .black.opacity(0.32), location: 0),
-                                .init(color: .clear, location: 0.30),
+                        stops: [.init(color: .black.opacity(0.42), location: 0),
+                                .init(color: .clear, location: 0.24),
                                 .init(color: .clear, location: 0.40),
-                                .init(color: Tone.canvas.opacity(0.78), location: 0.82),
-                                .init(color: Tone.canvas.opacity(0.96), location: 1)],
+                                .init(color: Tone.canvas.opacity(0.72), location: 0.76),
+                                .init(color: Tone.canvas, location: 1)],
                         startPoint: .top, endPoint: .bottom)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Tonight").eyebrow(Tone.brand)
+                        Text("Tonight").eyebrow(Tone.heroAccent)
+                            .shadow(color: .black.opacity(0.7), radius: 10)
                         Text(h.recipe.name)
-                            .font(.system(size: 29, weight: .bold))
+                            .font(.system(size: 34, weight: .bold))
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.leading)
-                            .shadow(color: .black.opacity(0.55), radius: 18)
-                            .padding(.top, 8)
+                            .shadow(color: .black.opacity(0.62), radius: 22)
+                            .padding(.top, 9)
                         Text(h.recipe.subtitle)
-                            .font(.system(size: 12.5))
-                            .foregroundStyle(.white.opacity(0.72))
-                            .padding(.top, 7)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.white.opacity(0.74))
+                            .padding(.top, 9)
                         VerdictPill(result: h.result, firstName: profile.firstName)
-                            .padding(.top, 13)
+                            .padding(.top, 14)
                     }
-                    .padding(22)
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.bottom, 24)
+
+                    VStack {
+                        HStack {
+                            CookingContextHeader()
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, Layout.gutter)
+                        .padding(.top, 60)
+                        Spacer(minLength: 0)
+                    }
                 }
-                .frame(height: 300)
-                .clipShape(RoundedRectangle(cornerRadius: Layout.tileRadius, style: .continuous))
+                .frame(height: Layout.heroPhoto)
             }
             .buttonStyle(.plain)
         }
     }
 
-    /// The 38 and the 0, together. Those two numbers are the whole promise of
-    /// the product, and nothing used to show the zero at all.
-    private var countTile: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("\(tally.total)")
-                .font(.system(size: 52, weight: .bold))
-                .foregroundStyle(Tone.yes)
+    /// One line, not three tiles. "15 ready · 23 with swaps · 0 blocked" — the
+    /// zero is the strongest fact in the product and it fits in eleven
+    /// characters.
+    private var counts: some View {
+        HStack(spacing: 9) {
+            count(tally.asIs, "ready", Tone.yes)
+            Text("·").foregroundStyle(Tone.text3)
+            count(tally.adapted, "with swaps", Tone.swap)
+            Text("·").foregroundStyle(Tone.text3)
+            count(tally.blocked, "blocked",
+                  tally.blocked == 0 ? Tone.text3 : Tone.no)
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: 13, design: .monospaced))
+        .foregroundStyle(Tone.text2)
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 20)
+    }
+
+    private func count(_ n: Int, _ label: LocalizedStringKey, _ tone: Color) -> some View {
+        HStack(spacing: 5) {
+            Text("\(n)")
+                .font(.system(size: 15, weight: .bold, design: .monospaced))
+                .foregroundStyle(tone)
                 .contentTransition(.numericText())
-
-            HStack(alignment: .firstTextBaseline, spacing: 7) {
-                Text("\(tally.blocked)")
-                    .font(.system(size: 19, weight: .bold))
-                    .foregroundStyle(tally.blocked == 0 ? Tone.text3 : Tone.no)
-                Text("blocked")
-                    .font(.system(size: 11.5))
-                    .foregroundStyle(Tone.text3)
-            }
-            .padding(.top, 11)
-            .overlay(alignment: .top) {
-                Rectangle().fill(Tone.hairline).frame(height: 1).offset(y: -5)
-            }
-
-            Spacer(minLength: 12)
-
-            Text(String(format: String(localized: "recipes for %@ today"), profile.firstName))
-                .font(.system(size: 12.5))
-                .foregroundStyle(Tone.text2)
-                .lineLimit(2)
+            Text(label)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(minHeight: 148, alignment: .top)
-        .padding(20)
-        .tile()
-    }
-
-    /// An action, not a statistic — hence the brand gradient. It doubles the
-    /// tab because scanning is the gesture you make standing in an aisle, and
-    /// it deserves a 148pt target rather than an 11pt label.
-    private var scanTile: some View {
-        Button { tab?.wrappedValue = 1 } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                Image(systemName: "barcode.viewfinder")
-                    .font(.system(size: 21, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background {
-                        RoundedRectangle(cornerRadius: 15, style: .continuous)
-                            .fill(Tone.brandGradient)
-                            .shadow(color: Tone.brandDeep.opacity(0.42), radius: 10, y: 6)
-                    }
-
-                Spacer(minLength: 14)
-
-                Text("Scan")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Tone.text)
-                Text("A product at the store")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Tone.text2)
-                    .padding(.top, 3)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(minHeight: 148, alignment: .top)
-            .padding(20)
-            .background {
-                RoundedRectangle(cornerRadius: Layout.tileRadius, style: .continuous)
-                    .fill(LinearGradient(colors: [Tone.brand.opacity(0.14), Tone.brand.opacity(0.04)],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: Layout.tileRadius, style: .continuous)
-                            .strokeBorder(Tone.brand.opacity(0.20), lineWidth: 1)
-                    }
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    /// Full width, because who you are cooking for is a state, not one choice
-    /// among several.
-    private var childStrip: some View {
-        CookingContextHeader(onDark: false)
-            .frame(maxWidth: .infinity)
-            .tile()
     }
 
     // MARK: - List

@@ -304,3 +304,10 @@
 "Start cooking" = "Commencer à cuisiner";
 "recipes for %@ today" = "recettes pour %@ aujourd’hui";
 "A product at the store" = "Un produit à l’épicerie";
+"Ingredients for %@" = "Ingrédients pour %@";
+"REPLACES %@" = "REMPLACE %@";
+"Why" = "Pourquoi";
+"Ratio" = "Ratio";
+"Every option in the table" = "Toutes les options de la table";
+"%lld m+" = "%lld m+";
+"These tables ship with the app and work offline. They are free for everyone, subscribed or not." = "Ces tables partent avec l’app et fonctionnent hors ligne. Elles sont gratuites pour tout le monde, abonné ou non.";

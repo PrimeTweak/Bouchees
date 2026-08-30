@@ -9,6 +9,7 @@ import SwiftUI
 struct RecipeDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var cooking = false
+    @State private var openRule: AdaptedIngredient?
     let recipe: Recipe
     let result: AdaptedRecipe
     let firstName: String
@@ -49,11 +50,10 @@ struct RecipeDetailScreen: View {
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
-                    blocTexture
+                    ingredientList
                     alerts
-                    blocIngredients
-                    RatingBlock(recipe: recipe)
                     blocPreparation
+                    RatingBlock(recipe: recipe)
                     blocProvenance
                     Text(Settings.medicalDisclaimer)
                         .font(.system(size: 11.5))
@@ -72,6 +72,9 @@ struct RecipeDetailScreen: View {
         .overlay(alignment: .topLeading) { backButton }
         .overlay(alignment: .topTrailing) { saveButton }
         .overlay(alignment: .bottom) { startButton }
+        .sheet(item: $openRule) { item in
+            SubstitutionRuleSheet(item: item)
+        }
         .navigationDestination(isPresented: $cooking) {
             CookingMode(recipe: recipe, result: result, firstName: firstName)
         }
@@ -79,6 +82,33 @@ struct RecipeDetailScreen: View {
 
     /// Glass circles floating over the photo, with content scrolling beneath —
     /// the exact pattern the platform describes for fixed buttons.
+    /* ONE LIST, ALREADY ADJUSTED.
+     *
+     * Not two columns. The parent does not want to see the before — they want
+     * the recipe they are going to shop for and cook. The swap is an
+     * annotation on the line, not a structure: an amber tag says what it
+     * replaces, and the ratio sits underneath when one is needed.
+     *
+     * Tapping a swapped line opens the rule that produced it. Available, never
+     * in the way. */
+    private var ingredientList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(String(format: String(localized: "Ingredients for %@"), firstName))
+                .eyebrow()
+                .padding(.top, 24)
+                .padding(.bottom, 10)
+
+            ForEach(result.ingredients) { item in
+                IngredientLine(item: item) {
+                    if item.status == .swapped { openRule = item }
+                }
+                if item.listID != result.ingredients.last?.listID {
+                    Divider().overlay(Tone.hairline)
+                }
+            }
+        }
+    }
+
     /// The only button on this page. Everything else is read; this one moves
     /// you into hands-in-the-batter mode.
     private var startButton: some View {
@@ -349,6 +379,144 @@ struct TagFlow: View {
                                 in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }
+    }
+}
+
+// MARK: - Ingredient line
+
+/// Quantity, name, and — when it was swapped — an amber tag naming what it
+/// replaces, with the ratio underneath. The parent reads their list; the swap
+/// information is there if they look for it and invisible if they do not.
+struct IngredientLine: View {
+    let item: AdaptedIngredient
+    var tap: () -> Void = {}
+
+    private var swapped: Bool { item.status == .swapped }
+
+    var body: some View {
+        Button(action: tap) {
+            HStack(alignment: .top, spacing: 13) {
+                Text(quantity)
+                    .font(.system(size: 12.5, design: .monospaced))
+                    .foregroundStyle(Tone.text3)
+                    .frame(width: 66, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.toName ?? item.name)
+                        .font(.system(size: 15.5))
+                        .foregroundStyle(swapped ? Tone.swap : Tone.text)
+                        .multilineTextAlignment(.leading)
+                    if let ratio = item.ratio, swapped {
+                        Text(ratio)
+                            .font(.system(size: 11.5))
+                            .foregroundStyle(Tone.text3)
+                    }
+                    if let prep = item.prep {
+                        Text(prep)
+                            .font(.system(size: 11.5))
+                            .foregroundStyle(Tone.swap.opacity(0.85))
+                    }
+                }
+
+                Spacer(minLength: 6)
+
+                if swapped {
+                    Text(String(format: String(localized: "REPLACES %@"),
+                                item.name.uppercased()))
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .kerning(0.6)
+                        .foregroundStyle(Tone.swap)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .overlay {
+                            Capsule().strokeBorder(Tone.swap.opacity(0.35), lineWidth: 1)
+                        }
+                        .padding(.top, 2)
+                }
+            }
+            .padding(.vertical, 11)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!swapped)
+    }
+
+    private var quantity: String {
+        let v = item.qty.display
+        return v.isEmpty ? item.unit : "\(v) \(item.unit)".trimmingCharacters(in: .whitespaces)
+    }
+}
+
+// MARK: - The rule behind a swap
+
+/// Tapping a swapped ingredient opens the rule that produced it: every option
+/// the table holds, in order, with its ratio and minimum age. This is what a
+/// deterministic, versioned engine allows and a generated one cannot fake.
+struct SubstitutionRuleSheet: View {
+    let item: AdaptedIngredient
+    @Environment(AppState.self) private var etat
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("\(item.name) → \(item.toName ?? "")")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(Tone.text)
+                    .padding(.top, 6)
+
+                if let reason = item.reason {
+                    field("Why", reason)
+                }
+                if let ratio = item.ratio {
+                    field("Ratio", ratio, mono: true)
+                }
+
+                Text("Every option in the table")
+                    .eyebrow()
+                    .padding(.top, 22)
+                    .padding(.bottom, 8)
+
+                ForEach(etat.substitutionOptions(for: item.name), id: \.name) { opt in
+                    HStack(alignment: .firstTextBaseline, spacing: 11) {
+                        Text(opt.name)
+                            .font(.system(size: 13.5))
+                            .foregroundStyle(opt.chosen ? Tone.swap : Tone.text2)
+                        Spacer(minLength: 8)
+                        Text(opt.detail)
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundStyle(Tone.text3)
+                    }
+                    .padding(.vertical, 8)
+                    Divider().overlay(Tone.hairline)
+                }
+
+                Text("These tables ship with the app and work offline. They are free for everyone, subscribed or not.")
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Tone.text3)
+                    .lineSpacing(2)
+                    .padding(.top, 22)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 40)
+        }
+        .background(Tone.canvas)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    private func field(_ key: LocalizedStringKey, _ value: String, mono: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(key).eyebrow()
+            Text(value)
+                .font(.system(size: 14.5, design: mono ? .monospaced : .default))
+                .foregroundStyle(Tone.text)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 15)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Tone.hairline).frame(height: 1)
         }
     }
 }
