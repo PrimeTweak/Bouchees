@@ -14,118 +14,73 @@ struct ProfilesScreen: View {
     @State private var editing: ChildProfile?
     @State private var pendingDeletion: ChildProfile?
 
-    /// Dark cards on the canvas rather than a grouped List. A system List
-    /// brings its own background and its own insets, and neither matches the
-    /// rest of the app.
     var body: some View {
         NavigationStack {
-            settingsBody
-        }
-    }
-
-    private var settingsBody: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Settings")
-                    .font(Type.display)
-                    .foregroundStyle(Tone.text)
-                    .padding(.top, 8)
-
-                Text("Appearance").eyebrow().padding(.top, 26).padding(.bottom, 9)
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("Theme")
-                            .font(.system(size: 14.5))
-                            .foregroundStyle(Tone.text)
-                        Spacer(minLength: 10)
-                        ThemeSegments(theme: Binding(
-                            get: { etat.theme }, set: { etat.theme = $0 }))
-                    }
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 14)
-                }
-                .card()
-                Text("Auto follows your iPhone, including the switch at sunset.")
-                    .font(.system(size: 11.5))
-                    .foregroundStyle(Tone.text3)
-                    .padding(.horizontal, 5)
-                    .padding(.top, 9)
-
-                Text("Children").eyebrow().padding(.top, 26).padding(.bottom, 9)
-                VStack(spacing: 0) {
-                    ForEach(Array(etat.profiles.enumerated()), id: \.element.id) { i, p in
-                        NavigationLink { ProfilesScreen() } label: {
-                            SettingRow(title: p.firstName, value: childSummary(p))
+            List {
+                Section {
+                    ForEach(etat.profiles) { p in
+                        Button {
+                            etat.select(p.id)
+                        } label: {
+                            ProfileRow(profile: p,
+                                        isOn: !etat.familyMode && p.id == etat.activeProfileID,
+                                        noms: etat.allergenNames(p.allergens),
+                                        tally: etat.tally(for: p))
                         }
-                        .buttonStyle(.plain)
-                        Divider().overlay(Tone.hairline).padding(.leading, 15)
-                    }
-                    NavigationLink { ProfilesScreen() } label: {
-                        SettingRow(title: "Add a child", value: "+", accent: true)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .card()
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                pendingDeletion = p
+                            } label: { Label("Remove", systemImage: "trash") }
 
-                Text("Subscription").eyebrow().padding(.top, 26).padding(.bottom, 9)
-                Button { showPaywall = true } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(etat.subscribed ? "Active" : "Weeks ahead")
-                                .font(.system(size: 15))
-                                .foregroundStyle(Tone.text)
-                            Text("7 new recipes every week")
-                                .font(Type.small)
-                                .foregroundStyle(Tone.text2)
+                            Button {
+                                editing = p
+                            } label: { Label("Edit", systemImage: "pencil") }
+                            .tint(Tone.brand)
                         }
-                        Spacer(minLength: 10)
-                        Text(etat.subscribed ? "Manage" : "Subscribe")
-                            .font(.system(size: 14.5, weight: .semibold))
-                            .foregroundStyle(Tone.brand)
                     }
-                    .padding(15)
+                } header: {
+                    Text("Your children")
+                } footer: {
+                    Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
                 }
-                .buttonStyle(.plain)
-                .card()
 
-                Text("Content").eyebrow().padding(.top, 26).padding(.bottom, 9)
-                VStack(spacing: 0) {
-                    SettingRow(title: "Recipes available", value: "\(etat.recipes.count)")
-                    Divider().overlay(Tone.hairline).padding(.leading, 15)
-                    Button { Task { await etat.sync() } } label: {
-                        SettingRow(title: "Refresh", value: etat.lastSyncLabel, accent: true)
+                if etat.profiles.count > 1 {
+                    Section {
+                        Toggle(isOn: Binding(
+                            get: { etat.familyMode },
+                            set: { _ in etat.toggleFamilyMode() })) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Everyone at the table").font(.body)
+                                    Text("Youngest child’s age, and everything each one avoids")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
+                            .tint(Tone.brand)
                     }
-                    .buttonStyle(.plain)
                 }
-                .card()
 
-                Text("Your children's profiles stay on this device and are never sent anywhere.")
-                    .font(.system(size: 11.5))
-                    .foregroundStyle(Tone.text3)
-                    .lineSpacing(2)
-                    .padding(.horizontal, 5)
-                    .padding(.top, 20)
-
-                Text(Settings.medicalDisclaimer)
-                    .font(.system(size: 11.5))
-                    .foregroundStyle(Tone.text3)
-                    .lineSpacing(2)
-                    .padding(.horizontal, 5)
-                    .padding(.top, 14)
+                Section {
+                    Button {
+                        editing = ChildProfile(name: "", ageMonths: 9, allergens: [])
+                    } label: {
+                        Label("Add a child", systemImage: "plus.circle.fill")
+                    }
+                }
             }
-            .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 130)
+            .navigationTitle("Children")
+            .sheet(item: $editing) { p in
+                ProfileEditor(profile: p)
+            }
+            .alert("Remove this profile?",
+                   isPresented: Binding(get: { pendingDeletion != nil },
+                                        set: { if !$0 { pendingDeletion = nil } }),
+                   presenting: pendingDeletion) { p in
+                Button("Remove", role: .destructive) { etat.remove(p) }
+                Button("Cancel", role: .cancel) { }
+            } message: { p in
+                Text("\(p.name)'s profile and their allergens will be erased from this device.")
+            }
         }
-        .background(Tone.canvas.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $showPaywall) { PaywallScreen() }
-    }
-
-    private func childSummary(_ p: ChildProfile) -> String {
-        let n = p.allergens.count
-        if n == 0 { return Format.age(p.ageMonths) }
-        return "\(Format.age(p.ageMonths)) · " +
-            String(format: String(localized: "%lld allergens"), n)
     }
 }
 
@@ -285,141 +240,137 @@ struct SettingsScreen: View {
     @State private var email = ""
     @State private var accountMessage: String?
 
+    /* Dark cards on the canvas rather than a grouped List: a system List
+     * brings its own background and its own insets, and neither matches the
+     * rest of the app.
+     *
+     * Split into one property per section. A single body holding all five
+     * defeats the type checker — "unable to type-check in reasonable time" is
+     * what a 200-line ViewBuilder earns. */
     var body: some View {
         NavigationStack {
-            List {
-                /* Children come first: it is what gets edited most — a
-                 * birthday, a newly diagnosed allergen. The tab is gone, so
-                 * this is where the screen now lives. */
-                Section("Children") {
-                    ForEach(etat.profiles) { p in
-                        NavigationLink {
-                            ProfilesScreen()
-                        } label: {
-                            HStack(spacing: 10) {
-                                ProfileAvatar(profile: p, size: 30)
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(p.firstName).font(.subheadline.weight(.medium))
-                                    Text(etat.allergenNames(p.allergens).isEmpty
-                                         ? Format.age(p.ageMonths)
-                                         : "\(Format.age(p.ageMonths)) · \(etat.allergenNames(p.allergens).count) allergens")
-                                        .font(.caption2).foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                    }
-                    NavigationLink {
-                        ProfilesScreen()
-                    } label: {
-                        Label("Add a child", systemImage: "plus")
-                            .foregroundStyle(Tone.brand)
-                    }
-                }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Settings")
+                        .font(Type.display)
+                        .foregroundStyle(Tone.text)
+                        .padding(.top, 8)
 
-                /* Appearance sits high because it is the setting a person
-                 * changes on the first evening and then never again. Burying
-                 * it makes them hunt. */
-                /* Section(_:) with a String title has no footer overload —
-                 * the header goes in its own builder when a footer is present. */
-                Section {
-                    Picker("Theme", selection: Binding(
-                        get: { etat.theme },
-                        set: { etat.theme = $0 }
-                    )) {
-                        ForEach(AppTheme.allCases, id: \.self) { t in
-                            Label(t.label, systemImage: t.symbol).tag(t)
-                        }
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
-                } header: {
-                    Text("Appearance")
-                } footer: {
-                    Text("Match iPhone follows your system setting, including the automatic switch at sunset.")
+                    appearanceSection
+                    childrenSection
+                    subscriptionSection
+                    contentSection
+                    footnotes
                 }
-
-                Section("Subscription") {
-                    HStack {
-                        Text(etat.subscribed ? "Active" : "No subscription")
-                        Spacer()
-                        Button(etat.subscribed ? "Manage" : "Subscribe") { showPaywall = true }
-                            .tint(Tone.brand)
-                    }
-                    Button("Restore purchases") {
-                        Task { await etat.subscription.restore() }
-                    }
-                }
-
-                Section {
-                    if let c = etat.subscription.email {
-                        HStack {
-                            Text("Signed in")
-                            Spacer()
-                            Text(c).foregroundStyle(.secondary).font(.footnote)
-                        }
-                        Button("Sign out", role: .destructive) {
-                            Task { await etat.signOut() }
-                        }
-                    } else {
-                        TextField("you@example.com", text: $email)
-                            .textContentType(.emailAddress)
-                            .keyboardType(.emailAddress)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        Button("Sign in") {
-                            Task {
-                                do {
-                                    try await etat.signIn(email: email)
-                                    accountMessage = nil
-                                } catch {
-                                    accountMessage = "Couldn’t sign in. Check the address and your connection."
-                                }
-                            }
-                        }
-                        .disabled(!email.contains("@"))
-                    }
-                    if let m = accountMessage {
-                        Text(m).font(.footnote).foregroundStyle(Tone.no)
-                    }
-                } header: {
-                    Text("Account")
-                } footer: {
-                    Text("The account is only used to find your subscription across devices. Your children’s profiles stay on this device and are never sent anywhere.")
-                }
-
-                Section("Content") {
-                    HStack {
-                        Text("Last updated")
-                        Spacer()
-                        Text(etat.lastSync.map {
-                            $0.formatted(date: .abbreviated, time: .shortened)
-                        } ?? "never")
-                            .foregroundStyle(.secondary)
-                            .font(.footnote)
-                    }
-                    Button("Refresh now") {
-                        Task { await etat.sync() }
-                    }
-                    HStack {
-                        Text("Recipes available")
-                        Spacer()
-                        Text("\(etat.recipes.count)").foregroundStyle(.secondary).monospacedDigit()
-                    }
-                }
-
-                Section {
-                    Link("Terms of Use", destination: Settings.terms)
-                    Link("Privacy", destination: Settings.privacy)
-                } footer: {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(Settings.medicalDisclaimer)
-                        Text("Product data: Open Food Facts, under the ODbL license.")
-                    }
-                }
+                .padding(.horizontal, Layout.gutter)
+                .padding(.bottom, 130)
             }
-            .navigationTitle("Settings")
+            .background(Tone.canvas.ignoresSafeArea())
+            .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showPaywall) { PaywallScreen() }
         }
+    }
+
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Appearance").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            HStack {
+                Text("Theme")
+                    .font(.system(size: 14.5))
+                    .foregroundStyle(Tone.text)
+                Spacer(minLength: 10)
+                ThemeSegments(theme: Binding(get: { etat.theme },
+                                             set: { etat.theme = $0 }))
+            }
+            .padding(.horizontal, 15)
+            .padding(.vertical, 14)
+            .card()
+
+            Text("Auto follows your iPhone, including the switch at sunset.")
+                .font(.system(size: 11.5))
+                .foregroundStyle(Tone.text3)
+                .padding(.horizontal, 5)
+                .padding(.top, 9)
+        }
+    }
+
+    private var childrenSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Children").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            VStack(spacing: 0) {
+                ForEach(etat.profiles) { p in
+                    NavigationLink { ProfilesScreen() } label: {
+                        SettingRow(title: p.firstName, value: childSummary(p))
+                    }
+                    .buttonStyle(.plain)
+                    Divider().overlay(Tone.hairline).padding(.leading, 15)
+                }
+                NavigationLink { ProfilesScreen() } label: {
+                    SettingRow(title: "Add a child", value: "+", accent: true)
+                }
+                .buttonStyle(.plain)
+            }
+            .card()
+        }
+    }
+
+    private var subscriptionSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Subscription").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            Button { showPaywall = true } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(etat.subscribed ? "Active" : "Weeks ahead")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Tone.text)
+                        Text("7 new recipes every week")
+                            .font(Type.small)
+                            .foregroundStyle(Tone.text2)
+                    }
+                    Spacer(minLength: 10)
+                    Text(etat.subscribed ? "Manage" : "Subscribe")
+                        .font(.system(size: 14.5, weight: .semibold))
+                        .foregroundStyle(Tone.brand)
+                }
+                .padding(15)
+            }
+            .buttonStyle(.plain)
+            .card()
+        }
+    }
+
+    private var contentSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Content").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            VStack(spacing: 0) {
+                SettingRow(title: "Recipes available", value: "\(etat.recipes.count)")
+                Divider().overlay(Tone.hairline).padding(.leading, 15)
+                Button { Task { await etat.sync() } } label: {
+                    SettingRow(title: "Refresh", value: etat.lastSyncLabel, accent: true)
+                }
+                .buttonStyle(.plain)
+            }
+            .card()
+        }
+    }
+
+    private var footnotes: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Your children's profiles stay on this device and are never sent anywhere.")
+            Text(Settings.medicalDisclaimer)
+        }
+        .font(.system(size: 11.5))
+        .foregroundStyle(Tone.text3)
+        .lineSpacing(2)
+        .padding(.horizontal, 5)
+        .padding(.top, 20)
+    }
+
+    private func childSummary(_ p: ChildProfile) -> String {
+        let n = p.allergens.count
+        if n == 0 { return Format.age(p.ageMonths) }
+        return Format.age(p.ageMonths) + " · " +
+            String(format: String(localized: "%lld allergens"), n)
     }
 }
 
@@ -585,33 +536,17 @@ struct ProductButton: View {
 
 // MARK: - Settings pieces
 
-/// Three states in one control, the shape from the comp. A Picker with
-/// .segmented brings the system's own chrome, which does not match.
+/// Three states in one control. A Picker with .segmented brings the system's
+/// own chrome, which does not match the rest of the app.
 struct ThemeSegments: View {
     @Binding var theme: AppTheme
 
     var body: some View {
         HStack(spacing: 5) {
             ForEach(AppTheme.allCases, id: \.self) { t in
-                let on = theme == t
-                Button {
+                Segment(theme: t, selected: theme == t) {
                     withAnimation(.smooth(duration: 0.22)) { theme = t }
-                } label: {
-                    Text(t.label)
-                        .font(.system(size: 12.5, weight: .semibold))
-                        .foregroundStyle(on ? Tone.canvas : Tone.text2)
-                        .padding(.horizontal, 13)
-                        .padding(.vertical, 7)
-                        .background {
-                            if on {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Tone.text)
-                                    .shadow(color: .black.opacity(0.3), radius: 5, y: 2)
-                            }
-                        }
                 }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(on ? [.isSelected] : [])
             }
         }
         .padding(4)
@@ -620,22 +555,35 @@ struct ThemeSegments: View {
     }
 }
 
+private struct Segment: View {
+    let theme: AppTheme
+    let selected: Bool
+    let tap: () -> Void
+
+    var body: some View {
+        Button(action: tap) {
+            Text(theme.label)
+                .font(.system(size: 12.5, weight: .semibold))
+                .foregroundStyle(selected ? Tone.canvas : Tone.text2)
+                .padding(.horizontal, 13)
+                .padding(.vertical, 7)
+                .background {
+                    if selected {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Tone.text)
+                            .shadow(color: .black.opacity(0.3), radius: 5, y: 2)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+}
+
 struct SettingRow: View {
-    let title: LocalizedStringKey
+    let title: String
     let value: String
     var accent = false
-
-    init(title: String, value: String, accent: Bool = false) {
-        self.title = LocalizedStringKey(title)
-        self.value = value
-        self.accent = accent
-    }
-
-    init(title: LocalizedStringKey, value: String, accent: Bool = false) {
-        self.title = title
-        self.value = value
-        self.accent = accent
-    }
 
     var body: some View {
         HStack {

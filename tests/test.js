@@ -133,6 +133,61 @@ test("boulettes sans moutarde → moutarde omise, recette adaptée", () => {
   assert.equal(r.status, "adapted");
 });
 
+/* ---------- steps carry the swapped names ---------- */
+
+/* Step 2 of the banana muffins used to read "Mix the banana, egg, milk and
+ * oil" while the engine had just replaced the egg and the milk. A parent
+ * mid-recipe read the name of the food their child cannot eat, at the step
+ * where they are told to add it — and had to scroll back to translate, with
+ * their hands in the batter. */
+
+test("steps: the replacement name appears in the step text", () => {
+  const res = Engine.adapterRecette(parId["banana-oat-muffins"],
+    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+  const etape = res.steps[1].toLowerCase();
+  assert.ok(etape.includes("applesauce"), "the replacement is named");
+  assert.ok(etape.includes("soy beverage"), "the second one too");
+  assert.ok(!/\begg\b/.test(etape), "the removed ingredient is gone");
+});
+
+test("steps: the original text stays available", () => {
+  const res = Engine.adapterRecette(parId["banana-oat-muffins"],
+    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+  assert.ok(/\begg\b/i.test(res.stepsOriginal[1]), "stepsOriginal untouched");
+});
+
+test("steps: a leading allergen word is consumed with the noun", () => {
+  /* Replacing only "butter" in "peanut butter" would leave "peanut sunflower
+   * seed butter" — the allergen still in the sentence. */
+  let touche = null;
+  recettes.forEach((r) => {
+    const res = Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 36 }, donnees);
+    (res.steps || []).forEach((st) => {
+      const t = (typeof st === "string" ? st : st.text || "").toLowerCase();
+      if (/\bpeanut\b/.test(t)) touche = r.id + ": " + t;
+    });
+  });
+  assert.ok(!touche, "no step mentions peanut for a peanut-avoiding profile — " + touche);
+});
+
+test("steps: plurals are matched", () => {
+  let trouve = null;
+  recettes.forEach((r) => {
+    const res = Engine.adapterRecette(r, { allergens: ["egg"], ageMois: 36 }, donnees);
+    (res.steps || []).forEach((st) => {
+      const t = (typeof st === "string" ? st : st.text || "").toLowerCase();
+      if (/\beggs?\b/.test(t)) trouve = r.id + ": " + t;
+    });
+  });
+  assert.ok(!trouve, "no step says egg or eggs for an egg-avoiding profile — " + trouve);
+});
+
+test("steps: a recipe with no swap keeps its steps identical", () => {
+  const r = parId["banana-oat-muffins"];
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  assert.deepStrictEqual(res.steps, r.steps, "untouched when nothing is swapped");
+});
+
 /* ---------- age rules ---------- */
 
 test("barres granola à 9 mois : miel → sirop d'érable (swap d'âge) + alerte ageMinBase", () => {

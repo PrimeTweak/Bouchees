@@ -87,6 +87,21 @@ enum Tone {
                        startPoint: .top, endPoint: .bottom)
     }
 
+    // ---- names the rest of the app already uses ----
+    // Kept as aliases rather than renamed everywhere: a rename that touches
+    // twenty call sites is twenty chances to miss one, and I missed six.
+
+    static var surface: Color { cardTop }
+    static var raised: Color { cardTop }
+    static var textSecondary: Color { text2 }
+    static var textTertiary: Color { text3 }
+
+    /// Verdict washes, for banners and cards that carry a status.
+    static let yesWash = dyn(light: 0xEFF6F1, dark: 0x0F2214)
+    static let swapWash = dyn(light: 0xFDF5E9, dark: 0x2A1E0A)
+    static let noWash = dyn(light: 0xFDF0EF, dark: 0x2A0F0D)
+    static let brandWash = dyn(light: 0xFAEEF2, dark: 0x2A1119)
+
     private static func dyn(light: UInt32, dark: UInt32, darkAlpha: Double = 1) -> Color {
         Color(UIColor { t in
             t.userInterfaceStyle == .dark
@@ -140,6 +155,8 @@ enum Layout {
     static let tabBottom: CGFloat = 26
     static let gutter: CGFloat = 22
     static let tap: CGFloat = 44
+    /// The name the rest of the app uses.
+    static var tapTarget: CGFloat { tap }
 
     /// Photo heights, measured off the comp.
     static let heroPhoto: CGFloat = 420
@@ -150,6 +167,9 @@ enum Layout {
     static let topVeil: CGFloat = 150
 
     static let cardRadius: CGFloat = 20
+    /// The 2026 bento exaggerates the radius: tiles read as tactile rather
+    /// than rectangular.
+    static let tileRadius: CGFloat = 30
     static let sheetRadius: CGFloat = 30
     static let thumb: CGFloat = 62
     static let thumbRadius: CGFloat = 17
@@ -173,36 +193,42 @@ struct Glass: ViewModifier {
     var shape: AnyShape = AnyShape(Capsule())
     var tinted: Bool = false
 
-    @ViewBuilder
+    /* NO `glassEffect` HERE, DELIBERATELY.
+     *
+     * The runner builds with Xcode 16.4, whose SDK is iOS 18.5. That API
+     * ships with Xcode 26, so the symbol does not exist at compile time —
+     * and `if #available(iOS 26, *)` guards RUNTIME, not compilation. The
+     * compiler still has to find it.
+     *
+     * So the material is drawn by hand, the way the comp is. When the build
+     * moves to Xcode 26, this whole body becomes one line.
+     */
     func body(content: Content) -> some View {
-        if #available(iOS 26, *) {
-            content.glassEffect(tinted ? .regular.tint(Tone.brand.opacity(0.14))
-                                       : .regular,
-                                in: shape)
-        } else {
-            content
-                .background(.ultraThinMaterial, in: shape)
-                .overlay {
-                    shape
-                        .fill(LinearGradient(
-                            colors: [.white.opacity(0.20), .white.opacity(0.05),
-                                     .white.opacity(0.11)],
-                            startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .blendMode(.plusLighter)
-                }
-                /* The specular line. Without it the material reads as frosted
-                 * plastic rather than glass. */
-                .overlay {
-                    shape.strokeBorder(
-                        LinearGradient(colors: [.white.opacity(0.55),
-                                                .white.opacity(0.14),
-                                                .white.opacity(0.30)],
-                                       startPoint: .top, endPoint: .bottom),
-                        lineWidth: 0.75)
-                }
-                .shadow(color: .black.opacity(0.42), radius: 17, y: 10)
-                .shadow(color: .black.opacity(0.28), radius: 4, y: 2)
-        }
+        content
+            .background(.ultraThinMaterial, in: shape)
+            .overlay {
+                shape
+                    .fill(LinearGradient(
+                        colors: [.white.opacity(0.20), .white.opacity(0.05),
+                                 .white.opacity(0.11)],
+                        startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .blendMode(.plusLighter)
+            }
+            .overlay {
+                /* The specular line on the top edge. Without it the material
+                 * reads as frosted plastic rather than glass. */
+                shape.strokeBorder(
+                    LinearGradient(colors: [.white.opacity(0.55),
+                                            .white.opacity(0.14),
+                                            .white.opacity(0.30)],
+                                   startPoint: .top, endPoint: .bottom),
+                    lineWidth: 0.75)
+            }
+            .overlay {
+                if tinted { shape.fill(Tone.brand.opacity(0.10)) }
+            }
+            .shadow(color: .black.opacity(0.42), radius: 17, y: 10)
+            .shadow(color: .black.opacity(0.28), radius: 4, y: 2)
     }
 }
 
@@ -212,6 +238,9 @@ extension View {
     }
 
     /// A card: not glass. Content layers get a gradient fill and a hairline.
+    /// A bento tile: the card treatment at the larger radius.
+    func tile() -> some View { card(Layout.tileRadius) }
+
     func card(_ radius: CGFloat = Layout.cardRadius) -> some View {
         self
             .background(Tone.cardGradient,

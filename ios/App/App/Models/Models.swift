@@ -215,6 +215,9 @@ struct AdaptedRecipe: Codable, Sendable {
     let alerts: [Alert]
     let texture: TextureStage
     let steps: [String]
+    /// The text before the swapped names were substituted in. Optional so an
+    /// older cached payload still decodes.
+    let stepsOriginal: [String]?
     let remainingAllergens: [String]
 
     var blockingAlert: Alert? { alerts.first { $0.level == .blocking } }

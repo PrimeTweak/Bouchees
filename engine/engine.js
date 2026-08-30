@@ -50,6 +50,78 @@
   }
 
   /* Texture stage that applies to a given age. */
+  /* Replace each swapped ingredient's name with its replacement, wherever the
+   * step text mentions it. Case-insensitive, whole-word, longest name first so
+   * "cow's milk" is matched before "milk". */
+  function reecrireEtapes(etapes, ingredients) {
+    if (!etapes || !etapes.length) return etapes;
+
+    var swaps = ingredients
+      .filter(function (i) { return i.status === "swapped" && i.toName; })
+      .sort(function (a, b) { return b.name.length - a.name.length; });
+
+    if (!swaps.length) return etapes;
+
+    return etapes.map(function (etape) {
+      var texte = typeof etape === "string" ? etape : etape.text;
+      if (!texte) return etape;
+
+      swaps.forEach(function (i) {
+        /* A step says "milk" where the catalogue says "Cow's milk". Try the
+         * full name first, then the last significant word — that is how the
+         * corpus actually writes them. */
+        var motif = new RegExp("\\b" + echapper(i.name) + "s?\\b", "gi");
+        if (!motif.test(texte)) {
+          var court = nomCourt(i.name);
+          if (!court) return;
+          /* Match the WHOLE noun phrase, not the last word alone.
+           *
+           * Replacing just "butter" in "peanut butter" leaves "peanut
+           * sunflower seed butter" — with the allergen still in the sentence.
+           * So any leading words from the ingredient's own name are consumed
+           * too, and the plural is allowed. */
+          var prefixes = motsAvant(i.name, court);
+          motif = new RegExp("\\b(?:" + prefixes + "\\s+)?" + echapper(court) + "s?\\b", "gi");
+        } else {
+          motif.lastIndex = 0;
+        }
+        texte = texte.replace(motif, function (trouve) {
+          /* Keep the original capitalisation: a name at the start of a
+           * sentence stays capitalised. */
+          return trouve[0] === trouve[0].toUpperCase()
+            ? i.toName.charAt(0).toUpperCase() + i.toName.slice(1)
+            : i.toName.charAt(0).toLowerCase() + i.toName.slice(1);
+        });
+      });
+
+      return typeof etape === "string" ? texte
+        : Object.assign({}, etape, { text: texte });
+    });
+  }
+
+  /* "Cow's milk" -> "milk". Skips words that are too generic to match safely. */
+  function nomCourt(nom) {
+    var mots = String(nom).toLowerCase().split(/[\s']+/).filter(Boolean);
+    var dernier = mots[mots.length - 1];
+    if (!dernier || dernier.length < 3) return null;
+    if (["oil", "water", "salt", "sugar", "powder"].indexOf(dernier) !== -1) return null;
+    return dernier;
+  }
+
+  /* The words that sit before the head noun, as an alternation: for
+   * "Peanut butter" and head "butter", this yields "peanut". */
+  function motsAvant(nom, tete) {
+    var mots = String(nom).toLowerCase().split(/[\s']+/).filter(Boolean);
+    var avant = mots.slice(0, mots.lastIndexOf(tete)).filter(function (m) {
+      return m.length > 2;
+    });
+    return avant.length ? avant.map(echapper).join("|") : "";
+  }
+
+  function echapper(t) {
+    return String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
   function stadePour(ageMois, base) {
     for (var i = 0; i < base.stages.length; i++) {
       var s = base.stages[i];
@@ -224,6 +296,22 @@
     /* Checkable invariant: the allergens derived from the result never
      * intersect the avoided list, except when status is not_adaptable. */
     resultat.remainingAllergens = allergenesDe(resultat.ingredients, catalogue);
+    /* THE STEP TEXT NAMES THE INGREDIENT THAT WAS REMOVED.
+     *
+     * Step 2 of the banana muffins reads "Mix the banana, egg, milk and oil"
+     * — but the engine has just replaced the egg with applesauce and the milk
+     * with soy. A parent mid-recipe reads the name of the food their child
+     * cannot eat, at the step where they are told to add it, and has to scroll
+     * back to the swap list to translate. With their hands in the batter.
+     *
+     * Measured on the corpus: eight of the seventeen adapted recipes carry
+     * this conflict for a milk/egg/peanut profile.
+     *
+     * So the steps are rewritten with the names the parent actually has. The
+     * original stays available in `stepsOriginal` for anyone who wants it. */
+    resultat.stepsOriginal = recette.steps;
+    resultat.steps = reecrireEtapes(recette.steps, resultat.ingredients);
+
     return resultat;
   }
 

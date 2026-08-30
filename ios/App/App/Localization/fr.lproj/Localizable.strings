@@ -293,3 +293,14 @@
 "Yesterday" = "Hier";
 "Your children's profiles stay on this device and are never sent anywhere." = "Les profils de vos enfants restent sur cet appareil et ne sont jamais envoyés ailleurs.";
 "swaps" = "échanges";
+"Step %lld of %lld · for %@" = "Étape %lld sur %lld · pour %@";
+"%@ replaces %@." = "%@ remplace %@.";
+"Screen stays awake" = "Écran maintenu allumé";
+"Next step" = "Étape suivante";
+"Done" = "Terminé";
+"Timer" = "Minuteur";
+"Running" = "En cours";
+"%lld minutes" = "%lld minutes";
+"Start cooking" = "Commencer à cuisiner";
+"recipes for %@ today" = "recettes pour %@ aujourd’hui";
+"A product at the store" = "Un produit à l’épicerie";

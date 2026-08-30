@@ -390,6 +390,41 @@ def check():
                                     f"an error in Swift 6")
                     break
 
+    # 7h. a member called on a project enum that the enum does not declare.
+    #     Rewriting Tone.swift renamed six tokens and left twenty call sites
+    #     pointing at names that no longer existed — twenty-one compile errors
+    #     from one edit. This finds them in a second.
+    #
+    #     Only enums used as namespaces (Tone, Layout, Type) are checked, and
+    #     only static members, so an instance property on a struct is left
+    #     alone.
+    namespaces = {}
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"enum (\w+) \{((?:.|\n)*?)\n\}", code):
+            nom, corps = m.group(1), m.group(2)
+            membres = set(re.findall(
+                r"^\s*(?:public\s+)?static\s+(?:let|var|func)\s+(\w+)", corps, re.M))
+            # a case is a member too
+            for c in re.findall(r"^\s*case\s+([\w,\s]+)", corps, re.M):
+                membres |= {x.strip().split("(")[0] for x in c.split(",") if x.strip()}
+            if membres:
+                namespaces[nom] = namespaces.get(nom, set()) | membres
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(code.split("\n"), 1):
+            for m in re.finditer(r"\b([A-Z]\w+)\.(\w+)\b", l):
+                ns, membre = m.group(1), m.group(2)
+                if ns not in namespaces or membre in namespaces[ns]:
+                    continue
+                # `self` and type-level things are not members
+                if membre in ("self", "Type", "init", "allCases"):
+                    continue
+                proches = sorted(namespaces[ns])[:6]
+                problems.append(f"{filename}:{i}: {ns}.{membre} — that namespace has no "
+                                f"'{membre}'  (it has: {', '.join(proches)}…)")
+                break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

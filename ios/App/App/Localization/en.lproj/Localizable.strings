@@ -295,3 +295,14 @@
 "Yesterday" = "Yesterday";
 "Your children's profiles stay on this device and are never sent anywhere." = "Your children's profiles stay on this device and are never sent anywhere.";
 "swaps" = "swaps";
+"Step %lld of %lld · for %@" = "Step %lld of %lld · for %@";
+"%@ replaces %@." = "%@ replaces %@.";
+"Screen stays awake" = "Screen stays awake";
+"Next step" = "Next step";
+"Done" = "Done";
+"Timer" = "Timer";
+"Running" = "Running";
+"%lld minutes" = "%lld minutes";
+"Start cooking" = "Start cooking";
+"recipes for %@ today" = "recipes for %@ today";
+"A product at the store" = "A product at the store";

@@ -130,6 +130,10 @@ private struct DemoCard: View {
     let recipe: Recipe
     let result: AdaptedRecipe
 
+    /* Split into three small views. One body holding the photo, the title,
+     * three swap rows and a verdict defeats the type checker — the error it
+     * gives, "unable to type-check in reasonable time", names the body and
+     * not the part that is heavy. */
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             RecipeVisual(recipe: recipe, result: result)
@@ -139,49 +143,72 @@ private struct DemoCard: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(recipe.name)
-                    .font(Type.title)
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Tone.text)
-
-                ForEach(result.ingredients.filter { $0.status == .swapped }.prefix(3), id: \.listID) { i in
-                    HStack(alignment: .top, spacing: 9) {
-                        Text("→")
-                            .font(Type.caption.weight(.bold))
-                            .foregroundStyle(Tone.swap)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(i.name)
-                                .font(Type.caption)
-                                .strikethrough()
-                                .foregroundStyle(Tone.textTertiary)
-                            Text(i.toName ?? "")
-                                .font(Type.secondary.weight(.semibold))
-                                .foregroundStyle(Tone.text)
-                            if let why = i.reason {
-                                Text(why)
-                                    .font(Type.caption)
-                                    .foregroundStyle(Tone.textSecondary)
-                            }
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.top, 11)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
-
-                if result.status == .asIs {
-                    HStack(spacing: 7) {
-                        VerdictMark(status: .asIs)
-                        Text("Nothing to change")
-                            .font(Type.caption.weight(.semibold))
-                            .foregroundStyle(Tone.yes)
-                    }
-                    .padding(.top, 11)
-                }
+                swaps
+                readyMark
             }
-            .padding(14)
+            .padding(16)
         }
         .card(24)
         .shadow(color: .black.opacity(0.35), radius: 20, y: 10)
         .animation(.smooth(duration: 0.3), value: result.swapCount)
+    }
+
+    private var swaps: some View {
+        ForEach(swapped.prefix(3), id: \.listID) { i in
+            SwapRow(from: i.name, to: i.toName ?? "", why: i.reason)
+        }
+    }
+
+    @ViewBuilder
+    private var readyMark: some View {
+        if result.status == .asIs {
+            HStack(spacing: 8) {
+                VerdictMark(status: .asIs)
+                Text("Nothing to change")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Tone.yes)
+            }
+            .padding(.top, 13)
+        }
+    }
+
+    private var swapped: [AdaptedIngredient] {
+        result.ingredients.filter { $0.status == .swapped }
+    }
+}
+
+/// One swap, with its reason attached. The reason is what separates this from
+/// a search engine, so it never leaves the row it explains.
+private struct SwapRow: View {
+    let from: String
+    let to: String
+    let why: String?
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 11) {
+            Text("→")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(Tone.swap)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(from)
+                    .font(.system(size: 13.5))
+                    .strikethrough()
+                    .foregroundStyle(Tone.text3)
+                Text(to)
+                    .font(.system(size: 15.5, weight: .semibold))
+                    .foregroundStyle(Tone.text)
+                if let why {
+                    Text(why)
+                        .font(Type.small)
+                        .foregroundStyle(Tone.text2)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.top, 13)
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 

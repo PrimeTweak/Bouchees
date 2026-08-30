@@ -8,6 +8,7 @@ import SwiftUI
 
 struct RecipeDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var cooking = false
     let recipe: Recipe
     let result: AdaptedRecipe
     let firstName: String
@@ -70,10 +71,38 @@ struct RecipeDetailScreen: View {
         .toolbar(.hidden, for: .navigationBar)
         .overlay(alignment: .topLeading) { backButton }
         .overlay(alignment: .topTrailing) { saveButton }
+        .overlay(alignment: .bottom) { startButton }
+        .navigationDestination(isPresented: $cooking) {
+            CookingMode(recipe: recipe, result: result, firstName: firstName)
+        }
     }
 
     /// Glass circles floating over the photo, with content scrolling beneath —
     /// the exact pattern the platform describes for fixed buttons.
+    /// The only button on this page. Everything else is read; this one moves
+    /// you into hands-in-the-batter mode.
+    private var startButton: some View {
+        Button { cooking = true } label: {
+            Text("Start cooking")
+                .font(.system(size: 16.5, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 58)
+                .background {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(Tone.brandGradient)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .strokeBorder(.white.opacity(0.3), lineWidth: 0.75)
+                        }
+                }
+                .shadow(color: Tone.brandDeep.opacity(0.46), radius: 18, y: 10)
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 26)
+    }
+
     /// Glass circles over the photo, content scrolling beneath — the pattern
     /// the platform describes for fixed buttons.
     private var backButton: some View {

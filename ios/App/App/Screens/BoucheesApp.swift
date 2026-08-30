@@ -74,7 +74,7 @@ struct RootView: View {
         ZStack(alignment: .bottom) {
             Group {
                 switch tab {
-                case 0: RecipesScreen()
+                case 0: RecipesScreen(tab: $tab)
                 case 1: ScannerScreen(tab: $tab)
                 default: SettingsScreen()
                 }

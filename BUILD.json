@@ -1,12 +1,11 @@
 {
-  "build": 54,
+  "build": 56,
   "date": "2026-08-29",
   "carries": [
-    "every screen rebuilt to the comp",
-    "real Liquid Glass: specular, shadow, illumination",
-    "native glassEffect on iOS 26",
-    "floating capsule + search island",
-    "photo 420/430 with scrim",
-    "settings and picker redesigned"
+    "bento home: hero, count, scan, child strip",
+    "cooking mode with wake lock and timer",
+    "engine rewrites step text with swapped names",
+    "5 new tests, 113 total",
+    "Start cooking as the only button on the detail"
   ]
 }
