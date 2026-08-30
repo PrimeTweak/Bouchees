@@ -1,12 +1,10 @@
 {
-  "build": 59,
+  "build": 60,
   "date": "2026-08-29",
   "carries": [
-    "tab bar reserves its height \u2014 content no longer hidden",
-    "sliding indicator with matchedGeometryEffect",
-    "child pill below the status bar, not into it",
-    "hero adapts when there is no photo, only a drawing",
-    "counts use tabular figures, not monospace",
-    "segments use the brand, not solid black"
+    "tab bar as safeAreaInset \u2014 taps work, no overlap",
+    "drawing background off in the hero (the grey box)",
+    "workflow selects the newest Xcode on the runner",
+    "native glassEffect behind #if compiler(>=6.2)"
   ]
 }

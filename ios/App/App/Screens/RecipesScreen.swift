@@ -41,7 +41,7 @@ struct RecipesScreen: View {
                     locked
                     disclaimer
                 }
-                .padding(.bottom, 24)
+                .padding(.bottom, 20)
             }
             .background(Tone.canvas.ignoresSafeArea())
             .ignoresSafeArea(.container, edges: .top)
@@ -89,7 +89,8 @@ struct RecipesScreen: View {
                     } else {
                         ZStack {
                             Tone.heroField
-                            RecipeVisual(recipe: h.recipe, result: h.result)
+                            RecipeVisual(recipe: h.recipe, result: h.result,
+                                         drawingBackground: false)
                                 .frame(width: 190, height: 190)
                                 .offset(y: -46)
                         }
@@ -122,7 +123,7 @@ struct RecipesScreen: View {
                             .padding(.top, 14)
                     }
                     .padding(.horizontal, Layout.gutter)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 20)
 
                     VStack {
                         HStack {

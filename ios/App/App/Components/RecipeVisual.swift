@@ -20,6 +20,8 @@ import UIKit
 struct RecipeVisual: View {
     let recipe: Recipe
     let result: AdaptedRecipe
+    /// Off in the hero, where the drawing sits on its own field.
+    var drawingBackground = true
 
     @State private var photo: UIImage?
     @State private var echec = false
@@ -36,7 +38,8 @@ struct RecipeVisual: View {
                     .scaledToFill()
                     .transition(.opacity)
             } else {
-                DishArtwork(result: result, category: recipe.category)
+                DishArtwork(showsBackground: drawingBackground,
+                            result: result, category: recipe.category)
             }
         }
         .task(id: recipe.id) { await load() }

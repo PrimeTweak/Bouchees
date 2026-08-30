@@ -108,6 +108,25 @@ jobs:
         # is wrong on its own — they simply disagree.
         run: node tools/check-decoding.js
 
+      # THE NEWEST XCODE ON THE RUNNER, NOT THE DEFAULT.
+      #
+      # The default is 16.4, whose SDK is iOS 18.5 — no `glassEffect`, no
+      # native Liquid Glass. Apple said at WWDC26 that the iOS 27 refinements
+      # apply AUTOMATICALLY to apps built against the framework, so the single
+      # highest-value change here is compiling with a newer SDK.
+      #
+      # If none is installed the step reports it and the build continues on
+      # the default; the code compiles either way.
+      - name: Select the newest Xcode
+        run: |
+          ls /Applications | grep -i '^Xcode' || true
+          NEWEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$NEWEST" ]; then
+            sudo xcode-select -s "$NEWEST/Contents/Developer"
+          fi
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
       - name: XcodeGen
         run: brew install xcodegen
 

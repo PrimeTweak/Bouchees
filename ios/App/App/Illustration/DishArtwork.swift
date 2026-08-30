@@ -237,6 +237,11 @@ struct SeededRandom {
 // MARK: - La vue
 
 struct DishArtwork: View {
+    /* The drawing carries its own tinted backdrop, which is right in a
+     * thumbnail and wrong anywhere it sits on something else — in the hero it
+     * rendered as a pale rectangle floating on the warm field. */
+    var showsBackground = true
+
     let result: AdaptedRecipe
     let category: String
 
@@ -244,7 +249,7 @@ struct DishArtwork: View {
         Canvas { context, size in
             draw(context: &context, size: size)
         }
-        .background(backgroundGradient)
+        .background(showsBackground ? AnyShapeStyle(backgroundGradient) : AnyShapeStyle(.clear))
         .accessibilityHidden(true)   // decorative: the verdict is read elsewhere
     }
 

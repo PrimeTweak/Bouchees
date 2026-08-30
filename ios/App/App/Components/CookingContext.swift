@@ -64,7 +64,16 @@ struct FloatingTabBar: View {
             .accessibilityLabel("Search")
         }
         .padding(.horizontal, Layout.tabInset)
-        .padding(.bottom, Layout.tabBottom)
+        .padding(.top, 6)
+        .padding(.bottom, 10)
+        /* The background must not be opaque: content scrolls beneath the
+         * capsule and fades out at the very bottom, which is the iOS 26
+         * scroll-edge behaviour. */
+        .background {
+            LinearGradient(colors: [Tone.canvas.opacity(0), Tone.canvas.opacity(0.92)],
+                           startPoint: .top, endPoint: .bottom)
+                .allowsHitTesting(false)
+        }
         .sheet(isPresented: $searching) { SearchSheet() }
     }
 }

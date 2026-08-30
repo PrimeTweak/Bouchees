@@ -72,23 +72,24 @@ struct RootView: View {
     /// a safe-area inset. iOS 26 wants the bar detached — a pill inset 21pt
     /// with content scrolling beneath it — so the screens run full height and
     /// the bar floats over them.
+    /// THE BAR AS A SAFE-AREA INSET, NOT AN OVERLAY.
+    ///
+    /// A ZStack put the capsule on top of the content: it reserved no space,
+    /// so the last rows scrolled under it, and taps landed on the scroll view
+    /// behind rather than on the buttons.
+    ///
+    /// `safeAreaInset` is the pattern for this. The bar becomes a sibling that
+    /// owns its strip of the screen — the content ends above it on its own,
+    /// and hit testing goes where it looks like it should.
     private var onglets: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                switch tab {
-                case 0: RecipesScreen(tab: $tab)
-                case 1: ScannerScreen(tab: $tab)
-                default: SettingsScreen()
-                }
+        Group {
+            switch tab {
+            case 0: RecipesScreen(tab: $tab)
+            case 1: ScannerScreen(tab: $tab)
+            default: SettingsScreen()
             }
-            .transition(.opacity)
-            /* The bar floats, so the content underneath has to end above it.
-             * A fixed bottom padding guessed wrong on a notched phone: the
-             * screens ignore the top safe area, which removes the bottom one
-             * too, and the last two rows ended up behind the capsule. This
-             * reserves the exact height instead of estimating it. */
-            .safeAreaPadding(.bottom, FloatingTabBar.reservedHeight)
-
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             FloatingTabBar(selection: $tab)
         }
         .ignoresSafeArea(.keyboard)

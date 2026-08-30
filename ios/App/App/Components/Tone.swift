@@ -214,7 +214,31 @@ struct Glass: ViewModifier {
      * So the material is drawn by hand, the way the comp is. When the build
      * moves to Xcode 26, this whole body becomes one line.
      */
+    @ViewBuilder
     func body(content: Content) -> some View {
+        #if compiler(>=6.2)
+        /* Xcode 26 and later: the real material. It carries the highlight,
+         * the shadow, the illumination and Apple's own refraction — and, from
+         * iOS 27, the user's transparency slider and the system's consistent
+         * corner radius, both applied automatically to apps built against the
+         * framework.
+         *
+         * The compiler check, not #available: the symbol has to EXIST at
+         * compile time, and it does not in the iOS 18.5 SDK. */
+        if #available(iOS 26, *) {
+            content.glassEffect(tinted ? .regular.tint(Tone.brand.opacity(0.14))
+                                       : .regular,
+                                in: shape)
+        } else {
+            handDrawn(content)
+        }
+        #else
+        handDrawn(content)
+        #endif
+    }
+
+    /// The fallback for the iOS 18.5 SDK, built the way the comp is.
+    private func handDrawn(_ content: Content) -> some View {
         content
             .background(.ultraThinMaterial, in: shape)
             .overlay {
