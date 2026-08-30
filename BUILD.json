@@ -1,11 +1,7 @@
 {
-  "build": 75,
+  "build": 76,
   "date": "2026-08-29",
   "carries": [
-    "the tab bar inset was OUTSIDE the NavigationStack \u2014 same trap, one level up",
-    "tab bar no longer minimizes on scroll",
-    "scanner verdict is a safeAreaInset, not a bottom-aligned ZStack",
-    "label lexicon: 600 terms, because the 92-ingredient recipe catalogue was never a label vocabulary",
-    "agreement rule: every allergen family must have terms in the lexicon"
+    "workflow copies label-lexicon.json \u2014 the app asked for a file the build never bundled"
   ]
 }

@@ -69,6 +69,10 @@ jobs:
           rm -rf "$R"; mkdir -p "$R/batches"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
+          # The scanner's label vocabulary. Without it the app falls back to
+          # the 92-ingredient recipe catalogue and every processed product
+          # reads "not sure".
+          cp data/label-lexicon.json "$R/"
           python3 - <<'PY'
           import json, shutil, pathlib
           m = json.load(open('dist/manifest.json'))
