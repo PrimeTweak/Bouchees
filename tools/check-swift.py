@@ -720,6 +720,30 @@ def check():
                         " — a stack resets the safe area, so the tab bar inset "
                         "stops reaching the content; keep one at the root")
 
+    # 7u. a type used across files but declared inside another type.
+    #     `enum Route` was inserted inside RootView, making it RootView.Route.
+    #     Every other file then failed with "cannot find type Route in scope"
+    #     — and the real cause, one level of nesting, was never named.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        prof = 0
+        for i, l in enumerate(lignes, 1):
+            m = re.match(r"\s+(?:public )?(?:enum|struct|final class|class|protocol) (\w+)", l)
+            if m and prof > 0 and not l.startswith("    private"):
+                nom = m.group(1)
+                # used from another file?
+                # Used UNQUALIFIED elsewhere is the failure. A qualified use
+                # — AppState.ProfileTally — is exactly what nesting is for.
+                nu = re.compile(r"(?<![.\w])" + re.escape(nom) + r"\b")
+                ailleurs = any(nu.search(c) for p2, (_, c) in sources.items()
+                               if p2 != path_)
+                if ailleurs and len(nom) > 3:
+                    problems.append(f"{filename}:{i}: '{nom}' is declared inside another "
+                                    f"type but used from other files — nesting makes it "
+                                    f"Outer.{nom}, which nothing else can see")
+            prof += l.count("{") - l.count("}")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

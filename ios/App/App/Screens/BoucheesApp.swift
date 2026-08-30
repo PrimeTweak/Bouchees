@@ -146,15 +146,18 @@ struct RootView: View {
         }
     }
 
+}
+
 /// Everything the stack can push. One enum, so the destinations live in one
 /// place rather than being re-declared on each screen.
+///
+/// FILE SCOPE, not nested: every screen refers to it, so nesting it inside
+/// RootView made it RootView.Route and nothing else could see it.
 enum Route: Hashable {
     case recipe(String)
     case saved
     case topRated
     case profiles
-}
-
 }
 
 /// With no engine the app can assert nothing. Better to say so plainly than to

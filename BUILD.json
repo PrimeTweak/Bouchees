@@ -1,13 +1,10 @@
 {
-  "build": 73,
+  "build": 74,
   "date": "2026-08-29",
   "carries": [
-    "ONE NavigationStack at the root \u2014 the cause of four separate bugs",
-    "content scrolls under the tab bar, as Apple intends; the walls are gone",
-    "tab bar minimizes on scroll down",
-    "launch image deleted \u2014 SwiftUI draws and animates the mark",
-    "barcode cascade: every form of the code x four Open Food Facts databases",
-    "9 barcode formats accepted, 8 new tests",
-    "checker rule: more than one NavigationStack"
+    "Route was nested inside RootView \u2014 nothing else could see it",
+    "TopRatedScreen kept its own openRecipeID; both screens now push a Route",
+    "AVFoundation has no .upca \u2014 iOS reads UPC-A as EAN-13",
+    "checker rule: a type nested in another but used unqualified elsewhere"
   ]
 }

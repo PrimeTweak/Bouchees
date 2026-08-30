@@ -69,7 +69,11 @@ final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputO
          * ITF-14 is on cartons and multipacks, Data Matrix and QR on newer
          * packaging, Code 39 on some store labels. The server normalises
          * whichever form comes back, so accepting more here costs nothing. */
-        out.metadataObjectTypes = [.ean8, .ean13, .upce, .upca, .code128,
+        /* No `.upca`: AVFoundation has no such type. iOS reads a UPC-A as an
+         * EAN-13 with a leading zero, which is exactly the form Open Food
+         * Facts indexes — so the twelve-digit case is already covered by
+         * .ean13, and the server normalises the rest. */
+        out.metadataObjectTypes = [.ean8, .ean13, .upce, .code128,
                                    .code39, .itf14, .dataMatrix, .qr]
         configured = true
     }

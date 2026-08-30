@@ -131,7 +131,7 @@ struct TopRatedScreen: View {
                 ForEach(Array(etat.topRated.enumerated()), id: \.element.id) { rank, recipe in
                     if let res = etat.resultFor(recipe) {
                         Button {
-                            openRecipeID = recipe.id
+                            navigate(.recipe(recipe.id))
                         } label: {
                             RankRow(rank: rank + 1, recipe: recipe, result: res)
                         }
@@ -155,10 +155,10 @@ struct TopRatedScreen: View {
                     .foregroundStyle(.secondary)
 
                 LazyVGrid(columns: Grid.colonnes, spacing: 14) {
-                    ForEach(etat.saved.recipes) { recipe in
+                    ForEach(etat.saved.recipes, id: \.id) { recipe in
                         if let res = etat.resultFor(recipe) {
                             Button {
-                                openRecipeID = recipe.id
+                                navigate(.recipe(recipe.id))
                             } label: {
                                 RecipeCard(recipe: recipe, result: res)
                             }
@@ -309,11 +309,5 @@ struct SavedScreen: View {
         .background(Tone.canvas.ignoresSafeArea())
         .navigationTitle("Saved")
         .navigationBarTitleDisplayMode(.large)
-        .navigationDestination(item: $openRecipeID) { id in
-            if let pair = etat.pairFor(pour: id) {
-                RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
-                                   firstName: etat.activeProfile.firstName)
-            }
-        }
     }
 }
