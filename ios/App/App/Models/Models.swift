@@ -150,7 +150,10 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     let timeMinutes: Int?
     let ingredients: [RecipeIngredient]
     let steps: [String]
-    let lot: String?
+    /* The published field is `batch`. This property was called `lot` and so
+     * decoded to nil on every recipe, silently — which is why filtering a
+     * week by it always came back empty. */
+    let batch: String?
     let source: RecipeSource?
 
     /// Filename of a reviewed photo, set by publishing. Absent until a photo

@@ -234,8 +234,12 @@ struct Glass: ViewModifier {
          * The compiler check, not #available: the symbol has to EXIST at
          * compile time, and it does not in the iOS 18.5 SDK. */
         if #available(iOS 26, *) {
-            content.glassEffect(tinted ? .regular.tint(Tone.brand.opacity(0.14))
-                                       : .regular,
+            /* `.interactive()` makes the material illuminate and spring at the
+             * touch point. Apple describes it as what separates glass that
+             * feels alive from glass that looks painted, and it costs one
+             * call. */
+            content.glassEffect(tinted ? .regular.tint(Tone.brand.opacity(0.14)).interactive()
+                                       : .regular.interactive(),
                                 in: shape)
         } else {
             handDrawn(content)
@@ -277,6 +281,30 @@ struct Glass: ViewModifier {
             }
             .shadow(color: .black.opacity(0.42), radius: 17, y: 10)
             .shadow(color: .black.opacity(0.28), radius: 4, y: 2)
+    }
+}
+
+/// TWO PIECES OF GLASS SIDE BY SIDE MUST BE GROUPED.
+///
+/// Apple is explicit: adjacent glass elements belong in a
+/// `GlassEffectContainer` so they blend and morph as one surface instead of
+/// rendering as two separate panes. The tab capsule and the search island sit
+/// ten points apart and were never grouped.
+struct GlassGroup<Content: View>: View {
+    var spacing: CGFloat = 12
+    @ViewBuilder var content: Content
+
+    @ViewBuilder
+    var body: some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            GlassEffectContainer(spacing: spacing) { content }
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
     }
 }
 

@@ -35,6 +35,7 @@ struct FloatingTabBar: View {
     ]
 
     var body: some View {
+        GlassGroup(spacing: 14) {
         HStack(spacing: 10) {
             /* A SLIDING INDICATOR, NOT A COLOUR SWAP.
              *
@@ -61,24 +62,23 @@ struct FloatingTabBar: View {
             Button { searching = true } label: {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 19, weight: .medium))
-                    .foregroundStyle(Tone.text2)
+                    /* .primary, not a fixed colour: SwiftUI gives text on
+                     * glass a vibrant tone that adapts to whatever passes
+                     * behind it. Naming a colour switches that off. */
+                    .foregroundStyle(.primary)
                     .frame(width: 54, height: 54)
                     .glass(Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Search")
         }
+        }
         .padding(.horizontal, Layout.tabInset)
         .padding(.top, 6)
         .padding(.bottom, 10)
-        /* The background must not be opaque: content scrolls beneath the
-         * capsule and fades out at the very bottom, which is the iOS 26
-         * scroll-edge behaviour. */
-        .background {
-            LinearGradient(colors: [Tone.canvas.opacity(0), Tone.canvas.opacity(0.92)],
-                           startPoint: .top, endPoint: .bottom)
-                .allowsHitTesting(false)
-        }
+        /* No background band. The gradient I put here rendered as a visible
+         * strip under the capsule. A scroll-edge fade belongs to the content
+         * that scrolls, not to the bar that floats over it. */
         .sheet(isPresented: $searching) { SearchSheet() }
     }
 }
@@ -139,15 +139,15 @@ struct CookingContextHeader: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
                         .font(.system(size: 14.5, weight: .semibold))
-                        .foregroundStyle(onDark ? .white : Tone.text)
+                        .foregroundStyle(.primary)
                     Text(subtitle)
                         .font(.system(size: 11))
-                        .foregroundStyle(onDark ? .white.opacity(0.7) : Tone.text2)
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
                 Image(systemName: "chevron.down")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(onDark ? .white.opacity(0.6) : Tone.text3)
+                    .foregroundStyle(.tertiary)
             }
             .padding(.horizontal, 13)
             .padding(.vertical, 8)
@@ -420,5 +420,24 @@ struct SearchSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Hiding the bar
+
+/// Lets a screen ask the parent to take the floating bar away.
+///
+/// `.toolbar(.hidden, for: .tabBar)` only works with a TabView. Ours is a
+/// custom view, so the request travels up as a preference instead.
+struct HideTabBar: PreferenceKey {
+    static var defaultValue: Bool { false }
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = value || nextValue()
+    }
+}
+
+extension View {
+    func hidesTabBar(_ hidden: Bool = true) -> some View {
+        preference(key: HideTabBar.self, value: hidden)
     }
 }

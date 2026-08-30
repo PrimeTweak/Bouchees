@@ -130,11 +130,23 @@ struct RecipesScreen: View {
                         /* Dark to the bottom of the photo. Fading to the
                          * canvas meant fading to pale in light mode, which put
                          * the title on beige. */
-                        stops: [.init(color: .black.opacity(0.45), location: 0),
+                        /* NINE STOPS, NOT FIVE.
+                         *
+                         * Five left a visible edge where the dark ended and
+                         * the page began. Three of these sit in the last
+                         * quarter, which is where the eye catches banding,
+                         * and the final stop is the CANVAS — cream in light,
+                         * near-black in dark — so the photo dissolves into
+                         * the page instead of stopping against it. */
+                        stops: [.init(color: .black.opacity(0.40), location: 0),
+                                .init(color: .black.opacity(0.16), location: 0.12),
                                 .init(color: .clear, location: 0.26),
-                                .init(color: .clear, location: 0.42),
-                                .init(color: .black.opacity(0.58), location: 0.78),
-                                .init(color: .black.opacity(0.74), location: 1)],
+                                .init(color: .clear, location: 0.40),
+                                .init(color: .black.opacity(0.24), location: 0.56),
+                                .init(color: .black.opacity(0.52), location: 0.70),
+                                .init(color: .black.opacity(0.74), location: 0.82),
+                                .init(color: Tone.canvas.opacity(0.55), location: 0.93),
+                                .init(color: Tone.canvas, location: 1)],
                         startPoint: .top, endPoint: .bottom)
 
                     VStack(alignment: .leading, spacing: 0) {
@@ -370,7 +382,10 @@ struct VerdictPill: View {
             VerdictMark(status: result.status)
             Text(phrase)
                 .font(.system(size: 13.5, weight: .semibold))
-                .foregroundStyle(.white)
+                /* The system picks the vibrant tone. The verdict DOT keeps
+                 * its own colour just below — that one is semantic and must
+                 * not adapt. */
+                .foregroundStyle(.primary)
         }
         .padding(.leading, 13)
         .padding(.trailing, 16)

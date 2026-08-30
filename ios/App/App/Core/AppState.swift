@@ -66,7 +66,10 @@ final class AppState {
         let mine = batches.filter { $0.unlocked }
         let target = mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
         guard let id = target else { return recipes }
-        let week = recipes.filter { $0.lot == id }
+        /* One word, three symptoms: "This week · 15 recipes" instead of 7,
+         * an empty shopping list, and meal groups drawn from the whole
+         * corpus. The model called this `lot`; the JSON calls it `batch`. */
+        let week = recipes.filter { $0.batch == id }
         return week.isEmpty ? recipes : week
     }
 

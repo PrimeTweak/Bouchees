@@ -1,11 +1,13 @@
 {
-  "build": 64,
+  "build": 65,
   "date": "2026-08-29",
   "carries": [
-    "hero field is a fixed dark constant, not themed \u2014 contrast fixed",
-    "veil stays dark to the bottom of the photo",
-    "child bar pinned with safeAreaInset, no longer scrolls away",
-    "shopping card removed from home \u2014 the tab is enough",
-    "week = the newest batch the reader can open, not the manifest pointer"
+    "Recipe.batch, not lot \u2014 unblocks the week and the shopping list",
+    "glass: .primary text, GlassEffectContainer, .interactive()",
+    "nine-stop hero gradient ending on the canvas",
+    "tab bar hidden on the detail via a preference key",
+    "back and favourite in a ZStack \u2014 they receive taps",
+    "band under the tab bar removed",
+    "3 tests, 2 checker rules"
   ]
 }

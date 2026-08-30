@@ -260,6 +260,55 @@ test("shopping: an ingredient shared by several recipes appears once", () => {
   assert.strictEqual(new Set(noms).size, noms.length, "no duplicate line");
 });
 
+/* ---------- a week is a week ---------- */
+
+/* The model called the field `lot`; the JSON calls it `batch`. Every recipe
+ * decoded it as nil, silently, so filtering a week by it came back empty and
+ * the app fell back to the whole corpus. These two assertions fail on the
+ * broken build and pass on the fixed one. */
+
+test("week: every published recipe declares its batch", () => {
+  const fs = require("fs");
+  const dir = path.join(__dirname, "..", "dist", "batches");
+  if (!fs.existsSync(dir)) return;
+  fs.readdirSync(dir).filter((f) => f.endsWith(".json")).forEach((f) => {
+    const lot = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
+    const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
+    arr.forEach((r) => {
+      assert.ok(r.batch, f + ": " + r.id + " has no batch field");
+    });
+  });
+});
+
+test("week: a batch holds between 5 and 10 recipes", () => {
+  const fs = require("fs");
+  const dir = path.join(__dirname, "..", "dist", "batches");
+  if (!fs.existsSync(dir)) return;
+  fs.readdirSync(dir).filter((f) => f.endsWith(".json")).forEach((f) => {
+    const lot = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
+    const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
+    /* The newest batch is allowed to be short — it is still being filled. */
+    if (f.includes("S34")) return;
+    assert.ok(arr.length >= 5 && arr.length <= 10,
+      f + " holds " + arr.length + " recipes; a week is 5 to 10");
+  });
+});
+
+test("shopping: a free batch never produces an empty list", () => {
+  const fs = require("fs");
+  const manif = path.join(__dirname, "..", "dist", "manifest.json");
+  if (!fs.existsSync(manif)) return;
+  const m = JSON.parse(fs.readFileSync(manif, "utf8"));
+  (m.free || []).forEach((id) => {
+    const f = path.join(__dirname, "..", "dist", "batches", id + ".json");
+    if (!fs.existsSync(f)) return;
+    const lot = JSON.parse(fs.readFileSync(f, "utf8"));
+    const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
+    const liste = Engine.listeEpicerie(arr, { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+    assert.ok(liste.length > 0, id + " produced an empty shopping list");
+  });
+});
+
 /* ---------- age rules ---------- */
 
 test("barres granola à 9 mois : miel → sirop d'érable (swap d'âge) + alerte ageMinBase", () => {

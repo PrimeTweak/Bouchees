@@ -496,6 +496,31 @@ def check():
                 else:
                     vus[nom] = ligne
 
+    # 7l. a hardcoded colour on a view that also carries glass.
+    #     Apple: "SwiftUI automatically uses a vibrant text color that adapts
+    #     to maintain legibility against colorful backgrounds." Naming a
+    #     colour switches that off — which is exactly what I did, then blamed
+    #     the material for not adapting.
+    #
+    #     Semantic styles (.primary, .secondary, .tertiary) are the point and
+    #     are allowed. A verdict colour on a SHAPE is fine too; this only
+    #     looks at text and symbols.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        for i, l in enumerate(lignes):
+            if ".glass(" not in l and ".glassEffect(" not in l:
+                continue
+            # walk back over the chain this modifier belongs to
+            for j in range(max(0, i - 8), i):
+                m = re.search(r"\.foregroundStyle\(\s*\.(white|black)\b", lignes[j])
+                if m and "Text(" in "\n".join(lignes[max(0, j - 3):j + 1]) + lignes[j]:
+                    problems.append(
+                        f"{filename}:{j + 1}: .foregroundStyle(.{m.group(1)}) on text that "
+                        f"sits on glass — use .primary and let the material pick the "
+                        f"vibrant tone")
+                    break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

@@ -169,6 +169,61 @@ if (!blocStatut) {
   });
 }
 
+/* A SWIFT FIELD THAT MATCHES NOTHING IN THE DATA.
+ *
+ * `Recipe.lot` decoded to nil on every recipe because the published field is
+ * called `batch`. Optionals fail silently, so nothing ever said so — the app
+ * simply behaved as if no recipe belonged to any week.
+ *
+ * Any optional Swift field absent from EVERY data file is almost always a
+ * typo. Fields the app fills in itself are listed rather than guessed. */
+(function champsOrphelins() {
+  var swiftPath = path.join(__dirname, "..", "ios/App/App/Models/Models.swift");
+  if (!fs.existsSync(swiftPath)) return;
+
+  var swift = fs.readFileSync(swiftPath, "utf8");
+  /* `struct Recipe[^{]*` also matched RecipeIngredient, so a field that is
+   * perfectly valid there was reported as orphaned. The word boundary keeps
+   * it to the type we mean. */
+  var bloc = swift.match(/struct Recipe(?![A-Za-z])[^{]*\{([\s\S]*?)\n\}/);
+  if (!bloc) return;
+
+  var champs = [];
+  var re = /^\s*let (\w+): ([\w\[\]?]+)/gm, m;
+  while ((m = re.exec(bloc[1])) !== null) {
+    if (m[2].slice(-1) === "?") champs.push(m[1]);
+  }
+
+  /* Filled by the app or the ratings endpoint, never by the corpus. */
+  var locaux = ["source", "image", "imageReviewed", "stepsOriginal",
+                "votes", "average", "myRating"];
+  var vus = {};
+
+  function scan(f) {
+    if (!fs.existsSync(f)) return;
+    var c = JSON.parse(fs.readFileSync(f, "utf8"));
+    var arr = Array.isArray(c) ? c : (c.recipes || []);
+    arr.forEach(function (r) {
+      Object.keys(r).forEach(function (k) { vus[k] = true; });
+    });
+  }
+
+  scan(path.join(__dirname, "..", "data/recipes.json"));
+  var dir = path.join(__dirname, "..", "dist/batches");
+  if (fs.existsSync(dir)) {
+    fs.readdirSync(dir).forEach(function (f) {
+      if (f.slice(-5) === ".json") scan(path.join(dir, f));
+    });
+  }
+
+  champs.forEach(function (c) {
+    if (!vus[c] && locaux.indexOf(c) === -1) {
+      problems.push("Recipe." + c + " matches no field in any data file — an " +
+        "optional that matches nothing decodes to nil in silence");
+    }
+  });
+})();
+
 if (!problems.length) {
   console.log("Decoding check passed — " + CASES.length + " structs match the JSON, " +
     exposed.length + " bridge functions match the Swift calls.");

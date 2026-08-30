@@ -30,6 +30,7 @@ struct BoucheesApp: App {
 struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
+    @State private var tabBarHidden = false
 
     var body: some View {
         Group {
@@ -90,8 +91,20 @@ struct RootView: View {
             default: SettingsScreen()
             }
         }
+        /* THE DETAIL SCREEN HAS TO BE ABLE TO HIDE THIS.
+         *
+         * `.toolbar(.hidden, for: .tabBar)` drives a TabView, and we do not
+         * have one — the bar is our own view, placed here by the parent. So
+         * the child could not remove it, and "Start cooking" ended up
+         * underneath. A preference key lets any screen ask for it to go. */
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            FloatingTabBar(selection: $tab)
+            if !tabBarHidden {
+                FloatingTabBar(selection: $tab)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .onPreferenceChange(HideTabBar.self) { hidden in
+            withAnimation(.smooth(duration: 0.25)) { tabBarHidden = hidden }
         }
         .ignoresSafeArea(.keyboard)
     }

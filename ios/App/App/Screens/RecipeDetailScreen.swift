@@ -21,7 +21,16 @@ struct RecipeDetailScreen: View {
     /// The photo runs to the top of the screen and the content scrolls
     /// beneath the floating controls. No opaque navigation bar: a gradient
     /// keeps the status bar legible, which is the platform's own pattern.
+    /* THE BUTTONS LIVE ABOVE THE SCROLL VIEW, NOT INSIDE IT.
+     *
+     * As a safeAreaInset on a ScrollView that also carries
+     * `.ignoresSafeArea(edges: .top)`, they were drawn in the right place but
+     * outside their parent's hit region — so neither back nor favourite
+     * responded. In a ZStack at screen level they sit above the scrolling
+     * content and receive taps normally.
+     */
     var body: some View {
+        ZStack(alignment: .top) {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: .bottomLeading) {
@@ -81,26 +90,24 @@ struct RecipeDetailScreen: View {
         .background(Tone.canvas.ignoresSafeArea())
         .ignoresSafeArea(.container, edges: .top)
         .toolbar(.hidden, for: .navigationBar)
-        /* THE BACK BUTTON DID NOT WORK.
-         *
-         * It was an overlay on a ScrollView that ignores the top safe area,
-         * so it was DRAWN in the right place but sat outside its parent's hit
-         * region — exactly the bug the tab bar had. An inset owns its strip
-         * and receives taps. */
-        .safeAreaInset(edge: .top) {
+
+        /* As an inset, not an overlay: the content ends above it on its own,
+         * and it no longer collides with the tab bar — which is hidden here,
+         * as it is in any app once you are inside a detail. */
+        .safeAreaInset(edge: .bottom) { startButton }
+        .hidesTabBar()
+        .zIndex(0)
+
             HStack {
                 backButton
                 Spacer(minLength: 0)
                 saveButton
             }
             .padding(.horizontal, 18)
-            .padding(.top, 8)
+            .padding(.top, 56)
+            .zIndex(1)
         }
-        /* As an inset, not an overlay: the content ends above it on its own,
-         * and it no longer collides with the tab bar — which is hidden here,
-         * as it is in any app once you are inside a detail. */
-        .safeAreaInset(edge: .bottom) { startButton }
-        .toolbar(.hidden, for: .tabBar)
+        .ignoresSafeArea(.container, edges: .top)
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }
@@ -168,7 +175,7 @@ struct RecipeDetailScreen: View {
         Button { dismiss() } label: {
             Image(systemName: "chevron.left")
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(width: 42, height: 42)
                 .glass(Circle())
         }
@@ -180,9 +187,7 @@ struct RecipeDetailScreen: View {
         SaveButton(recipe: recipe)
             .frame(width: 42, height: 42)
             .glass(Circle())
-            .padding(.trailing, 18)
-            .padding(.top, 58)
-    }
+            }
 
     // MARK: - Sections
 
