@@ -42,7 +42,8 @@ var PONT = (function () {
     /* Called once at startup. */
     load: function (jsonData) {
       var d = JSON.parse(jsonData);
-      data = { catalogue: d.ingredients, substitutions: d.substitutions, base: d.base };
+      data = { catalogue: d.ingredients, substitutions: d.substitutions,
+               base: d.base, lexicon: d.lexicon || null };
       return JSON.stringify({ ok: true,
         ingredients: Object.keys(d.ingredients).length,
         substitutions: d.substitutions.length,
@@ -108,9 +109,26 @@ var PONT = (function () {
         })
         .filter(function (t) { return t.length > 1; });
 
-      /* Both names are indexed. A Quebec label reads "farine de ble", not
-       * "wheat flour": without the French name the scanner would stop
-       * recognising products sold here. */
+      /* THE LABEL LEXICON, NOT THE RECIPE CATALOGUE.
+       *
+       * The catalogue holds 92 cooking ingredients with roles and
+       * substitutes — it was built to ADAPT RECIPES. A product label says
+       * "durum wheat semolina", "thiamine mononitrate", "sodium caseinate":
+       * industrial names with no role in a kitchen, so none of them are in
+       * it. Every processed product therefore came back "not sure", which is
+       * a catalogue mismatch rather than a bug.
+       *
+       * The lexicon covers 600 label terms: every alias of the eleven
+       * allergen families, in English and French, plus the additives,
+       * vitamins and thickeners that are simply SAFE and were making perfectly
+       * readable labels look unreadable.
+       *
+       * The catalogue is still consulted after it, so a recipe ingredient
+       * spotted on a label still resolves. */
+      var lex = d.lexicon || { allergens: {}, safe: [] };
+      var surs = {};
+      (lex.safe || []).forEach(function (t) { surs[flatten(t)] = true; });
+
       var index = {};
       Object.keys(d.catalogue).forEach(function (id) {
         var def = d.catalogue[id];
@@ -119,9 +137,36 @@ var PONT = (function () {
       });
       var keys = Object.keys(index);
 
+      var termes = Object.keys(lex.allergens || {}).map(flatten);
+      /* Longest first: "peanut butter" must win over "butter". */
+      termes.sort(function (a, b) { return b.length - a.length; });
+
       var found = {}, unknown = [];
       parts.forEach(function (m) {
         var n = flatten(m);
+
+        /* 1. An allergen term, whole word or contained in the phrase. */
+        var frappe = null;
+        for (var i = 0; i < termes.length; i++) {
+          var t = termes[i];
+          if (n === t || n.indexOf(t) !== -1) { frappe = t; break; }
+        }
+        if (frappe) {
+          var famille = lex.allergens[Object.keys(lex.allergens).find(function (k) {
+            return flatten(k) === frappe;
+          })];
+          if (famille && avoided.indexOf(famille) !== -1) found[famille] = true;
+          return;
+        }
+
+        /* 2. A term known to be safe — an additive, a vitamin, a spice. */
+        if (surs[n]) return;
+        var sur = Object.keys(surs).find(function (t) {
+          return t.length > 3 && n.indexOf(t) !== -1;
+        });
+        if (sur) return;
+
+        /* 3. The recipe catalogue, for anything the lexicon missed. */
         var id = index[n];
         if (!id) {
           var key = keys.find(function (c) {

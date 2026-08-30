@@ -23,10 +23,6 @@ struct FloatingTabBar: View {
 
     @Binding var selection: Int
 
-    /// Collapsed to the active tab alone, the way iOS 26 does when the user
-    /// scrolls down. It expands again on the way back up.
-    var minimized: Bool = false
-
     @State private var searching = false
     @Namespace private var glassSpace
 
@@ -53,21 +49,15 @@ struct FloatingTabBar: View {
              * across it. */
             HStack(spacing: 0) {
                 ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
-                    /* Minimized, only the active tab is drawn — the capsule
-                     * shrinks around it and the rest come back on scroll up. */
-                    if !minimized || selection == i {
-                        TabItem(icon: item.icon, label: item.label,
-                                selected: selection == i,
-                                namespace: glassSpace) {
-                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
-                                selection = i
-                            }
+                    TabItem(icon: item.icon, label: item.label,
+                            selected: selection == i,
+                            namespace: glassSpace) {
+                        withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
+                            selection = i
                         }
                     }
                 }
             }
-            .fixedSize(horizontal: minimized, vertical: false)
-            .frame(maxWidth: minimized ? nil : .infinity)
             .padding(.horizontal, 5)
             .padding(.vertical, 6)
             .glass(Capsule())
@@ -435,66 +425,6 @@ struct SearchSheet: View {
                     Button("Close") { dismiss() }
                 }
             }
-        }
-    }
-}
-
-// MARK: - Scroll direction
-
-/// Carries "the user is scrolling down" up to the root so the tab bar can
-/// minimize.
-///
-/// iOS 26 has `tabBarMinimizeBehavior(.onScrollDown)`, which drives a TabView.
-/// This bar is our own view, so the behaviour is reproduced rather than
-/// adopted — what matters is that the bar gets out of the way.
-struct ScrollDirection: PreferenceKey {
-    static var defaultValue: Bool { false }
-    static func reduce(value: inout Bool, nextValue: () -> Bool) {
-        value = value || nextValue()
-    }
-}
-
-private struct TabBarMinimizedKey: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    var tabBarMinimized: Bool {
-        get { self[TabBarMinimizedKey.self] }
-        set { self[TabBarMinimizedKey.self] = newValue }
-    }
-}
-
-extension View {
-    /// Reports downward scrolling so the tab bar can collapse.
-    ///
-    /// Below iOS 18 there is no scroll geometry to observe, and the bar simply
-    /// stays expanded — a smaller screen, never a broken one.
-    func reportsScrollDirection() -> some View {
-        modifier(ScrollDirectionReporter())
-    }
-}
-
-private struct ScrollDirectionReporter: ViewModifier {
-    @State private var last: CGFloat = 0
-    @State private var down = false
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 18, *) {
-            content
-                .onScrollGeometryChange(for: CGFloat.self) { geo in
-                    geo.contentOffset.y
-                } action: { _, y in
-                    /* A dead band: below eight points the bar would flicker on
-                     * the small movements of a hand holding a phone. */
-                    guard abs(y - last) > 8 else { return }
-                    down = y > last && y > 40
-                    last = y
-                }
-                .preference(key: ScrollDirection.self, value: down)
-        } else {
-            content
         }
     }
 }

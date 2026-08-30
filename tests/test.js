@@ -482,6 +482,94 @@ test("barcode: junk in, nothing out", () => {
   assert.deepEqual(Barcode.formes(null), []);
 });
 
+/* ---------- the label lexicon ---------- */
+
+/* Real labels François scanned came back "not sure" on words a person reads
+ * without hesitating. The cause was a category error: the catalogue holds 92
+ * COOKING ingredients, and a package lists industrial ones — enriched flours,
+ * added vitamins, emulsifiers. None of those have a role in a kitchen, so
+ * none of them were in it.
+ *
+ * The lexicon is 600 label terms. These tests use the actual products. */
+
+function evaluerEtiquette(texte, evites) {
+  const vm = require("vm");
+  const ctx = { module: { exports: {} }, console, JSON };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "engine.js"), "utf8"), ctx);
+  vm.runInContext("var Engine = module.exports;", ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
+  ctx.d = JSON.stringify({
+    ingredients: lire("ingredients.json"),
+    substitutions: lire("substitutions.json"),
+    base: lire("base.json"),
+    lexicon: lire("label-lexicon.json")
+  });
+  vm.runInContext("PONT.load(d);", ctx);
+  ctx.t = texte;
+  ctx.a = JSON.stringify(evites);
+  return JSON.parse(vm.runInContext("PONT.evaluateLabel(t, a);", ctx));
+}
+
+test("label: an enriched pasta box is read, not shrugged at", () => {
+  const v = evaluerEtiquette(
+    "durum wheat semolina, niacin, ferrous sulphate, thiamine mononitrate, " +
+    "riboflavin, folic acid", ["milk", "egg", "peanut"]);
+  assert.equal(v.status, "safe", "every word on this box is readable");
+  assert.equal(v.unknownIngredients.length, 0, "nothing left unrecognised");
+});
+
+test("label: the same box IS wheat for a wheat-free child", () => {
+  const v = evaluerEtiquette("durum wheat semolina, niacin", ["wheat"]);
+  assert.equal(v.status, "avoid", "semolina is wheat");
+});
+
+test("label: milk hides behind sodium caseinate", () => {
+  const v = evaluerEtiquette(
+    "sugar, sodium caseinate, natural flavour", ["milk"]);
+  assert.equal(v.status, "avoid", "caseinate is a milk protein");
+});
+
+test("label: whey, lactose and butterfat are all milk", () => {
+  ["whey powder", "lactose", "butterfat", "milk solids"].forEach((t) => {
+    assert.equal(evaluerEtiquette("sugar, " + t, ["milk"]).status, "avoid",
+      t + " should read as milk");
+  });
+});
+
+test("label: soy lecithin is soy", () => {
+  assert.equal(evaluerEtiquette("cocoa, soy lecithin", ["soy"]).status, "avoid");
+});
+
+test("label: a French Quebec label reads the same", () => {
+  const v = evaluerEtiquette(
+    "semoule de ble dur, niacine, sulfate ferreux, riboflavine", ["wheat"]);
+  assert.equal(v.status, "avoid", "the French name resolves too");
+});
+
+test("label: the longest term wins — peanut butter is not butter", () => {
+  const v = evaluerEtiquette("peanut butter, oats, honey", ["milk"]);
+  assert.equal(v.status, "safe", "peanut butter must not read as dairy butter");
+});
+
+test("label: an unknown word still blocks a safe verdict", () => {
+  const v = evaluerEtiquette("sugar, zorblatt extract", ["milk"]);
+  assert.notEqual(v.status, "safe", "an unread word is never safe");
+});
+
+test("label: the lexicon covers the eleven allergen families", () => {
+  const lex = lire("label-lexicon.json");
+  const familles = new Set(Object.values(lex.allergens));
+  ["wheat", "milk", "egg", "peanut", "tree_nut", "soy", "sesame",
+   "fish", "shellfish", "mustard", "sulphites"].forEach((f) => {
+    assert.ok(familles.has(f), f + " has no term in the lexicon");
+  });
+  assert.ok(Object.keys(lex.allergens).length > 200, "at least 200 allergen terms");
+  assert.ok(lex.safe.length > 300, "at least 300 safe terms");
+});
+
 /* ---------- age rules ---------- */
 
 test("granola bars at 9 months: honey becomes maple syrup, with the age alert", () => {

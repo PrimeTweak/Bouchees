@@ -31,7 +31,6 @@ struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
     @State private var path = NavigationPath()
-    @State private var barMinimized = false
 
     var body: some View {
         Group {
@@ -104,6 +103,19 @@ struct RootView: View {
                 default: SettingsScreen()
                 }
             }
+            /* THE INSET GOES INSIDE THE STACK.
+             *
+             * Placed on the NavigationStack it sat OUTSIDE, and a stack does
+             * not hand its parent's safe area down to the scrolling content
+             * inside it. That is the same trap as before, one level up: the
+             * bar reserved space nobody could see.
+             *
+             * Inside, on the screen itself, it does both halves of what Apple
+             * describes — the list passes behind the glass, and the scroll
+             * gains enough inset that its last row clears the bar. */
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                FloatingTabBar(selection: $tab)
+            }
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .recipe(let id):
@@ -120,30 +132,8 @@ struct RootView: View {
                 }
             }
         }
-        /* THE BAR DOES NOT BLOCK CONTENT.
-         *
-         * Apple: "the buttons in the bars are fixed, and page content scrolls
-         * below them." A safeAreaInset does both halves of that: the list
-         * passes behind the glass, AND the scroll gains enough inset that its
-         * last row can be scrolled clear of the bar.
-         *
-         * The opaque fade I had here removed the first half to fix the
-         * second. It is gone; the scroll edge effect handles legibility. */
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if path.isEmpty {
-                FloatingTabBar(selection: $tab, minimized: barMinimized)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
         .ignoresSafeArea(.keyboard)
-        .environment(\.tabBarMinimized, barMinimized)
         .environment(\.navigate, NavigateAction { route in path.append(route) })
-        .onPreferenceChange(ScrollDirection.self) { down in
-            /* iOS 26 minimizes the tab bar on scroll down and restores it on
-             * scroll up. We are not a TabView, so we do it by hand — the
-             * behaviour is what matters, not the API. */
-            withAnimation(.smooth(duration: 0.26)) { barMinimized = down }
-        }
     }
 
 }

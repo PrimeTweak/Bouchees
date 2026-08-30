@@ -138,6 +138,37 @@ if (w && Number(w) < 1320) {
 }
 
 /* ---------- report -------------------------------------------------------- */
+
+/* THE LEXICON MUST COVER EVERY ALLERGEN THE APP CLAIMS TO CATCH.
+ *
+ * The scanner promised eleven families and the recipe catalogue was the only
+ * vocabulary behind it — 92 cooking ingredients against a world of industrial
+ * label terms. A family with no term in the lexicon is a family the scanner
+ * silently cannot see. */
+(function lexiqueComplet() {
+  var lexPath = path.join(__dirname, "..", "data", "label-lexicon.json");
+  if (!fs.existsSync(lexPath)) {
+    problems.push("data/label-lexicon.json is missing — the scanner falls back " +
+                  "to the recipe catalogue and cannot read a product label");
+    return;
+  }
+  var lex = JSON.parse(fs.readFileSync(lexPath, "utf8"));
+  var base = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "..", "data", "base.json"), "utf8"));
+  var couvertes = {};
+  Object.keys(lex.allergens || {}).forEach(function (t) {
+    couvertes[lex.allergens[t]] = (couvertes[lex.allergens[t]] || 0) + 1;
+  });
+  (base.allergens || []).forEach(function (a) {
+    if (!couvertes[a.id]) {
+      problems.push("allergen '" + a.id + "' has no term in the label lexicon — " +
+                    "the scanner cannot detect it on a package");
+    }
+  });
+})();
+
+checked.push("label lexicon");
+
 if (!problems.length) {
   console.log("Agreement check passed — " + checked.length + " vocabularies line up: " +
     checked.join(", ") + ".");

@@ -80,10 +80,18 @@ final class RecipeEngine {
 
     /// Injects the safety tables. Until that is done the engine refuses to
     /// answer — never a silent default value.
-    func chargerDonnees(ingredients: Data, substitutions: Data, base baseData: Data) throws {
+    /// - Parameter lexicon: label vocabulary for the scanner. The recipe
+    ///   catalogue holds 92 cooking ingredients; a product label says
+    ///   "durum wheat semolina" and "thiamine mononitrate", which are not
+    ///   cooking ingredients at all. Without this every processed product
+    ///   came back "not sure".
+    func chargerDonnees(ingredients: Data, substitutions: Data, base baseData: Data,
+                        lexicon: Data? = nil) throws {
+        let lex = lexicon.map { String(decoding: $0, as: UTF8.self) } ?? "null"
         let enveloppe = """
         {"ingredients":\(String(decoding: ingredients, as: UTF8.self)),\
         "substitutions":\(String(decoding: substitutions, as: UTF8.self)),\
+        "lexicon":\(lex),\
         "base":\(String(decoding: baseData, as: UTF8.self))}
         """
         _ = try appeler("load", [enveloppe])

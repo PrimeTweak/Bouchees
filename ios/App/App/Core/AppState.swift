@@ -197,7 +197,10 @@ final class AppState {
             try m.chargerDonnees(
                 ingredients: try Resources.data("ingredients", "json"),
                 substitutions: try Resources.data("substitutions", "json"),
-                base: try Resources.data("base", "json"))
+                base: try Resources.data("base", "json"),
+                /* Optional: an older bundle without it still runs, with the
+                 * narrower recognition it always had. */
+                lexicon: try? Resources.data("label-lexicon", "json"))
             moteur = m
             /* The same bytes the engine just loaded, decoded a second time for
              * display. Cheap, and it keeps the rule sheet honest: what it

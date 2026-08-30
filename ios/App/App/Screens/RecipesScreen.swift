@@ -54,7 +54,6 @@ struct RecipesScreen: View {
          * The hero photo still reaches the top: it is inside the scroll
          * view and simply drawn tall. */
         .toolbar(.hidden, for: .navigationBar)
-        .reportsScrollDirection()
         /* WHO YOU ARE COOKING FOR STAYS PUT.
          *
          * It rode on the photo and scrolled away with it. In a family with two

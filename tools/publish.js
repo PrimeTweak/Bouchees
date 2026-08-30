@@ -57,7 +57,10 @@ function publier(options) {
   const securite = {
     ingredients: lire("data/ingredients.json"),
     substitutions: lire("data/substitutions.json"),
-    base: lire("data/base.json")
+    base: lire("data/base.json"),
+    /* The scanner's label vocabulary. Ships beside the safety tables, never
+     * behind the paywall: reading a label is the free promise. */
+    lexicon: lire("data/label-lexicon.json")
   };
 
   /* The rolling window: a subscriber sees the current week and the two before

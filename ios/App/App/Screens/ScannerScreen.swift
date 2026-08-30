@@ -143,13 +143,22 @@ struct ScannerScreen: View {
     }
 
     private var content: some View {
-        ZStack(alignment: .bottom) {
+        /* NOT a bottom-aligned ZStack.
+         *
+         * A ZStack aligns to the bottom of its CONTAINER, not to the safe
+         * area, so the verdict sat under the tab bar however much padding it
+         * carried. The camera fills the frame; the verdict is a safeAreaInset
+         * like every other bar in this app, and the tab bar reserves its own
+         * space below it. */
+        ZStack {
             CameraPreview(session: scanner.session)
                 .ignoresSafeArea()
 
             ViewfinderFrame()
                 .allowsHitTesting(false)
 
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             if isWorking || product != nil || messageErreur != nil {
                 ProductSheet(product: product, verdict: verdict,
                              isWorking: isWorking, error: messageErreur,

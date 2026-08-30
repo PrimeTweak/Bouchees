@@ -1,10 +1,11 @@
 {
-  "build": 74,
+  "build": 75,
   "date": "2026-08-29",
   "carries": [
-    "Route was nested inside RootView \u2014 nothing else could see it",
-    "TopRatedScreen kept its own openRecipeID; both screens now push a Route",
-    "AVFoundation has no .upca \u2014 iOS reads UPC-A as EAN-13",
-    "checker rule: a type nested in another but used unqualified elsewhere"
+    "the tab bar inset was OUTSIDE the NavigationStack \u2014 same trap, one level up",
+    "tab bar no longer minimizes on scroll",
+    "scanner verdict is a safeAreaInset, not a bottom-aligned ZStack",
+    "label lexicon: 600 terms, because the 92-ingredient recipe catalogue was never a label vocabulary",
+    "agreement rule: every allergen family must have terms in the lexicon"
   ]
 }
