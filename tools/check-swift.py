@@ -441,6 +441,30 @@ def check():
                 problems.append(f"{filename}:{i}: {m.group(1)}.strokeBorder — that value is "
                                 f"AnyShape, which erases InsettableShape; use stroke instead")
 
+    # 7j. a `some View` property passed where a ShapeStyle is required.
+    #     A gradient IS a ShapeStyle, but `some View` erases that: the opaque
+    #     type only promises View. AnyShapeStyle(x), .fill(x) and .background(x,
+    #     in:) all reject it, and the error talks about conformance rather than
+    #     about the declaration that caused it.
+    #
+    #     Third build lost to opaque types this evening, after AnyShape and
+    #     strokeBorder. Worth a rule.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        opaques = set(re.findall(r"(?:var|let)\s+(\w+)\s*:\s*some View", code))
+        if not opaques:
+            continue
+        for i, l in enumerate(code.split("\n"), 1):
+            # `context.fill(path, with:)` inside a Canvas takes a Path, not a
+            # style — and a local named `body` there is not the view's body.
+            if "context.fill" in l or "with:" in l:
+                continue
+            for m in re.finditer(r"(?:AnyShapeStyle|\.fill)\(\s*(\w+)\s*[,)]", l):
+                if m.group(1) in opaques:
+                    problems.append(f"{filename}:{i}: '{m.group(1)}' is declared 'some View', "
+                                    f"which erases ShapeStyle — give it its concrete type "
+                                    f"(LinearGradient, Color…)")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

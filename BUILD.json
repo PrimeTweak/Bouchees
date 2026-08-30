@@ -1,10 +1,9 @@
 {
-  "build": 60,
+  "build": 61,
   "date": "2026-08-29",
   "carries": [
-    "tab bar as safeAreaInset \u2014 taps work, no overlap",
-    "drawing background off in the hero (the grey box)",
-    "workflow selects the newest Xcode on the runner",
-    "native glassEffect behind #if compiler(>=6.2)"
+    "backgroundGradient typed LinearGradient, not some View",
+    "runner moved to macos-latest for Xcode 26",
+    "checker: opaque type erasing ShapeStyle"
   ]
 }
