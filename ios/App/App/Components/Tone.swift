@@ -451,7 +451,13 @@ struct PrimaryButton: ButtonStyle {
 /// `safeAreaInset`, which reserves the space but does not carry the edge
 /// effect — acceptable, because the effect itself is an iOS 26 feature.
 struct TopBar<Bar: View>: ViewModifier {
-    @ViewBuilder var bar: Bar
+    /* No `@ViewBuilder` on this stored property.
+     *
+     * The attribute makes the memberwise initialiser take `() -> Bar` rather
+     * than `Bar`, so `TopBar(bar: bar())` passed a value where a closure was
+     * expected. The extension below already builds the view; this only holds
+     * the result. */
+    let bar: Bar
 
     @ViewBuilder
     func body(content: Content) -> some View {

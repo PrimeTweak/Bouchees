@@ -662,6 +662,36 @@ def check():
                             f"full-bleed image — it switches off the scroll edge "
                             f"effect and the status bar stops being legible")
 
+    # 7s. a @ViewBuilder stored property constructed with a value.
+    #     `@ViewBuilder var bar: Bar` makes the memberwise initialiser take
+    #     `() -> Bar`, not `Bar`. Calling `TopBar(bar: bar())` therefore hands
+    #     a value where a closure is expected — and the error talks about the
+    #     generic parameter, not about the attribute that caused it.
+    #
+    #     Constructing the same type with a trailing closure is correct and is
+    #     not flagged.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        # types that declare a @ViewBuilder stored property, and its name
+        builders = {}
+        for m in re.finditer(r"(?:struct|final class|class)\s+(\w+)[^{]*\{((?:.|\n)*?)\n\}",
+                             code):
+            for d in re.finditer(r"@ViewBuilder\s+(?:var|let)\s+(\w+)\s*:", m.group(2)):
+                builders.setdefault(m.group(1), set()).add(d.group(1))
+
+        for _, (autre, _) in sources.items():
+            for typ, props in builders.items():
+                for prop in props:
+                    for m in re.finditer(re.escape(typ) + r"\s*\(\s*" + re.escape(prop)
+                                         + r"\s*:\s*([^)]*)\)", autre):
+                        arg = m.group(1).strip()
+                        if arg and not arg.startswith("{"):
+                            ligne = autre[:m.start()].count("\n") + 1
+                            problems.append(
+                                f"{filename}:{ligne}: {typ}({prop}:) is given a value, but "
+                                f"'{prop}' is @ViewBuilder — the initialiser expects a "
+                                f"closure; drop the attribute or pass a closure")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

@@ -1,14 +1,8 @@
 {
-  "build": 71,
+  "build": 72,
   "date": "2026-08-29",
   "carries": [
-    "scroll edge effect back on \u2014 ignoresSafeArea was switching it off",
-    "child pill is a safeAreaBar per screen, gone from Saved and the detail",
-    "one back button",
-    "bottom fade on both lists",
-    "animated launch: the mark settles, the bite lands, nothing before 400ms",
-    "system launch colour matches the canvas",
-    "six assets renamed to English",
-    "checker rule: ignoresSafeArea without a hero photo"
+    "TopBar: @ViewBuilder on a stored property makes the initialiser take a closure",
+    "checker rule: a @ViewBuilder property constructed with a value"
   ]
 }
