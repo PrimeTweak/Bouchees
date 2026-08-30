@@ -15,9 +15,11 @@ import SwiftUI
 /// because the top of a phone is hard to reach one-handed, and this app is
 /// used one-handed by definition.
 struct FloatingTabBar: View {
-    /// What the content below must leave free: the capsule plus its inset.
-    /// Published so no screen has to guess.
-    static let reservedHeight: CGFloat = 60 + Layout.tabBottom
+    /* No `reservedHeight` any more. The bar became a safeAreaInset in build
+     * 61, which means it reserves its own height — and every screen was still
+     * adding a second reservation on top. Two sources of truth for one
+     * measurement is what left the shopping list clipped and the recipe list
+     * floating. */
 
     @Binding var selection: Int
     @State private var searching = false

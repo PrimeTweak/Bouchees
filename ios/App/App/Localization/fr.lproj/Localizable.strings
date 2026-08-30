@@ -329,3 +329,6 @@
 "This week's recipes will fill the list." = "Les recettes de la semaine rempliront la liste.";
 "Nothing here" = "Rien ici";
 "Try another meal." = "Essayez un autre repas.";
+"Saved recipes" = "Recettes favorites";
+"%lld saved · your own shortlist" = "%lld en favoris · votre sélection";
+"Tap the bookmark on a recipe to keep it here." = "Touchez le signet d’une recette pour la garder ici.";

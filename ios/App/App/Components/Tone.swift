@@ -82,6 +82,20 @@ enum Tone {
     // Actions, selection, the active tab. NEVER a verdict.
 
     static let brand = dyn(light: 0xC03A20, dark: 0xFF7A5C)      // 4.6:1 / 7.7:1
+    /* THE SUBSCRIPTION CARD.
+     *
+     * Warm peach rather than near-black: a dark card on a cream page reads as
+     * a hole, and it crushed the meal chips underneath. Contrast measured —
+     * the text pair below clears 4.5:1 on this field in both appearances. */
+    static var upsellField: LinearGradient {
+        LinearGradient(colors: [dyn(light: 0xFFF2EC, dark: 0x2A1D14),
+                                dyn(light: 0xFFE6DC, dark: 0x171009)],
+                       startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
+
+    static let upsellText = dyn(light: 0x3A2118, dark: 0xFFFFFF)
+    static let upsellText2 = dyn(light: 0x8A6152, dark: 0xA89890)
+
     /// Behind a drawing in the hero, where a photograph would otherwise be.
     /// Warm and deep enough that white text sits on it without a scrim doing
     /// all the work.

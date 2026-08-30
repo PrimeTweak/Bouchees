@@ -27,14 +27,18 @@ struct RecipesScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    /* The photo runs to the top of the screen, so the pill
+                     * floats over it. Everything after it is ordinary content
+                     * and must clear the status bar on its own. */
                     hero
                     weekHeader
                     upsell
+                    savedEntry
                     mealChips
                     list
                     disclaimer
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, 16)
             }
             .background(Tone.canvas.ignoresSafeArea())
             .ignoresSafeArea(.container, edges: .top)
@@ -45,25 +49,6 @@ struct RecipesScreen: View {
              * with two children on different profiles, cooking for the wrong
              * one is the worst failure this app has — so it is pinned, and
              * the content passes under it. */
-            /* The pill is 44pt tall; the inset reserved 14. That difference
-             * is exactly what let the first thumbnail slide underneath it.
-             * And the offline banner lived in an overlay that ignored the
-             * safe area, so it climbed into the status bar — it belongs
-             * here, in the same reserved strip. */
-            .safeAreaInset(edge: .top, spacing: 0) {
-                VStack(spacing: 8) {
-                    if let message = etat.syncMessage {
-                        MessageBanner(texte: message)
-                    }
-                    HStack {
-                        CookingContextHeader()
-                        Spacer(minLength: 0)
-                    }
-                }
-                .padding(.horizontal, Layout.gutter)
-                .padding(.top, 8)
-                .padding(.bottom, 10)
-            }
             .navigationDestination(item: $openRecipeID) { id in
                 if let pair = etat.pairFor(pour: id) {
                     RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
@@ -72,6 +57,33 @@ struct RecipesScreen: View {
             }
             .sheet(isPresented: $showPaywall) { PaywallScreen() }
             .refreshable { await etat.sync() }
+        }
+        /* THE FOURTH ATTEMPT, AND THE CAUSE WAS HERE ALL ALONG.
+         *
+         * This used to be a `safeAreaInset` on the ScrollView, INSIDE the
+         * NavigationStack. When the detail screen is pushed it covers the same
+         * area — but the parent's inset stays in the tree and keeps its strip
+         * at the top. The pill was not visible on the detail, yet its HIT
+         * REGION was, and it swallowed every tap meant for the back and
+         * favourite buttons drawn underneath.
+         *
+         * That is why three fixes on RecipeDetailScreen changed nothing: the
+         * problem was never on that screen. Outside the stack, and hidden
+         * while a detail is up, it stops intercepting.
+         */
+        .overlay(alignment: .top) {
+            HStack {
+                if let message = etat.syncMessage {
+                    MessageBanner(texte: message)
+                } else {
+                    CookingContextHeader()
+                    Spacer(minLength: 0)
+                }
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 8)
+            .opacity(openRecipeID == nil ? 1 : 0)
+            .allowsHitTesting(openRecipeID == nil)
         }
     }
 
@@ -205,6 +217,51 @@ struct RecipesScreen: View {
         .padding(.top, 20)
     }
 
+    /* THE BOOKMARK LED NOWHERE.
+     *
+     * SavedRecipes has persisted to disk since the first build and the
+     * bookmark on the detail page has always written to it. Nothing ever read
+     * it back — tapping it saved into a void. */
+    @ViewBuilder
+    private var savedEntry: some View {
+        let n = etat.saved.recipes.count
+        if n > 0 {
+            NavigationLink { SavedScreen() } label: {
+                HStack(spacing: 11) {
+                    Image(systemName: "bookmark.fill")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(Tone.brandGradient,
+                                    in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Saved recipes")
+                            .font(.system(size: 13.5, weight: .semibold))
+                            .foregroundStyle(Tone.text)
+                        Text(String(format: String(localized: "%lld saved · your own shortlist"), n))
+                            .font(.system(size: 10.5))
+                            .foregroundStyle(Tone.text2)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Tone.text3)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(Tone.text.opacity(0.04),
+                            in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Tone.hairline, lineWidth: 1)
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 14)
+        }
+    }
+
     /// Breakfast, meals, snacks — how a parent thinks about a day.
     private var mealChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -322,43 +379,51 @@ struct RecipesScreen: View {
         if !batches.isEmpty && !etat.subscribed {
             Button { showPaywall = true } label: {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Weeks ahead").eyebrow(Tone.heroAccent)
+                    Text("Weeks ahead").eyebrow(Tone.brand)
 
                     Text(String(format: String(localized: "%lld more recipes"),
                                 batches.reduce(0) { $0 + $1.count }))
                         .font(.system(size: 19, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Tone.upsellText)
                         .padding(.top, 7)
 
                     Text(String(format: String(localized: "7 new ones every week, adapted to %@"),
                                 profile.firstName))
                         .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.62))
+                        .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
                     Text("7 days free, then $4.99/month")
                         .font(.system(size: 12))
-                        .foregroundStyle(.white.opacity(0.62))
+                        .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 2)
 
+                    /* Solid, in the action colour. On the dark card a light
+                     * button was right; on this one the reverse reads
+                     * better. */
                     Text("Try 7 days free")
                         .font(.system(size: 12.5, weight: .semibold))
-                        .foregroundStyle(Color(red: 0.16, green: 0.11, blue: 0.08))
+                        .foregroundStyle(.white)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 8)
-                        .background(Color(red: 1, green: 0.80, blue: 0.72), in: Capsule())
+                        .background(Tone.brandGradient, in: Capsule())
+                        .shadow(color: Tone.brandDeep.opacity(0.3), radius: 8, y: 4)
                         .padding(.top, 13)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(17)
+                /* WARM PEACH, NOT BLACK.
+                 *
+                 * A near-black card on a cream page reads as a hole rather
+                 * than an offer, and it crushed the meal chips right below
+                 * it. This stays distinct without shouting, and it belongs to
+                 * the same family as the action colour. */
                 .background {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(LinearGradient(colors: [Color(red: 0.16, green: 0.11, blue: 0.08),
-                                                      Color(red: 0.09, green: 0.06, blue: 0.04)],
-                                             startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .fill(Tone.upsellField)
                         .overlay {
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .strokeBorder(Tone.brand.opacity(0.22), lineWidth: 1)
+                                .strokeBorder(Tone.brand.opacity(0.18), lineWidth: 1)
                         }
                 }
             }

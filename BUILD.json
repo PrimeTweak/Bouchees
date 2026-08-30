@@ -1,10 +1,11 @@
 {
-  "build": 67,
+  "build": 68,
   "date": "2026-08-29",
   "carries": [
-    "image prompt back under 500 \u2014 the test I broke was right",
-    "112 test names now in English",
-    "French gone from the engine and every Swift file",
-    "checker rule: French anywhere in the code, reading raw not stripped source"
+    "back and favourite: the parent inset was eating the taps, not the detail screen",
+    "Saved screen reachable at last \u2014 the bookmark had been writing into a void",
+    "subscription card in warm peach, contrast measured at 13.6:1 and 4.9:1",
+    "reservedHeight deleted \u2014 one source of truth for the bar height",
+    "checker rule: safeAreaInset inside a NavigationStack"
   ]
 }

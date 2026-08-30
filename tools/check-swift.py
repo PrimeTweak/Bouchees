@@ -547,6 +547,33 @@ def check():
                                 f"everything inside the code is in English")
 
 
+    # 7n. a safeAreaInset placed inside a NavigationStack.
+    #     An inset attached to a view INSIDE the stack survives every screen
+    #     pushed on top of it. The overlay stops being visible but keeps its
+    #     hit region, so buttons on the pushed screen are drawn correctly and
+    #     receive nothing.
+    #
+    #     That cost four attempts on the wrong file. The rule looks for an
+    #     inset that appears after a NavigationStack opens and before it
+    #     closes.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        profondeur = None
+        for i, l in enumerate(lignes, 1):
+            if "NavigationStack" in l and "{" in l:
+                profondeur = 0
+            if profondeur is None:
+                continue
+            profondeur += l.count("{") - l.count("}")
+            if profondeur <= 0:
+                profondeur = None
+                continue
+            if ".safeAreaInset(edge: .top" in l:
+                problems.append(f"{filename}:{i}: safeAreaInset(.top) inside a "
+                                f"NavigationStack — it keeps its hit region over every "
+                                f"pushed screen; move it outside the stack")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

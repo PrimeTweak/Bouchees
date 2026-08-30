@@ -274,3 +274,54 @@ struct RatingBlock: View {
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }
+
+// MARK: - Saved recipes
+
+/// THE SCREEN THAT WAS NEVER REACHABLE.
+///
+/// `SavedRecipes` has persisted to disk since the first build, and the
+/// bookmark on the detail page has always written to it. Nothing ever read it
+/// back — the button saved into a void. This is the way in.
+struct SavedScreen: View {
+    @Environment(AppState.self) private var etat
+    @State private var openRecipeID: String?
+
+    private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] {
+        etat.saved.recipes.compactMap { etat.pairFor(pour: $0.id) }
+    }
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                if pairs.isEmpty {
+                    EmptyState(symbol: "bookmark",
+                               title: "Nothing saved yet",
+                               message: "Tap the bookmark on a recipe to keep it here.")
+                        .padding(.top, 80)
+                } else {
+                    ForEach(pairs, id: \.recipe.id) { pair in
+                        Button { openRecipeID = pair.recipe.id } label: {
+                            RecipeRow(recipe: pair.recipe, result: pair.result)
+                        }
+                        .buttonStyle(.plain)
+
+                        if pair.recipe.id != pairs.last?.recipe.id {
+                            Divider().overlay(Tone.hairline)
+                                .padding(.leading, Layout.gutter + Layout.thumb + 15)
+                        }
+                    }
+                }
+            }
+            .padding(.bottom, 16)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .navigationTitle("Saved")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(item: $openRecipeID) { id in
+            if let pair = etat.pairFor(pour: id) {
+                RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
+                                   firstName: etat.activeProfile.firstName)
+            }
+        }
+    }
+}
