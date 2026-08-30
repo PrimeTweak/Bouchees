@@ -218,8 +218,13 @@ struct Glass: ViewModifier {
             }
             .overlay {
                 /* The specular line on the top edge. Without it the material
-                 * reads as frosted plastic rather than glass. */
-                shape.strokeBorder(
+                 * reads as frosted plastic rather than glass.
+                 *
+                 * `stroke`, not `strokeBorder`: AnyShape erases the
+                 * InsettableShape conformance that strokeBorder needs. The
+                 * line straddles the edge instead of sitting inside it, which
+                 * at 0.75pt is the same pixel. */
+                shape.stroke(
                     LinearGradient(colors: [.white.opacity(0.55),
                                             .white.opacity(0.14),
                                             .white.opacity(0.30)],

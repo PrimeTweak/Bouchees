@@ -425,6 +425,22 @@ def check():
                                 f"'{membre}'  (it has: {', '.join(proches)}…)")
                 break
 
+    # 7i. strokeBorder on a type-erased shape.
+    #     `strokeBorder` lives on InsettableShape. AnyShape erases that
+    #     conformance, so the call fails to compile — and the error names the
+    #     member, not the erasure that caused it. `stroke` is the fix.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        # names bound to AnyShape in this file
+        erased = set(re.findall(r"(?:var|let)\s+(\w+)\s*:\s*AnyShape", code))
+        erased |= set(re.findall(r"(\w+)\s*=\s*AnyShape\(", code))
+        for i, l in enumerate(lignes, 1):
+            m = re.search(r"\b(\w+)\.strokeBorder\b", l)
+            if m and m.group(1) in erased:
+                problems.append(f"{filename}:{i}: {m.group(1)}.strokeBorder — that value is "
+                                f"AnyShape, which erases InsettableShape; use stroke instead")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

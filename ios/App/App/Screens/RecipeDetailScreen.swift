@@ -443,7 +443,7 @@ struct IngredientLine: View {
     }
 
     private var quantity: String {
-        let v = item.qty.display
+        let v = item.qty.affichage
         return v.isEmpty ? item.unit : "\(v) \(item.unit)".trimmingCharacters(in: .whitespaces)
     }
 }

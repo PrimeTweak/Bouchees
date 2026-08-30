@@ -1,11 +1,9 @@
 {
-  "build": 57,
+  "build": 58,
   "date": "2026-08-29",
   "carries": [
-    "photo-led home, 430pt hero, counts on one line",
-    "detail: ONE adjusted ingredient list with amber REPLACES tag",
-    "tap a swap to open the rule and every option in the table",
-    "cooking mode with the dish photo",
-    "themes via window overrideUserInterfaceStyle \u2014 Auto actually returns to system"
+    "qty.affichage, not display",
+    "stroke, not strokeBorder on AnyShape",
+    "checker: AnyShape erasure rule"
   ]
 }
