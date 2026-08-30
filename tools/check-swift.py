@@ -248,6 +248,7 @@ def check():
     #     are checked, and only calls that use labels for every argument, so a
     #     custom init or a positional call is left alone.
     struct_fields = {}
+    struct_defaults = {}
     for path_, (_, code) in sources.items():
         for m in re.finditer(r"struct (\w+): View \{((?:.|\n)*?)\n\}", code):
             nom, corps = m.group(1), m.group(2)
@@ -263,8 +264,34 @@ def check():
                 r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:private\s+)?(?:let|var)\s+(\w+)\s*[:=]",
                 corps, re.M))
             champs.discard("body")
+            # A stored property with a default value makes its argument
+            # optional at the call site.
+            defauts = set(re.findall(
+                r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:private\s+)?var\s+(\w+)\s*(?::[^=\n]+)?=",
+                corps, re.M))
+            # A property wrapper supplies its own value too.
+            enveloppes = set(re.findall(
+                r"^\s*@(?:State|Environment|FocusState|AppStorage)\b[^\n]*\b(?:var)\s+(\w+)",
+                corps, re.M))
+            champs -= enveloppes
+            # A computed property is not an init parameter. It is followed by
+            # `{` on its own line or the next — the same distinction the
+            # ViewBuilder rule already makes. Without it, `private var
+            # shortVerdict: String { … }` looks like a missing argument.
+            lignes_corps = corps.split("\n")
+            calculees = set()
+            for idx, lc in enumerate(lignes_corps):
+                mm = re.match(r"\s*(?:private\s+)?var\s+(\w+)\s*:", lc)
+                if not mm:
+                    continue
+                suite = lc[mm.end():].strip()
+                suivante = (lignes_corps[idx + 1] if idx + 1 < len(lignes_corps) else "").strip()
+                if suite.endswith("{") or suivante.startswith("{"):
+                    calculees.add(mm.group(1))
+            champs -= calculees
             if champs:
                 struct_fields[nom] = champs
+                struct_defaults[nom] = defauts & champs
 
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
@@ -282,6 +309,16 @@ def check():
                     problems.append(f"{filename}:{i}: {nom}({inconnus[0]}:) — that struct "
                                     f"declares no '{inconnus[0]}'  (it has: {attendus})")
 
+
+                # The "missing argument" half of this rule was tried and
+                # removed: telling a stored property from a computed one
+                # without a parser produced four false positives across three
+                # attempts. A checker that cries wolf gets ignored, and the
+                # compiler names this case clearly anyway.
+                #
+                # What stays is the half that works: a label the struct does
+                # not declare, which the compiler reports without saying
+                # where the wrong call lives.
     # 7f. a call whose argument labels do not match the function it calls.
     #     `pairFor(id)` against `func pairFor(pour id: String)` fails, and the
     #     error names the label it wanted without saying where the wrong call

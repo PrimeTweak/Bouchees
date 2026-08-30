@@ -51,7 +51,8 @@ struct RecipesScreen: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(item: $openRecipeID) { id in
                 if let pair = etat.pairFor(pour: id) {
-                    RecipeDetailScreen(recipe: pair.recipe, result: pair.result)
+                    RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
+                                       firstName: profile.firstName)
                 }
             }
             .sheet(isPresented: $showPaywall) { PaywallScreen() }

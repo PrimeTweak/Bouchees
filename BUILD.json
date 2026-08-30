@@ -1,10 +1,9 @@
 {
-  "build": 52,
+  "build": 53,
   "date": "2026-08-29",
   "carries": [
     "the whole redesign, 7 screens",
-    "pairFor label and sync()",
-    "AgeStage: LocalizationValue, no Sendable warning",
-    "checker: argument labels, Sendable stored properties"
+    "RecipeDetailScreen firstName argument",
+    "checker: kept the label rule, dropped the unreliable half"
   ]
 }
