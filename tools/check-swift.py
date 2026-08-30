@@ -750,6 +750,22 @@ def check():
                                     f"Outer.{nom}, which nothing else can see")
             prof += l.count("{") - l.count("}")
 
+    # 7v. a unicode escape without braces.
+    #     Swift writes `\\u{00e9}`. `\\u00e9` is not an escape at all, and the
+    #     compiler says "expected hexadecimal code in braces" three times for
+    #     one line without naming the missing braces.
+    #
+    #     This came from a script writing Swift: Python and JavaScript accept
+    #     the brace-less form, Swift does not. Writing the character itself is
+    #     usually better than either.
+    for path_, (raw, _) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(raw.split("\n"), 1):
+            for m in re.finditer(r"\\u(?!\{)([0-9a-fA-F]{2,})", l):
+                problems.append(f"{filename}:{i}: '\\u{m.group(1)}' has no braces — "
+                                f"Swift needs \\u{{{m.group(1)}}}, or write the "
+                                f"character itself")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

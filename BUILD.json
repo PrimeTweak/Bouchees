@@ -1,13 +1,8 @@
 {
-  "build": 77,
+  "build": 78,
   "date": "2026-08-29",
   "carries": [
-    "week strip replaces the meal chips \u2014 seven days, drag a recipe to move it",
-    "top bar is a masked double gradient; the photo lightens up to meet it",
-    "shopping title moved into the bar, 130pt back to the list",
-    "shopping filters to one day",
-    "scanner reads the label itself with Vision, on device, offline",
-    "the verdict says whether a database or the package said it",
-    "9 week-plan tests, 153 total"
+    "unicode escapes need braces in Swift \u2014 a script wrote the Python form",
+    "checker rule: a backslash-u escape with no braces"
   ]
 }

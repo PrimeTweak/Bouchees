@@ -771,7 +771,7 @@ final class LabelReader {
     static func ingredientSection(in texte: String) -> String? {
         let bas = texte.lowercased()
         let entetes = ["ingredients:", "ingredients :", "ingredients",
-                       "ingr\u00e9dients:", "ingr\u00e9dients :", "ingr\u00e9dients"] // label text
+                       "ingrédients:", "ingrédients :", "ingrédients"] // label text
         for e in entetes {
             guard let r = bas.range(of: e) else { continue }
             var suite = String(texte[r.upperBound...])
