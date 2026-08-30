@@ -18,7 +18,14 @@ struct ShoppingScreen: View {
     @State private var checked: Set<String> = []
     @State private var loaded = false
 
-    private var items: [ShoppingItem] { etat.shoppingList }
+    /// The whole week, or one day when the strip is narrowed.
+    private var items: [ShoppingItem] {
+        dayFilter ? etat.shoppingList(on: etat.selectedDay) : etat.shoppingList
+    }
+
+    /// Off by default: the week is the normal shopping trip, and a day is the
+    /// exception you ask for.
+    @State private var dayFilter = false
 
     private var byAisle: [(aisle: String, items: [ShoppingItem])] {
         let groups = Dictionary(grouping: items, by: \.aisle)
@@ -34,7 +41,15 @@ struct ShoppingScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                header
+                /* The title lives in the bar now; the content starts under it. */
+                Color.clear.frame(height: 92)
+                weekStrip
+                HStack {
+                    scopeToggle
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, Layout.gutter)
+                .padding(.top, 12)
                 progress
                 ForEach(byAisle, id: \.aisle) { group in
                     Text(Self.aisleLabel(group.aisle))
@@ -68,14 +83,8 @@ struct ShoppingScreen: View {
         .toolbar(.hidden, for: .navigationBar)
         /* Who you are shopping for matters as much as who you are cooking
          * for — the list is adapted to them. */
-        .topBar {
-            HStack {
-                CookingContextHeader()
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 6)
-        }
+        .softTopBar(height: 96) { header }
+        .softBottomEdge()
         /* Below iOS 26 there is no scroll edge effect, so the last row
          * would read through the floating bar. Harmless where the effect
          * exists. */
@@ -88,22 +97,60 @@ struct ShoppingScreen: View {
 
     // MARK: - Pieces
 
+    /// The title shares the bar with the child pill.
+    ///
+    /// It used to sit below a full-width pill, which pushed it 130pt down the
+    /// screen before a single item appeared. On its own line beside a compact
+    /// pill, that space goes back to the list.
     private var header: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Text("Shopping list")
-                .font(.system(size: 32, weight: .bold))
+        HStack(alignment: .center, spacing: 10) {
+            Text("Shopping")
+                .font(.system(size: 20, weight: .bold))
+                .kerning(-0.5)
                 .foregroundStyle(Tone.text)
-            Text(subtitle)
-                .font(.system(size: 13))
-                .foregroundStyle(Tone.text2)
+            Spacer(minLength: 0)
+            CookingContextHeader(compact: true)
         }
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 62)
+        .padding(.top, 46)
     }
 
     private var subtitle: String {
         String(format: String(localized: "This week · %lld recipes · for %@"),
                etat.weekRecipes.count, etat.activeProfile.firstName)
+    }
+
+    /// Touching a day narrows the list to what that day needs.
+    ///
+    /// "What do I buy for Wednesday" is a real question in an aisle, and it
+    /// was unanswerable — the list was the whole week or nothing.
+    @ViewBuilder
+    private var weekStrip: some View {
+        @Bindable var e = etat
+        WeekStrip(selected: $e.selectedDay)
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 4)
+    }
+
+    /// Week or day, one tap.
+    private var scopeToggle: some View {
+        Button {
+            withAnimation(.smooth(duration: 0.24)) { dayFilter.toggle() }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: dayFilter ? "calendar.day.timeline.left" : "calendar")
+                    .font(.system(size: 10, weight: .semibold))
+                Text(dayFilter ? WeekDay.full[etat.selectedDay] : "Whole week")
+                    .font(.system(size: 11, weight: .semibold))
+            }
+            .foregroundStyle(dayFilter ? Tone.canvas : Tone.text2)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 6)
+            .background(dayFilter ? AnyShapeStyle(Tone.text)
+                                  : AnyShapeStyle(Tone.text.opacity(0.05)),
+                        in: Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     private var progress: some View {

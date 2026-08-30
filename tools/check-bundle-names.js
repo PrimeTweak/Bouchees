@@ -34,10 +34,19 @@ function walk(dir) {
       const src = fs.readFileSync(p, "utf8");
       for (const m of src.matchAll(/Resources\.(?:url|data)\("([^"]+)",\s*"([^"]+)"\)/g))
         asked.add(m[1] + "." + m[2]);
-      /* The engine scripts are loaded from a literal array. */
+      /* The engine scripts are loaded from a literal array.
+       *
+       * "Any for-in over string literals is a script list" was too broad: the
+       * scanner iterates over label phrases — "nutrition facts", "valeur
+       * nutritive" — and each became a demand for a file named after it. A
+       * script name has no spaces and no colon, which separates the two
+       * without needing to know either. */
       for (const m of src.matchAll(/for\s+\w+\s+in\s+\[((?:"[^"]+",?\s*)+)\]/g))
-        for (const n of m[1].match(/"([^"]+)"/g) || [])
-          asked.add(n.replace(/"/g, "") + ".js");
+        for (const n of m[1].match(/"([^"]+)"/g) || []) {
+          const nom = n.replace(/"/g, "");
+          if (!/^[A-Za-z0-9_-]+$/.test(nom)) continue;
+          asked.add(nom + ".js");
+        }
     }
   }
 }

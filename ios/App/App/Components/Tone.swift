@@ -492,3 +492,79 @@ extension View {
         }
     }
 }
+
+// MARK: - The soft top bar
+
+/// A top bar that fades out instead of ending on a line.
+///
+/// A plain background stops at a hard edge, and so does an unmasked
+/// `backdrop-filter`: blurring a strip and cutting it produces a SECOND line
+/// where the blur ends. Both the tint and the blur have to fall off together,
+/// which is what the mask does.
+///
+/// The hero photo carries the other half — it lightens upward into the canvas
+/// over the same distance. Where they overlap there is no edge at all.
+struct SoftTopBar<Bar: View>: ViewModifier {
+    let bar: Bar
+    var height: CGFloat = 112
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .top) {
+            ZStack(alignment: .top) {
+                LinearGradient(
+                    stops: [
+                        .init(color: Tone.canvas.opacity(0.99), location: 0),
+                        .init(color: Tone.canvas.opacity(0.97), location: 0.30),
+                        .init(color: Tone.canvas.opacity(0.86), location: 0.52),
+                        .init(color: Tone.canvas.opacity(0.56), location: 0.70),
+                        .init(color: Tone.canvas.opacity(0.24), location: 0.85),
+                        .init(color: Tone.canvas.opacity(0), location: 1)
+                    ],
+                    startPoint: .top, endPoint: .bottom)
+                    .background(.ultraThinMaterial)
+                    .mask {
+                        LinearGradient(
+                            stops: [
+                                .init(color: .black, location: 0),
+                                .init(color: .black, location: 0.48),
+                                .init(color: .black.opacity(0.6), location: 0.74),
+                                .init(color: .clear, location: 1)
+                            ],
+                            startPoint: .top, endPoint: .bottom)
+                    }
+                    .frame(height: height)
+                    .allowsHitTesting(false)
+
+                bar
+            }
+            .ignoresSafeArea(edges: .top)
+        }
+    }
+}
+
+extension View {
+    /// Places a bar over a fading field rather than on a hard band.
+    func softTopBar<Bar: View>(height: CGFloat = 112,
+                               @ViewBuilder _ bar: () -> Bar) -> some View {
+        modifier(SoftTopBar(bar: bar(), height: height))
+    }
+
+    /// The fade at the bottom, matching the top.
+    ///
+    /// Below iOS 26 there is no scroll edge effect. This is soft, not a wall:
+    /// content still passes behind the tab bar, it simply dims as it goes.
+    func softBottomEdge() -> some View {
+        overlay(alignment: .bottom) {
+            LinearGradient(
+                stops: [
+                    .init(color: Tone.canvas.opacity(0), location: 0),
+                    .init(color: Tone.canvas.opacity(0.32), location: 0.36),
+                    .init(color: Tone.canvas.opacity(0.74), location: 0.66),
+                    .init(color: Tone.canvas.opacity(0.94), location: 1)
+                ],
+                startPoint: .top, endPoint: .bottom)
+                .frame(height: 98)
+                .allowsHitTesting(false)
+        }
+    }
+}

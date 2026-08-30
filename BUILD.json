@@ -1,7 +1,13 @@
 {
-  "build": 76,
+  "build": 77,
   "date": "2026-08-29",
   "carries": [
-    "workflow copies label-lexicon.json \u2014 the app asked for a file the build never bundled"
+    "week strip replaces the meal chips \u2014 seven days, drag a recipe to move it",
+    "top bar is a masked double gradient; the photo lightens up to meet it",
+    "shopping title moved into the bar, 130pt back to the list",
+    "shopping filters to one day",
+    "scanner reads the label itself with Vision, on device, offline",
+    "the verdict says whether a database or the package said it",
+    "9 week-plan tests, 153 total"
   ]
 }

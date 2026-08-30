@@ -55,17 +55,71 @@ final class AppState {
     /// `currentWeek` already holds the batch id, straight from the manifest.
     /// Deriving it from `batches.last` would be a second, weaker answer to a
     /// question the server already answered.
-    var weekRecipes: [Recipe] {
-        /* The manifest's `currentWeek` names the week being PUBLISHED, which
-         * can be ahead of anything this reader can open — it says 2026-S35
-         * while the newest batch is S34, and a subscriber-only one at that.
-         *
-         * So the week is the most recent batch the reader can actually
-         * unlock. Falling back to the whole corpus is what produced
-         * "This week · 15 recipes" and an empty shopping list. */
+    /// Which recipe sits on which day of this week.
+    ///
+    /// Loaded once per batch and written the moment the parent moves
+    /// something. Regenerated deterministically when a new batch arrives.
+    var plan: WeekPlan = .empty
+
+    /// The day the strip is showing. Starts on today.
+    var selectedDay: Int = WeekDay.today
+
+    /// The recipes assigned to one day, in the order the parent put them.
+    func recipes(on day: Int) -> [Recipe] {
+        let ids = plan.recipes(on: day)
+        return ids.compactMap { id in weekRecipes.first { $0.id == id } }
+    }
+
+    /// Moves a recipe to another day and writes it down straight away.
+    func move(_ recipe: Recipe, to day: Int) {
+        plan.move(recipe.id, to: day)
+        if let id = currentBatchID { local.saveWeekPlan(plan, batch: id) }
+    }
+
+    /// Swaps two whole days.
+    func swapDays(_ a: Int, _ b: Int) {
+        plan.swap(a, b)
+        if let id = currentBatchID { local.saveWeekPlan(plan, batch: id) }
+    }
+
+    /// Rebuilds the plan when the batch changes, keeping any day the parent
+    /// already chose for a recipe that is still in the week.
+    func refreshPlan() {
+        guard let id = currentBatchID else { plan = .empty; return }
+        let semaine = weekRecipes
+        let connus = Set(semaine.map(\.id))
+
+        var courant = local.loadWeekPlan(batch: id) ?? WeekPlan.initial(for: semaine)
+        /* Drop anything no longer in the week, then place anything new. */
+        for jour in courant.days.keys {
+            courant.days[jour]?.removeAll { !connus.contains($0) }
+            if courant.days[jour]?.isEmpty == true { courant.days[jour] = nil }
+        }
+        let places = Set(courant.days.values.flatMap { $0 })
+        let neuves = semaine.filter { !places.contains($0.id) }
+        if !neuves.isEmpty {
+            let depart = WeekPlan.initial(for: neuves)
+            for (jour, ids) in depart.days {
+                courant.days[jour, default: []].append(contentsOf: ids)
+            }
+        }
+        plan = courant
+        local.saveWeekPlan(plan, batch: id)
+    }
+
+    /// The batch the reader is actually on.
+    ///
+    /// The manifest's `currentWeek` names the week being PUBLISHED, which can
+    /// be ahead of anything this reader can open — it says 2026-S35 while the
+    /// newest unlocked batch is S34. The week plan is keyed on this, so both
+    /// have to agree.
+    var currentBatchID: String? {
         let mine = batches.filter { $0.unlocked }
-        let target = mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
-        guard let id = target else { return recipes }
+        return mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
+    }
+
+    var weekRecipes: [Recipe] {
+        guard let id = currentBatchID else { return recipes }
         /* One word, three symptoms: "This week · 15 recipes" instead of 7,
          * an empty shopping list, and meal groups drawn from the whole
          * corpus. The model called this `lot`; the JSON calls it `batch`. */
@@ -74,6 +128,16 @@ final class AppState {
     }
 
     /// The week's shopping list, already adapted for the active profile.
+    /// The list for one day only.
+    ///
+    /// Standing in an aisle, "what do I need for Wednesday" is a real
+    /// question, and the whole-week list could not answer it.
+    func shoppingList(on day: Int) -> [ShoppingItem] {
+        let plats = recipes(on: day)
+        guard !plats.isEmpty, let m = moteur else { return [] }
+        return (try? m.shoppingList(plats, pour: activeProfile)) ?? []
+    }
+
     var shoppingList: [ShoppingItem] {
         guard let moteur, moteur.pret else { return [] }
         return (try? moteur.shoppingList(weekRecipes, pour: activeProfile)) ?? []
@@ -186,7 +250,9 @@ final class AppState {
 
     func start() async {
         isLoading = true
-        defer { isLoading = false }
+        /* The plan is keyed on the batch, so it is rebuilt whenever the set of
+         * unlocked recipes could have changed. */
+        defer { isLoading = false; refreshPlan() }
 
         theme = local.readTheme()
         profiles = local.readProfiles()
@@ -266,6 +332,7 @@ final class AppState {
                 ? "No connection and nothing stored. Connect once to download the recipes."
                 : "Offline — your downloaded recipes are still available."
         }
+        refreshPlan()
     }
 
     // MARK: - Adaptation

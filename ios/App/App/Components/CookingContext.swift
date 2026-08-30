@@ -130,6 +130,13 @@ private struct TabItem: View {
 /// on different profiles, cooking for the wrong one is the worst failure this
 /// app can have — so it is never more than a glance away.
 struct CookingContextHeader: View {
+    /// Avatar and first name only.
+    ///
+    /// On a screen whose title already occupies the left of the bar, the full
+    /// pill would take the whole line and push the content down — which is
+    /// what put the shopping title 130pt from the top.
+    var compact: Bool = false
+
     @Environment(AppState.self) private var etat
     @State private var picking = false
     var onDark: Bool = true
@@ -141,12 +148,17 @@ struct CookingContextHeader: View {
                               familyMode: etat.familyMode, size: 30)
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
-                        .font(.system(size: 14.5, weight: .semibold))
+                        .font(.system(size: compact ? 12.5 : 14.5, weight: .semibold))
                         .foregroundStyle(.primary)
-                    Text(subtitle)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                    /* The age and the allergies are the point of this pill —
+                     * but only where it owns the line. Beside a title they
+                     * would wrap it to two rows. */
+                    if !compact {
+                        Text(subtitle)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
                 }
                 Image(systemName: "chevron.down")
                     .font(.system(size: 11, weight: .semibold))
@@ -426,5 +438,118 @@ struct SearchSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - The week strip
+
+/// Seven days, each showing what is planned on it.
+///
+/// NOT a planner to fill. Every comparison of meal-planning apps says the same
+/// thing: handing someone an empty grid and a drag gesture turns dinner into
+/// admin. Seven recipes already arrive each week — the strip shows where they
+/// landed and lets the parent move one, which is the only decision worth
+/// offering.
+///
+/// Two days are usually empty, and that stays true. Seven recipes do not make
+/// seven suppers, and spreading them to look complete would be a lie about
+/// what the app provides.
+struct WeekStrip: View {
+    @Environment(AppState.self) private var etat
+
+    @Binding var selected: Int
+    /// A recipe being dragged onto another day.
+    @State private var dragging: String?
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(0..<7, id: \.self) { jour in
+                DayCell(day: jour,
+                        selected: selected == jour,
+                        today: jour == WeekDay.today,
+                        recipes: etat.recipes(on: jour))
+                    .contentShape(.rect)
+                    .onTapGesture {
+                        withAnimation(.smooth(duration: 0.24)) { selected = jour }
+                    }
+                    /* Drop target. Dragging a recipe from one day onto
+                     * another is the whole editing model — no long press, no
+                     * edit mode, no confirmation. */
+                    .dropDestination(for: String.self) { ids, _ in
+                        guard let id = ids.first,
+                              let r = etat.weekRecipes.first(where: { $0.id == id })
+                        else { return false }
+                        withAnimation(.smooth(duration: 0.28)) {
+                            etat.move(r, to: jour)
+                            selected = jour
+                        }
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        return true
+                    }
+            }
+        }
+    }
+}
+
+private struct DayCell: View {
+    let day: Int
+    let selected: Bool
+    let today: Bool
+    let recipes: [Recipe]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(WeekDay.short[day])
+                .font(.system(size: 8, weight: .bold, design: .monospaced))
+                .kerning(0.8)
+                .foregroundStyle(labelColour)
+
+            Text("\(day + 1)")
+                .font(.system(size: 13.5, weight: .bold))
+                .kerning(-0.3)
+                .foregroundStyle(selected ? Tone.canvas : Tone.text)
+                .padding(.top, 2)
+
+            /* One dot per recipe rather than a thumbnail: at this size a
+             * picture is mud, and the count is the fact that matters. */
+            HStack(spacing: 2.5) {
+                if recipes.isEmpty {
+                    Circle()
+                        .strokeBorder(Tone.text.opacity(0.14), lineWidth: 1)
+                        .frame(width: 5, height: 5)
+                } else {
+                    ForEach(recipes.prefix(3), id: \.id) { _ in
+                        Circle()
+                            .fill(selected ? Tone.canvas.opacity(0.8) : Tone.brand)
+                            .frame(width: 5, height: 5)
+                    }
+                }
+            }
+            .frame(height: 6)
+            .padding(.top, 6)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background {
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .fill(selected ? AnyShapeStyle(Tone.text)
+                               : AnyShapeStyle(Tone.text.opacity(0.04)))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 13, style: .continuous)
+                        .strokeBorder(today && !selected ? Tone.brand.opacity(0.4)
+                                                         : Tone.hairline,
+                                      lineWidth: 1)
+                }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(WeekDay.full[day]))
+        .accessibilityValue(recipes.isEmpty
+            ? Text("nothing planned")
+            : Text(recipes.map(\.name).joined(separator: ", ")))
+    }
+
+    private var labelColour: Color {
+        if selected { return Tone.canvas.opacity(0.6) }
+        return today ? Tone.brand : Tone.text3
     }
 }

@@ -13,16 +13,29 @@
 import SwiftUI
 import AVFoundation
 import UIKit
+/* On-device text recognition. The reason it is here: for Canada, Open Food
+ * Facts has 124,088 products and complete ingredients for 21,918 of them.
+ * The ingredient list is printed on the package, in front of the camera,
+ * and it is the source that legally governs. */
+import Vision
 
 // MARK: - Capture
 
 @MainActor
-final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputObjectsDelegate {
+final class BarcodeSession: NSObject, ObservableObject,
+                            AVCaptureMetadataOutputObjectsDelegate,
+                            AVCaptureVideoDataOutputSampleBufferDelegate {
     @Published var code: String?
     @Published var error: String?
 
     let session = AVCaptureSession()
     private var configured = false
+    private let fileVideo = DispatchQueue(label: "ca.bouchees.frames", qos: .userInitiated)
+
+    /// Set while the label mode is active. Off, frames are ignored entirely
+    /// so the camera costs nothing extra when scanning barcodes.
+    var readingLabel = false
+    let reader = LabelReader()
     private var lastCode: String?
 
     func start() {
@@ -64,6 +77,16 @@ final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputO
         }
         session.addOutput(out)
         out.setMetadataObjectsDelegate(self, queue: .main)
+
+        /* A second output, for reading the label. Frames are dropped while a
+         * recognition is in flight — Vision on `.accurate` takes longer than
+         * a frame interval, and queueing them would grow without bound. */
+        let video = AVCaptureVideoDataOutput()
+        video.alwaysDiscardsLateVideoFrames = true
+        if session.canAddOutput(video) {
+            session.addOutput(video)
+            video.setSampleBufferDelegate(self, queue: fileVideo)
+        }
         /* Everything a grocery item can carry.
          *
          * ITF-14 is on cartons and multipacks, Data Matrix and QR on newer
@@ -129,6 +152,16 @@ struct ScannerScreen: View {
     @State private var messageErreur: String?
     @State private var canContribute = false
 
+    /// Barcode, or read the label directly.
+    ///
+    /// Two modes because the databases cover one product in six here. The
+    /// second is not a fallback bolted on — it is the mode that works in a
+    /// grocery basement with no signal, on a product nobody catalogued.
+    @State private var mode: ScanMode = .barcode
+    /// Where a verdict came from. A parent deciding for their child has to
+    /// know whether a database said it or the package did.
+    @State private var source: VerdictSource = .database
+
     var body: some View {
         Group {
             switch authorization {
@@ -154,9 +187,19 @@ struct ScannerScreen: View {
             CameraPreview(session: scanner.session)
                 .ignoresSafeArea()
 
-            ViewfinderFrame()
+            ViewfinderFrame(wide: mode == .label)
                 .allowsHitTesting(false)
 
+            VStack {
+                modePicker
+                    .padding(.top, 48)
+                Spacer(minLength: 0)
+            }
+
+        }
+        .onChange(of: scanner.reader.text) { _, texte in
+            guard let t = texte, mode == .label else { return }
+            evaluerEtiquette(t)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if isWorking || product != nil || messageErreur != nil {
@@ -239,22 +282,70 @@ struct ScannerScreen: View {
         }
     }
 
+    /// Barcode or label, one tap.
+    private var modePicker: some View {
+        HStack(spacing: 3) {
+            ForEach([ScanMode.barcode, .label], id: \.self) { m in
+                Button {
+                    withAnimation(.smooth(duration: 0.22)) {
+                        mode = m
+                        scanner.readingLabel = (m == .label)
+                        reset()
+                    }
+                } label: {
+                    Text(m == .barcode ? "Barcode" : "Ingredients")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(mode == m ? Color.black : Color.white.opacity(0.66))
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 6)
+                        .background(mode == m ? AnyShapeStyle(Color.white)
+                                              : AnyShapeStyle(Color.clear),
+                                    in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(3)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay { Capsule().strokeBorder(.white.opacity(0.24), lineWidth: 0.5) }
+    }
+
+    /// Runs the label text through the same engine a database result goes
+    /// through. Same 603 terms, same rules, same refusal to guess.
+    private func evaluerEtiquette(_ texte: String) {
+        source = .label
+        product = nil
+        messageErreur = nil
+        do {
+            verdict = try etat.evaluateLabel(texte)
+            UINotificationFeedbackGenerator().notificationOccurred(
+                verdict?.status == .avoid ? .warning : .success)
+        } catch {
+            messageErreur = String(localized:
+                "I could not read enough of the label. Try holding it flatter, in better light.")
+        }
+    }
+
     private func reset() {
         product = nil
         verdict = nil
         messageErreur = nil
         canContribute = false
+        scanner.reader.reset()
         scanner.rearm()
     }
 }
 
 struct ViewfinderFrame: View {
+    /// A label needs a taller window than a barcode strip.
+    var wide: Bool = false
+
     /// Four corner brackets rather than a full rectangle. It reads as a target
     /// without boxing in the product, and it survives any camera background.
     var body: some View {
         GeometryReader { geo in
-            let w = geo.size.width * 0.72
-            let h = w / 1.4
+            let w = geo.size.width * (wide ? 0.84 : 0.72)
+            let h = wide ? w * 1.05 : w / 1.4
             ZStack {
                 ForEach(0..<4, id: \.self) { i in
                     Corner()
@@ -585,5 +676,136 @@ struct ProductVerdictBanner: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// What the camera is looking for.
+enum ScanMode: Hashable {
+    case barcode
+    case label
+}
+
+/// Where a verdict came from.
+enum VerdictSource: Hashable {
+    case database
+    case label
+}
+
+// MARK: - Reading the label
+
+/// Reads an ingredient list off the package with on-device text recognition.
+///
+/// WHY THIS EXISTS. A coverage study of April 2026 measured Open Food Facts at
+/// 124,088 Canadian products with complete ingredients for 21,918 — roughly
+/// one in six. USDA holds 2,319 Canadian barcodes out of two million. Stacking
+/// more databases does not fix a product that was never entered, and small
+/// Quebec producers rarely are.
+///
+/// The list is printed on the package. Vision reads it on the device: offline,
+/// free, private, and it works on a product nobody has ever catalogued.
+@MainActor
+@Observable
+final class LabelReader {
+
+    private(set) var text: String?
+    private(set) var reading = false
+
+    /// Everything Vision saw, so the parent can check what was read rather
+    /// than trust it. OCR misreads, and a misread on an allergen matters.
+    private(set) var lines: [String] = []
+
+    func reset() {
+        text = nil
+        lines = []
+        reading = false
+    }
+
+    /// Recognises text in one frame.
+    ///
+    /// `.accurate` rather than `.fast`: a curved bottle in grocery lighting is
+    /// exactly where the fast path drops words, and a dropped word on an
+    /// ingredient list is the failure this app exists to prevent.
+    func read(_ buffer: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
+        guard !reading else { return }
+        reading = true
+
+        let requete = VNRecognizeTextRequest { [weak self] requete, _ in
+            guard let obs = requete.results as? [VNRecognizedTextObservation] else { return }
+            /* Several candidates, not one. Vision returns them ordered by
+             * confidence, and asking for more than one measurably improves
+             * reading order on multi-line labels. */
+            let lues = obs.compactMap { $0.topCandidates(3).first?.string }
+            Task { @MainActor [weak self] in
+                self?.finish(lues)
+            }
+        }
+        requete.recognitionLevel = .accurate
+        requete.usesLanguageCorrection = true
+        /* A Quebec package is bilingual, and the French half is often the
+         * fuller one. */
+        requete.recognitionLanguages = ["fr-CA", "fr-FR", "en-CA", "en-US"]
+
+        let handler = VNImageRequestHandler(cvPixelBuffer: buffer,
+                                            orientation: orientation, options: [:])
+        Task.detached(priority: .userInitiated) {
+            try? handler.perform([requete])
+        }
+    }
+
+    private func finish(_ lues: [String]) {
+        reading = false
+        guard !lues.isEmpty else { return }
+
+        lines = lues
+        /* Keep only what follows an "ingredients" heading when there is one.
+         * A nutrition table above it would otherwise be read as ingredients,
+         * and "sodium 5 mg" is not an ingredient. */
+        let joint = lues.joined(separator: " ")
+        text = Self.ingredientSection(in: joint) ?? joint
+    }
+
+    /// The ingredient list within everything the camera saw.
+    ///
+    /// Both languages, because a Canadian package prints both and either may
+    /// be the one in focus.
+    static func ingredientSection(in texte: String) -> String? {
+        let bas = texte.lowercased()
+        let entetes = ["ingredients:", "ingredients :", "ingredients",
+                       "ingr\u00e9dients:", "ingr\u00e9dients :", "ingr\u00e9dients"] // label text
+        for e in entetes {
+            guard let r = bas.range(of: e) else { continue }
+            var suite = String(texte[r.upperBound...])
+            /* Stop at whatever follows the list on a package. */
+            for fin in ["nutrition facts", "contains:", "may contain", "produced in",
+                        "keep refrigerated", "best before",
+                        "valeur nutritive", "contient:", "peut contenir",
+                        "produit en", "garder au froid", "meilleur avant"] { // label text
+                if let f = suite.lowercased().range(of: fin) {
+                    suite = String(suite[..<f.lowerBound])
+                }
+            }
+            let propre = suite.trimmingCharacters(in: .whitespacesAndNewlines)
+            if propre.count > 8 { return propre }
+        }
+        return nil
+    }
+}
+
+// MARK: - Frames
+
+extension BarcodeSession {
+    /// Hands one frame to the reader, and only when the label mode is on.
+    ///
+    /// Nonisolated because AVFoundation calls this on its own queue; the hop
+    /// to the main actor happens once, with the pixel buffer, rather than for
+    /// every frame.
+    nonisolated func captureOutput(_ output: AVCaptureOutput,
+                                   didOutput sampleBuffer: CMSampleBuffer,
+                                   from connection: AVCaptureConnection) {
+        guard let pixels = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        Task { @MainActor [weak self] in
+            guard let self, self.readingLabel else { return }
+            self.reader.read(pixels, orientation: .right)
+        }
     }
 }

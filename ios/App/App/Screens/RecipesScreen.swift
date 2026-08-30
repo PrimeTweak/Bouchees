@@ -35,7 +35,7 @@ struct RecipesScreen: View {
                 weekHeader
                 upsell
                 savedEntry
-                mealChips
+                weekStrip
                 list
                 disclaimer
             }
@@ -60,7 +60,13 @@ struct RecipesScreen: View {
          * children on different profiles, cooking for the wrong one is the
          * worst failure this app has — so it is pinned, and the content passes
          * under it. */
-        .topBar {
+        /* A FADE, NOT A BAND.
+         *
+         * The bar used to end on a line and the photo began underneath it —
+         * two surfaces touching instead of one becoming the other. Now the
+         * bar falls off downward and the photo lightens upward over the same
+         * distance; where they overlap there is no edge. */
+        .softTopBar {
             HStack {
                 if let message = etat.syncMessage {
                     MessageBanner(texte: message)
@@ -70,8 +76,9 @@ struct RecipesScreen: View {
                 }
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 6)
+            .padding(.top, 46)
         }
+        .softBottomEdge()
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
         .refreshable { await etat.sync() }
     }
@@ -144,10 +151,16 @@ struct RecipesScreen: View {
                          * and the final stop is the CANVAS — cream in light,
                          * near-black in dark — so the photo dissolves into
                          * the page instead of stopping against it. */
-                        stops: [.init(color: .black.opacity(0.40), location: 0),
-                                .init(color: .black.opacity(0.16), location: 0.12),
-                                .init(color: .clear, location: 0.26),
-                                .init(color: .clear, location: 0.40),
+                        /* The TOP now lightens to the canvas instead of
+                         * darkening. It used to go black under a cream bar,
+                         * which is exactly the hard line reported from the app — the
+                         * photo has to meet the bar, not fight it. */
+                        stops: [.init(color: Tone.canvas, location: 0),
+                                .init(color: Tone.canvas.opacity(0.9), location: 0.06),
+                                .init(color: Tone.canvas.opacity(0.5), location: 0.14),
+                                .init(color: Tone.canvas.opacity(0.16), location: 0.22),
+                                .init(color: .clear, location: 0.30),
+                                .init(color: .clear, location: 0.42),
                                 .init(color: .black.opacity(0.24), location: 0.56),
                                 .init(color: .black.opacity(0.52), location: 0.70),
                                 .init(color: .black.opacity(0.74), location: 0.82),
@@ -251,19 +264,7 @@ struct RecipesScreen: View {
         }
     }
 
-    /// Breakfast, meals, snacks — how a parent thinks about a day.
-    private var mealChips: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 7) {
-                chip(nil, "All", week.count)
-                ForEach(mealTypes, id: \.self) { m in
-                    chip(m, LocalizedStringKey(m), week.filter { $0.category == m }.count)
-                }
-            }
-            .padding(.horizontal, Layout.gutter)
-        }
-        .padding(.top, 16)
-    }
+
 
     private func chip(_ value: String?, _ label: LocalizedStringKey, _ n: Int) -> some View {
         let on = meal == value
@@ -296,37 +297,95 @@ struct RecipesScreen: View {
 
     /// Grouped by meal, in the order of a day. Mixing breakfast into the meals
     /// made the list feel like a pile; grouping makes it a week.
-    private var list: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(groups, id: \.meal) { group in
-                Text(LocalizedStringKey(group.meal))
-                    .eyebrow()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, Layout.gutter)
-                    .padding(.top, 24)
-                    .padding(.bottom, 2)
+    /// Seven days, and what is planned on each.
+    ///
+    /// This replaces the meal chips. "All / Snack / Breakfast / Meal" answered
+    /// a question nobody asks standing in a kitchen at five o'clock; "what is
+    /// Wednesday" is the real one.
+    @ViewBuilder
+    private var weekStrip: some View {
+        @Bindable var e = etat
+        WeekStrip(selected: $e.selectedDay)
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 16)
+    }
 
-                ForEach(group.items, id: \.recipe.id) { pair in
+    /// The chosen day's recipes, draggable onto another day.
+    private var list: some View {
+        let jour = etat.selectedDay
+        let plats = etat.recipes(on: jour).compactMap { r in
+            etat.resultFor(r).map { (recipe: r, result: $0) }
+        }
+
+        return LazyVStack(spacing: 0) {
+            Text(WeekDay.full[jour])
+                .eyebrow()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, Layout.gutter)
+                .padding(.top, 22)
+                .padding(.bottom, 2)
+
+            if plats.isEmpty {
+                EmptyDay(day: jour)
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.top, 8)
+            } else {
+                ForEach(plats, id: \.recipe.id) { pair in
                     Button { navigate(.recipe(pair.recipe.id)) } label: {
                         RecipeRow(recipe: pair.recipe, result: pair.result)
                     }
                     .buttonStyle(.plain)
+                    /* Drag a recipe onto another day in the strip. The
+                     * preview is the row itself, so what you pick up is what
+                     * you saw. */
+                    .draggable(pair.recipe.id) {
+                        RecipeRow(recipe: pair.recipe, result: pair.result)
+                            .frame(width: 260)
+                            .background(Tone.cardTop, in: RoundedRectangle(cornerRadius: 16,
+                                                                       style: .continuous))
+                    }
 
-                    if pair.recipe.id != group.items.last?.recipe.id {
+                    if pair.recipe.id != plats.last?.recipe.id {
                         Divider().overlay(Tone.hairline)
                             .padding(.leading, Layout.gutter + Layout.thumb + 15)
                     }
                 }
             }
-
-            if groups.isEmpty {
-                EmptyState(symbol: "fork.knife",
-                           title: "Nothing here",
-                           message: "Try another meal.")
-                    .padding(.top, 44)
-            }
         }
     }
+
+    // (EmptyDay follows the screen, at file scope)
+}
+
+/// What an unplanned day says.
+///
+/// Seven recipes do not make seven suppers. Rather than spread them thin to
+/// look complete, the empty day says so and offers the only useful action.
+private struct EmptyDay: View {
+    let day: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Nothing planned")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Tone.text)
+            Text("Drag a recipe here from another day, or cook something you already know.")
+                .font(.system(size: 12.5))
+                .foregroundStyle(Tone.text2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(Tone.text.opacity(0.03),
+                    in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Tone.hairline, style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+        }
+    }
+}
+
+extension RecipesScreen {
 
     // MARK: - Data
 

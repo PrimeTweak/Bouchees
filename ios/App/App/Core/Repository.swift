@@ -95,6 +95,27 @@ final class LocalStore {
     /* Ticked items, per week. A shopping list without memory is useless in an
      * aisle — you put the phone away to pick something up and lose your place.
      * Keyed by batch so a new week starts clean on its own. */
+    /// The week plan, per batch. Moving a recipe to another day has to
+    /// survive a relaunch — it is a decision the parent made.
+    func saveWeekPlan(_ plan: WeekPlan, batch: String) {
+        let paires = plan.days.map { ["day": $0.key, "ids": $0.value] as [String: Any] }
+        guard let d = try? JSONSerialization.data(withJSONObject: paires) else { return }
+        try? d.write(to: folder.appendingPathComponent("plan-\(batch).json"), options: .atomic)
+    }
+
+    func loadWeekPlan(batch: String) -> WeekPlan? {
+        guard let d = try? Data(contentsOf: folder.appendingPathComponent("plan-\(batch).json")),
+              let brut = try? JSONSerialization.jsonObject(with: d) as? [[String: Any]]
+        else { return nil }
+        var days: [Int: [String]] = [:]
+        for p in brut {
+            if let jour = p["day"] as? Int, let ids = p["ids"] as? [String] {
+                days[jour] = ids
+            }
+        }
+        return days.isEmpty ? nil : WeekPlan(days: days)
+    }
+
     func saveChecked(_ ids: Set<String>, week: String) {
         UserDefaults.standard.set(Array(ids), forKey: "checked.\(week)")
     }

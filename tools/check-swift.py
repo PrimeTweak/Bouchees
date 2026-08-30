@@ -534,10 +534,16 @@ def check():
     # a label example is the thing being described, not prose.
     PERMIS = ("Bouchées", "Bouchée", "bouchée", "purée", "sauté", "café", "crêpe",
               "Arôme", "François")
+    #     French quoted AS DATA is the exception, and it is marked rather than
+    #     guessed: a line ending in `// label text` holds words printed on a
+    #     Quebec package, which cannot be translated without breaking the
+    #     match.
     for path_, (raw, _) in sources.items():
         filename = os.path.basename(path_)
         for i, l in enumerate(raw.split("\n"), 1):
             if not any(c in l for c in ACCENTS):
+                continue
+            if l.rstrip().endswith("// label text"):
                 continue
             reste = l
             for mot in PERMIS:

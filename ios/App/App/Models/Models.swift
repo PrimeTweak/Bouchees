@@ -8,6 +8,9 @@
 //  that cautiously says it cannot tell.
 
 import Foundation
+/* LocalizedStringKey lives in SwiftUI. The models are otherwise
+ * Foundation-only, and stay that way. */
+import SwiftUI
 
 // MARK: - Tolerant quantity
 
@@ -392,4 +395,76 @@ struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
 struct ShoppingQuantity: Codable, Hashable, Sendable {
     let value: Double
     let unit: String
+}
+
+// MARK: - The week
+
+/// Which recipe sits on which day.
+///
+/// Seven recipes arrive each week; the parent decides when to cook them. The
+/// plan is a map from a day index to recipe ids — not a list, because a day
+/// can hold two things and another none.
+///
+/// Not every day is filled, and that is deliberate. Seven recipes do not make
+/// seven suppers, and an app that spread them to look complete would be
+/// lying about what it provides.
+struct WeekPlan: Codable, Equatable {
+    /// Monday is 0. Matches the ISO week the batch is named after.
+    var days: [Int: [String]]
+
+    static let empty = WeekPlan(days: [:])
+
+    /// The day a recipe currently sits on, if any.
+    func day(of recipeID: String) -> Int? {
+        days.first { $0.value.contains(recipeID) }?.key
+    }
+
+    func recipes(on day: Int) -> [String] { days[day] ?? [] }
+
+    var assignedCount: Int { days.values.reduce(0) { $0 + $1.count } }
+
+    /// Moves a recipe to another day, removing it from wherever it was.
+    mutating func move(_ recipeID: String, to day: Int) {
+        for key in days.keys {
+            days[key]?.removeAll { $0 == recipeID }
+            if days[key]?.isEmpty == true { days[key] = nil }
+        }
+        days[day, default: []].append(recipeID)
+    }
+
+    /// Swaps everything between two days. What a long press offers.
+    mutating func swap(_ a: Int, _ b: Int) {
+        let left = days[a]
+        days[a] = days[b]
+        days[b] = left
+        if days[a]?.isEmpty ?? true { days[a] = nil }
+        if days[b]?.isEmpty ?? true { days[b] = nil }
+    }
+
+    /// The first plan for a batch: spread across the days a family actually
+    /// cooks, weekend last. Deterministic, so the same week always opens the
+    /// same way until the parent moves something.
+    static func initial(for recipes: [Recipe]) -> WeekPlan {
+        var plan = WeekPlan.empty
+        /* Weeknights first — Monday through Friday is when a plan helps. The
+         * weekend is left open on purpose. */
+        let ordre = [0, 1, 2, 3, 4, 5, 6]
+        for (i, r) in recipes.enumerated() {
+            plan.days[ordre[i % ordre.count], default: []].append(r.id)
+        }
+        return plan
+    }
+}
+
+/// Day names, short, for the strip.
+enum WeekDay {
+    static let short: [LocalizedStringKey] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    static let full: [LocalizedStringKey] = ["Monday", "Tuesday", "Wednesday",
+                                             "Thursday", "Friday", "Saturday", "Sunday"]
+
+    /// Monday is 0. Calendar gives Sunday as 1, so it shifts.
+    static var today: Int {
+        let c = Calendar.current.component(.weekday, from: Date())
+        return (c + 5) % 7
+    }
 }

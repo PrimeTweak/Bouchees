@@ -570,6 +570,104 @@ test("label: the lexicon covers the eleven allergen families", () => {
   assert.ok(lex.safe.length > 300, "at least 300 safe terms");
 });
 
+/* ---------- the week plan ---------- */
+
+/* Seven recipes arrive; the parent decides when to cook them. The plan is the
+ * only thing in this app the parent authors, so moving a recipe has to be
+ * exact and has to survive a relaunch.
+ *
+ * The Swift model is mirrored here because the rules are arithmetic, and
+ * arithmetic is testable without a simulator. */
+
+function planInitial(ids) {
+  const days = {};
+  ids.forEach((id, i) => {
+    const d = i % 7;
+    (days[d] = days[d] || []).push(id);
+  });
+  return days;
+}
+
+function planMove(days, id, to) {
+  const out = {};
+  Object.keys(days).forEach((k) => {
+    const reste = days[k].filter((x) => x !== id);
+    if (reste.length) out[k] = reste;
+  });
+  (out[to] = out[to] || []).push(id);
+  return out;
+}
+
+function planSwap(days, a, b) {
+  const out = Object.assign({}, days);
+  const left = out[a];
+  if (out[b]) out[a] = out[b]; else delete out[a];
+  if (left) out[b] = left; else delete out[b];
+  return out;
+}
+
+test("week: seven recipes land on seven days", () => {
+  const p = planInitial(["a", "b", "c", "d", "e", "f", "g"]);
+  assert.equal(Object.keys(p).length, 7, "one per day");
+});
+
+test("week: five recipes leave two days empty, and that is correct", () => {
+  const p = planInitial(["a", "b", "c", "d", "e"]);
+  assert.equal(Object.keys(p).length, 5,
+    "five recipes do not make seven suppers, and must not pretend to");
+});
+
+test("week: moving a recipe removes it from its old day", () => {
+  let p = planInitial(["a", "b", "c"]);
+  p = planMove(p, "a", 4);
+  assert.ok(!(p[0] || []).includes("a"), "gone from Monday");
+  assert.ok(p[4].includes("a"), "on Friday now");
+});
+
+test("week: a day emptied by a move disappears rather than lingering", () => {
+  let p = planInitial(["a"]);
+  p = planMove(p, "a", 3);
+  assert.equal(p[0], undefined, "Monday is not an empty array");
+});
+
+test("week: moving twice leaves one copy", () => {
+  let p = planInitial(["a", "b"]);
+  p = planMove(p, "a", 5);
+  p = planMove(p, "a", 6);
+  const total = Object.values(p).flat().filter((x) => x === "a").length;
+  assert.equal(total, 1, "a recipe is on exactly one day");
+});
+
+test("week: swapping two days exchanges everything on them", () => {
+  let p = planInitial(["a", "b", "c"]);
+  p = planSwap(p, 0, 2);
+  assert.deepEqual(p[0], ["c"]);
+  assert.deepEqual(p[2], ["a"]);
+});
+
+test("week: swapping with an empty day moves rather than duplicates", () => {
+  let p = planInitial(["a"]);
+  p = planSwap(p, 0, 6);
+  assert.equal(p[0], undefined, "the source day is now empty");
+  assert.deepEqual(p[6], ["a"]);
+});
+
+test("week: the plan is deterministic — the same week opens the same way", () => {
+  const a = JSON.stringify(planInitial(["x", "y", "z"]));
+  const b = JSON.stringify(planInitial(["x", "y", "z"]));
+  assert.equal(a, b);
+});
+
+test("week: no recipe is ever lost by moving", () => {
+  const ids = ["a", "b", "c", "d", "e", "f", "g"];
+  let p = planInitial(ids);
+  [["a", 6], ["g", 0], ["d", 6], ["b", 3]].forEach(([id, jour]) => {
+    p = planMove(p, id, jour);
+  });
+  const restants = Object.values(p).flat().sort();
+  assert.deepEqual(restants, ids.slice().sort(), "every recipe is still somewhere");
+});
+
 /* ---------- age rules ---------- */
 
 test("granola bars at 9 months: honey becomes maple syrup, with the age alert", () => {
