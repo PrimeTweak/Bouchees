@@ -419,57 +419,39 @@ struct ProductSheet: View {
 ///
 /// The names come off the product label, so French entries on a Quebec
 /// product are correct and stay as they are.
+/// A wrapping row of ingredient names.
+///
+/// MEASURES NOTHING.
+///
+/// The version this replaces was a feedback loop: an outer GeometryReader
+/// whose `.frame(height:)` was fed by an inner GeometryReader measuring its
+/// own content, plus `alignmentGuide` closures mutating captured variables.
+/// SwiftUI calls those closures an unpredictable number of times, in an
+/// unpredictable order, so the layout never converged — the main thread spun
+/// and the whole screen stopped responding. From the outside that looked like
+/// "the scanner no longer reads barcodes".
+///
+/// `Layout` does the same job natively since iOS 16, in one pass, with no
+/// state and no measurement round-trip.
+///
+/// The names come off the product label, so French entries on a Quebec
+/// product are correct and stay as they are.
 private struct FlowTags: View {
     let names: [String]
     let highlighted: Set<String>
 
-    @State private var height: CGFloat = 40
-
     var body: some View {
-        GeometryReader { geo in
-            content(width: geo.size.width)
-                .background {
-                    GeometryReader { inner in
-                        Color.clear.onAppear { height = inner.size.height }
-                            .onChange(of: inner.size.height) { _, h in height = h }
-                    }
-                }
-        }
-        .frame(height: height)
-    }
-
-    private func content(width: CGFloat) -> some View {
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-
-        return ZStack(alignment: .topLeading) {
+        WrappingRow(spacing: 6, lineSpacing: 6) {
             ForEach(names, id: \.self) { name in
                 tag(name)
-                    .alignmentGuide(.leading) { d in
-                        if abs(x - d.width) > width {
-                            x = 0
-                            y -= d.height + 6
-                        }
-                        let result = x
-                        x = name == names.last ? 0 : x - d.width - 6
-                        return result
-                    }
-                    .alignmentGuide(.top) { _ in
-                        let result = y
-                        if name == names.last { y = 0 }
-                        return result
-                    }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     private func tag(_ name: String) -> some View {
         let flagged = highlighted.contains { $0.caseInsensitiveCompare(name) == .orderedSame }
         return Text(name)
             .font(.system(size: 11.5, weight: flagged ? .bold : .regular))
-            /* Both branches must be the same type — a ternary between
-             * Color.opacity and .white does not infer. */
             .foregroundStyle(flagged ? Color.black.opacity(0.82) : Color.white)
             .lineLimit(1)
             .padding(.horizontal, 12)
@@ -477,6 +459,60 @@ private struct FlowTags: View {
             .background(flagged ? AnyShapeStyle(.white)
                                 : AnyShapeStyle(Color.white.opacity(0.2)),
                         in: Capsule())
+    }
+}
+
+/// Lays subviews out left to right, wrapping when the line is full.
+///
+/// A `Layout` computes size and positions in ONE pass from sizes it asks for
+/// directly. No GeometryReader, no @State, no round-trip — which is what makes
+/// it impossible to loop.
+struct WrappingRow: Layout {
+    var spacing: CGFloat = 6
+    var lineSpacing: CGFloat = 6
+
+    func sizeThatFits(proposal: ProposedViewSize,
+                      subviews: Subviews,
+                      cache: inout Void) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var lineHeight: CGFloat = 0
+
+        for sub in subviews {
+            let size = sub.sizeThatFits(.unspecified)
+            if x > 0 && x + size.width > maxWidth {
+                x = 0
+                y += lineHeight + lineSpacing
+                lineHeight = 0
+            }
+            x += size.width + spacing
+            lineHeight = max(lineHeight, size.height)
+        }
+        return CGSize(width: maxWidth == .infinity ? x : maxWidth,
+                      height: y + lineHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect,
+                       proposal: ProposedViewSize,
+                       subviews: Subviews,
+                       cache: inout Void) {
+        var x = bounds.minX
+        var y = bounds.minY
+        var lineHeight: CGFloat = 0
+
+        for sub in subviews {
+            let size = sub.sizeThatFits(.unspecified)
+            if x > bounds.minX && x + size.width > bounds.maxX {
+                x = bounds.minX
+                y += lineHeight + lineSpacing
+                lineHeight = 0
+            }
+            sub.place(at: CGPoint(x: x, y: y), anchor: .topLeading,
+                      proposal: ProposedViewSize(size))
+            x += size.width + spacing
+            lineHeight = max(lineHeight, size.height)
+        }
     }
 }
 

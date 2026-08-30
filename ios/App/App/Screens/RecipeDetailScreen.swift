@@ -84,35 +84,42 @@ struct RecipeDetailScreen: View {
                 .padding(.horizontal, Layout.gutter)
                 .padding(.top, 4)
             }
-            .padding(.bottom, 130)
+            .padding(.bottom, 16)
         }
         .background(Tone.canvas.ignoresSafeArea())
         .ignoresSafeArea(.container, edges: .top)
-        .toolbar(.hidden, for: .navigationBar)
 
         /* As an inset, not an overlay: the content ends above it on its own,
          * and it no longer collides with the tab bar — which is hidden here,
          * as it is in any app once you are inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
         .hidesTabBar()
-        /* THE THIRD ATTEMPT, AND THE REAL CAUSE.
+        /* IN THE BAR, NOT OVER IT.
          *
-         * `.ignoresSafeArea` sits on the ScrollView, so it stretches to the
-         * top of the screen and covers the buttons. zIndex orders DRAWING,
-         * not hit testing — which is why they rendered perfectly and did
-         * nothing.
+         * Four attempts moved these buttons around the same screen. The cause
+         * was never layout: on iOS 26 a glass container inside the toolbar
+         * area intercepts touches, and `hitTest:` on it returns itself, so an
+         * overlay drawn there receives nothing. Apple has the bug filed
+         * (FB18201935) and the reproduction case is this exact shape — an
+         * overlay carrying a glassEffect button over a scroll view that
+         * ignores the safe area.
          *
-         * As an overlay on the container, outside the scroll view entirely,
-         * they own their own space and receive taps. */
-        .overlay(alignment: .top) {
-            HStack {
-                backButton
-                Spacer(minLength: 0)
-                saveButton
+         * `.toolbar` puts them INSIDE that container instead of behind it,
+         * and iOS 26 gives toolbar items the material automatically, grouped
+         * with their neighbours. */
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+                .accessibilityLabel("Back")
             }
-            .padding(.horizontal, 18)
-            .padding(.top, 56)
+            ToolbarItem(placement: .topBarTrailing) {
+                SaveButton(recipe: recipe)
+            }
         }
+        .toolbarBackground(.hidden, for: .navigationBar)
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }

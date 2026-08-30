@@ -1,11 +1,10 @@
 {
-  "build": 68,
+  "build": 69,
   "date": "2026-08-29",
   "carries": [
-    "back and favourite: the parent inset was eating the taps, not the detail screen",
-    "Saved screen reachable at last \u2014 the bookmark had been writing into a void",
-    "subscription card in warm peach, contrast measured at 13.6:1 and 4.9:1",
-    "reservedHeight deleted \u2014 one source of truth for the bar height",
-    "checker rule: safeAreaInset inside a NavigationStack"
+    "SCANNER: FlowTags was a layout feedback loop that froze the main thread",
+    "back and save move into the toolbar \u2014 iOS 26 glass container eats overlay taps (FB18201935)",
+    "four double bottom reservations found by sweeping every screen",
+    "two checker rules: layout feedback loop, double bottom reservation"
   ]
 }

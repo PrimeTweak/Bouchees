@@ -574,6 +574,43 @@ def check():
                                 f"NavigationStack — it keeps its hit region over every "
                                 f"pushed screen; move it outside the stack")
 
+    # 7o. a GeometryReader whose own frame is fed by what it measures.
+    #     The scanner froze on this: an outer GeometryReader carrying
+    #     `.frame(height: height)` while an inner one wrote to `height`. The
+    #     layout never converged, the main thread spun, and from the outside
+    #     it looked like the camera had stopped reading barcodes.
+    #
+    #     The signal is a file that both writes a @State length from a
+    #     GeometryReader and applies that same property as a frame.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        if "GeometryReader" not in code:
+            continue
+        etats = set(re.findall(r"@State private var (\w+): CGFloat", code))
+        for nom in etats:
+            ecrit = re.search(r"\b" + nom + r"\s*=\s*\w+\.size\.(width|height)", code)
+            cadre = re.search(r"\.frame\((?:width|height):\s*" + nom + r"\b", code)
+            if ecrit and cadre:
+                ligne = code[:cadre.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: '{nom}' is written from a "
+                                f"GeometryReader and used as a frame — that is a "
+                                f"layout feedback loop; use a Layout instead")
+
+    # 7p. a large bottom padding on content that already carries a
+    #     safeAreaInset(.bottom). The inset reserves its own height; a second
+    #     reservation for the same bar is what left text clipped behind it on
+    #     one screen and floating on another.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        if ".safeAreaInset(edge: .bottom)" not in code:
+            continue
+        for m in re.finditer(r"\.padding\(\.bottom,\s*(\d+)\)", code):
+            if int(m.group(1)) > 40:
+                ligne = code[:m.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: padding(.bottom, {m.group(1)}) on "
+                                f"content that already has a safeAreaInset(.bottom) — "
+                                f"two reservations for one bar")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

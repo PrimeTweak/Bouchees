@@ -101,7 +101,7 @@ private struct LiveDemoStep: View {
                     .padding(.top, 16)
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 120)
+            .padding(.bottom, 16)
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 8) {
@@ -372,7 +372,7 @@ private struct WhoStep: View {
                 }
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 140)
+            .padding(.bottom, 16)
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 9) {
@@ -490,7 +490,7 @@ private struct OfferStep: View {
                 .padding(.top, 18)
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.bottom, 190)
+            .padding(.bottom, 16)
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 6) {
