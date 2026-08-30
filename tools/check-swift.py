@@ -465,6 +465,37 @@ def check():
                                     f"which erases ShapeStyle — give it its concrete type "
                                     f"(LinearGradient, Color…)")
 
+    # 7k. two declarations of the same property in one type.
+    #     I added `var currentWeek: [Recipe]` to a class that already had
+    #     `private(set) var currentWeek: String?`. Swift reports it as an
+    #     invalid redeclaration plus three follow-on errors from the
+    #     Observation macro, none of which name the collision plainly.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        # split into top-level type bodies
+        for m in re.finditer(r"^(?:final\s+)?(?:public\s+)?(?:class|struct|enum|actor)\s+(\w+)[^\{]*\{",
+                             code, re.M):
+            debut = m.end()
+            prof, fin = 1, len(code)
+            for i in range(debut, len(code)):
+                if code[i] == "{": prof += 1
+                elif code[i] == "}":
+                    prof -= 1
+                    if prof == 0: fin = i; break
+            corps = code[debut:fin]
+            # only declarations at this type's own level, not nested ones
+            vus = {}
+            for d in re.finditer(r"^    (?:@\w+(?:\([^)]*\))?\s+)*"
+                                 r"(?:private\(set\)\s+)?(?:private\s+|public\s+)?"
+                                 r"(?:static\s+)?(?:var|let)\s+(\w+)\b", corps, re.M):
+                nom = d.group(1)
+                ligne = code[:debut + d.start()].count("\n") + 1
+                if nom in vus:
+                    problems.append(f"{filename}:{ligne}: '{nom}' is declared twice in "
+                                    f"{m.group(1)} (first at line {vus[nom]})")
+                else:
+                    vus[nom] = ligne
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

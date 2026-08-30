@@ -306,7 +306,7 @@ struct RecipesScreen: View {
 
     private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] { etat.pairs }
 
-    private var week: [Recipe] { etat.currentWeek }
+    private var week: [Recipe] { etat.weekRecipes }
 
     private var heroPair: (recipe: Recipe, result: AdaptedRecipe)? {
         let inWeek = pairs.filter { p in week.contains { $0.id == p.recipe.id } }

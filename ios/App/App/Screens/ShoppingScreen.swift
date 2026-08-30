@@ -92,7 +92,7 @@ struct ShoppingScreen: View {
 
     private var subtitle: String {
         String(format: String(localized: "This week · %lld recipes · for %@"),
-               etat.currentWeek.count, etat.activeProfile.firstName)
+               etat.weekRecipes.count, etat.activeProfile.firstName)
     }
 
     private var progress: some View {

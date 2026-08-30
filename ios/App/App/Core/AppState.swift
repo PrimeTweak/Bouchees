@@ -50,25 +50,31 @@ final class AppState {
     }
 
     /// The recipes of the current batch — the week the subscription promises.
-    /// The batches were always weekly; nothing in the UI showed it.
-    var currentWeek: [Recipe] {
-        guard let batch = batches.last(where: { $0.unlocked }) else { return recipes }
-        let week = recipes.filter { $0.lot == batch.id }
+    /// The batches were always weekly; nothing in the UI ever showed it.
+    ///
+    /// `currentWeek` already holds the batch id, straight from the manifest.
+    /// Deriving it from `batches.last` would be a second, weaker answer to a
+    /// question the server already answered.
+    var weekRecipes: [Recipe] {
+        guard let id = currentWeek ?? batches.last(where: { $0.unlocked })?.id else {
+            return recipes
+        }
+        let week = recipes.filter { $0.lot == id }
         return week.isEmpty ? recipes : week
     }
 
     /// The week's shopping list, already adapted for the active profile.
     var shoppingList: [ShoppingItem] {
         guard let moteur, moteur.pret else { return [] }
-        return (try? moteur.shoppingList(currentWeek, pour: activeProfile)) ?? []
+        return (try? moteur.shoppingList(weekRecipes, pour: activeProfile)) ?? []
     }
 
     var checkedItems: Set<String> {
-        local.loadChecked(week: batches.last(where: { $0.unlocked })?.id ?? "")
+        local.loadChecked(week: currentWeek ?? "")
     }
 
     func saveCheckedItems(_ ids: Set<String>) {
-        local.saveChecked(ids, week: batches.last(where: { $0.unlocked })?.id ?? "")
+        local.saveChecked(ids, week: currentWeek ?? "")
     }
 
     func substitutionOptions(for ingredientName: String) -> [SubstitutionOption] {

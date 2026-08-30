@@ -1,12 +1,9 @@
 {
-  "build": 62,
+  "build": 63,
   "date": "2026-08-29",
   "carries": [
-    "hero always dark and clipped \u2014 no more bleed, readable in light",
-    "back button as safeAreaInset \u2014 it works now",
-    "38 French units translated across the whole repo, 2 tests",
-    "home is the week, grouped by meal; Ready/Swaps segments gone",
-    "shopping list: new screen, engine aggregator, 4th tab, 5 tests",
-    "Start cooking as inset, tab bar hidden on the detail"
+    "currentWeek collision fixed \u2014 mine is weekRecipes now",
+    "reuses the manifest week id instead of deriving it",
+    "checker: duplicate property declaration in a type"
   ]
 }
