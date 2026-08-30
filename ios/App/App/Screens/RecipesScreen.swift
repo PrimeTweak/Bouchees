@@ -41,8 +41,22 @@ struct RecipesScreen: View {
                 .padding(.bottom, 16)
             }
             .background(Tone.canvas.ignoresSafeArea())
-            .ignoresSafeArea(.container, edges: .top)
+            /* NO `ignoresSafeArea` HERE ANY MORE.
+             *
+             * Apple: "All scroll views underneath navigation or toolbars
+             * automatically apply a visual treatment. This ensures legibility
+             * of overlapping content in the bars." That is the scroll edge
+             * effect, and it is free — but only for a scroll view that sits
+             * UNDER a bar. Extending past the bar switched it off, which is
+             * why the clock and the battery were unreadable over the list.
+             *
+             * The hero photo still reaches the top: it is inside the scroll
+             * view and simply drawn tall. */
             .toolbar(.hidden, for: .navigationBar)
+            /* Below iOS 26 there is no scroll edge effect, so the last row
+             * would read through the floating bar. Harmless where the effect
+             * exists. */
+            .bottomFade()
             /* WHO YOU ARE COOKING FOR STAYS PUT.
              *
              * It rode on the photo and scrolled away with it. In a family
@@ -58,20 +72,17 @@ struct RecipesScreen: View {
             .sheet(isPresented: $showPaywall) { PaywallScreen() }
             .refreshable { await etat.sync() }
         }
-        /* THE FOURTH ATTEMPT, AND THE CAUSE WAS HERE ALL ALONG.
+        /* `safeAreaBar`, not an overlay.
          *
-         * This used to be a `safeAreaInset` on the ScrollView, INSIDE the
-         * NavigationStack. When the detail screen is pushed it covers the same
-         * area — but the parent's inset stays in the tree and keeps its strip
-         * at the top. The pill was not visible on the detail, yet its HIT
-         * REGION was, and it swallowed every tap meant for the back and
-         * favourite buttons drawn underneath.
+         * As an overlay on the whole screen it survived every pushed view —
+         * it sat over the Saved list and over the recipe detail, hiding only
+         * when a RECIPE was open because that was the one case I checked.
          *
-         * That is why three fixes on RecipeDetailScreen changed nothing: the
-         * problem was never on that screen. Outside the stack, and hidden
-         * while a detail is up, it stops intercepting.
-         */
-        .overlay(alignment: .top) {
+         * iOS 26 has a modifier made for exactly this: it places a view below
+         * the navigation bar AND extends the scroll edge effect underneath
+         * it. Attached here, it belongs to this screen alone and disappears
+         * with it. */
+        .topBar {
             HStack {
                 if let message = etat.syncMessage {
                     MessageBanner(texte: message)
@@ -81,9 +92,7 @@ struct RecipesScreen: View {
                 }
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 8)
-            .opacity(openRecipeID == nil ? 1 : 0)
-            .allowsHitTesting(openRecipeID == nil)
+            .padding(.bottom, 6)
         }
     }
 

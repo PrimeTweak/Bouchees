@@ -67,6 +67,20 @@ struct ShoppingScreen: View {
             }
             .background(Tone.canvas.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
+            /* Who you are shopping for matters as much as who you are cooking
+             * for — the list is adapted to them. */
+            .topBar {
+                HStack {
+                    CookingContextHeader()
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, Layout.gutter)
+                .padding(.bottom, 6)
+            }
+            /* Below iOS 26 there is no scroll edge effect, so the last row
+             * would read through the floating bar. Harmless where the effect
+             * exists. */
+            .bottomFade()
             .onAppear {
                 guard !loaded else { return }
                 checked = etat.checkedItems

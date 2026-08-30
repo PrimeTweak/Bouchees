@@ -120,6 +120,10 @@ struct RecipeDetailScreen: View {
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
+        /* The system draws its own back button as soon as a screen is pushed.
+         * Adding a ToolbarItem beside it gave two — mine and the platform's,
+         * side by side. */
+        .navigationBarBackButtonHidden(true)
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }

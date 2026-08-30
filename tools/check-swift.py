@@ -532,7 +532,7 @@ def check():
     ACCENTS = "àâäçèéêëîïôùûœ"
     # The product name, words English borrowed, and French quoted AS DATA —
     # a label example is the thing being described, not prose.
-    PERMIS = ("Bouchées", "Bouchée", "purée", "sauté", "café", "crêpe",
+    PERMIS = ("Bouchées", "Bouchée", "bouchée", "purée", "sauté", "café", "crêpe",
               "Arôme", "François")
     for path_, (raw, _) in sources.items():
         filename = os.path.basename(path_)
@@ -641,6 +641,26 @@ def check():
                         problems.append(f"{filename}:{i}: conforming to '{conf}', which this "
                                         f"project also defines — write SwiftUI.{conf} or the "
                                         f"compiler picks the local one")
+
+    # 7r. ignoresSafeArea(.top) on a screen with no full-bleed image.
+    #     iOS applies the scroll edge effect automatically to any scroll view
+    #     UNDER a bar. Extending past the bar switches it off — which is what
+    #     left the clock unreadable over a scrolling list.
+    #
+    #     Apple's own guidance: the status bar belongs on every page unless
+    #     the page shows a full-screen image or video. So the modifier is
+    #     allowed on a file that draws a hero photo, and nowhere else.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        if "ignoresSafeArea(.container, edges: .top)" not in code:
+            continue
+        photo = ("heroPhoto" in code or "detailPhoto" in code
+                 or "CameraPreview" in code)
+        if not photo:
+            ligne = code[:code.find("ignoresSafeArea(.container, edges: .top)")].count("\n") + 1
+            problems.append(f"{filename}:{ligne}: ignoresSafeArea(.top) with no "
+                            f"full-bleed image — it switches off the scroll edge "
+                            f"effect and the status bar stops being legible")
 
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly

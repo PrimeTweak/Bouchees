@@ -103,7 +103,7 @@ struct CameraPreview: UIViewRepresentable {
     }
 }
 
-// MARK: - Écran
+// MARK: - Screen
 
 struct ScannerScreen: View {
     /// Bound to the tab bar so a refusal can hand the parent back to Cook with

@@ -441,3 +441,48 @@ struct PrimaryButton: ButtonStyle {
             .animation(.smooth(duration: 0.16), value: configuration.isPressed)
     }
 }
+
+// MARK: - Top bar
+
+/// Places a view below the navigation bar and extends the scroll edge effect
+/// underneath it.
+///
+/// `safeAreaBar` is the iOS 26 modifier for this. Below that it falls back to
+/// `safeAreaInset`, which reserves the space but does not carry the edge
+/// effect — acceptable, because the effect itself is an iOS 26 feature.
+struct TopBar<Bar: View>: ViewModifier {
+    @ViewBuilder var bar: Bar
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            content.safeAreaBar(edge: .top) { bar }
+        } else {
+            content.safeAreaInset(edge: .top) { bar }
+        }
+        #else
+        content.safeAreaInset(edge: .top) { bar }
+        #endif
+    }
+}
+
+extension View {
+    func topBar<Bar: View>(@ViewBuilder _ bar: () -> Bar) -> some View {
+        modifier(TopBar(bar: bar()))
+    }
+
+    /// The fade that stops content from reading through the tab bar.
+    ///
+    /// On iOS 26 the scroll edge effect does this on its own; this is the
+    /// fallback, and it is harmless where the effect is present.
+    func bottomFade() -> some View {
+        overlay(alignment: .bottom) {
+            LinearGradient(colors: [Tone.canvas.opacity(0), Tone.canvas.opacity(0.92),
+                                    Tone.canvas],
+                           startPoint: .top, endPoint: .bottom)
+                .frame(height: 72)
+                .allowsHitTesting(false)
+        }
+    }
+}

@@ -63,7 +63,7 @@ struct AllergenGlyph: View {
             p.addCurve(to: point(13, 14.8), control1: point(11.4, 8), control2: point(11.4, 12))
 
         case "ble":
-            // Épi
+            // Wheat ear
             p.move(to: point(10, 17.5)); p.addLine(to: point(10, 6))
             for level in [6.0, 10.0, 13.5] {
                 p.move(to: point(10, level))
