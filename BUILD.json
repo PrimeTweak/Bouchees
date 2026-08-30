@@ -1,9 +1,12 @@
 {
-  "build": 58,
+  "build": 59,
   "date": "2026-08-29",
   "carries": [
-    "qty.affichage, not display",
-    "stroke, not strokeBorder on AnyShape",
-    "checker: AnyShape erasure rule"
+    "tab bar reserves its height \u2014 content no longer hidden",
+    "sliding indicator with matchedGeometryEffect",
+    "child pill below the status bar, not into it",
+    "hero adapts when there is no photo, only a drawing",
+    "counts use tabular figures, not monospace",
+    "segments use the brand, not solid black"
   ]
 }

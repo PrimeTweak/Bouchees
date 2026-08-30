@@ -74,6 +74,15 @@ enum Tone {
     // Actions, selection, the active tab. NEVER a verdict.
 
     static let brand = dyn(light: 0xE8593A, dark: 0xFF7A5C)
+    /// Behind a drawing in the hero, where a photograph would otherwise be.
+    /// Warm and deep enough that white text sits on it without a scrim doing
+    /// all the work.
+    static var heroField: LinearGradient {
+        LinearGradient(colors: [dyn(light: 0xE8DCC8, dark: 0x2A211A),
+                                dyn(light: 0xD4C4AA, dark: 0x15100C)],
+                       startPoint: .top, endPoint: .bottom)
+    }
+
     /// The label over a photo. Brighter than brand so it survives the veil.
     static let heroAccent = Color(red: 1, green: 0.66, blue: 0.56)
     static let brandDeep = dyn(light: 0xC0421F, dark: 0xD8452C)

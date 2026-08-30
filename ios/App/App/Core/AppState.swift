@@ -69,6 +69,12 @@ final class AppState {
         }
     }
 
+    /// Whether a real generated photograph exists for this recipe. The
+    /// drawing is a fallback, and it should not be treated as a photo.
+    func hasPhoto(_ recipe: Recipe) -> Bool {
+        recipe.image != nil && !(recipe.image?.isEmpty ?? true)
+    }
+
     func adaptPreview(_ recipe: Recipe, for profile: ChildProfile) -> AdaptedRecipe? {
         guard let moteur, moteur.pret else { return nil }
         return try? moteur.adapter([recipe], pour: profile).first

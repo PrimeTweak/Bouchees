@@ -15,6 +15,10 @@ import SwiftUI
 /// because the top of a phone is hard to reach one-handed, and this app is
 /// used one-handed by definition.
 struct FloatingTabBar: View {
+    /// What the content below must leave free: the capsule plus its inset.
+    /// Published so no screen has to guess.
+    static let reservedHeight: CGFloat = 60 + Layout.tabBottom
+
     @Binding var selection: Int
     @State private var searching = false
     @Namespace private var glassSpace
@@ -27,16 +31,26 @@ struct FloatingTabBar: View {
 
     var body: some View {
         HStack(spacing: 10) {
+            /* A SLIDING INDICATOR, NOT A COLOUR SWAP.
+             *
+             * The iOS 26 bar moves a lit shape between destinations rather
+             * than recolouring a label. matchedGeometryEffect gives the same
+             * behaviour here: one capsule, animated from tab to tab, so the
+             * bar reads as a single piece of glass with light travelling
+             * across it. */
             HStack(spacing: 0) {
                 ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
                     TabItem(icon: item.icon, label: item.label,
-                            selected: selection == i) {
-                        withAnimation(.smooth(duration: 0.22)) { selection = i }
+                            selected: selection == i,
+                            namespace: glassSpace) {
+                        withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
+                            selection = i
+                        }
                     }
                 }
             }
             .padding(.horizontal, 5)
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
             .glass(Capsule())
 
             Button { searching = true } label: {
@@ -59,19 +73,33 @@ private struct TabItem: View {
     let icon: String
     let label: LocalizedStringKey
     let selected: Bool
+    let namespace: Namespace.ID
     let tap: () -> Void
 
     var body: some View {
         Button(action: tap) {
             VStack(spacing: 2) {
                 Image(systemName: icon)
-                    .font(.system(size: 21, weight: selected ? .semibold : .regular))
+                    .font(.system(size: 20, weight: selected ? .semibold : .regular))
+                    .symbolEffect(.bounce, value: selected)
                 Text(label)
                     .font(.system(size: 10.5, weight: selected ? .bold : .medium))
             }
             .foregroundStyle(selected ? Tone.brand : Tone.text2)
             .frame(maxWidth: .infinity)
-            .frame(height: Layout.tap)
+            .frame(height: Layout.tap + 4)
+            .background {
+                if selected {
+                    /* The lit shape that travels between destinations. It is
+                     * one view, moved — not three views recoloured. */
+                    Capsule()
+                        .fill(Tone.brand.opacity(0.14))
+                        .overlay {
+                            Capsule().stroke(Tone.brand.opacity(0.22), lineWidth: 0.75)
+                        }
+                        .matchedGeometryEffect(id: "tabIndicator", in: namespace)
+                }
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -106,20 +134,26 @@ struct CountedSegments: View {
             VStack(spacing: 1) {
                 Text("\(n)")
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(on ? Tone.canvas : Tone.text)
+                    .foregroundStyle(on ? .white : Tone.text)
                     .contentTransition(.numericText())
                 Text(label)
                     .font(.system(size: 10.5, weight: .semibold))
-                    .foregroundStyle(on ? Tone.canvas.opacity(0.7) : Tone.text2)
+                    .foregroundStyle(on ? .white.opacity(0.78) : Tone.text2)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 9)
             .background {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(on ? AnyShapeStyle(Tone.text) : AnyShapeStyle(Tone.text.opacity(0.05)))
+                /* The brand, not near-black. A solid black pill in light mode
+                 * is a hole in the page; the brand at full strength reads as a
+                 * selection. */
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(on ? AnyShapeStyle(Tone.brandGradient)
+                             : AnyShapeStyle(Tone.text.opacity(0.045)))
+                    .shadow(color: on ? Tone.brandDeep.opacity(0.32) : .clear,
+                            radius: 10, y: 5)
             }
             .overlay {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(on ? .clear : Tone.hairline, lineWidth: 1)
             }
         }

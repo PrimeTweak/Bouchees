@@ -41,7 +41,7 @@ struct RecipesScreen: View {
                     locked
                     disclaimer
                 }
-                .padding(.bottom, 130)
+                .padding(.bottom, 24)
             }
             .background(Tone.canvas.ignoresSafeArea())
             .ignoresSafeArea(.container, edges: .top)
@@ -71,10 +71,31 @@ struct RecipesScreen: View {
         if let h = heroPair {
             Button { openRecipeID = h.recipe.id } label: {
                 ZStack(alignment: .bottomLeading) {
-                    RecipeVisual(recipe: h.recipe, result: h.result)
+                    /* WHEN THERE IS NO PHOTO, DO NOT PRETEND.
+                     *
+                     * Only one recipe in the corpus has a generated image; the
+                     * rest fall back to the drawing, which was made for a 60pt
+                     * thumbnail. Blown up to 430 it reads as a flat beige
+                     * polygon — worse than no picture at all.
+                     *
+                     * So the drawing gets a shorter frame, centred on a warm
+                     * field, at the size it was drawn for. The photo, when
+                     * there is one, fills the whole hero. */
+                    if etat.hasPhoto(h.recipe) {
+                        RecipeVisual(recipe: h.recipe, result: h.result)
+                            .frame(height: Layout.heroPhoto)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                    } else {
+                        ZStack {
+                            Tone.heroField
+                            RecipeVisual(recipe: h.recipe, result: h.result)
+                                .frame(width: 190, height: 190)
+                                .offset(y: -46)
+                        }
                         .frame(height: Layout.heroPhoto)
                         .frame(maxWidth: .infinity)
-                        .clipped()
+                    }
 
                     LinearGradient(
                         stops: [.init(color: .black.opacity(0.42), location: 0),
@@ -109,7 +130,9 @@ struct RecipesScreen: View {
                             Spacer(minLength: 0)
                         }
                         .padding(.horizontal, Layout.gutter)
-                        .padding(.top, 60)
+                        /* Below the status bar, not into it. 60 put the pill
+                         * on top of the clock on a notched phone. */
+                        .padding(.top, 72)
                         Spacer(minLength: 0)
                     }
                 }
@@ -132,16 +155,20 @@ struct RecipesScreen: View {
                   tally.blocked == 0 ? Tone.text3 : Tone.no)
             Spacer(minLength: 0)
         }
-        .font(.system(size: 13, design: .monospaced))
+        /* Not monospaced. Tabular figures align the numbers without making
+         * the words read like code — which is what the whole line did. */
+        .font(.system(size: 13.5))
+        .monospacedDigit()
         .foregroundStyle(Tone.text2)
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 20)
+        .padding(.top, 22)
     }
 
     private func count(_ n: Int, _ label: LocalizedStringKey, _ tone: Color) -> some View {
         HStack(spacing: 5) {
             Text("\(n)")
-                .font(.system(size: 15, weight: .bold, design: .monospaced))
+                .font(.system(size: 15.5, weight: .bold))
+                .monospacedDigit()
                 .foregroundStyle(tone)
                 .contentTransition(.numericText())
             Text(label)

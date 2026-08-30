@@ -82,6 +82,12 @@ struct RootView: View {
                 }
             }
             .transition(.opacity)
+            /* The bar floats, so the content underneath has to end above it.
+             * A fixed bottom padding guessed wrong on a notched phone: the
+             * screens ignore the top safe area, which removes the bottom one
+             * too, and the last two rows ended up behind the capsule. This
+             * reserves the exact height instead of estimating it. */
+            .safeAreaPadding(.bottom, FloatingTabBar.reservedHeight)
 
             FloatingTabBar(selection: $tab)
         }
