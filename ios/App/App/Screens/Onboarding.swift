@@ -224,8 +224,7 @@ private struct AllergenTile: View {
     var body: some View {
         Button(action: toggle) {
             VStack(spacing: 5) {
-                AllergenGlyph(id: allergen.id)
-                    .frame(width: 20, height: 20)
+                AllergenGlyph(identifier: allergen.id, size: 20)
                 Text(allergen.name)
                     .font(.system(size: 10, weight: .semibold))
                     .lineLimit(1)

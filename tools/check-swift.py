@@ -238,6 +238,50 @@ def check():
                 problems.append(f"{filename}:{i + 1}: '-> some View' with an if/switch body and "
                                 f"no return — it needs @ViewBuilder directly above the func")
 
+    # 7e. a View initialised with an argument label its struct does not declare.
+    #     SwiftUI memberwise inits take the stored property names exactly, so
+    #     `AllergenGlyph(id:)` against `let identifier: String` fails — and the
+    #     error names the parameter it wanted, not the file that called it
+    #     wrongly.
+    #
+    #     Only structs whose stored properties are ALL simple `let name: Type`
+    #     are checked, and only calls that use labels for every argument, so a
+    #     custom init or a positional call is left alone.
+    struct_fields = {}
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"struct (\w+): View \{((?:.|\n)*?)\n\}", code):
+            nom, corps = m.group(1), m.group(2)
+            if re.search(r"\binit\s*\(", corps):
+                continue          # a custom init changes the labels
+            # Property wrappers count as init parameters too — @Binding, @State
+            # with no default, @Environment — and `var body: some View` is not
+            # a field at all. Missing either produces false positives, and a
+            # checker that cries wolf gets ignored.
+            # `var compact = false` has no type annotation and is still an init
+            # parameter, so the colon cannot be required.
+            champs = set(re.findall(
+                r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:private\s+)?(?:let|var)\s+(\w+)\s*[:=]",
+                corps, re.M))
+            champs.discard("body")
+            if champs:
+                struct_fields[nom] = champs
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(code.split("\n"), 1):
+            for m in re.finditer(r"\b([A-Z]\w+)\(([^()]*)\)", l):
+                nom, args = m.group(1), m.group(2)
+                if nom not in struct_fields or not args.strip():
+                    continue
+                labels = re.findall(r"(?:^|,)\s*(\w+)\s*:", args)
+                if len(labels) != len([a for a in args.split(",") if a.strip()]):
+                    continue      # a positional argument: not a memberwise init
+                inconnus = [x for x in labels if x not in struct_fields[nom]]
+                if inconnus:
+                    attendus = ", ".join(sorted(struct_fields[nom]))
+                    problems.append(f"{filename}:{i}: {nom}({inconnus[0]}:) — that struct "
+                                    f"declares no '{inconnus[0]}'  (it has: {attendus})")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
