@@ -50,12 +50,12 @@ struct RecipesScreen: View {
             .background(Tone.canvas.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(item: $openRecipeID) { id in
-                if let pair = etat.pairFor(id) {
+                if let pair = etat.pairFor(pour: id) {
                     RecipeDetailScreen(recipe: pair.recipe, result: pair.result)
                 }
             }
             .sheet(isPresented: $showPaywall) { PaywallScreen() }
-            .refreshable { await etat.refresh() }
+            .refreshable { await etat.sync() }
         }
     }
 

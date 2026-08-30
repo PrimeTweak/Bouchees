@@ -282,6 +282,54 @@ def check():
                     problems.append(f"{filename}:{i}: {nom}({inconnus[0]}:) — that struct "
                                     f"declares no '{inconnus[0]}'  (it has: {attendus})")
 
+    # 7f. a call whose argument labels do not match the function it calls.
+    #     `pairFor(id)` against `func pairFor(pour id: String)` fails, and the
+    #     error names the label it wanted without saying where the wrong call
+    #     lives. Two builds went on that this evening.
+    #
+    #     Only same-file and cross-file functions with simple signatures are
+    #     compared, and only calls with the same number of arguments — enough
+    #     to catch a rename, cheap enough to stay quiet otherwise.
+    signatures = {}
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"func (\w+)\(([^)]*)\)", code):
+            nom, params = m.group(1), m.group(2)
+            if not params.strip():
+                continue
+            etiquettes = []
+            ok = True
+            for p_ in [x.strip() for x in params.split(",") if x.strip()]:
+                mm = re.match(r"(\w+|_)\s+\w+\s*:", p_) or re.match(r"(\w+)\s*:", p_)
+                if not mm:
+                    ok = False
+                    break
+                etiquettes.append(mm.group(1))
+            if ok and nom not in signatures:
+                signatures[nom] = etiquettes
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(code.split("\n"), 1):
+            # Only calls on `etat` — the app's own state object. Without that
+            # anchor the rule matches JSONEncoder().encode(x) against a
+            # same-named project function and cries wolf. The receiver has to
+            # be one we can actually resolve.
+            for m in re.finditer(r"\betat\.(\w+)\(([^()]*)\)", l):
+                nom, args = m.group(1), m.group(2)
+                if nom not in signatures or not args.strip():
+                    continue
+                attendues = signatures[nom]
+                donnees = [x.strip().split(":")[0].strip() if ":" in x else "_"
+                           for x in args.split(",") if x.strip()]
+                if len(donnees) != len(attendues):
+                    continue
+                for d, at in zip(donnees, attendues):
+                    if at == "_" or d == at:
+                        continue
+                    problems.append(f"{filename}:{i}: {nom}({d}:) — that function expects "
+                                    f"'{at}:'  (full labels: {', '.join(attendues)})")
+                    break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

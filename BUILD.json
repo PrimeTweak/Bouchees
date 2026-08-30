@@ -1,12 +1,9 @@
 {
-  "build": 50,
+  "build": 51,
   "date": "2026-08-29",
   "carries": [
-    "home: hero photo, the figure, a list",
-    "floating glass tab bar + search island",
-    "recipe detail: full-bleed photo, glass buttons",
-    "scanner: full-colour verdict",
-    "all 7 screens on Tone tokens",
-    "light / dark / system"
+    "the whole redesign, 7 screens",
+    "pairFor label and sync() fixed",
+    "checker: argument labels on etat calls"
   ]
 }
