@@ -29,7 +29,6 @@ struct RecipesScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     hero
                     weekHeader
-                    shoppingEntry
                     mealChips
                     if let message = etat.syncMessage {
                         MessageBanner(texte: message)
@@ -45,6 +44,21 @@ struct RecipesScreen: View {
             .background(Tone.canvas.ignoresSafeArea())
             .ignoresSafeArea(.container, edges: .top)
             .toolbar(.hidden, for: .navigationBar)
+            /* WHO YOU ARE COOKING FOR STAYS PUT.
+             *
+             * It rode on the photo and scrolled away with it. In a family
+             * with two children on different profiles, cooking for the wrong
+             * one is the worst failure this app has — so it is pinned, and
+             * the content passes under it. */
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    CookingContextHeader()
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, Layout.gutter)
+                .padding(.top, 6)
+                .padding(.bottom, 8)
+            }
             .navigationDestination(item: $openRecipeID) { id in
                 if let pair = etat.pairFor(pour: id) {
                     RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
@@ -113,11 +127,14 @@ struct RecipesScreen: View {
                     .clipped()
 
                     LinearGradient(
-                        stops: [.init(color: .black.opacity(0.42), location: 0),
-                                .init(color: .clear, location: 0.24),
-                                .init(color: .clear, location: 0.40),
-                                .init(color: Tone.canvas.opacity(0.72), location: 0.76),
-                                .init(color: Tone.canvas, location: 1)],
+                        /* Dark to the bottom of the photo. Fading to the
+                         * canvas meant fading to pale in light mode, which put
+                         * the title on beige. */
+                        stops: [.init(color: .black.opacity(0.45), location: 0),
+                                .init(color: .clear, location: 0.26),
+                                .init(color: .clear, location: 0.42),
+                                .init(color: .black.opacity(0.58), location: 0.78),
+                                .init(color: .black.opacity(0.74), location: 1)],
                         startPoint: .top, endPoint: .bottom)
 
                     VStack(alignment: .leading, spacing: 0) {
@@ -139,17 +156,6 @@ struct RecipesScreen: View {
                     .padding(.horizontal, Layout.gutter)
                     .padding(.bottom, 20)
 
-                    VStack {
-                        HStack {
-                            CookingContextHeader()
-                            Spacer(minLength: 0)
-                        }
-                        .padding(.horizontal, Layout.gutter)
-                        /* Below the status bar, not into it. 60 put the pill
-                         * on top of the clock on a notched phone. */
-                        .padding(.top, 72)
-                        Spacer(minLength: 0)
-                    }
                 }
                 .frame(height: Layout.heroPhoto)
             }
@@ -180,49 +186,6 @@ struct RecipesScreen: View {
         }
         .padding(.horizontal, Layout.gutter)
         .padding(.top, 20)
-    }
-
-    /// The second gesture of the week, after "what do I cook": "what do I buy".
-    private var shoppingEntry: some View {
-        Button { tab?.wrappedValue = 1 } label: {
-            HStack(spacing: 11) {
-                Image(systemName: "cart.fill")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 38, height: 38)
-                    .background {
-                        RoundedRectangle(cornerRadius: 13, style: .continuous)
-                            .fill(Tone.brandGradient)
-                            .shadow(color: Tone.brandDeep.opacity(0.34), radius: 8, y: 5)
-                    }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Shopping list")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Tone.text)
-                    Text(String(format: String(localized: "%lld items, already adapted"),
-                                etat.shoppingList.count))
-                        .font(.system(size: 11.5))
-                        .foregroundStyle(Tone.text2)
-                }
-                Spacer(minLength: 8)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Tone.text3)
-            }
-            .padding(14)
-            .background {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(LinearGradient(colors: [Tone.brand.opacity(0.12), Tone.brand.opacity(0.04)],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(Tone.brand.opacity(0.18), lineWidth: 1)
-                    }
-            }
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, Layout.gutter)
-        .padding(.top, 16)
     }
 
     /// Breakfast, meals, snacks — how a parent thinks about a day.

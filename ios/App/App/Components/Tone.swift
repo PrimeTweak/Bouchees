@@ -77,9 +77,17 @@ enum Tone {
     /// Behind a drawing in the hero, where a photograph would otherwise be.
     /// Warm and deep enough that white text sits on it without a scrim doing
     /// all the work.
+    /* FIXED, NOT THEMED.
+     *
+     * I wrote "the hero is dark whatever the theme" and then made this
+     * gradient theme-dependent anyway — pale beige in light mode, which is
+     * exactly what put white text on a pale field.
+     *
+     * These are constants. White text sits on them in both appearances,
+     * which is the whole point. */
     static var heroField: LinearGradient {
-        LinearGradient(colors: [dyn(light: 0xE8DCC8, dark: 0x2A211A),
-                                dyn(light: 0xD4C4AA, dark: 0x15100C)],
+        LinearGradient(colors: [Color(red: 0.29, green: 0.22, blue: 0.15),
+                                Color(red: 0.10, green: 0.07, blue: 0.04)],
                        startPoint: .top, endPoint: .bottom)
     }
 

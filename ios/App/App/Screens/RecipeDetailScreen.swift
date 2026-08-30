@@ -186,13 +186,6 @@ struct RecipeDetailScreen: View {
 
     // MARK: - Sections
 
-    private var soustitre: String {
-        var bouts = [recipe.subtitle, "\(firstName), \(Format.age(etat.activeProfile.ageMonths))"]
-        let noms = etat.allergenNames(etat.activeProfile.allergens)
-        if !noms.isEmpty { bouts.append("no \(Format.liste(noms))") }
-        return bouts.joined(separator: " · ")
-    }
-
     private var blocTexture: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Texture — \(result.texture.name)").font(.headline)

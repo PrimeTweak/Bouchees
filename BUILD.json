@@ -1,9 +1,11 @@
 {
-  "build": 63,
+  "build": 64,
   "date": "2026-08-29",
   "carries": [
-    "currentWeek collision fixed \u2014 mine is weekRecipes now",
-    "reuses the manifest week id instead of deriving it",
-    "checker: duplicate property declaration in a type"
+    "hero field is a fixed dark constant, not themed \u2014 contrast fixed",
+    "veil stays dark to the bottom of the photo",
+    "child bar pinned with safeAreaInset, no longer scrolls away",
+    "shopping card removed from home \u2014 the tab is enough",
+    "week = the newest batch the reader can open, not the manifest pointer"
   ]
 }

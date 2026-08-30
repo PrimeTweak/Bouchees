@@ -56,9 +56,16 @@ final class AppState {
     /// Deriving it from `batches.last` would be a second, weaker answer to a
     /// question the server already answered.
     var weekRecipes: [Recipe] {
-        guard let id = currentWeek ?? batches.last(where: { $0.unlocked })?.id else {
-            return recipes
-        }
+        /* The manifest's `currentWeek` names the week being PUBLISHED, which
+         * can be ahead of anything this reader can open — it says 2026-S35
+         * while the newest batch is S34, and a subscriber-only one at that.
+         *
+         * So the week is the most recent batch the reader can actually
+         * unlock. Falling back to the whole corpus is what produced
+         * "This week · 15 recipes" and an empty shopping list. */
+        let mine = batches.filter { $0.unlocked }
+        let target = mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
+        guard let id = target else { return recipes }
         let week = recipes.filter { $0.lot == id }
         return week.isEmpty ? recipes : week
     }
