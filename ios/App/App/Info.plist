@@ -19,7 +19,11 @@
   <key>UILaunchScreen</key>
   <dict>
     <key>UIColorName</key><string>Canvas</string>
-    <key>UIImageName</key><string>LaunchMark</string>
+    <!-- No UIImageName. A launch image is drawn at its NATIVE size, centred:
+         a 900pt banner on a 393pt screen overflows both edges, which is what
+         put a giant cut-off "Bouchées" on the launch screen. The colour alone
+         matches the canvas, and SwiftUI draws the mark on the first frame
+         with no seam — and with an animation an image cannot have. -->
     <key>UIImageRespectsSafeAreaInsets</key><true/>
   </dict>
   <key>UISupportedInterfaceOrientations</key>

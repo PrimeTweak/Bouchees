@@ -30,7 +30,8 @@ struct BoucheesApp: App {
 struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
-    @State private var tabBarHidden = false
+    @State private var path = NavigationPath()
+    @State private var barMinimized = false
 
     var body: some View {
         Group {
@@ -82,32 +83,78 @@ struct RootView: View {
     /// `safeAreaInset` is the pattern for this. The bar becomes a sibling that
     /// owns its strip of the screen — the content ends above it on its own,
     /// and hit testing goes where it looks like it should.
+    /// ONE NavigationStack, HERE, around everything.
+    ///
+    /// Each screen used to open its own. A `safeAreaInset` reduces the safe
+    /// area of its DIRECT child, and a NavigationStack resets it for its
+    /// content — so the bar below reached none of the four screens. That one
+    /// mistake produced the dead back button, the pill that survived every
+    /// pushed screen, the tab bar covering text, and thirty-six compensating
+    /// paddings across nine files.
+    ///
+    /// With a single stack the inset reaches the content, pushed screens hide
+    /// the bar the way iOS intends, and no screen has to guess.
     private var onglets: some View {
-        Group {
-            switch tab {
-            case 0: RecipesScreen(tab: $tab)
-            case 1: ShoppingScreen()
-            case 2: ScannerScreen(tab: $tab)
-            default: SettingsScreen()
+        NavigationStack(path: $path) {
+            Group {
+                switch tab {
+                case 0: RecipesScreen(tab: $tab)
+                case 1: ShoppingScreen()
+                case 2: ScannerScreen(tab: $tab)
+                default: SettingsScreen()
+                }
+            }
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .recipe(let id):
+                    if let pair = etat.pairFor(pour: id) {
+                        RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
+                                           firstName: etat.activeProfile.firstName)
+                    }
+                case .saved:
+                    SavedScreen()
+                case .topRated:
+                    TopRatedScreen()
+                case .profiles:
+                    ProfilesScreen()
+                }
             }
         }
-        /* THE DETAIL SCREEN HAS TO BE ABLE TO HIDE THIS.
+        /* THE BAR DOES NOT BLOCK CONTENT.
          *
-         * `.toolbar(.hidden, for: .tabBar)` drives a TabView, and we do not
-         * have one — the bar is our own view, placed here by the parent. So
-         * the child could not remove it, and "Start cooking" ended up
-         * underneath. A preference key lets any screen ask for it to go. */
+         * Apple: "the buttons in the bars are fixed, and page content scrolls
+         * below them." A safeAreaInset does both halves of that: the list
+         * passes behind the glass, AND the scroll gains enough inset that its
+         * last row can be scrolled clear of the bar.
+         *
+         * The opaque fade I had here removed the first half to fix the
+         * second. It is gone; the scroll edge effect handles legibility. */
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if !tabBarHidden {
-                FloatingTabBar(selection: $tab)
+            if path.isEmpty {
+                FloatingTabBar(selection: $tab, minimized: barMinimized)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .onPreferenceChange(HideTabBar.self) { hidden in
-            withAnimation(.smooth(duration: 0.25)) { tabBarHidden = hidden }
-        }
         .ignoresSafeArea(.keyboard)
+        .environment(\.tabBarMinimized, barMinimized)
+        .environment(\.navigate, NavigateAction { route in path.append(route) })
+        .onPreferenceChange(ScrollDirection.self) { down in
+            /* iOS 26 minimizes the tab bar on scroll down and restores it on
+             * scroll up. We are not a TabView, so we do it by hand — the
+             * behaviour is what matters, not the API. */
+            withAnimation(.smooth(duration: 0.26)) { barMinimized = down }
+        }
     }
+
+/// Everything the stack can push. One enum, so the destinations live in one
+/// place rather than being re-declared on each screen.
+enum Route: Hashable {
+    case recipe(String)
+    case saved
+    case topRated
+    case profiles
+}
+
 }
 
 /// With no engine the app can assert nothing. Better to say so plainly than to
@@ -257,5 +304,27 @@ struct AllergenGrid: View {
                 .tint(Tone.brand)
             }
         }
+    }
+}
+
+// MARK: - Navigation
+
+/// Pushes a route onto the one stack.
+///
+/// A screen used to own a `navigationDestination` and a piece of @State per
+/// destination. With a single stack it only has to say where it wants to go.
+struct NavigateAction {
+    let push: (Route) -> Void
+    func callAsFunction(_ route: Route) { push(route) }
+}
+
+private struct NavigateKey: EnvironmentKey {
+    static let defaultValue = NavigateAction { _ in }
+}
+
+extension EnvironmentValues {
+    var navigate: NavigateAction {
+        get { self[NavigateKey.self] }
+        set { self[NavigateKey.self] = newValue }
     }
 }

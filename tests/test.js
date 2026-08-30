@@ -425,6 +425,63 @@ test("contrast: the old amber would have failed", () => {
   assert.ok(ratio(0xFFB84D, 0xFBF9F6) < 4.5, "the old value was indeed too pale");
 });
 
+/* ---------- barcode forms ---------- */
+
+/* A scan failed on a real product — Archibald beer, bought in Quebec, present
+ * in Open Food Facts. We asked for a key that does not exist: the camera hands
+ * back one form of the code and the database indexes another.
+ *
+ * This is pure arithmetic, so it is tested with no network at all. */
+
+const Barcode = require("../engine/barcode.js");
+
+test("barcode: UPC-E expands to the UPC-A it was compressed from", () => {
+  /* The classic worked example: 04252614 expands to 042100005264. */
+  assert.equal(Barcode.expandUPCE("04252614"), "042100005264");
+});
+
+test("barcode: a UPC-A is also tried as EAN-13, with the leading zero", () => {
+  const f = Barcode.formes("876976001538");
+  assert.ok(f.includes("876976001538"), "the code as read");
+  assert.ok(f.includes("0876976001538"), "and its EAN-13 key");
+});
+
+test("barcode: an EAN-13 starting with zero is also tried as UPC-A", () => {
+  const f = Barcode.formes("0042100005264");
+  assert.ok(f.includes("042100005264"), "the twelve-digit form");
+});
+
+test("barcode: an ITF-14 carton yields the EAN-13 inside it", () => {
+  const f = Barcode.formes("10012345678902");
+  assert.ok(f.some((x) => x.length === 13), "a thirteen-digit form is offered");
+});
+
+test("barcode: an EAN-13 is left alone", () => {
+  /* The olive oil that already worked must keep working. */
+  const f = Barcode.formes("6191509905058");
+  assert.equal(f[0], "6191509905058");
+});
+
+test("barcode: the check digit is the standard modulo ten", () => {
+  assert.equal(Barcode.checkDigit("619150990505"), "8");
+  assert.equal(Barcode.checkDigit("00761234567"), Barcode.checkDigit("00761234567"));
+});
+
+test("barcode: forms are unique and never empty", () => {
+  ["6191509905058", "876976001538", "04252614", "10012345678902"].forEach((c) => {
+    const f = Barcode.formes(c);
+    assert.ok(f.length > 0, c + " produced no form");
+    assert.equal(f.length, new Set(f).size, c + " produced a duplicate");
+    f.forEach((x) => assert.ok(/^\d+$/.test(x), "every form is digits only"));
+  });
+});
+
+test("barcode: junk in, nothing out", () => {
+  assert.deepEqual(Barcode.formes(""), []);
+  assert.deepEqual(Barcode.formes("abc"), []);
+  assert.deepEqual(Barcode.formes(null), []);
+});
+
 /* ---------- age rules ---------- */
 
 test("granola bars at 9 months: honey becomes maple syrup, with the age alert", () => {

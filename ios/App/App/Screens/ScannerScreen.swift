@@ -64,7 +64,13 @@ final class BarcodeSession: NSObject, ObservableObject, AVCaptureMetadataOutputO
         }
         session.addOutput(out)
         out.setMetadataObjectsDelegate(self, queue: .main)
-        out.metadataObjectTypes = [.ean8, .ean13, .upce, .code128]
+        /* Everything a grocery item can carry.
+         *
+         * ITF-14 is on cartons and multipacks, Data Matrix and QR on newer
+         * packaging, Code 39 on some store labels. The server normalises
+         * whichever form comes back, so accepting more here costs nothing. */
+        out.metadataObjectTypes = [.ean8, .ean13, .upce, .upca, .code128,
+                                   .code39, .itf14, .dataMatrix, .qr]
         configured = true
     }
 
@@ -117,19 +123,18 @@ struct ScannerScreen: View {
     @State private var product: GroceryProduct?
     @State private var verdict: ProductVerdict?
     @State private var messageErreur: String?
+    @State private var canContribute = false
 
     var body: some View {
-        NavigationStack {
-            Group {
-                switch authorization {
-                case .authorized: content
-                case .denied, .restricted: denied
-                default: prompt
-                }
+        Group {
+            switch authorization {
+            case .authorized: content
+            case .denied, .restricted: denied
+            default: prompt
             }
-            .navigationTitle("Scan")
-            .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationTitle("Scan")
+        .navigationBarTitleDisplayMode(.inline)
         .onDisappear { scanner.stop() }
     }
 
@@ -156,6 +161,9 @@ struct ScannerScreen: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        /* The verdict is an inset, not a floating card. It was anchored a
+         * fixed distance from the bottom and the tab bar sat on top of its
+         * button; reserving the space is what stops that for good. */
         .animation(.easeInOut(duration: 0.22), value: product?.code)
         .onAppear { scanner.start() }
         .onChange(of: scanner.code) { _, nouveau in
@@ -195,6 +203,7 @@ struct ScannerScreen: View {
         product = nil
         verdict = nil
         messageErreur = nil
+        canContribute = false
         defer { isWorking = false }
 
         do {
@@ -206,7 +215,12 @@ struct ScannerScreen: View {
             }
             verdict = try etat.evaluateLabel(texte)
         } catch RepositoryError.network(404) {
-            messageErreur = "This product isn’t in the open database. Read the label — and feel free to add it to Open Food Facts."
+            /* The cascade tried every form of the code against four
+             * databases. If nothing came back the product really is absent —
+             * so give the parent the next step rather than a verdict. */
+            messageErreur = String(localized:
+                "Not in any open database yet. Read the label — and you can add this product so the next parent finds it.")
+            canContribute = true
         } catch {
             messageErreur = "Lookup failed. Check your connection — and when in doubt, read the label."
         }
@@ -216,6 +230,7 @@ struct ScannerScreen: View {
         product = nil
         verdict = nil
         messageErreur = nil
+        canContribute = false
         scanner.rearm()
     }
 }

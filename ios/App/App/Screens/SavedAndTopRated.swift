@@ -92,35 +92,27 @@ struct SaveButton: View {
 
 struct TopRatedScreen: View {
     @Environment(AppState.self) private var etat
-    @State private var openRecipeID: String?
+    @Environment(\.navigate) private var navigate
     @State private var section = 0
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Picker("", selection: $section) {
-                        Text("Top rated").tag(0)
-                        Text("My saved").tag(1)
-                    }
-                    .pickerStyle(.segmented)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Picker("", selection: $section) {
+                    Text("Top rated").tag(0)
+                    Text("My saved").tag(1)
+                }
+                .pickerStyle(.segmented)
 
-                    if section == 0 { ranking } else { saved }
-                }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 32)
+                if section == 0 { ranking } else { saved }
             }
-            .background(Tone.canvas.ignoresSafeArea())
-            .navigationTitle("Best")
-            .navigationBarTitleDisplayMode(.inline)
-            .refreshable { await etat.loadTopRated() }
-            .navigationDestination(item: $openRecipeID) { id in
-                if let paire = etat.pairFor(pour: id) {
-                    RecipeDetailScreen(recipe: paire.recipe, result: paire.result,
-                             firstName: etat.activeProfile.name)
-                }
-            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 32)
         }
+        .background(Tone.canvas.ignoresSafeArea())
+        .navigationTitle("Best")
+        .navigationBarTitleDisplayMode(.inline)
+        .refreshable { await etat.loadTopRated() }
         .task { await etat.loadTopRated() }
     }
 
@@ -284,7 +276,7 @@ struct RatingBlock: View {
 /// back — the button saved into a void. This is the way in.
 struct SavedScreen: View {
     @Environment(AppState.self) private var etat
-    @State private var openRecipeID: String?
+    @Environment(\.navigate) private var navigate
 
     private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] {
         etat.saved.recipes.compactMap { etat.pairFor(pour: $0.id) }
@@ -300,7 +292,7 @@ struct SavedScreen: View {
                         .padding(.top, 80)
                 } else {
                     ForEach(pairs, id: \.recipe.id) { pair in
-                        Button { openRecipeID = pair.recipe.id } label: {
+                        Button { navigate(.recipe(pair.recipe.id)) } label: {
                             RecipeRow(recipe: pair.recipe, result: pair.result)
                         }
                         .buttonStyle(.plain)

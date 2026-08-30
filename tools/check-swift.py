@@ -692,6 +692,34 @@ def check():
                                 f"'{prop}' is @ViewBuilder — the initialiser expects a "
                                 f"closure; drop the attribute or pass a closure")
 
+    # 7t. more than one NavigationStack in the app.
+    #     A safeAreaInset reduces the safe area of its DIRECT child, and a
+    #     NavigationStack resets it for its content. Four screens each opening
+    #     their own meant the tab bar's inset reached none of them — which
+    #     produced the dead back button, the pill surviving every pushed
+    #     screen, content under the bar, and thirty-six compensating paddings.
+    #
+    #     One stack, at the root. Screens are content.
+    #     A view PRESENTED as a sheet is its own hierarchy and may own a
+    #     stack; that is the one exception, and it is named rather than
+    #     guessed.
+    PRESENTEES = ("ProfileEditor", "PaywallScreen", "SubstitutionRuleSheet",
+                  "ChildPickerSheet", "SearchSheet", "TagFlow")
+    stacks = []
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"NavigationStack\s*[({]", code):
+            avant = code[:m.start()]
+            proprios = re.findall(r"(?:^|\n)(?:private )?(?:struct|final class|class) (\w+)",
+                                  avant)
+            if proprios and proprios[-1] in PRESENTEES:
+                continue
+            ligne = avant.count("\n") + 1
+            stacks.append(f"{os.path.basename(path_)}:{ligne}")
+    if len(stacks) > 1:
+        problems.append("more than one NavigationStack: " + ", ".join(stacks) +
+                        " — a stack resets the safe area, so the tab bar inset "
+                        "stops reaching the content; keep one at the root")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

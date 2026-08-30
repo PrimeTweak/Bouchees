@@ -17,71 +17,50 @@ struct RecipesScreen: View {
     @Environment(AppState.self) private var etat
 
     @State private var meal: String?
-    @State private var openRecipeID: String?
+    /* The stack lives at the root now; a screen pushes a Route rather than
+     * owning a destination. */
+    @Environment(\.navigate) private var navigate
     @State private var showPaywall = false
 
     private var profile: ChildProfile { etat.activeProfile }
     private var tally: AppState.ProfileTally { etat.tally(for: profile) }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    /* The photo runs to the top of the screen, so the pill
-                     * floats over it. Everything after it is ordinary content
-                     * and must clear the status bar on its own. */
-                    hero
-                    weekHeader
-                    upsell
-                    savedEntry
-                    mealChips
-                    list
-                    disclaimer
-                }
-                .padding(.bottom, 16)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                /* The photo runs to the top of the screen, so the pill
+                 * floats over it. Everything after it is ordinary content
+                 * and must clear the status bar on its own. */
+                hero
+                weekHeader
+                upsell
+                savedEntry
+                mealChips
+                list
+                disclaimer
             }
-            .background(Tone.canvas.ignoresSafeArea())
-            /* NO `ignoresSafeArea` HERE ANY MORE.
-             *
-             * Apple: "All scroll views underneath navigation or toolbars
-             * automatically apply a visual treatment. This ensures legibility
-             * of overlapping content in the bars." That is the scroll edge
-             * effect, and it is free — but only for a scroll view that sits
-             * UNDER a bar. Extending past the bar switched it off, which is
-             * why the clock and the battery were unreadable over the list.
-             *
-             * The hero photo still reaches the top: it is inside the scroll
-             * view and simply drawn tall. */
-            .toolbar(.hidden, for: .navigationBar)
-            /* Below iOS 26 there is no scroll edge effect, so the last row
-             * would read through the floating bar. Harmless where the effect
-             * exists. */
-            .bottomFade()
-            /* WHO YOU ARE COOKING FOR STAYS PUT.
-             *
-             * It rode on the photo and scrolled away with it. In a family
-             * with two children on different profiles, cooking for the wrong
-             * one is the worst failure this app has — so it is pinned, and
-             * the content passes under it. */
-            .navigationDestination(item: $openRecipeID) { id in
-                if let pair = etat.pairFor(pour: id) {
-                    RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
-                                       firstName: profile.firstName)
-                }
-            }
-            .sheet(isPresented: $showPaywall) { PaywallScreen() }
-            .refreshable { await etat.sync() }
+            .padding(.bottom, 16)
         }
-        /* `safeAreaBar`, not an overlay.
+        .background(Tone.canvas.ignoresSafeArea())
+        /* NO `ignoresSafeArea` HERE ANY MORE.
          *
-         * As an overlay on the whole screen it survived every pushed view —
-         * it sat over the Saved list and over the recipe detail, hiding only
-         * when a RECIPE was open because that was the one case I checked.
+         * Apple: "All scroll views underneath navigation or toolbars
+         * automatically apply a visual treatment. This ensures legibility
+         * of overlapping content in the bars." That is the scroll edge
+         * effect, and it is free — but only for a scroll view that sits
+         * UNDER a bar. Extending past the bar switched it off, which is
+         * why the clock and the battery were unreadable over the list.
          *
-         * iOS 26 has a modifier made for exactly this: it places a view below
-         * the navigation bar AND extends the scroll edge effect underneath
-         * it. Attached here, it belongs to this screen alone and disappears
-         * with it. */
+         * The hero photo still reaches the top: it is inside the scroll
+         * view and simply drawn tall. */
+        .toolbar(.hidden, for: .navigationBar)
+        .reportsScrollDirection()
+        /* WHO YOU ARE COOKING FOR STAYS PUT.
+         *
+         * It rode on the photo and scrolled away with it. In a family with two
+         * children on different profiles, cooking for the wrong one is the
+         * worst failure this app has — so it is pinned, and the content passes
+         * under it. */
         .topBar {
             HStack {
                 if let message = etat.syncMessage {
@@ -94,6 +73,8 @@ struct RecipesScreen: View {
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 6)
         }
+        .sheet(isPresented: $showPaywall) { PaywallScreen() }
+        .refreshable { await etat.sync() }
     }
 
     // MARK: - Hero
@@ -108,7 +89,7 @@ struct RecipesScreen: View {
     @ViewBuilder
     private var hero: some View {
         if let h = heroPair {
-            Button { openRecipeID = h.recipe.id } label: {
+            Button { navigate(.recipe(h.recipe.id)) } label: {
                 ZStack(alignment: .bottomLeading) {
                     /* WHEN THERE IS NO PHOTO, DO NOT PRETEND.
                      *
@@ -235,7 +216,7 @@ struct RecipesScreen: View {
     private var savedEntry: some View {
         let n = etat.saved.recipes.count
         if n > 0 {
-            NavigationLink { SavedScreen() } label: {
+            Button { navigate(.saved) } label: {
                 HStack(spacing: 11) {
                     Image(systemName: "bookmark.fill")
                         .font(.system(size: 14, weight: .medium))
@@ -327,7 +308,7 @@ struct RecipesScreen: View {
                     .padding(.bottom, 2)
 
                 ForEach(group.items, id: \.recipe.id) { pair in
-                    Button { openRecipeID = pair.recipe.id } label: {
+                    Button { navigate(.recipe(pair.recipe.id)) } label: {
                         RecipeRow(recipe: pair.recipe, result: pair.result)
                     }
                     .buttonStyle(.plain)

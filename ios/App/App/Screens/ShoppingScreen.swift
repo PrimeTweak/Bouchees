@@ -32,60 +32,57 @@ struct ShoppingScreen: View {
                                      "pantry", "frozen", "other"]
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    header
-                    progress
-                    ForEach(byAisle, id: \.aisle) { group in
-                        Text(Self.aisleLabel(group.aisle))
-                            .eyebrow()
-                            .padding(.horizontal, Layout.gutter)
-                            .padding(.top, 24)
-                            .padding(.bottom, 4)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                header
+                progress
+                ForEach(byAisle, id: \.aisle) { group in
+                    Text(Self.aisleLabel(group.aisle))
+                        .eyebrow()
+                        .padding(.horizontal, Layout.gutter)
+                        .padding(.top, 24)
+                        .padding(.bottom, 4)
 
-                        ForEach(group.items) { item in
-                            ShoppingRow(item: item,
-                                        done: checked.contains(item.id)) {
-                                toggle(item)
-                            }
-                            if item.id != group.items.last?.id {
-                                Divider().overlay(Tone.hairline)
-                                    .padding(.leading, Layout.gutter + 35)
-                            }
+                    ForEach(group.items) { item in
+                        ShoppingRow(item: item,
+                                    done: checked.contains(item.id)) {
+                            toggle(item)
+                        }
+                        if item.id != group.items.last?.id {
+                            Divider().overlay(Tone.hairline)
+                                .padding(.leading, Layout.gutter + 35)
                         }
                     }
+                }
 
-                    if items.isEmpty {
-                        EmptyState(symbol: "cart",
-                                   title: "Nothing to buy yet",
-                                   message: "This week's recipes will fill the list.")
-                            .padding(.top, 60)
-                    }
+                if items.isEmpty {
+                    EmptyState(symbol: "cart",
+                               title: "Nothing to buy yet",
+                               message: "This week's recipes will fill the list.")
+                        .padding(.top, 60)
                 }
-                .padding(.bottom, 24)
             }
-            .background(Tone.canvas.ignoresSafeArea())
-            .toolbar(.hidden, for: .navigationBar)
-            /* Who you are shopping for matters as much as who you are cooking
-             * for — the list is adapted to them. */
-            .topBar {
-                HStack {
-                    CookingContextHeader()
-                    Spacer(minLength: 0)
-                }
-                .padding(.horizontal, Layout.gutter)
-                .padding(.bottom, 6)
+            .padding(.bottom, 24)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        /* Who you are shopping for matters as much as who you are cooking
+         * for — the list is adapted to them. */
+        .topBar {
+            HStack {
+                CookingContextHeader()
+                Spacer(minLength: 0)
             }
-            /* Below iOS 26 there is no scroll edge effect, so the last row
-             * would read through the floating bar. Harmless where the effect
-             * exists. */
-            .bottomFade()
-            .onAppear {
-                guard !loaded else { return }
-                checked = etat.checkedItems
-                loaded = true
-            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 6)
+        }
+        /* Below iOS 26 there is no scroll edge effect, so the last row
+         * would read through the floating bar. Harmless where the effect
+         * exists. */
+        .onAppear {
+            guard !loaded else { return }
+            checked = etat.checkedItems
+            loaded = true
         }
     }
 

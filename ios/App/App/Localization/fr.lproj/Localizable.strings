@@ -332,3 +332,5 @@
 "Saved recipes" = "Recettes favorites";
 "%lld saved · your own shortlist" = "%lld en favoris · votre sélection";
 "Tap the bookmark on a recipe to keep it here." = "Touchez le signet d’une recette pour la garder ici.";
+"Not in any open database yet. Read the label — and you can add this product so the next parent finds it." = "Absent des bases ouvertes. Lisez l’étiquette — et vous pouvez ajouter ce produit pour le parent suivant.";
+"Add this product" = "Ajouter ce produit";

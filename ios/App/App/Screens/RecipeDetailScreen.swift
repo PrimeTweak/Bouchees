@@ -93,7 +93,6 @@ struct RecipeDetailScreen: View {
          * and it no longer collides with the tab bar — which is hidden here,
          * as it is in any app once you are inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
-        .hidesTabBar()
         /* IN THE BAR, NOT OVER IT.
          *
          * Four attempts moved these buttons around the same screen. The cause

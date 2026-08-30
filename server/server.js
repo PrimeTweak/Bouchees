@@ -13,6 +13,8 @@
  * this".
  */
 "use strict";
+
+const Barcode = require("../engine/barcode.js");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -296,29 +298,91 @@ const routes = {
    * Facts, derives allergens WITH OUR catalogue, and keeps nothing.
    * The ODbL requires share-alike if that data is MERGED into
    * une base : on ne fusionne pas, on consulte. */
+  /* Product lookup by barcode.
+   *
+   * A CASCADE, not a single call. Two things were missing and each one hid
+   * products that are in the database:
+   *
+   *   1. The camera returns whatever form is printed — UPC-E, UPC-A, EAN-13,
+   *      ITF-14. Open Food Facts indexes mostly EAN-13. A North American
+   *      UPC-A is the same product with a leading zero: two keys, one
+   *      barcode, and only one was ever tried.
+   *
+   *   2. world.openfoodfacts.org covers food only. Three sibling databases
+   *      share the API and the licence — beauty, pet food, everything else.
+   *      A toddler puts toothpaste and kibble in their mouth too.
+   *
+   * We relay, derive allergens with OUR catalogue, and keep nothing. The ODbL
+   * requires share-alike when data is MERGED into a base; consulting is not
+   * merging.
+   */
   "GET /api/product": async function (req, res, ctx) {
-    const code = (ctx.url.searchParams.get("code") || "").replace(/[^0-9]/g, "");
-    if (code.length < 8 || code.length > 14) return json(res, 400, { error: "code-barres invalide" });
-    try {
-      const r = await fetch("https://world.openfoodfacts.org/api/v2/product/" + code +
-        "?fields=product_name,brands,ingredients_text_fr,ingredients_text,allergens_tags,traces_tags,image_small_url", {
-        headers: { "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/0.6 (contact@bouchees.example)" }
-      });
-      const d = await r.json();
-      if (!d || d.status !== 1 || !d.product) return json(res, 404, { error: "product inconnu", code: code });
-      const p = d.product;
-      json(res, 200, {
-        code: code,
-        name: p.product_name || null,
-        brand: p.brands || null,
-        ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
-        allergenTags: p.allergens_tags || [],
-        traceTags: p.traces_tags || [],
-        image: p.image_small_url || null,
-        assignment: "Données de Open Food Facts, sous licence ODbL (opendatacommons.org/licenses/odbl/1-0)",
-        notice: "Les étiquettes d'allergènes de la base sont indicatives — Bouchées re-dérive tout depuis la liste d'ingrédients."
-      });
-    } catch (e) { json(res, 502, { error: "consultation impossible", detail: e.message }); }
+    const brut = (ctx.url.searchParams.get("code") || "").replace(/[^0-9]/g, "");
+    if (brut.length < 6 || brut.length > 14) {
+      return json(res, 400, { error: "invalid barcode" });
+    }
+
+    const formes = Barcode.formes(brut);
+    if (!formes.length) return json(res, 400, { error: "invalid barcode" });
+
+    /* Food first: it is the common case and the only one with a full
+     * ingredient list most of the time. */
+    const bases = [
+      { hote: "world.openfoodfacts.org", genre: "food" },
+      { hote: "world.openbeautyfacts.org", genre: "beauty" },
+      { hote: "world.openpetfoodfacts.org", genre: "petfood" },
+      { hote: "world.openproductsfacts.org", genre: "product" }
+    ];
+
+    const champs = "product_name,product_name_fr,brands,ingredients_text_fr," +
+                   "ingredients_text,allergens_tags,traces_tags,image_small_url";
+    const entetes = {
+      "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/0.7 (contact@bouchees.example)"
+    };
+
+    const essais = [];
+    for (const base of bases) {
+      for (const forme of formes) {
+        try {
+          const r = await fetch("https://" + base.hote + "/api/v2/product/" + forme +
+                                "?fields=" + champs, { headers: entetes });
+          const d = await r.json();
+          essais.push(base.genre + ":" + forme);
+          if (!d || d.status !== 1 || !d.product) continue;
+
+          const p = d.product;
+          return json(res, 200, {
+            code: forme,
+            scanned: brut,
+            source: base.genre,
+            name: p.product_name_fr || p.product_name || null,
+            brand: p.brands || null,
+            ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
+            allergenTags: p.allergens_tags || [],
+            traceTags: p.traces_tags || [],
+            image: p.image_small_url || null,
+            assignment: "Data from Open Food Facts and its sibling databases, " +
+                        "ODbL licence (opendatacommons.org/licenses/odbl/1-0)",
+            notice: "The database's own allergen tags are indicative — Bouchees " +
+                    "re-derives everything from the ingredient list."
+          });
+        } catch (e) {
+          /* One database being unreachable must not end the cascade. */
+          essais.push(base.genre + ":" + forme + ":error");
+        }
+      }
+    }
+
+    /* Nothing anywhere. Say what was tried, and say what the parent can do —
+     * a dead end with a next step is not a dead end. */
+    json(res, 404, {
+      error: "product not found",
+      scanned: brut,
+      tried: formes,
+      databases: bases.map(function (b) { return b.genre; }),
+      attempts: essais.length,
+      contribute: "https://world.openfoodfacts.org/cgi/product.pl?code=" + formes[0]
+    });
   },
 
   /* Connexion volontairement minimale : un email, un token. Pas de mot de

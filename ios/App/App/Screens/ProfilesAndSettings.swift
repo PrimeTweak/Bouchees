@@ -15,71 +15,69 @@ struct ProfilesScreen: View {
     @State private var pendingDeletion: ChildProfile?
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    ForEach(etat.profiles) { p in
-                        Button {
-                            etat.select(p.id)
-                        } label: {
-                            ProfileRow(profile: p,
-                                        isOn: !etat.familyMode && p.id == etat.activeProfileID,
-                                        noms: etat.allergenNames(p.allergens),
-                                        tally: etat.tally(for: p))
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                pendingDeletion = p
-                            } label: { Label("Remove", systemImage: "trash") }
-
-                            Button {
-                                editing = p
-                            } label: { Label("Edit", systemImage: "pencil") }
-                            .tint(Tone.brand)
-                        }
-                    }
-                } header: {
-                    Text("Your children")
-                } footer: {
-                    Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
-                }
-
-                if etat.profiles.count > 1 {
-                    Section {
-                        Toggle(isOn: Binding(
-                            get: { etat.familyMode },
-                            set: { _ in etat.toggleFamilyMode() })) {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Everyone at the table").font(.body)
-                                    Text("Youngest child’s age, and everything each one avoids")
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
-                            .tint(Tone.brand)
-                    }
-                }
-
-                Section {
+        List {
+            Section {
+                ForEach(etat.profiles) { p in
                     Button {
-                        editing = ChildProfile(name: "", ageMonths: 9, allergens: [])
+                        etat.select(p.id)
                     } label: {
-                        Label("Add a child", systemImage: "plus.circle.fill")
+                        ProfileRow(profile: p,
+                                    isOn: !etat.familyMode && p.id == etat.activeProfileID,
+                                    noms: etat.allergenNames(p.allergens),
+                                    tally: etat.tally(for: p))
+                    }
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            pendingDeletion = p
+                        } label: { Label("Remove", systemImage: "trash") }
+
+                        Button {
+                            editing = p
+                        } label: { Label("Edit", systemImage: "pencil") }
+                        .tint(Tone.brand)
                     }
                 }
+            } header: {
+                Text("Your children")
+            } footer: {
+                Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
             }
-            .navigationTitle("Children")
-            .sheet(item: $editing) { p in
-                ProfileEditor(profile: p)
+
+            if etat.profiles.count > 1 {
+                Section {
+                    Toggle(isOn: Binding(
+                        get: { etat.familyMode },
+                        set: { _ in etat.toggleFamilyMode() })) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Everyone at the table").font(.body)
+                                Text("Youngest child’s age, and everything each one avoids")
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                        .tint(Tone.brand)
+                }
             }
-            .alert("Remove this profile?",
-                   isPresented: Binding(get: { pendingDeletion != nil },
-                                        set: { if !$0 { pendingDeletion = nil } }),
-                   presenting: pendingDeletion) { p in
-                Button("Remove", role: .destructive) { etat.remove(p) }
-                Button("Cancel", role: .cancel) { }
-            } message: { p in
-                Text("\(p.name)'s profile and their allergens will be erased from this device.")
+
+            Section {
+                Button {
+                    editing = ChildProfile(name: "", ageMonths: 9, allergens: [])
+                } label: {
+                    Label("Add a child", systemImage: "plus.circle.fill")
+                }
             }
+        }
+        .navigationTitle("Children")
+        .sheet(item: $editing) { p in
+            ProfileEditor(profile: p)
+        }
+        .alert("Remove this profile?",
+               isPresented: Binding(get: { pendingDeletion != nil },
+                                    set: { if !$0 { pendingDeletion = nil } }),
+               presenting: pendingDeletion) { p in
+            Button("Remove", role: .destructive) { etat.remove(p) }
+            Button("Cancel", role: .cancel) { }
+        } message: { p in
+            Text("\(p.name)'s profile and their allergens will be erased from this device.")
         }
     }
 }
@@ -248,27 +246,25 @@ struct SettingsScreen: View {
      * defeats the type checker — "unable to type-check in reasonable time" is
      * what a 200-line ViewBuilder earns. */
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Settings")
-                        .font(Type.display)
-                        .foregroundStyle(Tone.text)
-                        .padding(.top, 8)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Settings")
+                    .font(Type.display)
+                    .foregroundStyle(Tone.text)
+                    .padding(.top, 8)
 
-                    appearanceSection
-                    childrenSection
-                    subscriptionSection
-                    contentSection
-                    footnotes
-                }
-                .padding(.horizontal, Layout.gutter)
-                .padding(.bottom, 130)
+                appearanceSection
+                childrenSection
+                subscriptionSection
+                contentSection
+                footnotes
             }
-            .background(Tone.canvas.ignoresSafeArea())
-            .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showPaywall) { PaywallScreen() }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 130)
         }
+        .background(Tone.canvas.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showPaywall) { PaywallScreen() }
     }
 
     private var appearanceSection: some View {
