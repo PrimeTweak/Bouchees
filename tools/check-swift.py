@@ -766,6 +766,48 @@ def check():
                                 f"Swift needs \\u{{{m.group(1)}}}, or write the "
                                 f"character itself")
 
+    # 7w. a guessed top inset.
+    #     `padding(.top, 46)` inside a view that ignores the safe area
+    #     measures from the physical edge. A Dynamic Island occupies 59, a
+    #     notch a different number, an iPad another — so any large constant
+    #     there is a height someone guessed.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        if "ignoresSafeArea" not in code:
+            continue
+        #     Only where it is a BAR being positioned: a padding that follows
+        #     the pill, a title or a toolbar row. Spacing between sections of
+        #     content is a different thing and legitimately large.
+        for m in re.finditer(r"\.padding\(\.top,\s*(\d+)\)", code):
+            if int(m.group(1)) <= 30:
+                continue
+            avant = code[max(0, m.start() - 400):m.start()]
+            barre = any(k in avant for k in ("CookingContextHeader", "softTopBar",
+                                             "topBar", "MessageBanner", "toolbar"))
+            if not barre:
+                continue
+            ligne = code[:m.start()].count("\n") + 1
+            problems.append(f"{filename}:{ligne}: padding(.top, {m.group(1)}) in a file "
+                            f"that ignores the safe area — that is a guessed status bar "
+                            f"height; let the safe area supply it")
+
+    # 7x. a fading gradient with horizontal margins.
+    #     A gradient that dims content has to span the screen. The moment it
+    #     has side padding its edges become a visible box — which is what put
+    #     an outline under "Start cooking" and above the tab bar.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        lignes = code.split("\n")
+        for i, l in enumerate(lignes, 1):
+            if "LinearGradient" not in l:
+                continue
+            fenetre = "\n".join(lignes[max(0, i - 6):i + 2])
+            if "Tone.canvas" not in fenetre:
+                continue
+            if re.search(r"\.padding\(\.horizontal,\s*\d+\)", fenetre):
+                problems.append(f"{filename}:{i}: a canvas fade with horizontal padding — "
+                                f"its edges draw a box; a fade must span the screen")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

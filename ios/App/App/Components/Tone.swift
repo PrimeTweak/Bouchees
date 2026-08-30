@@ -533,11 +533,21 @@ struct SoftTopBar<Bar: View>: ViewModifier {
                             startPoint: .top, endPoint: .bottom)
                     }
                     .frame(height: height)
+                    /* The FIELD ignores the safe area — filling to the edge is
+                     * its whole job. */
+                    .ignoresSafeArea(edges: .top)
                     .allowsHitTesting(false)
 
+                /* The CONTENT does not. Applying the modifier to the ZStack
+                 * gave it to both, so `padding(.top, 46)` measured from the
+                 * physical edge — and a Dynamic Island occupies 59. The pill
+                 * ended up underneath it.
+                 *
+                 * A safe area is the right number on a notch, on an island
+                 * and on an iPad; a constant is right on none of them. */
                 bar
+                    .padding(.top, 4)
             }
-            .ignoresSafeArea(edges: .top)
         }
     }
 }
@@ -549,22 +559,4 @@ extension View {
         modifier(SoftTopBar(bar: bar(), height: height))
     }
 
-    /// The fade at the bottom, matching the top.
-    ///
-    /// Below iOS 26 there is no scroll edge effect. This is soft, not a wall:
-    /// content still passes behind the tab bar, it simply dims as it goes.
-    func softBottomEdge() -> some View {
-        overlay(alignment: .bottom) {
-            LinearGradient(
-                stops: [
-                    .init(color: Tone.canvas.opacity(0), location: 0),
-                    .init(color: Tone.canvas.opacity(0.32), location: 0.36),
-                    .init(color: Tone.canvas.opacity(0.74), location: 0.66),
-                    .init(color: Tone.canvas.opacity(0.94), location: 1)
-                ],
-                startPoint: .top, endPoint: .bottom)
-                .frame(height: 98)
-                .allowsHitTesting(false)
-        }
-    }
 }

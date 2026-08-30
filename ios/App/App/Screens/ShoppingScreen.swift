@@ -41,15 +41,20 @@ struct ShoppingScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                /* The title lives in the bar now; the content starts under it. */
-                Color.clear.frame(height: 92)
-                weekStrip
+                /* Clears the bar, which holds the pill only. */
+                Color.clear.frame(height: 56)
+                header
                 HStack {
-                    scopeToggle
+                    scopePicker
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, Layout.gutter)
-                .padding(.top, 12)
+                .padding(.top, 16)
+                /* Dimmed on "whole week": the days are still there, they
+                 * simply are not filtering anything. */
+                weekStrip
+                    .opacity(dayFilter ? 1 : 0.42)
+                    .allowsHitTesting(dayFilter)
                 progress
                 ForEach(byAisle, id: \.aisle) { group in
                     Text(Self.aisleLabel(group.aisle))
@@ -83,8 +88,7 @@ struct ShoppingScreen: View {
         .toolbar(.hidden, for: .navigationBar)
         /* Who you are shopping for matters as much as who you are cooking
          * for — the list is adapted to them. */
-        .softTopBar(height: 96) { header }
-        .softBottomEdge()
+        .softTopBar(height: 96) { bar }
         /* Below iOS 26 there is no scroll edge effect, so the last row
          * would read through the floating bar. Harmless where the effect
          * exists. */
@@ -97,22 +101,30 @@ struct ShoppingScreen: View {
 
     // MARK: - Pieces
 
-    /// The title shares the bar with the child pill.
+    /// The bar holds the child pill alone, on the right.
     ///
-    /// It used to sit below a full-width pill, which pushed it 130pt down the
-    /// screen before a single item appeared. On its own line beside a compact
-    /// pill, that space goes back to the list.
-    private var header: some View {
-        HStack(alignment: .center, spacing: 10) {
-            Text("Shopping")
-                .font(.system(size: 20, weight: .bold))
-                .kerning(-0.5)
-                .foregroundStyle(Tone.text)
+    /// The title used to live here at 20pt while Settings carried
+    /// `Type.display` in its content — two systems for the same job on two
+    /// screens of the same rank.
+    private var bar: some View {
+        HStack {
             Spacer(minLength: 0)
             CookingContextHeader(compact: true)
         }
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 46)
+    }
+
+    /// The title, in the content, at the same size and place as Settings.
+    ///
+    /// It scrolls away like Settings' does. Pinned, it held the bar for a
+    /// screen whose whole purpose is the list below it.
+    private var header: some View {
+        Text("Shopping list")
+            .font(Type.display)
+            .foregroundStyle(Tone.text)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 8)
     }
 
     private var subtitle: String {
@@ -132,25 +144,35 @@ struct ShoppingScreen: View {
             .padding(.top, 4)
     }
 
-    /// Week or day, one tap.
-    private var scopeToggle: some View {
-        Button {
-            withAnimation(.smooth(duration: 0.24)) { dayFilter.toggle() }
-        } label: {
-            HStack(spacing: 5) {
-                Image(systemName: dayFilter ? "calendar.day.timeline.left" : "calendar")
-                    .font(.system(size: 10, weight: .semibold))
-                Text(dayFilter ? WeekDay.full[etat.selectedDay] : "Whole week")
-                    .font(.system(size: 11, weight: .semibold))
+    /// Scope first, then which day.
+    ///
+    /// Two segments rather than one toggle: a button that changes its own
+    /// label never says what the next tap will do. Two segments show both
+    /// states and which one is live.
+    ///
+    /// Above the days, because that is the order of the decision — whole week
+    /// or one day, and only then which day. Underneath, it asked for the
+    /// consequence before the cause.
+    private var scopePicker: some View {
+        HStack(spacing: 2) {
+            ForEach([false, true], id: \.self) { parJour in
+                Button {
+                    withAnimation(.smooth(duration: 0.24)) { dayFilter = parJour }
+                } label: {
+                    Text(parJour ? "By day" : "Whole week")
+                        .font(.system(size: 11.5, weight: .semibold))
+                        .foregroundStyle(dayFilter == parJour ? Tone.canvas : Tone.text2)
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 6)
+                        .background(dayFilter == parJour ? AnyShapeStyle(Tone.text)
+                                                         : AnyShapeStyle(Color.clear),
+                                    in: Capsule())
+                }
+                .buttonStyle(.plain)
             }
-            .foregroundStyle(dayFilter ? Tone.canvas : Tone.text2)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 6)
-            .background(dayFilter ? AnyShapeStyle(Tone.text)
-                                  : AnyShapeStyle(Tone.text.opacity(0.05)),
-                        in: Capsule())
         }
-        .buttonStyle(.plain)
+        .padding(3)
+        .background(Tone.text.opacity(0.05), in: Capsule())
     }
 
     private var progress: some View {

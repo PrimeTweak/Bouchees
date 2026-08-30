@@ -76,9 +76,7 @@ struct RecipesScreen: View {
                 }
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 46)
         }
-        .softBottomEdge()
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
         .refreshable { await etat.sync() }
     }

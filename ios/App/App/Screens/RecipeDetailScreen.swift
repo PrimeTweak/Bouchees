@@ -182,14 +182,23 @@ struct RecipeDetailScreen: View {
         .buttonStyle(.plain)
         .padding(.horizontal, 20)
         .padding(.bottom, 26)
-        .padding(.top, 14)
-        /* Content used to read straight through the button. A fade under it
-         * means the list dissolves rather than colliding. */
+        .padding(.top, 40)
+        /* EDGE TO EDGE, NOT BEHIND THE BUTTON.
+         *
+         * A background wraps the shape it dresses, so this one stopped at the
+         * button's margins — and a gradient that stops draws a box. Applied
+         * to the whole inset it spans the screen, and 40pt of lead-in gives
+         * the fade room to happen. */
+        .frame(maxWidth: .infinity)
         .background {
-            LinearGradient(colors: [Tone.canvas.opacity(0), Tone.canvas.opacity(0.94),
-                                    Tone.canvas],
-                           startPoint: .top, endPoint: .bottom)
+            LinearGradient(
+                stops: [.init(color: Tone.canvas.opacity(0), location: 0),
+                        .init(color: Tone.canvas.opacity(0.55), location: 0.28),
+                        .init(color: Tone.canvas.opacity(0.92), location: 0.55),
+                        .init(color: Tone.canvas, location: 0.78)],
+                startPoint: .top, endPoint: .bottom)
                 .allowsHitTesting(false)
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 

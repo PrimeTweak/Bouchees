@@ -38,7 +38,18 @@ struct FloatingTabBar: View {
     ]
 
     var body: some View {
-        GlassGroup(spacing: 14) {
+        /* SPACING ZERO. THE TWO PIECES STAY TWO.
+         *
+         * A GlassEffectContainer merges glass closer together than its
+         * spacing. The capsule and the search island sit 10pt apart and the
+         * container allowed 14 — so iOS fused them into ONE shape, wider and
+         * taller than either, and that shape's outline is the band that
+         * appeared above the bar.
+         *
+         * iOS does the same thing itself: its capsule and its search island
+         * are two separate pieces of glass, never blended. Merging is for
+         * buttons that belong to one group, not for two destinations. */
+        GlassGroup(spacing: 0) {
         HStack(spacing: 10) {
             /* A SLIDING INDICATOR, NOT A COLOUR SWAP.
              *

@@ -1,8 +1,12 @@
 {
-  "build": 78,
+  "build": 79,
   "date": "2026-08-29",
   "carries": [
-    "unicode escapes need braces in Swift \u2014 a script wrote the Python form",
-    "checker rule: a backslash-u escape with no braces"
+    "GlassGroup spacing 14 merged two pieces 10pt apart \u2014 that blob was the outline",
+    "the Start cooking fade was the BUTTON background, so it drew a box",
+    "ignoresSafeArea applied to the whole ZStack pushed the pill under the Dynamic Island",
+    "Shopping now carries Type.display in content, like Settings",
+    "scope picker above the days, two segments not a toggle",
+    "two checker rules: guessed top inset, fade with horizontal margins"
   ]
 }
