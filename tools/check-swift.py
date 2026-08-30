@@ -611,6 +611,37 @@ def check():
                                 f"content that already has a safeAreaInset(.bottom) — "
                                 f"two reservations for one bar")
 
+    # 7q. a project type that shadows a SwiftUI name, used unqualified.
+    #     The project owns `enum Layout` for its spacing constants. Writing
+    #     `struct WrappingRow: Layout` therefore meant "inherit from that
+    #     enum", and the compiler answered with four cascading errors — none
+    #     of which named the collision.
+    #
+    #     Shadowing is fine. Using the shadowed name as a conformance without
+    #     qualifying it is not.
+    SWIFTUI_NAMES = {"Layout", "View", "Shape", "Animation", "Alignment", "Color",
+                     "Font", "Image", "Text", "Group", "Section", "List", "Label",
+                     "Gesture", "Edge", "Axis", "Material", "Visibility"}
+    ombres = set()
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"^(?:final\s+)?(?:public\s+)?(?:struct|enum|class|protocol)\s+(\w+)",
+                             code, re.M):
+            if m.group(1) in SWIFTUI_NAMES:
+                ombres.add(m.group(1))
+
+    if ombres:
+        for path_, (_, code) in sources.items():
+            filename = os.path.basename(path_)
+            for i, l in enumerate(code.split("\n"), 1):
+                m = re.search(r"^(?:final\s+)?(?:public\s+)?(?:struct|class|enum)\s+\w+\s*:\s*([\w, ]+)\{?", l)
+                if not m:
+                    continue
+                for conf in [c.strip() for c in m.group(1).split(",")]:
+                    if conf in ombres:
+                        problems.append(f"{filename}:{i}: conforming to '{conf}', which this "
+                                        f"project also defines — write SwiftUI.{conf} or the "
+                                        f"compiler picks the local one")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

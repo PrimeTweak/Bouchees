@@ -467,12 +467,17 @@ private struct FlowTags: View {
 /// A `Layout` computes size and positions in ONE pass from sizes it asks for
 /// directly. No GeometryReader, no @State, no round-trip — which is what makes
 /// it impossible to loop.
-struct WrappingRow: Layout {
+/* `SwiftUI.Layout`, qualified.
+ *
+ * The project has its own `enum Layout` holding the spacing constants, and it
+ * wins the name lookup — so `: Layout` meant "inherit from my enum", which
+ * gave four cascading errors none of which named the collision. */
+struct WrappingRow: SwiftUI.Layout {
     var spacing: CGFloat = 6
     var lineSpacing: CGFloat = 6
 
     func sizeThatFits(proposal: ProposedViewSize,
-                      subviews: Subviews,
+                      subviews: LayoutSubviews,
                       cache: inout Void) -> CGSize {
         let maxWidth = proposal.width ?? .infinity
         var x: CGFloat = 0
@@ -495,7 +500,7 @@ struct WrappingRow: Layout {
 
     func placeSubviews(in bounds: CGRect,
                        proposal: ProposedViewSize,
-                       subviews: Subviews,
+                       subviews: LayoutSubviews,
                        cache: inout Void) {
         var x = bounds.minX
         var y = bounds.minY

@@ -1,10 +1,9 @@
 {
-  "build": 69,
+  "build": 70,
   "date": "2026-08-29",
   "carries": [
-    "SCANNER: FlowTags was a layout feedback loop that froze the main thread",
-    "back and save move into the toolbar \u2014 iOS 26 glass container eats overlay taps (FB18201935)",
-    "four double bottom reservations found by sweeping every screen",
-    "two checker rules: layout feedback loop, double bottom reservation"
+    "SwiftUI.Layout qualified \u2014 the project owns an enum Layout that won lookup",
+    "LayoutSubviews, not the nested Subviews",
+    "checker rule: conforming to a name the project also defines"
   ]
 }
