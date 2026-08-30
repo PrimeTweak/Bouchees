@@ -24,41 +24,30 @@ struct RecipeDetailScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: .bottomLeading) {
                     RecipeVisual(recipe: recipe, result: result)
-                        .frame(height: 340)
+                        .frame(height: Layout.detailPhoto)
                         .frame(maxWidth: .infinity)
                         .clipped()
-                        .overlay(alignment: .bottom) {
-                            LinearGradient(
-                                colors: [.clear, Tone.canvas.opacity(0.6), Tone.canvas],
-                                startPoint: .top, endPoint: .bottom)
-                                .frame(height: 190)
-                        }
-                        .overlay(alignment: .top) {
-                            LinearGradient(colors: [.black.opacity(0.34), .clear],
-                                           startPoint: .top, endPoint: .bottom)
-                                .frame(height: 120)
-                        }
+                        .overlay { PhotoScrim() }
 
                     VStack(alignment: .leading, spacing: 0) {
                         Text(soustitre)
-                            .font(Type.label)
-                            .foregroundStyle(Tone.brand)
-                            .textCase(.uppercase)
-                            .kerning(1.4)
+                            .eyebrow(Tone.brand)
+                            .shadow(color: .black.opacity(0.6), radius: 8)
 
                         Text(recipe.name)
-                            .font(Type.display)
-                            .foregroundStyle(Tone.text)
-                            .padding(.top, 6)
+                            .font(Type.displayTight)
+                            .foregroundStyle(.white)
+                            .shadow(color: .black.opacity(0.55), radius: 20)
+                            .padding(.top, 8)
 
                         VerdictPill(result: result, firstName: firstName)
-                            .padding(.top, 13)
+                            .padding(.top, 14)
                     }
                     .padding(.horizontal, Layout.gutter)
-                    .padding(.bottom, 6)
+                    .padding(.bottom, 22)
                 }
 
-                VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 0) {
                     blocTexture
                     alerts
                     blocIngredients
@@ -66,13 +55,15 @@ struct RecipeDetailScreen: View {
                     blocPreparation
                     blocProvenance
                     Text(Settings.medicalDisclaimer)
-                        .font(Type.caption)
-                        .foregroundStyle(Tone.textTertiary)
+                        .font(.system(size: 11.5))
+                        .foregroundStyle(Tone.text3)
+                        .lineSpacing(2)
+                        .padding(.top, 28)
                 }
                 .padding(.horizontal, Layout.gutter)
-                .padding(.top, 22)
+                .padding(.top, 4)
             }
-            .padding(.bottom, 110)
+            .padding(.bottom, 130)
         }
         .background(Tone.canvas.ignoresSafeArea())
         .ignoresSafeArea(.container, edges: .top)
@@ -83,26 +74,28 @@ struct RecipeDetailScreen: View {
 
     /// Glass circles floating over the photo, with content scrolling beneath —
     /// the exact pattern the platform describes for fixed buttons.
-    @ViewBuilder
+    /// Glass circles over the photo, content scrolling beneath — the pattern
+    /// the platform describes for fixed buttons.
     private var backButton: some View {
         Button { dismiss() } label: {
             Image(systemName: "chevron.left")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Tone.text)
-                .glassCircle()
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 42, height: 42)
+                .glass(Circle())
         }
         .buttonStyle(.plain)
-        .padding(.leading, 16)
-        .padding(.top, 52)
+        .padding(.leading, 18)
+        .padding(.top, 58)
         .accessibilityLabel("Back")
     }
 
-    @ViewBuilder
     private var saveButton: some View {
         SaveButton(recipe: recipe)
-            .glassCircle()
-            .padding(.trailing, 16)
-            .padding(.top, 52)
+            .frame(width: 42, height: 42)
+            .glass(Circle())
+            .padding(.trailing, 18)
+            .padding(.top, 58)
     }
 
     // MARK: - Sections

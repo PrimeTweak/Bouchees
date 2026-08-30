@@ -64,6 +64,12 @@ struct RootView: View {
     ///
     /// Glass belongs here and to almost nowhere else: it is the navigation
     /// layer, floating above content. Applied to list rows it becomes mush.
+    /// THREE TABS, IN A FLOATING GLASS CAPSULE.
+    ///
+    /// Not a TabView: the system bar is opaque, full width, and sits on top of
+    /// a safe-area inset. iOS 26 wants the bar detached — a pill inset 21pt
+    /// with content scrolling beneath it — so the screens run full height and
+    /// the bar floats over them.
     private var onglets: some View {
         ZStack(alignment: .bottom) {
             Group {
@@ -73,12 +79,11 @@ struct RootView: View {
                 default: SettingsScreen()
                 }
             }
-            .ignoresSafeArea(.container, edges: .top)
+            .transition(.opacity)
 
             FloatingTabBar(selection: $tab)
-                .padding(.horizontal, Layout.tabInset)
-                .padding(.bottom, 6)
         }
+        .ignoresSafeArea(.keyboard)
     }
 }
 

@@ -14,73 +14,118 @@ struct ProfilesScreen: View {
     @State private var editing: ChildProfile?
     @State private var pendingDeletion: ChildProfile?
 
+    /// Dark cards on the canvas rather than a grouped List. A system List
+    /// brings its own background and its own insets, and neither matches the
+    /// rest of the app.
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    ForEach(etat.profiles) { p in
-                        Button {
-                            etat.select(p.id)
-                        } label: {
-                            ProfileRow(profile: p,
-                                        isOn: !etat.familyMode && p.id == etat.activeProfileID,
-                                        noms: etat.allergenNames(p.allergens),
-                                        tally: etat.tally(for: p))
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                pendingDeletion = p
-                            } label: { Label("Remove", systemImage: "trash") }
-
-                            Button {
-                                editing = p
-                            } label: { Label("Edit", systemImage: "pencil") }
-                            .tint(Tone.brand)
-                        }
-                    }
-                } header: {
-                    Text("Your children")
-                } footer: {
-                    Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
-                }
-
-                if etat.profiles.count > 1 {
-                    Section {
-                        Toggle(isOn: Binding(
-                            get: { etat.familyMode },
-                            set: { _ in etat.toggleFamilyMode() })) {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Everyone at the table").font(.body)
-                                    Text("Youngest child’s age, and everything each one avoids")
-                                        .font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
-                            .tint(Tone.brand)
-                    }
-                }
-
-                Section {
-                    Button {
-                        editing = ChildProfile(name: "", ageMonths: 9, allergens: [])
-                    } label: {
-                        Label("Add a child", systemImage: "plus.circle.fill")
-                    }
-                }
-            }
-            .navigationTitle("Children")
-            .sheet(item: $editing) { p in
-                ProfileEditor(profile: p)
-            }
-            .alert("Remove this profile?",
-                   isPresented: Binding(get: { pendingDeletion != nil },
-                                        set: { if !$0 { pendingDeletion = nil } }),
-                   presenting: pendingDeletion) { p in
-                Button("Remove", role: .destructive) { etat.remove(p) }
-                Button("Cancel", role: .cancel) { }
-            } message: { p in
-                Text("\(p.name)'s profile and their allergens will be erased from this device.")
-            }
+            settingsBody
         }
+    }
+
+    private var settingsBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Settings")
+                    .font(Type.display)
+                    .foregroundStyle(Tone.text)
+                    .padding(.top, 8)
+
+                Text("Appearance").eyebrow().padding(.top, 26).padding(.bottom, 9)
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Theme")
+                            .font(.system(size: 14.5))
+                            .foregroundStyle(Tone.text)
+                        Spacer(minLength: 10)
+                        ThemeSegments(theme: Binding(
+                            get: { etat.theme }, set: { etat.theme = $0 }))
+                    }
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 14)
+                }
+                .card()
+                Text("Auto follows your iPhone, including the switch at sunset.")
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Tone.text3)
+                    .padding(.horizontal, 5)
+                    .padding(.top, 9)
+
+                Text("Children").eyebrow().padding(.top, 26).padding(.bottom, 9)
+                VStack(spacing: 0) {
+                    ForEach(Array(etat.profiles.enumerated()), id: \.element.id) { i, p in
+                        NavigationLink { ProfilesScreen() } label: {
+                            SettingRow(title: p.firstName, value: childSummary(p))
+                        }
+                        .buttonStyle(.plain)
+                        Divider().overlay(Tone.hairline).padding(.leading, 15)
+                    }
+                    NavigationLink { ProfilesScreen() } label: {
+                        SettingRow(title: "Add a child", value: "+", accent: true)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .card()
+
+                Text("Subscription").eyebrow().padding(.top, 26).padding(.bottom, 9)
+                Button { showPaywall = true } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(etat.subscribed ? "Active" : "Weeks ahead")
+                                .font(.system(size: 15))
+                                .foregroundStyle(Tone.text)
+                            Text("7 new recipes every week")
+                                .font(Type.small)
+                                .foregroundStyle(Tone.text2)
+                        }
+                        Spacer(minLength: 10)
+                        Text(etat.subscribed ? "Manage" : "Subscribe")
+                            .font(.system(size: 14.5, weight: .semibold))
+                            .foregroundStyle(Tone.brand)
+                    }
+                    .padding(15)
+                }
+                .buttonStyle(.plain)
+                .card()
+
+                Text("Content").eyebrow().padding(.top, 26).padding(.bottom, 9)
+                VStack(spacing: 0) {
+                    SettingRow(title: "Recipes available", value: "\(etat.recipes.count)")
+                    Divider().overlay(Tone.hairline).padding(.leading, 15)
+                    Button { Task { await etat.sync() } } label: {
+                        SettingRow(title: "Refresh", value: etat.lastSyncLabel, accent: true)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .card()
+
+                Text("Your children's profiles stay on this device and are never sent anywhere.")
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Tone.text3)
+                    .lineSpacing(2)
+                    .padding(.horizontal, 5)
+                    .padding(.top, 20)
+
+                Text(Settings.medicalDisclaimer)
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Tone.text3)
+                    .lineSpacing(2)
+                    .padding(.horizontal, 5)
+                    .padding(.top, 14)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 130)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showPaywall) { PaywallScreen() }
+    }
+
+    private func childSummary(_ p: ChildProfile) -> String {
+        let n = p.allergens.count
+        if n == 0 { return Format.age(p.ageMonths) }
+        return "\(Format.age(p.ageMonths)) · " +
+            String(format: String(localized: "%lld allergens"), n)
     }
 }
 
@@ -535,5 +580,74 @@ struct ProductButton: View {
         .buttonStyle(.bordered)
         .tint(Tone.brand)
         .disabled(isWorking)
+    }
+}
+
+// MARK: - Settings pieces
+
+/// Three states in one control, the shape from the comp. A Picker with
+/// .segmented brings the system's own chrome, which does not match.
+struct ThemeSegments: View {
+    @Binding var theme: AppTheme
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(AppTheme.allCases, id: \.self) { t in
+                let on = theme == t
+                Button {
+                    withAnimation(.smooth(duration: 0.22)) { theme = t }
+                } label: {
+                    Text(t.label)
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .foregroundStyle(on ? Tone.canvas : Tone.text2)
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 7)
+                        .background {
+                            if on {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Tone.text)
+                                    .shadow(color: .black.opacity(0.3), radius: 5, y: 2)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? [.isSelected] : [])
+            }
+        }
+        .padding(4)
+        .background(Tone.text.opacity(0.05),
+                    in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+    }
+}
+
+struct SettingRow: View {
+    let title: LocalizedStringKey
+    let value: String
+    var accent = false
+
+    init(title: String, value: String, accent: Bool = false) {
+        self.title = LocalizedStringKey(title)
+        self.value = value
+        self.accent = accent
+    }
+
+    init(title: LocalizedStringKey, value: String, accent: Bool = false) {
+        self.title = title
+        self.value = value
+        self.accent = accent
+    }
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 15))
+                .foregroundStyle(accent ? Tone.brand : Tone.text)
+            Spacer(minLength: 10)
+            Text(value)
+                .font(.system(size: 14))
+                .foregroundStyle(Tone.text2)
+        }
+        .padding(15)
+        .contentShape(Rectangle())
     }
 }

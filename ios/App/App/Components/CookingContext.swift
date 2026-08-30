@@ -1,247 +1,364 @@
 //  CookingContext.swift
 //
-//  WHO YOU ARE COOKING FOR, ON EVERY SCREEN.
-//
-//  This was a tab. A tab you had to visit to learn which child the app was
-//  filtering for — and in a family with two children on different allergen
-//  profiles, a screen that does not say who it is filtering for is a screen
-//  that can lie. Cooking for the wrong child is the worst failure this app can
-//  have, and it was one forgotten tap away.
-//
-//  So it becomes a header: name, age, what is avoided, always in view. Tapping
-//  it opens the picker as a sheet, and you come back exactly where you were.
+//  The floating tab bar, the child picker, and the counted segments — the
+//  three pieces that appear on more than one screen.
 
 import SwiftUI
 
-// MARK: - The header
+// MARK: - Tab bar
 
-/// Sits above the content on every screen that depends on a profile.
-struct CookingContextHeader: View {
-    @Environment(AppState.self) private var etat
-    @State private var showPicker = false
+/// A GLASS CAPSULE, INSET 21pt, WITH A SEARCH ISLAND.
+///
+/// iOS 26 detached the tab bar from the screen edges: a pill floating over the
+/// content, which scrolls beneath it and fades out at the bottom. Search sits
+/// in its own circle to the right — Apple moved it to the bottom precisely
+/// because the top of a phone is hard to reach one-handed, and this app is
+/// used one-handed by definition.
+struct FloatingTabBar: View {
+    @Binding var selection: Int
+    @State private var searching = false
+    @Namespace private var glassSpace
+
+    private static let items: [(icon: String, label: LocalizedStringKey)] = [
+        ("fork.knife", "Recipes"),
+        ("barcode.viewfinder", "Scan"),
+        ("gearshape", "Settings")
+    ]
 
     var body: some View {
-        Button {
-            showPicker = true
-        } label: {
-            HStack(spacing: 10) {
-                ProfileAvatar(profile: etat.activeProfile, familyMode: etat.familyMode)
-
-                VStack(alignment: .leading, spacing: 1) {
-                    /* Built as a String first. A ternary inside Text() leaves
-                     * the compiler choosing between Text(String) and
-                     * Text(LocalizedStringKey), and that ambiguity produces an
-                     * error that names the expression rather than the line. */
-                    Text(titleLine)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color.primary)
-
-                    Text(contextLine)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+        HStack(spacing: 10) {
+            HStack(spacing: 0) {
+                ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
+                    TabItem(icon: item.icon, label: item.label,
+                            selected: selection == i) {
+                        withAnimation(.smooth(duration: 0.22)) { selection = i }
+                    }
                 }
-
-                Spacer(minLength: 6)
-
-                Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.tertiary)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(titleLine + ". " + contextLine))
-        .sheet(isPresented: $showPicker) { ChildPickerSheet() }
-    }
+            .padding(.horizontal, 5)
+            .padding(.vertical, 8)
+            .glass(Capsule())
 
-    private var titleLine: String {
-        if etat.familyMode { return String(localized: "Cooking for everyone") }
-        return String(format: String(localized: "Cooking for %@"), etat.activeProfile.firstName)
-    }
-
-    private var contextLine: String {
-        let profile = etat.activeProfile
-        let noms = etat.allergenNames(profile.allergens)
-        if noms.isEmpty {
-            return String(format: String(localized: "%@ — no allergen avoided"),
-                          Format.age(profile.ageMonths))
+            Button { searching = true } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 19, weight: .medium))
+                    .foregroundStyle(Tone.text2)
+                    .frame(width: 54, height: 54)
+                    .glass(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Search")
         }
-        return String(format: String(localized: "%@ — no %@"),
-                      Format.age(profile.ageMonths), Format.liste(noms))
+        .padding(.horizontal, Layout.tabInset)
+        .padding(.bottom, Layout.tabBottom)
+        .sheet(isPresented: $searching) { SearchSheet() }
     }
 }
 
-/// The initial, or a pair of figures in family mode.
+private struct TabItem: View {
+    let icon: String
+    let label: LocalizedStringKey
+    let selected: Bool
+    let tap: () -> Void
+
+    var body: some View {
+        Button(action: tap) {
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 21, weight: selected ? .semibold : .regular))
+                Text(label)
+                    .font(.system(size: 10.5, weight: selected ? .bold : .medium))
+            }
+            .foregroundStyle(selected ? Tone.brand : Tone.text2)
+            .frame(maxWidth: .infinity)
+            .frame(height: Layout.tap)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+}
+
+// MARK: - Counted segments
+
+/// "15" is information. "Ready" is not. The counts recompute whenever the
+/// profile changes, which is what makes the engine's promise visible.
+struct CountedSegments: View {
+    @Binding var selection: RecipeFilter
+    let tally: AppState.ProfileTally
+    let savedCount: Int
+
+    var body: some View {
+        HStack(spacing: 7) {
+            seg(.all, tally.total, "All")
+            seg(.ready, tally.asIs, "Ready")
+            seg(.swaps, tally.adapted, "Swaps")
+            if savedCount > 0 { seg(.saved, savedCount, "Saved") }
+        }
+        .padding(.horizontal, Layout.gutter)
+    }
+
+    private func seg(_ f: RecipeFilter, _ n: Int, _ label: LocalizedStringKey) -> some View {
+        let on = selection == f
+        return Button {
+            withAnimation(.smooth(duration: 0.2)) { selection = f }
+        } label: {
+            VStack(spacing: 1) {
+                Text("\(n)")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(on ? Tone.canvas : Tone.text)
+                    .contentTransition(.numericText())
+                Text(label)
+                    .font(.system(size: 10.5, weight: .semibold))
+                    .foregroundStyle(on ? Tone.canvas.opacity(0.7) : Tone.text2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 9)
+            .background {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(on ? AnyShapeStyle(Tone.text) : AnyShapeStyle(Tone.text.opacity(0.05)))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(on ? .clear : Tone.hairline, lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(on ? [.isSelected] : [])
+    }
+}
+
+enum RecipeFilter: String, CaseIterable {
+    case all, ready, swaps, saved
+}
+
+// MARK: - Context header
+
+/// Who you are cooking for, over the hero photo. In a family with two children
+/// on different profiles, cooking for the wrong one is the worst failure this
+/// app can have — so it is never more than a glance away.
+struct CookingContextHeader: View {
+    @Environment(AppState.self) private var etat
+    @State private var picking = false
+    var onDark: Bool = true
+
+    var body: some View {
+        Button { picking = true } label: {
+            HStack(spacing: 9) {
+                ProfileAvatar(profile: etat.activeProfile,
+                              familyMode: etat.familyMode, size: 30)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(title)
+                        .font(.system(size: 14.5, weight: .semibold))
+                        .foregroundStyle(onDark ? .white : Tone.text)
+                    Text(subtitle)
+                        .font(.system(size: 11))
+                        .foregroundStyle(onDark ? .white.opacity(0.7) : Tone.text2)
+                        .lineLimit(1)
+                }
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(onDark ? .white.opacity(0.6) : Tone.text3)
+            }
+            .padding(.horizontal, 13)
+            .padding(.vertical, 8)
+            .glass(Capsule())
+        }
+        .buttonStyle(.plain)
+        .sheet(isPresented: $picking) { ChildPickerSheet() }
+        .accessibilityLabel("\(title). \(subtitle). Tap to switch.")
+    }
+
+    private var title: String {
+        etat.familyMode
+            ? String(localized: "Everyone")
+            : etat.activeProfile.firstName
+    }
+
+    private var subtitle: String {
+        let p = etat.activeProfile
+        let noms = etat.allergenNames(p.allergens)
+        if noms.isEmpty {
+            return String(format: String(localized: "%@ — no allergen avoided"),
+                          Format.age(p.ageMonths))
+        }
+        return String(format: String(localized: "%@ — no %@"),
+                      Format.age(p.ageMonths), Format.liste(noms))
+    }
+}
+
 struct ProfileAvatar: View {
     let profile: ChildProfile
-    var familyMode: Bool = false
-    var size: CGFloat = 32
+    var familyMode = false
+    var size: CGFloat = 44
 
     var body: some View {
         ZStack {
-            Circle().fill(familyMode ? Tone.swap : Tone.brand)
+            Circle().fill(gradient)
+            Circle().strokeBorder(.white.opacity(0.35), lineWidth: 0.75)
             if familyMode {
                 Image(systemName: "person.2.fill")
-                    .font(.system(size: size * 0.4, weight: .semibold))
+                    .font(.system(size: size * 0.38, weight: .semibold))
                     .foregroundStyle(.white)
             } else {
-                Text(initiale)
-                    .font(.system(size: size * 0.42, weight: .bold))
+                Text(String(profile.firstName.prefix(1)).uppercased())
+                    .font(.system(size: size * 0.40, weight: .bold))
                     .foregroundStyle(.white)
             }
         }
         .frame(width: size, height: size)
+        .shadow(color: shadowTone.opacity(0.4), radius: size * 0.14, y: size * 0.09)
     }
 
-    private var initiale: String {
-        String(profile.firstName.prefix(1)).uppercased()
+    private var gradient: LinearGradient {
+        LinearGradient(colors: familyMode
+                       ? [Color(red: 0.50, green: 0.64, blue: 0.88),
+                          Color(red: 0.23, green: 0.37, blue: 0.66)]
+                       : [Tone.brand, Tone.brandDeep],
+                       startPoint: .topLeading, endPoint: .bottomTrailing)
     }
+    private var shadowTone: Color { familyMode ? .blue : Tone.brandDeep }
 }
 
-// MARK: - The picker
+// MARK: - Child picker
 
-/// Opens from the header. Every child carries their own numbers, because that
-/// is what a parent wants to know looking at a profile: how many recipes it
-/// leaves them.
+/// A sheet over the dimmed screen, not a tab. Every child carries their own
+/// numbers, because that is what a parent wants to know looking at a profile.
 struct ChildPickerSheet: View {
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    ForEach(etat.profiles) { p in
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Who are you cooking for?")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Tone.text)
+                    .padding(.top, 4)
+
+                VStack(spacing: 0) {
+                    ForEach(Array(etat.profiles.enumerated()), id: \.element.id) { i, p in
                         Button {
                             etat.select(p.id)
                             dismiss()
                         } label: {
-                            ChildPickerRow(profile: p,
-                                           noms: etat.allergenNames(p.allergens),
-                                           tally: etat.tally(for: p),
-                                           isOn: !etat.familyMode && p.id == etat.activeProfileID)
+                            PickerRow(profile: p,
+                                      noms: etat.allergenNames(p.allergens),
+                                      tally: etat.tally(for: p),
+                                      isOn: !etat.familyMode && p.id == etat.activeProfileID)
                         }
                         .buttonStyle(.plain)
+                        if i < etat.profiles.count - 1 {
+                            Divider().overlay(Tone.hairline).padding(.leading, 74)
+                        }
                     }
                 }
+                .card()
+                .padding(.top, 18)
 
                 if etat.profiles.count > 1 {
-                    Section {
-                        Button {
-                            etat.toggleFamilyMode(true)
-                            dismiss()
-                        } label: {
-                            FamilyModeRow(tally: etat.tally(for: etat.familyProfile),
-                                          age: etat.familyProfile.ageMonths,
-                                          isOn: etat.familyMode)
-                        }
-                        .buttonStyle(.plain)
-                    } header: {
-                        Text("All at once")
+                    Text("All at once").eyebrow().padding(.top, 24).padding(.bottom, 9)
+
+                    Button {
+                        etat.toggleFamilyMode(true)
+                        dismiss()
+                    } label: {
+                        FamilyRow(tally: etat.tally(for: etat.familyProfile),
+                                  age: etat.familyProfile.ageMonths,
+                                  isOn: etat.familyMode)
                     }
+                    .buttonStyle(.plain)
+                    .card()
                 }
             }
-            .navigationTitle("Who are you cooking for?")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
-                }
-            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 40)
         }
+        .background(Tone.canvas)
         .presentationDetents([.medium, .large])
+        .presentationCornerRadius(Layout.sheetRadius)
+        .presentationDragIndicator(.visible)
     }
 }
 
-private struct ChildPickerRow: View {
+private struct PickerRow: View {
     let profile: ChildProfile
     let noms: [String]
     let tally: AppState.ProfileTally
     let isOn: Bool
 
-    private var sousTitre: String {
-        if noms.isEmpty {
-            return String(format: String(localized: "%@ — no allergen avoided"),
-                          Format.age(profile.ageMonths))
-        }
-        return String(format: String(localized: "%@ — no %@"),
-                      Format.age(profile.ageMonths), Format.liste(noms))
-    }
-
     var body: some View {
-        HStack(spacing: 12) {
-            ProfileAvatar(profile: profile, size: 38)
-
+        HStack(spacing: 13) {
+            ProfileAvatar(profile: profile)
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.firstName)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-
-                Text(sousTitre)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Tone.text)
+                Text(subtitle)
+                    .font(Type.small)
+                    .foregroundStyle(Tone.text2)
                     .lineLimit(2)
-
                 TallyLine(tally: tally)
             }
-
-            Spacer(minLength: 4)
-
+            Spacer(minLength: 6)
             if isOn {
                 Image(systemName: "checkmark")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Tone.brand)
             }
         }
-        .padding(.vertical, 4)
+        .padding(15)
+        .background(isOn ? Tone.brand.opacity(0.07) : .clear)
         .contentShape(Rectangle())
+    }
+
+    private var subtitle: String {
+        noms.isEmpty
+            ? String(format: String(localized: "%@ — no allergen avoided"), Format.age(profile.ageMonths))
+            : String(format: String(localized: "%@ — no %@"), Format.age(profile.ageMonths), Format.liste(noms))
     }
 }
 
-private struct FamilyModeRow: View {
+private struct FamilyRow: View {
     let tally: AppState.ProfileTally
     let age: Int
     let isOn: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 13) {
             ZStack {
-                Circle().fill(Tone.swap)
+                Circle().fill(LinearGradient(
+                    colors: [Color(red: 0.50, green: 0.64, blue: 0.88),
+                             Color(red: 0.23, green: 0.37, blue: 0.66)],
+                    startPoint: .topLeading, endPoint: .bottomTrailing))
                 Image(systemName: "person.2.fill")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
             }
-            .frame(width: 38, height: 38)
+            .frame(width: 44, height: 44)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Family mode")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-
-                /* Named and explained. This is the hard case in a real family,
-                 * and it has to be strict by construction: the youngest age and
-                 * the union of every allergen. */
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Tone.text)
+                /* Named and explained: the youngest age and the union of every
+                 * allergen. The hard case in a real family, strict by
+                 * construction. */
                 Text(String(format: String(localized: "The youngest age (%@) and everything any of them avoids"),
                             Format.age(age)))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(Type.small)
+                    .foregroundStyle(Tone.text2)
                     .lineLimit(2)
-
                 TallyLine(tally: tally)
             }
-
-            Spacer(minLength: 4)
-
+            Spacer(minLength: 6)
             if isOn {
                 Image(systemName: "checkmark")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Tone.brand)
             }
         }
-        .padding(.vertical, 4)
+        .padding(15)
         .contentShape(Rectangle())
     }
 }
@@ -252,144 +369,30 @@ struct TallyLine: View {
 
     var body: some View {
         if tally.total > 0 {
-            HStack(spacing: 4) {
-                Text("\(tally.asIs)").font(.caption2.weight(.bold)).foregroundStyle(Tone.yes)
-                Text("ready").font(.caption2).foregroundStyle(.secondary)
-                Text("·").font(.caption2).foregroundStyle(.tertiary)
-                Text("\(tally.adapted)").font(.caption2.weight(.bold)).foregroundStyle(Tone.swap)
-                Text("with swaps").font(.caption2).foregroundStyle(.secondary)
-                if tally.blocked > 0 {
-                    Text("·").font(.caption2).foregroundStyle(.tertiary)
-                    Text("\(tally.blocked)").font(.caption2.weight(.bold)).foregroundStyle(Tone.no)
-                    Text("blocked").font(.caption2).foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Text("\(tally.asIs)").font(.system(size: 11.5, weight: .bold))
+                    Text("ready").font(.system(size: 11.5))
                 }
+                .foregroundStyle(Tone.yes)
+
+                Text("·").font(.system(size: 11.5)).foregroundStyle(Tone.text3)
+
+                HStack(spacing: 4) {
+                    Text("\(tally.adapted)").font(.system(size: 11.5, weight: .bold))
+                    Text("swaps").font(.system(size: 11.5))
+                }
+                .foregroundStyle(Tone.swap)
             }
-            .padding(.top, 2)
+            .padding(.top, 3)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(tally.asIs) ready, \(tally.adapted) with swaps, \(tally.blocked) blocked")
+            .accessibilityLabel("\(tally.asIs) ready, \(tally.adapted) with swaps")
         }
     }
 }
 
-// MARK: - Counted segments
+// MARK: - Search
 
-/// "15 ready" is information. "Ready" is not.
-///
-/// The counts recompute whenever the profile changes, which is what makes the
-/// engine's promise visible: a parent who just entered three allergens expects
-/// a shortened list and finds out nothing was lost.
-struct CountedSegments: View {
-    @Binding var selection: RecipeFilter
-    let tally: AppState.ProfileTally
-    let savedCount: Int
-
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                segment(.all, count: tally.total, label: "All")
-                segment(.ready, count: tally.asIs, label: "Ready")
-                segment(.swaps, count: tally.adapted, label: "Swaps")
-                if savedCount > 0 {
-                    segment(.saved, count: savedCount, label: "Saved")
-                }
-            }
-            .padding(.horizontal, 16)
-        }
-    }
-
-    private func segment(_ f: RecipeFilter, count: Int, label: LocalizedStringKey) -> some View {
-        let on = selection == f
-        return Button {
-            selection = f
-        } label: {
-            VStack(spacing: 1) {
-                Text("\(count)")
-                    .font(.subheadline.weight(.bold))
-                Text(label)
-                    .font(.caption2.weight(.medium))
-            }
-            .frame(minWidth: 62)
-            .padding(.vertical, 7)
-            /* Both branches of each ternary are the same concrete type.
-             * `on ? Color(.systemBackground) : .secondary` asks the compiler to
-             * unify a Color with a HierarchicalShapeStyle, which it will not
-             * do — and the error it emits points at the whole expression
-             * rather than the line. */
-            .background(on ? Color.primary : Color(.secondarySystemBackground),
-                        in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .foregroundStyle(on ? Color(.systemBackground) : Color.secondary)
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(on ? [.isSelected] : [])
-    }
-}
-
-/// The filters a parent actually uses. Saved and top rated stop being tabs and
-/// become two more ways to narrow one list.
-enum RecipeFilter: String, CaseIterable, Sendable {
-    case all, ready, swaps, saved
-}
-
-// MARK: - Floating tab bar
-
-/// The iOS 26 tab bar: a glass capsule, inset from the edges, with content
-/// scrolling underneath. Two to five destinations; three here.
-///
-/// The search island to the right is part of the same pattern — Apple moved
-/// search to the bottom precisely because the top of a phone is hard to reach
-/// one-handed, and this app is used one-handed by definition.
-struct FloatingTabBar: View {
-    @Binding var selection: Int
-    @State private var searching = false
-
-    private static let items: [(icon: String, label: LocalizedStringKey)] = [
-        ("fork.knife", "Cook"),
-        ("barcode.viewfinder", "Scan"),
-        ("gearshape", "Settings")
-    ]
-
-    var body: some View {
-        HStack(spacing: 9) {
-            HStack(spacing: 0) {
-                ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
-                    Button {
-                        selection = i
-                    } label: {
-                        VStack(spacing: 2) {
-                            Image(systemName: item.icon)
-                                .font(.system(size: 18, weight: selection == i ? .semibold : .regular))
-                            Text(item.label)
-                                .font(Type.label.weight(selection == i ? .semibold : .medium))
-                        }
-                        .foregroundStyle(selection == i ? Tone.brand : Tone.textTertiary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: Layout.tapTarget)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selection == i ? [.isSelected] : [])
-                }
-            }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 5)
-            .glassCapsule()
-
-            Button {
-                searching = true
-            } label: {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundStyle(Tone.textTertiary)
-                    .glassCircle()
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Search")
-        }
-        .sheet(isPresented: $searching) { SearchSheet() }
-    }
-}
-
-/// Search opens as its own screen, per the platform pattern.
 struct SearchSheet: View {
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
@@ -409,14 +412,15 @@ struct SearchSheet: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(hits, id: \.recipe.id) { p in
-                    RecipeRow(recipe: p.recipe, result: p.result)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Tone.canvas)
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(hits, id: \.recipe.id) { p in
+                        RecipeRow(recipe: p.recipe, result: p.result)
+                        Divider().overlay(Tone.hairline)
+                            .padding(.leading, Layout.gutter + Layout.thumb + 15)
+                    }
                 }
             }
-            .listStyle(.plain)
             .background(Tone.canvas)
             .searchable(text: $query, prompt: Text("A recipe or an ingredient"))
             .navigationTitle("Search")

@@ -1,9 +1,12 @@
 {
-  "build": 53,
+  "build": 54,
   "date": "2026-08-29",
   "carries": [
-    "the whole redesign, 7 screens",
-    "RecipeDetailScreen firstName argument",
-    "checker: kept the label rule, dropped the unreliable half"
+    "every screen rebuilt to the comp",
+    "real Liquid Glass: specular, shadow, illumination",
+    "native glassEffect on iOS 26",
+    "floating capsule + search island",
+    "photo 420/430 with scrim",
+    "settings and picker redesigned"
   ]
 }

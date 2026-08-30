@@ -111,8 +111,7 @@ private struct LiveDemoStep: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Tone.brand)
+                .buttonStyle(PrimaryButton())
 
                 Text("Nothing leaves this device.")
                     .font(Type.caption)
@@ -180,9 +179,8 @@ private struct DemoCard: View {
             }
             .padding(14)
         }
-        .background(Tone.surface, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 19, style: .continuous)
-            .strokeBorder(Tone.hairline, lineWidth: 1))
+        .card(24)
+        .shadow(color: .black.opacity(0.35), radius: 20, y: 10)
         .animation(.smooth(duration: 0.3), value: result.swapCount)
     }
 }
@@ -232,10 +230,16 @@ private struct AllergenTile: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 66)
-            .background(isOn ? Tone.brand : Tone.surface,
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(isOn ? Color.clear : Tone.hairline, lineWidth: 1))
+            .background {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(isOn ? AnyShapeStyle(Tone.brandGradient)
+                               : AnyShapeStyle(Tone.text.opacity(0.05)))
+                    .shadow(color: isOn ? Tone.brandDeep.opacity(0.4) : .clear, radius: 11, y: 6)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .strokeBorder(isOn ? .white.opacity(0.3) : Tone.hairline, lineWidth: 1)
+            }
             .foregroundStyle(isOn ? Color.white : Tone.textSecondary)
         }
         .buttonStyle(.plain)
@@ -266,9 +270,15 @@ private struct CountLine: View {
             Spacer(minLength: 0)
         }
         .padding(15)
-        .background(Tone.surface, in: RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
-            .strokeBorder(Tone.hairline, lineWidth: 1))
+        .background {
+            RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
+                .fill(LinearGradient(colors: [Tone.yes.opacity(0.14), Tone.yes.opacity(0.05)],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+                .overlay {
+                    RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
+                        .strokeBorder(Tone.yes.opacity(0.22), lineWidth: 1)
+                }
+        }
         .animation(.smooth(duration: 0.3), value: tally.total)
     }
 }
@@ -345,8 +355,7 @@ private struct WhoStep: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Tone.brand)
+                .buttonStyle(PrimaryButton())
 
                 Text("Not medical advice. Swaps come from versioned tables a professional should review.")
                     .font(Type.caption)
@@ -464,8 +473,7 @@ private struct OfferStep: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Tone.brand)
+                .buttonStyle(PrimaryButton())
 
                 /* A visible way out RAISES conversion: it removes the sense of
                  * a trap, and it avoids the subscriber who cancels on day 8

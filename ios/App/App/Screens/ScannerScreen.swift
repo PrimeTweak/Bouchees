@@ -221,12 +221,37 @@ struct ScannerScreen: View {
 }
 
 struct ViewfinderFrame: View {
+    /// Four corner brackets rather than a full rectangle. It reads as a target
+    /// without boxing in the product, and it survives any camera background.
     var body: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .strokeBorder(.white.opacity(0.9), lineWidth: 3)
-            .frame(width: 260, height: 165)
-            .shadow(radius: 12)
-            .accessibilityHidden(true)
+        GeometryReader { geo in
+            let w = geo.size.width * 0.72
+            let h = w / 1.4
+            ZStack {
+                ForEach(0..<4, id: \.self) { i in
+                    Corner()
+                        .stroke(.white.opacity(0.9), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .frame(width: 34, height: 34)
+                        .rotationEffect(.degrees(Double(i) * 90))
+                        .offset(x: (i == 0 || i == 3) ? -w/2 + 17 : w/2 - 17,
+                                y: (i == 0 || i == 1) ? -h/2 + 17 : h/2 - 17)
+                }
+            }
+            .frame(width: w, height: h)
+            .position(x: geo.size.width / 2, y: geo.size.height * 0.38)
+        }
+    }
+}
+
+private struct Corner: Shape {
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX, y: r.minY + 10))
+        p.addQuadCurve(to: CGPoint(x: r.minX + 10, y: r.minY),
+                       control: CGPoint(x: r.minX, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY))
+        return p
     }
 }
 
@@ -263,7 +288,7 @@ struct ProductSheet: View {
                     .foregroundStyle(.white)
             } else if let v = verdict, let p = product {
                 Text(headline(v))
-                    .font(.system(size: 30, weight: .bold))
+                    .font(.system(size: 32, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
@@ -320,11 +345,21 @@ struct ProductSheet: View {
             .buttonStyle(.plain)
             .padding(.top, 9)
         }
-        .padding(21)
+        .padding(.horizontal, 22)
+        .padding(.top, 24)
+        .padding(.bottom, 22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(background, in: RoundedRectangle(cornerRadius: Layout.sheetRadius, style: .continuous))
-        .shadow(color: .black.opacity(0.34), radius: 22, y: 8)
-        .padding(14)
+        .background {
+            RoundedRectangle(cornerRadius: Layout.sheetRadius, style: .continuous)
+                .fill(LinearGradient(colors: [background, background.opacity(0.82)],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+                .overlay {
+                    RoundedRectangle(cornerRadius: Layout.sheetRadius, style: .continuous)
+                        .strokeBorder(.white.opacity(0.28), lineWidth: 0.75)
+                }
+        }
+        .shadow(color: .black.opacity(0.6), radius: 30, y: 14)
+        .padding(.horizontal, 14)
     }
 
     /// The label arrives as one string. Split on the usual separators so the

@@ -91,6 +91,15 @@ final class AppState {
     /// numbers alongside each child's.
     var familyProfile: ChildProfile { ChildProfile.famille(profiles) }
 
+    /// When the corpus last came down, in words. A date is precise and
+    /// unreadable; "Today" is what a parent wants to know.
+    var lastSyncLabel: String {
+        guard let d = lastSync else { return String(localized: "Never") }
+        if Calendar.current.isDateInToday(d) { return String(localized: "Today") }
+        if Calendar.current.isDateInYesterday(d) { return String(localized: "Yesterday") }
+        return d.formatted(.dateTime.day().month(.abbreviated))
+    }
+
     var needsOnboarding: Bool { profiles.isEmpty }
 
     // MARK: - Startup
