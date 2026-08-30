@@ -71,7 +71,7 @@ enum Tone {
 
     /* CONTRAST RATIOS, MEASURED ON THE CANVAS.
      *
-     * The amber on François's screenshot was 1.9:1 — the DARK value used in
+     * The amber that shipped was 1.9:1 — the DARK value used in
      * light mode by mistake. WCAG asks 4.5:1 for body text. Every pair below
      * clears it, and a test recomputes them. */
     static let yes = dyn(light: 0x1E8347, dark: 0x5FD08A)      // 4.8:1 / 8.9:1

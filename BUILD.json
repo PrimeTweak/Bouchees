@@ -1,13 +1,10 @@
 {
-  "build": 66,
+  "build": 67,
   "date": "2026-08-29",
   "carries": [
-    "shopping list works: the bridge threw on every call (Moteur/donnees vs Engine/required)",
-    "back and favourite are an overlay on the container, outside the scroll view",
-    "contrast measured \u2014 two colours the test rejected",
-    "subscription card moved under the week",
-    "three text overlaps fixed",
-    "scanner tags wrap",
-    "image prompt names imperfections"
+    "image prompt back under 500 \u2014 the test I broke was right",
+    "112 test names now in English",
+    "French gone from the engine and every Swift file",
+    "checker rule: French anywhere in the code, reading raw not stripped source"
   ]
 }

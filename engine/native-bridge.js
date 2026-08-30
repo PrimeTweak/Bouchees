@@ -19,7 +19,7 @@ var PONT = (function () {
   var data = null;   /* { catalogue, substitutions, base } */
 
   function required() {
-    if (!data) throw new Error("pont : données non chargées");
+    if (!data) throw new Error("bridge: data not loaded");
     return data;
   }
 

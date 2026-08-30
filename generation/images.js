@@ -36,25 +36,32 @@ const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
  * taken, a utensil left where someone put it down. Those are now demanded
  * rather than implied. */
 const STYLE = [
-  "candid home food photography, shot handheld on a phone",
-  "soft natural window light, one side brighter than the other",
-  "worn wooden table, everyday ceramic with a chip or a stain",
-  "shallow depth of field, 50mm",
-  "sharp focus on the food"
+  "candid home photo, handheld",
+  "soft window light from one side",
+  "worn wooden table, everyday ceramic",
+  "shallow depth of field, 50mm"
 ].join(", ");
 
 /* Two of these are drawn per recipe. More than two and the picture starts to
  * look staged in a different way — deliberately messy, which reads as fake
  * just as fast. */
+/* ONE mark per recipe, and short.
+ *
+ * Two of these pushed the prompt to 569 characters and broke the test that
+ * keeps it under 500 — a test I wrote myself, for a reason that still holds:
+ * the model weighs the whole string, so every extra adjective competes with
+ * the two words that say what the dish is.
+ *
+ * One concrete imperfection does the work. Eight adjectives about mess do
+ * not. */
 const IMPERFECTIONS = [
-  "a few crumbs on the counter beside the dish",
-  "one portion already served, the rest still in the pan",
-  "uneven browning, one edge darker than the middle",
-  "a spoon resting where it was set down",
-  "a slightly bent edge on the parchment",
-  "the dish not centred in the frame",
-  "a light smear on the rim of the plate",
-  "one piece broken open so the inside shows"
+  "crumbs on the counter",
+  "one portion already served",
+  "uneven browning",
+  "a spoon left beside it",
+  "the dish off-centre",
+  "a smear on the plate rim",
+  "one piece broken open"
 ];
 
 const CADRAGES = [
@@ -231,10 +238,7 @@ function promptPour(recette, donnees) {
   /* Two imperfections per recipe, keyed to the same seed as the framing so
    * the corpus stays reproducible — a parent reopening a recipe sees the
    * same picture. */
-  const marques = [
-    IMPERFECTIONS[g % IMPERFECTIONS.length],
-    IMPERFECTIONS[(g + 3) % IMPERFECTIONS.length]
-  ].filter(function (v, i, a) { return a.indexOf(v) === i; }).join(", ");
+  const marques = IMPERFECTIONS[g % IMPERFECTIONS.length];
 
   /* The exclusions are stated POSITIVELY, in the prompt itself.
    *

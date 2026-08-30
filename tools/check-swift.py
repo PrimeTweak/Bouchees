@@ -521,6 +521,32 @@ def check():
                         f"vibrant tone")
                     break
 
+    # 7m. French anywhere in the code.
+    #     Everything that goes INTO the code is written in English. This rule
+    #     is what keeps it that way, because French creeps back one comment
+    #     at a time.
+    #
+    #     It reads raw, not code: the parser strips comments and strings
+    #     before the other rules run, and comments are exactly where French
+    #     survives.
+    ACCENTS = "àâäçèéêëîïôùûœ"
+    # The product name, words English borrowed, and French quoted AS DATA —
+    # a label example is the thing being described, not prose.
+    PERMIS = ("Bouchées", "Bouchée", "purée", "sauté", "café", "crêpe",
+              "Arôme", "François")
+    for path_, (raw, _) in sources.items():
+        filename = os.path.basename(path_)
+        for i, l in enumerate(raw.split("\n"), 1):
+            if not any(c in l for c in ACCENTS):
+                continue
+            reste = l
+            for mot in PERMIS:
+                reste = reste.replace(mot, "")
+            if any(c in reste for c in ACCENTS):
+                problems.append(f"{filename}:{i}: French in the code — "
+                                f"everything inside the code is in English")
+
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
