@@ -852,6 +852,49 @@ def check():
                             f"if that button gets rebuilt the flag is lost and the "
                             f"first tap does nothing; move it to a stable ancestor")
 
+    # 7z. a property read off a model that does not declare it.
+    #     The checker already catches `Foo(bar:)` when Foo has no `bar`. It
+    #     did NOT catch `product.image` and `product.traceTags` — reads, not
+    #     calls — so four invented members reached the compiler.
+    #
+    #     Only for models whose stored properties are all visible in one
+    #     struct: guessing at a class with computed members would be noise.
+    modeles = {}
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"\nstruct (\w+): [^\n]*(?:Codable|Sendable)[^\n]*\{"
+                             r"((?:\n    (?:let|var) [^\n]*)+)", code):
+            champs = set(re.findall(r"(?:let|var) (\w+)", m.group(2)))
+            modeles[m.group(1)] = champs
+
+    # Computed properties live in extensions and in the rest of the body, so
+    # the stored-property list alone is not the type's surface. Everything
+    # declared anywhere for that type counts.
+    for path_, (_, code) in sources.items():
+        for nom in list(modeles):
+            for m in re.finditer(r"extension " + nom + r"\b[^\n]*\{"
+                                 r"((?:.|\n)*?)\n\}", code):
+                modeles[nom] |= set(re.findall(r"(?:let|var|func) (\w+)", m.group(1)))
+            for m in re.finditer(r"\nstruct " + nom + r":[^\n]*\{((?:.|\n)*?)\n\}", code):
+                modeles[nom] |= set(re.findall(r"(?:let|var|func) (\w+)", m.group(1)))
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for nom, champs in modeles.items():
+            # find locals typed as this model, then check what is read off them
+            for var in set(re.findall(r"(?:let|var) (\w+): " + nom + r"\??\b", code)):
+                for m in re.finditer(r"\b" + var + r"\??\.(\w+)", code):
+                    membre = m.group(1)
+                    if membre in champs or membre in ("self",):
+                        continue
+                    # methods and protocol members are not stored properties
+                    apres = code[m.end():m.end() + 1]
+                    if apres == "(":
+                        continue
+                    ligne = code[:m.start()].count("\n") + 1
+                    problems.append(f"{filename}:{ligne}: {var}.{membre} — {nom} "
+                                    f"declares no '{membre}'  (it has: "
+                                    f"{', '.join(sorted(champs))})")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

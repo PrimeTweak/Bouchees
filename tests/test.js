@@ -1059,11 +1059,11 @@ test("images: the prompt NAMES the dish, not only its ingredients", () => {
   assert(pm.positif.toLowerCase().startsWith("homemade banana oat muffins"),
     "le titre doit mener : " + pm.positif.slice(0, 60));
   assert(/muffins in paper liners/.test(pm.positif),
-    "la forme doit venir de servings (12 muffins)");
-  assert.equal(pm.plat, m.name, "le nom du plat must be transmis at la vision");
+    "the shape comes from servings");
+  assert.equal(pm.plat, m.name, "the dish name is passed to the vision check");
 
   const pain = Images.promptPour(parId["banana-bread"], donnees);
-  assert(/a loaf on a board/.test(pain.positif), "1 loaf → un pain, pas un bol");
+  assert(/a loaf on a board/.test(pain.positif), "1 loaf gives a loaf, not a bowl");
 
   const r = parId["squash-and-coconut-soup"];
   const p = Images.promptPour(r, donnees);

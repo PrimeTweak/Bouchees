@@ -35,11 +35,16 @@ const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
  * always the same short list: crumbs, an uneven edge, a portion already
  * taken, a utensil left where someone put it down. Those are now demanded
  * rather than implied. */
+/* No furniture named.
+ *
+ * "Worn wooden table" and "one corner of the table visible" are what pulled
+ * the camera back far enough to include a room. The surface is still there —
+ * it is simply not the subject, and naming it made it one. */
 const STYLE = [
   "candid home photo, handheld",
   "soft window light from one side",
-  "worn wooden table, everyday ceramic",
-  "shallow depth of field, 50mm"
+  "shallow depth of field, 85mm macro",
+  "background thrown out of focus"
 ].join(", ");
 
 /* Two of these are drawn per recipe. More than two and the picture starts to
@@ -54,21 +59,34 @@ const STYLE = [
  *
  * One concrete imperfection does the work. Eight adjectives about mess do
  * not. */
+/* One mark, and it usually shows the inside.
+ *
+ * "One piece broken open" earns its place twice: it is the imperfection that
+ * says a person was here, AND it is the only way to show the crumb — which is
+ * what tells a parent whether their own batch came out right. */
 const IMPERFECTIONS = [
-  "crumbs on the counter",
-  "one portion already served",
-  "uneven browning",
+  "one broken open so the crumb shows",
+  "one cut in half, the inside facing the camera",
+  "crumbs beside it",
+  "uneven browning across the top",
   "a spoon left beside it",
-  "the dish off-centre",
-  "a smear on the plate rim",
-  "one piece broken open"
+  "the dish slightly off-centre"
 ];
 
+/* CLOSE. THE DISH FILLS THE FRAME.
+ *
+ * Nothing here used to say how far away the camera stood, so the model chose
+ * whatever distance showed everything the prompt named — and the prompt named
+ * a table. The result was a beige room with twelve small muffins in it.
+ *
+ * A recipe photo has two jobs: make someone want to cook it, and show what it
+ * looks like when it worked. A room does neither. Every framing now states
+ * the distance, and every one is close. */
 const CADRAGES = [
-  "overhead flat lay, camera directly above",
-  "three-quarter angle from about 40 degrees, close to the food",
-  "eye-level side view across the table, plate in sharp focus",
-  "slightly overhead at 60 degrees, one corner of the table visible"
+  "close-up filling the frame, camera about 30 cm away, background falling out of focus",
+  "three-quarter angle from 40 degrees, very close, only the dish and a hand's width of surface",
+  "tight overhead crop, the dish filling most of the frame, edges cut off",
+  "low eye-level, close enough to see the crumb, background reduced to soft tone"
 ];
 
 const MOMENTS = [
@@ -85,6 +103,11 @@ const NEGATIF = [
   /* The catalogue tells: these are what made every render look bought
    * rather than baked. */
   "not a cookbook photo", "no food styling", "no perfect symmetry",
+  /* What produced a beige room instead of a muffin: the model showed
+   * everything the prompt named, and it had been given furniture. */
+  "no room in the background", "no wall", "no window frame", "no furniture",
+  "not shot from across a room", "no wide shot", "no empty space around the dish",
+  "no blown-out highlights",
   "no wiped plate rim", "no garnish placed for the photo",
   "no props arranged around the dish", "no even studio-flat lighting",
   "blurry", "grainy", "noisy", "distorted", "deformed", "low quality",
@@ -156,17 +179,26 @@ const PLATS_EN = {
  *
  * The servings field already carries the answer — "12 muffins", "10 patties",
  * "1 loaf" — so the shape and the vessel are derived from it. */
+/* HOW MANY, AND HOW CLOSE.
+ *
+ * "Cooling on a wire rack" gave a whole rack — twelve muffins, each too small
+ * to see. A count belongs in the presentation, because it is the presentation:
+ * three muffins photographed close say more about the recipe than twelve
+ * photographed from across a room.
+ *
+ * The number is small everywhere. Nobody needs to see the whole batch; they
+ * need to see one, properly. */
 const PRESENTATION = [
-  [/muffins?/i,             "muffins in paper liners, cooling on a wire rack"],
-  [/cr[eê]pes?|pancakes?/i, "a stack of pancakes on a plate"],
-  [/patties|galettes?/i,    "browned patties on a plate"],
-  [/nuggets?|croquettes?/i, "baked nuggets on a plate"],
-  [/meatballs?|boulettes?/i,"meatballs on a plate"],
-  [/bites?|boules?/i,       "small round bites on a plate"],
-  [/cookies?|biscuits?/i,   "cookies on a wire rack"],
-  [/bars?|barres?/i,        "cut bars on parchment"],
-  [/loaf|loaves|pains?/i,   "a loaf on a board, one slice cut"],
-  [/frittatas?/i,           "mini frittatas in a muffin tin"],
+  [/muffins?/i,             "three muffins in paper liners, close together"],
+  [/cr[e\u00ea]pes?|pancakes?/i, "a short stack of three pancakes"],
+  [/patties|galettes?/i,    "two browned patties"],
+  [/nuggets?|croquettes?/i, "four baked nuggets"],
+  [/meatballs?|boulettes?/i,"five meatballs"],
+  [/bites?|boules?/i,       "four small round bites"],
+  [/cookies?|biscuits?/i,   "three cookies overlapping"],
+  [/bars?|barres?/i,        "two cut bars, one stacked on the other"],
+  [/loaf|loaves|pains?/i,   "a loaf on a board, two slices cut and leaning"],
+  [/frittatas?/i,           "three mini frittatas"],
   [/glass|verres?/i,        "a tall glass on a table"],
   [/\bml\b|cups?/i,        "a small serving bowl with a spoon"]
 ];

@@ -174,13 +174,6 @@ struct ScannerScreen: View {
                              isWorking: isWorking, error: messageErreur,
                              onDismiss: { reset() },
                              onDetails: { showDetails = true },
-                             onFindAlternatives: {
-                                 /* Back to Cook, filtered to what is ready as
-                                  * is. The parent asked a question and gets an
-                                  * answer, not a refusal. */
-                                 reset()
-                                 tab?.wrappedValue = 0
-                             },
                              firstName: etat.activeProfile.firstName)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -313,7 +306,13 @@ struct ProductSheet: View {
     let isWorking: Bool
     let error: String?
     let onDismiss: () -> Void
-    var onFindAlternatives: () -> Void = {}
+
+    /// Opens the reasoning behind the verdict.
+    ///
+    /// This replaced `onFindAlternatives`: the alternatives now live INSIDE
+    /// the detail sheet, where there is room to say why the product was
+    /// refused before offering something else.
+    var onDetails: () -> Void = {}
     var firstName: String = ""
 
     var body: some View {
@@ -654,14 +653,14 @@ struct ProductDetailSheet: View {
 
     private var head: some View {
         HStack(alignment: .top, spacing: 13) {
-            ProductThumb(url: product.image)
+            ProductThumb()
             VStack(alignment: .leading, spacing: 3) {
                 Text(product.name ?? String(localized: "Unnamed product"))
                     .font(.system(size: 17, weight: .bold))
                     .kerning(-0.35)
                     .foregroundStyle(Tone.text)
                     .fixedSize(horizontal: false, vertical: true)
-                if let brand = product.brand {
+                if let brand = product.marque {
                     Text(brand)
                         .font(.system(size: 11.5))
                         .foregroundStyle(Tone.text2)
@@ -684,7 +683,15 @@ struct ProductDetailSheet: View {
         if verdict.allergensFound.contains(where: {
             $0.caseInsensitiveCompare(allergen) == .orderedSame
         }) { return .contains }
-        if product.traceTags.contains(where: { $0.contains(allergen) }) { return .traces }
+        /* No traces state yet.
+         *
+         * "May contain" lives in the database's `traces_tags`, which the
+         * server does not relay and `GroceryProduct` does not carry. Rather
+         * than guess, this reports what the engine actually measured: the
+         * allergen is in the ingredient list, or it is not.
+         *
+         * Adding traces means relaying the field and re-deriving it the same
+         * way — a separate change, and one worth making. */
         return .clear
     }
 
@@ -859,20 +866,13 @@ private struct AllergenCard: View {
 /// A placeholder rather than a blank when it does not — recognising the box
 /// you are holding is half of trusting the verdict.
 private struct ProductThumb: View {
-    let url: String?
-
+    /* No image. `GroceryProduct` carries a code, a name, a brand and the
+     * ingredient text — nothing else. The database has photos, but the app
+     * does not relay them, and inventing a `product.image` was me writing
+     * against a model I had not read. A shape that says "package" is honest;
+     * a broken image view is not. */
     var body: some View {
-        Group {
-            if let url, let u = URL(string: url) {
-                AsyncImage(url: u) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    placeholder
-                }
-            } else {
-                placeholder
-            }
-        }
+        placeholder
         .frame(width: 64, height: 78)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay {
@@ -894,7 +894,7 @@ private struct ProductThumb: View {
 
 /// The verdict, in one line, with the child's name in it.
 private struct VerdictBadge: View {
-    let status: ProductStatus
+    let status: ProductVerdict.Statut
     let firstName: String
 
     var body: some View {

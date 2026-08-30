@@ -1,14 +1,9 @@
 {
-  "build": 80,
+  "build": 82,
   "date": "2026-08-29",
   "carries": [
-    "both sheets moved to the root \u2014 attached to their own button, the first tap was lost",
-    "the child picker no longer asks who you are cooking for",
-    "hold the tab bar and slide: bubble, haptics per crossing",
-    "search opens with the keyboard up and three groups of suggestions",
-    "scanner: the Ingredients mode is gone \u2014 if I have to read the label, so can you",
-    "product detail: one card per allergen, Contains/Traces/Clear, no score out of 100",
-    "shopping pill is a ToolbarItem; the 56pt reserve is gone",
-    "checker rule: a .sheet on the Button that opens it"
+    "four members I invented against a model I had not read",
+    "the Traces state is gone until the server relays traces_tags \u2014 measured, not guessed",
+    "checker rule: a property READ off a model that does not declare it"
   ]
 }
