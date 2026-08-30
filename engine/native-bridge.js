@@ -71,17 +71,22 @@ var PONT = (function () {
       return JSON.stringify(out);
     },
 
-    /* Texture stage for a given age. */
-    /* The week's shopping list, aggregated on this side so Swift only has to
-     * display it. */
+    /* The week's shopping list, aggregated here so Swift only displays it.
+     *
+     * This threw on every call: I wrote `Moteur` and `donnees`, which are the
+     * names used in the test harness. In this file the engine is `Engine` and
+     * the tables come from `required()`. The exception surfaced as an empty
+     * list, because the Swift side falls back to [] on any bridge error. */
     shoppingList: function (jsonRecipes, jsonProfile) {
       var recettes = JSON.parse(jsonRecipes);
       var profil = JSON.parse(jsonProfile);
-      return JSON.stringify(Moteur.listeEpicerie(recettes, {
+      return JSON.stringify(Engine.listeEpicerie(recettes, {
         allergens: profil.allergens || [],
         ageMois: profil.ageMonths
-      }, donnees));
+      }, required()));
     },
+
+    /* Texture stage for a given age. */
 
     stage: function (ageMois) {
       return JSON.stringify(Engine.stadePour(ageMois, required().base));

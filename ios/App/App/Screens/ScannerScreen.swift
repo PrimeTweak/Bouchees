@@ -360,6 +360,10 @@ struct ProductSheet: View {
         }
         .shadow(color: .black.opacity(0.6), radius: 30, y: 14)
         .padding(.horizontal, 14)
+        /* It was anchored 100pt from the bottom while the bar occupies 86 —
+         * so the tab labels bled through the action. An inset reserves its
+         * own strip, like everything else on this screen. */
+        .padding(.bottom, 10)
     }
 
     /// The label arrives as one string. Split on the usual separators so the
@@ -407,29 +411,72 @@ struct ProductSheet: View {
 }
 
 /// Tags that wrap. The culprit is opaque white; the rest recede.
+/// A wrapping row of ingredient names.
+///
+/// A LazyVGrid with fixed columns truncated every name to the width of the
+/// narrowest cell — "Carbonate…", "Arôme…" — which is useless when the point
+/// is to read what is in the product. This measures each tag and wraps.
+///
+/// The names come off the product label, so French entries on a Quebec
+/// product are correct and stay as they are.
 private struct FlowTags: View {
     let names: [String]
     let highlighted: Set<String>
 
-    private let columns = [GridItem(.adaptive(minimum: 60), spacing: 6, alignment: .leading)]
+    @State private var height: CGFloat = 40
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 6) {
-            ForEach(names, id: \.self) { n in
-                Text(n)
-                    .font(.system(size: 11, weight: isHit(n) ? .bold : .regular))
-                    .lineLimit(1)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 4)
-                    .background(isHit(n) ? Color.white : Color.white.opacity(0.18),
-                                in: Capsule())
-                    .foregroundStyle(isHit(n) ? Tone.no : Color.white)
-            }
+        GeometryReader { geo in
+            content(width: geo.size.width)
+                .background {
+                    GeometryReader { inner in
+                        Color.clear.onAppear { height = inner.size.height }
+                            .onChange(of: inner.size.height) { _, h in height = h }
+                    }
+                }
         }
+        .frame(height: height)
     }
 
-    private func isHit(_ n: String) -> Bool {
-        highlighted.contains { n.localizedCaseInsensitiveContains($0) }
+    private func content(width: CGFloat) -> some View {
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+
+        return ZStack(alignment: .topLeading) {
+            ForEach(names, id: \.self) { name in
+                tag(name)
+                    .alignmentGuide(.leading) { d in
+                        if abs(x - d.width) > width {
+                            x = 0
+                            y -= d.height + 6
+                        }
+                        let result = x
+                        x = name == names.last ? 0 : x - d.width - 6
+                        return result
+                    }
+                    .alignmentGuide(.top) { _ in
+                        let result = y
+                        if name == names.last { y = 0 }
+                        return result
+                    }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    private func tag(_ name: String) -> some View {
+        let flagged = highlighted.contains { $0.caseInsensitiveCompare(name) == .orderedSame }
+        return Text(name)
+            .font(.system(size: 11.5, weight: flagged ? .bold : .regular))
+            /* Both branches must be the same type — a ternary between
+             * Color.opacity and .white does not infer. */
+            .foregroundStyle(flagged ? Color.black.opacity(0.82) : Color.white)
+            .lineLimit(1)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(flagged ? AnyShapeStyle(.white)
+                                : AnyShapeStyle(Color.white.opacity(0.2)),
+                        in: Capsule())
     }
 }
 

@@ -309,6 +309,117 @@ test("shopping: a free batch never produces an empty list", () => {
   });
 });
 
+/* ---------- the bridge actually runs ---------- */
+
+/* The decoding checker compares Swift structs to JSON shapes. It cannot see
+ * that a bridge function throws at runtime — and `shoppingList` did, on every
+ * call, because I used the test harness's names (`Moteur`, `donnees`) inside
+ * a file where they are `Engine` and `required()`. The Swift side falls back
+ * to an empty array on any bridge error, so the failure looked like "no
+ * items" rather than a crash.
+ *
+ * This runs the bridge the way JavaScriptCore does: in a bare context with
+ * nothing but the engine loaded. */
+
+test("bridge: every exported function runs in a bare context", () => {
+  const vm = require("vm");
+  const ctx = { module: { exports: {} }, console, JSON };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "engine.js"), "utf8"), ctx);
+  vm.runInContext("var Engine = module.exports;", ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
+
+  ctx.d = JSON.stringify({
+    ingredients: lire("ingredients.json"),
+    substitutions: lire("substitutions.json"),
+    base: lire("base.json")
+  });
+  vm.runInContext("PONT.load(d);", ctx);
+
+  ctx.r = JSON.stringify(recettes.slice(0, 5));
+  ctx.p = JSON.stringify({ ageMonths: 24, allergens: ["milk", "egg"] });
+
+  const liste = JSON.parse(vm.runInContext("PONT.shoppingList(r, p);", ctx));
+  assert.ok(Array.isArray(liste) && liste.length > 0,
+    "shoppingList returned nothing through the bridge");
+
+  const adapte = JSON.parse(vm.runInContext("PONT.adaptBatch(r, p);", ctx));
+  assert.ok(Array.isArray(adapte) && adapte.length === 5, "adaptBatch works");
+
+  const stade = JSON.parse(vm.runInContext("PONT.stage(24);", ctx));
+  assert.ok(stade, "stage works");
+});
+
+test("bridge: shoppingList carries quantities and replacements", () => {
+  const vm = require("vm");
+  const ctx = { module: { exports: {} }, console, JSON };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "engine.js"), "utf8"), ctx);
+  vm.runInContext("var Engine = module.exports;", ctx);
+  vm.runInContext(fs.readFileSync(
+    path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
+  ctx.d = JSON.stringify({
+    ingredients: lire("ingredients.json"),
+    substitutions: lire("substitutions.json"),
+    base: lire("base.json")
+  });
+  vm.runInContext("PONT.load(d);", ctx);
+  ctx.r = JSON.stringify(recettes);
+  ctx.p = JSON.stringify({ ageMonths: 24, allergens: ["milk", "egg"] });
+
+  const liste = JSON.parse(vm.runInContext("PONT.shoppingList(r, p);", ctx));
+  assert.ok(liste.some((l) => l.quantities.length > 0), "quantities survive");
+  assert.ok(liste.some((l) => l.replaces), "replacements are named");
+  liste.forEach((l) => {
+    assert.ok(typeof l.name === "string" && l.name.length, "each line has a name");
+    assert.ok(typeof l.aisle === "string" && l.aisle.length, "each line has an aisle");
+  });
+});
+
+/* ---------- colour contrast ---------- */
+
+/* The amber that shipped read at 1.9:1 against the cream canvas: the dark
+ * value, used in light mode. Nothing checked it, so it looked fine in the
+ * code and vanished on the screen. */
+
+function luminance(hex) {
+  const c = [16, 8, 0].map((s) => {
+    const v = ((hex >> s) & 0xFF) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+
+function ratio(a, b) {
+  const l1 = luminance(a), l2 = luminance(b);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+test("contrast: every semantic colour clears 4.5:1 on its canvas", () => {
+  const clair = 0xFBF9F6, sombre = 0x0B0A09;
+  const paires = [
+    ["text",  0x17140F, 0xF4F1EC],
+    ["text2", 0x6B635A, 0x948C83],
+    ["yes",   0x1E8347, 0x5FD08A],
+    ["swap",  0xA35F00, 0xF0AC46],
+    ["no",    0xC4291C, 0xFF5B4F],
+    ["brand", 0xC03A20, 0xFF7A5C]
+  ];
+  paires.forEach(([nom, l, d]) => {
+    const rl = ratio(l, clair), rd = ratio(d, sombre);
+    assert.ok(rl >= 4.5, nom + " light is " + rl.toFixed(1) + ":1, needs 4.5");
+    assert.ok(rd >= 4.5, nom + " dark is " + rd.toFixed(1) + ":1, needs 4.5");
+  });
+});
+
+test("contrast: the old amber would have failed", () => {
+  /* 0xFFB84D on cream — what shipped. Kept as a regression marker. */
+  assert.ok(ratio(0xFFB84D, 0xFBF9F6) < 4.5, "the old value was indeed too pale");
+});
+
 /* ---------- age rules ---------- */
 
 test("barres granola à 9 mois : miel → sirop d'érable (swap d'âge) + alerte ageMinBase", () => {

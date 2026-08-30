@@ -29,14 +29,9 @@ struct RecipesScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     hero
                     weekHeader
+                    upsell
                     mealChips
-                    if let message = etat.syncMessage {
-                        MessageBanner(texte: message)
-                            .padding(.horizontal, Layout.gutter)
-                            .padding(.top, 18)
-                    }
                     list
-                    locked
                     disclaimer
                 }
                 .padding(.bottom, 20)
@@ -50,14 +45,24 @@ struct RecipesScreen: View {
              * with two children on different profiles, cooking for the wrong
              * one is the worst failure this app has — so it is pinned, and
              * the content passes under it. */
+            /* The pill is 44pt tall; the inset reserved 14. That difference
+             * is exactly what let the first thumbnail slide underneath it.
+             * And the offline banner lived in an overlay that ignored the
+             * safe area, so it climbed into the status bar — it belongs
+             * here, in the same reserved strip. */
             .safeAreaInset(edge: .top, spacing: 0) {
-                HStack {
-                    CookingContextHeader()
-                    Spacer(minLength: 0)
+                VStack(spacing: 8) {
+                    if let message = etat.syncMessage {
+                        MessageBanner(texte: message)
+                    }
+                    HStack {
+                        CookingContextHeader()
+                        Spacer(minLength: 0)
+                    }
                 }
                 .padding(.horizontal, Layout.gutter)
-                .padding(.top, 6)
-                .padding(.bottom, 8)
+                .padding(.top, 8)
+                .padding(.bottom, 10)
             }
             .navigationDestination(item: $openRecipeID) { id in
                 if let pair = etat.pairFor(pour: id) {
@@ -305,34 +310,61 @@ struct RecipesScreen: View {
 
     // MARK: - Tail
 
+    /* THE SUBSCRIPTION IS THE POINT OF THE APP.
+     *
+     * It used to sit after six recipes and the medical notice — you had to
+     * scroll to find the thing the product is for. It now comes right under
+     * the week, as the only DARK block on a light page, so the eye lands on
+     * it. Four lines: how many, how often, the price, the trial. */
     @ViewBuilder
-    private var locked: some View {
+    private var upsell: some View {
         let batches = etat.lockedBatches
-        if !batches.isEmpty {
+        if !batches.isEmpty && !etat.subscribed {
             Button { showPaywall = true } label: {
-                HStack(spacing: 13) {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Tone.brand)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("\(batches.reduce(0) { $0 + $1.count }) more recipes")
-                            .font(.system(size: 15.5, weight: .semibold))
-                            .foregroundStyle(Tone.text)
-                        Text("7 new ones every week")
-                            .font(Type.small)
-                            .foregroundStyle(Tone.text2)
-                    }
-                    Spacer(minLength: 8)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Tone.text3)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Weeks ahead").eyebrow(Tone.heroAccent)
+
+                    Text(String(format: String(localized: "%lld more recipes"),
+                                batches.reduce(0) { $0 + $1.count }))
+                        .font(.system(size: 19, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.top, 7)
+
+                    Text(String(format: String(localized: "7 new ones every week, adapted to %@"),
+                                profile.firstName))
+                        .font(.system(size: 12))
+                        .foregroundStyle(.white.opacity(0.62))
+                        .padding(.top, 5)
+
+                    Text("7 days free, then $4.99/month")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.white.opacity(0.62))
+                        .padding(.top, 2)
+
+                    Text("Try 7 days free")
+                        .font(.system(size: 12.5, weight: .semibold))
+                        .foregroundStyle(Color(red: 0.16, green: 0.11, blue: 0.08))
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 8)
+                        .background(Color(red: 1, green: 0.80, blue: 0.72), in: Capsule())
+                        .padding(.top, 13)
                 }
-                .padding(16)
-                .card()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(17)
+                .background {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(LinearGradient(colors: [Color(red: 0.16, green: 0.11, blue: 0.08),
+                                                      Color(red: 0.09, green: 0.06, blue: 0.04)],
+                                             startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .strokeBorder(Tone.brand.opacity(0.22), lineWidth: 1)
+                        }
+                }
             }
             .buttonStyle(.plain)
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 28)
+            .padding(.top, 16)
         }
     }
 

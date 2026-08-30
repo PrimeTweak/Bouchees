@@ -259,8 +259,12 @@ struct DishArtwork: View {
      * type only promises View, so AnyShapeStyle cannot take it. The concrete
      * type keeps both conformances. */
     private var backgroundGradient: LinearGradient {
-        let (a, b) = Palette.background(category)
-        return LinearGradient(colors: [a, b], startPoint: .topLeading, endPoint: .bottomTrailing)
+        /* One neutral field for every category. Tinting the backdrop pink for
+         * snacks and green for meals made the grid look like a colour-coded
+         * chart, and once real photos land the tint has nothing to say. */
+        _ = category
+        return LinearGradient(colors: [Tone.cardTop, Tone.cardBottom],
+                              startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     /// Visible ingredients = those left after adaptation.

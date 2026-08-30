@@ -1,13 +1,13 @@
 {
-  "build": 65,
+  "build": 66,
   "date": "2026-08-29",
   "carries": [
-    "Recipe.batch, not lot \u2014 unblocks the week and the shopping list",
-    "glass: .primary text, GlassEffectContainer, .interactive()",
-    "nine-stop hero gradient ending on the canvas",
-    "tab bar hidden on the detail via a preference key",
-    "back and favourite in a ZStack \u2014 they receive taps",
-    "band under the tab bar removed",
-    "3 tests, 2 checker rules"
+    "shopping list works: the bridge threw on every call (Moteur/donnees vs Engine/required)",
+    "back and favourite are an overlay on the container, outside the scroll view",
+    "contrast measured \u2014 two colours the test rejected",
+    "subscription card moved under the week",
+    "three text overlaps fixed",
+    "scanner tags wrap",
+    "image prompt names imperfections"
   ]
 }

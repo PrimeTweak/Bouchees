@@ -27,13 +27,35 @@ const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 /* Short on purpose. A 700-character style buries the subject: FLUX weighs the
  * whole prompt, so twenty adjectives about lighting compete with the two words
  * that say what the dish is. The subject leads, the style supports. */
+/* "Unstyled and lived-in" asked for a mood and got a catalogue photo anyway.
+ * A model gives you what you NAME, and nothing here named a single concrete
+ * imperfection — so it produced a clean dish, centred, wiped, lit evenly.
+ *
+ * What separates a real photograph of a home kitchen from a rendered one is
+ * always the same short list: crumbs, an uneven edge, a portion already
+ * taken, a utensil left where someone put it down. Those are now demanded
+ * rather than implied. */
 const STYLE = [
-  "candid home food photography",
-  "soft natural window light",
-  "worn wooden table, everyday ceramic",
+  "candid home food photography, shot handheld on a phone",
+  "soft natural window light, one side brighter than the other",
+  "worn wooden table, everyday ceramic with a chip or a stain",
   "shallow depth of field, 50mm",
-  "unstyled and lived-in, sharp focus on the food"
+  "sharp focus on the food"
 ].join(", ");
+
+/* Two of these are drawn per recipe. More than two and the picture starts to
+ * look staged in a different way — deliberately messy, which reads as fake
+ * just as fast. */
+const IMPERFECTIONS = [
+  "a few crumbs on the counter beside the dish",
+  "one portion already served, the rest still in the pan",
+  "uneven browning, one edge darker than the middle",
+  "a spoon resting where it was set down",
+  "a slightly bent edge on the parchment",
+  "the dish not centred in the frame",
+  "a light smear on the rim of the plate",
+  "one piece broken open so the inside shows"
+];
 
 const CADRAGES = [
   "overhead flat lay, camera directly above",
@@ -53,6 +75,11 @@ const NEGATIF = [
   "no watermark", "no people", "no hands", "no faces",
   "no polished silverware", "no black background", "no studio lighting",
   "no artificial steam", "no garnish that is not listed",
+  /* The catalogue tells: these are what made every render look bought
+   * rather than baked. */
+  "not a cookbook photo", "no food styling", "no perfect symmetry",
+  "no wiped plate rim", "no garnish placed for the photo",
+  "no props arranged around the dish", "no even studio-flat lighting",
   "blurry", "grainy", "noisy", "distorted", "deformed", "low quality",
   "oversaturated", "plastic looking", "cgi", "illustration", "cartoon"
 ].join(", ");
@@ -201,6 +228,14 @@ function promptPour(recette, donnees) {
   const moment = MOMENTS[Math.floor(g / CADRAGES.length) % MOMENTS.length];
   const plat = PLATS_EN[recette.category] || "home-cooked dish";
 
+  /* Two imperfections per recipe, keyed to the same seed as the framing so
+   * the corpus stays reproducible — a parent reopening a recipe sees the
+   * same picture. */
+  const marques = [
+    IMPERFECTIONS[g % IMPERFECTIONS.length],
+    IMPERFECTIONS[(g + 3) % IMPERFECTIONS.length]
+  ].filter(function (v, i, a) { return a.indexOf(v) === i; }).join(", ");
+
   /* The exclusions are stated POSITIVELY, in the prompt itself.
    *
    * Proven by isolation on FLUX schnell: the identical request with a negative
@@ -224,6 +259,9 @@ function promptPour(recette, donnees) {
       "made with " + visibles.slice(0, 4).join(", "),
       cadrage,
       moment,
+      /* Named imperfections, before the style block. The subject still
+       * leads; these say the picture was taken, not assembled. */
+      marques,
       STYLE
     ].join(". "),
     negatif: NEGATIF + ", " + exclusions.join(", "),

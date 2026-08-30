@@ -30,7 +30,6 @@ struct RecipeDetailScreen: View {
      * content and receive taps normally.
      */
     var body: some View {
-        ZStack(alignment: .top) {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: .bottomLeading) {
@@ -96,8 +95,16 @@ struct RecipeDetailScreen: View {
          * as it is in any app once you are inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
         .hidesTabBar()
-        .zIndex(0)
-
+        /* THE THIRD ATTEMPT, AND THE REAL CAUSE.
+         *
+         * `.ignoresSafeArea` sits on the ScrollView, so it stretches to the
+         * top of the screen and covers the buttons. zIndex orders DRAWING,
+         * not hit testing — which is why they rendered perfectly and did
+         * nothing.
+         *
+         * As an overlay on the container, outside the scroll view entirely,
+         * they own their own space and receive taps. */
+        .overlay(alignment: .top) {
             HStack {
                 backButton
                 Spacer(minLength: 0)
@@ -105,9 +112,7 @@ struct RecipeDetailScreen: View {
             }
             .padding(.horizontal, 18)
             .padding(.top, 56)
-            .zIndex(1)
         }
-        .ignoresSafeArea(.container, edges: .top)
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }
@@ -167,6 +172,15 @@ struct RecipeDetailScreen: View {
         .buttonStyle(.plain)
         .padding(.horizontal, 20)
         .padding(.bottom, 26)
+        .padding(.top, 14)
+        /* Content used to read straight through the button. A fade under it
+         * means the list dissolves rather than colliding. */
+        .background {
+            LinearGradient(colors: [Tone.canvas.opacity(0), Tone.canvas.opacity(0.94),
+                                    Tone.canvas],
+                           startPoint: .top, endPoint: .bottom)
+                .allowsHitTesting(false)
+        }
     }
 
     /// Glass circles over the photo, content scrolling beneath — the pattern

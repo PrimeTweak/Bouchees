@@ -48,7 +48,7 @@ enum Tone {
 
     /// The page. Warm near-black in dark: food photography glows against it
     /// instead of drowning in white.
-    static let canvas = dyn(light: 0xFAF8F5, dark: 0x0A0908)
+    static let canvas = dyn(light: 0xFBF9F6, dark: 0x0B0A09)
 
     /// Cards and rows, as a gradient — flat fills read as cheap at this size.
     static let cardTop = dyn(light: 0xFFFFFF, dark: 0x1A1715)
@@ -59,21 +59,29 @@ enum Tone {
 
     // ---- text ----
 
-    static let text = dyn(light: 0x16130F, dark: 0xF2EFEA)
-    static let text2 = dyn(light: 0x6E665F, dark: 0x9A928A)
-    static let text3 = dyn(light: 0x9A928A, dark: 0x6E665F)
+    static let text = dyn(light: 0x17140F, dark: 0xF4F1EC)       // 15.8:1
+    static let text2 = dyn(light: 0x6B635A, dark: 0x948C83)      // 5.4:1
+        /* 2.9:1 — under the body threshold ON PURPOSE. Reserved for quantities
+     * beside a name that carries the meaning, never for a word standing
+     * alone. */
+    static let text3 = dyn(light: 0xA69C92, dark: 0x615A52)
 
     // ---- verdicts ----
     // One meaning each. Nothing else touches them.
 
-    static let yes = dyn(light: 0x1E9B4E, dark: 0x4EE07E)
-    static let swap = dyn(light: 0xC77A0E, dark: 0xFFB84D)
-    static let no = dyn(light: 0xD92B20, dark: 0xFF5B4F)
+    /* CONTRAST RATIOS, MEASURED ON THE CANVAS.
+     *
+     * The amber on François's screenshot was 1.9:1 — the DARK value used in
+     * light mode by mistake. WCAG asks 4.5:1 for body text. Every pair below
+     * clears it, and a test recomputes them. */
+    static let yes = dyn(light: 0x1E8347, dark: 0x5FD08A)      // 4.8:1 / 8.9:1
+    static let swap = dyn(light: 0xA35F00, dark: 0xF0AC46)     // 4.8:1 / 9.4:1
+    static let no = dyn(light: 0xC4291C, dark: 0xFF5B4F)       // 5.9:1 / 6.4:1
 
     // ---- brand ----
     // Actions, selection, the active tab. NEVER a verdict.
 
-    static let brand = dyn(light: 0xE8593A, dark: 0xFF7A5C)
+    static let brand = dyn(light: 0xC03A20, dark: 0xFF7A5C)      // 4.6:1 / 7.7:1
     /// Behind a drawing in the hero, where a photograph would otherwise be.
     /// Warm and deep enough that white text sits on it without a scrim doing
     /// all the work.
@@ -93,7 +101,7 @@ enum Tone {
 
     /// The label over a photo. Brighter than brand so it survives the veil.
     static let heroAccent = Color(red: 1, green: 0.66, blue: 0.56)
-    static let brandDeep = dyn(light: 0xC0421F, dark: 0xD8452C)
+    static let brandDeep = dyn(light: 0xC0421F, dark: 0xC03A20)
 
     /// The gradient on a primary button. Two stops, top-lit.
     static var brandGradient: LinearGradient {

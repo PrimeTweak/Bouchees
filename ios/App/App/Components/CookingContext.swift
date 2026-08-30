@@ -217,6 +217,13 @@ struct ChildPickerSheet: View {
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
 
+    /// Header, one row per child, plus family mode when there are two.
+    private var sheetHeight: CGFloat {
+        let rows = CGFloat(etat.profiles.count) * 92
+        let family: CGFloat = etat.profiles.count > 1 ? 138 : 0
+        return min(150 + rows + family, 620)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -264,7 +271,9 @@ struct ChildPickerSheet: View {
             .padding(.bottom, 40)
         }
         .background(Tone.canvas)
-        .presentationDetents([.medium, .large])
+        /* .medium froze the sheet at half the screen even with one child in
+         * it. A height-based detent fits the content. */
+        .presentationDetents([.height(sheetHeight), .large])
         .presentationCornerRadius(Layout.sheetRadius)
         .presentationDragIndicator(.visible)
     }
@@ -358,24 +367,18 @@ struct TallyLine: View {
 
     var body: some View {
         if tally.total > 0 {
-            HStack(spacing: 8) {
-                HStack(spacing: 4) {
-                    Text("\(tally.asIs)").font(.system(size: 11.5, weight: .bold))
-                    Text("ready").font(.system(size: 11.5))
-                }
-                .foregroundStyle(Tone.yes)
-
-                Text("·").font(.system(size: 11.5)).foregroundStyle(Tone.text3)
-
-                HStack(spacing: 4) {
-                    Text("\(tally.adapted)").font(.system(size: 11.5, weight: .bold))
-                    Text("swaps").font(.system(size: 11.5))
-                }
-                .foregroundStyle(Tone.swap)
+            /* "3 ready · 12 swaps" outlived the segments it belonged to. The
+             * distinction was never the parent's concern — what they want to
+             * know when picking a child is how many recipes that profile
+             * opens up. */
+            HStack(spacing: 4) {
+                Text("\(tally.total)").font(.system(size: 11.5, weight: .bold))
+                Text("recipes").font(.system(size: 11.5))
             }
+            .foregroundStyle(Tone.yes)
             .padding(.top, 3)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(tally.asIs) ready, \(tally.adapted) with swaps")
+            .accessibilityLabel("\(tally.total) recipes")
         }
     }
 }
