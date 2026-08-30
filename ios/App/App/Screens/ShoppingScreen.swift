@@ -86,21 +86,16 @@ struct ShoppingScreen: View {
         /* The bar is visible but transparent: it carries the pill and lets
          * iOS 26 apply the scroll edge effect, which is what keeps the status
          * bar legible over a scrolling list. */
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .navigationBarTitleDisplayMode(.inline)
+        /* HIDDEN, LIKE SETTINGS.
+         *
+         * Settings hides its navigation bar; Shopping kept one to carry the
+         * pill. Both titles had `padding(.top, 8)`, so the whole difference
+         * in height was that bar. Same treatment on both sides, and the pill
+         * rides in the content instead. */
+        .toolbar(.hidden, for: .navigationBar)
         /* Who you are shopping for matters as much as who you are cooking
          * for — the list is adapted to them. */
-        .toolbar {
-            /* A ToolbarItem, not a floating bar.
-             *
-             * The floating version needed 56pt of clear space reserved above
-             * the title — a reserve Settings does not have, which is exactly
-             * why the two titles sat at different heights. In the system bar
-             * it costs nothing, and the title starts where Settings' does. */
-            ToolbarItem(placement: .topBarTrailing) {
-                CookingContextHeader(compact: true)
-            }
-        }
+
         /* Below iOS 26 there is no scroll edge effect, so the last row
          * would read through the floating bar. Harmless where the effect
          * exists. */
@@ -119,12 +114,18 @@ struct ShoppingScreen: View {
     /// It scrolls away like Settings' does. Pinned, it held the bar for a
     /// screen whose whole purpose is the list below it.
     private var header: some View {
-        Text("Shopping list")
-            .font(Type.display)
-            .foregroundStyle(Tone.text)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, Layout.gutter)
-            .padding(.top, 8)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Spacer(minLength: 0)
+                CookingContextHeader(compact: true)
+            }
+            Text("Shopping list")
+                .font(Type.display)
+                .foregroundStyle(Tone.text)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 8)
     }
 
     private var subtitle: String {

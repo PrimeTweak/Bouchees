@@ -895,6 +895,36 @@ def check():
                                     f"declares no '{membre}'  (it has: "
                                     f"{', '.join(sorted(champs))})")
 
+    # 7aa. glass INSIDE a Button's label.
+    #      A glass container swallows the first touch: hitTest: on it returns
+    #      itself (FB18201935). Inside a label it sits between the finger and
+    #      the button, so the control needs two taps — measured four times on
+    #      the detail screen, then again on the pill and on search.
+    #
+    #      Glass belongs on the Button, not in what the Button draws.
+    #      `Button { action } label: { … }` puts the drawing in the SECOND
+    #      block, which is where the glass ends up. Scanning the first block
+    #      found nothing — the rule matched zero occurrences of the bug it was
+    #      written for.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"\blabel:\s*\{", code):
+            prof = 0
+            i = m.end() - 1
+            for j in range(i, min(len(code), i + 2400)):
+                if code[j] == "{":
+                    prof += 1
+                elif code[j] == "}":
+                    prof -= 1
+                    if prof == 0:
+                        if re.search(r"\.glass\(", code[i:j]):
+                            ligne = code[:m.start()].count("\n") + 1
+                            problems.append(
+                                f"{filename}:{ligne}: .glass() inside a label: "
+                                f"block — a glass container swallows the first "
+                                f"touch; put it on the Button instead")
+                        break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

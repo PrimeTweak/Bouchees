@@ -1,9 +1,11 @@
 {
-  "build": 82,
+  "build": 83,
   "date": "2026-08-29",
   "carries": [
-    "four members I invented against a model I had not read",
-    "the Traces state is gone until the server relays traces_tags \u2014 measured, not guessed",
-    "checker rule: a property READ off a model that does not declare it"
+    "tab bar: the items were Buttons, which ate the touch before the parent gesture",
+    "glass inside a label swallows the first touch \u2014 pill, search, and back button",
+    "shopping hides its navigation bar like Settings does",
+    "search sheet sized to its content instead of full screen",
+    "checker rule: .glass() inside a label: block \u2014 found a fifth case on the detail screen"
   ]
 }

@@ -560,3 +560,15 @@ extension View {
     }
 
 }
+
+extension View {
+    /// Glass, unless something above already supplies it.
+    ///
+    /// A toolbar item on iOS 26 gets the material from the system. Adding our
+    /// own draws a second capsule inside the first — and, worse, a glass
+    /// container swallows the first touch, so the control needs two taps.
+    @ViewBuilder
+    func glassIf(_ on: Bool) -> some View {
+        if on { self.glass(Capsule()) } else { self }
+    }
+}

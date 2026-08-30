@@ -29,6 +29,12 @@ struct FloatingTabBar: View {
     /// True while the finger is down on the bar. Grows the selection bubble.
     @State private var held = false
 
+    /// Which tab sits under a given x.
+    private func index(at x: CGFloat, largeur: CGFloat) -> Int {
+        guard largeur > 0 else { return selection }
+        return max(0, min(Self.items.count - 1, Int(x / largeur)))
+    }
+
     /* Four, not three. Shopping is the second gesture of the week — after
      * "what do I cook", "what do I buy" — and it deserves a destination
      * rather than a button buried in a list. The platform allows two to five
@@ -77,15 +83,32 @@ struct FloatingTabBar: View {
                         TabItem(icon: item.icon, label: item.label,
                                 selected: selection == i,
                                 held: held,
-                                namespace: glassSpace) {
-                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
-                                selection = i
-                            }
-                        }
+                                namespace: glassSpace)
                     }
                 }
                 .contentShape(.rect)
+                /* ONE GESTURE ON THE BAR, NOT A BUTTON PER TAB.
+                 *
+                 * Each item used to be a Button, and a Button consumes the
+                 * touch before a parent `.gesture` ever sees it — SwiftUI
+                 * gives children priority. That is why the long press never
+                 * fired and the slide never started.
+                 *
+                 * The bar owns the whole interaction now: a tap selects the
+                 * item under the finger, a hold raises the bubble, and a drag
+                 * moves it. The items are drawings. */
                 .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onEnded { valeur in
+                            /* A tap is a drag that went nowhere. */
+                            guard !held else { return }
+                            let cible = index(at: valeur.location.x, largeur: largeur)
+                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
+                                selection = cible
+                            }
+                        }
+                )
+                .simultaneousGesture(
                     LongPressGesture(minimumDuration: 0.28)
                         .onEnded { _ in
                             withAnimation(.smooth(duration: 0.2, extraBounce: 0.3)) {
@@ -96,8 +119,7 @@ struct FloatingTabBar: View {
                         .sequenced(before: DragGesture(minimumDistance: 0))
                         .onChanged { valeur in
                             guard case .second(_, let drag?) = valeur else { return }
-                            let sous = Int(drag.location.x / largeur)
-                            let borne = max(0, min(Self.items.count - 1, sous))
+                            let borne = index(at: drag.location.x, largeur: largeur)
                             guard borne != selection else { return }
                             withAnimation(.smooth(duration: 0.22)) { selection = borne }
                             /* One tick per crossing — the bar reads as a
@@ -115,6 +137,13 @@ struct FloatingTabBar: View {
             .padding(.vertical, 6)
             .glass(Capsule())
 
+            /* GLASS ON THE BUTTON, NOT INSIDE ITS LABEL.
+             *
+             * A glass container swallows the first touch — `hitTest:` on it
+             * returns itself (FB18201935). Inside the label, it sat between
+             * the finger and the button, which is why search needed two taps.
+             * Outside, the button owns the hit area and the glass is only a
+             * material. */
             Button { present(.search) } label: {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 19, weight: .medium))
@@ -123,9 +152,10 @@ struct FloatingTabBar: View {
                      * behind it. Naming a colour switches that off. */
                     .foregroundStyle(.primary)
                     .frame(width: 54, height: 54)
-                    .glass(Circle())
+                    .contentShape(Circle())
             }
             .buttonStyle(.plain)
+            .glass(Circle())
             .accessibilityLabel("Search")
         }
         }
@@ -145,10 +175,15 @@ private struct TabItem: View {
     /// The finger is down on the bar: the indicator becomes the bubble.
     var held: Bool = false
     let namespace: Namespace.ID
-    let tap: () -> Void
 
+    /* A DRAWING, NOT A BUTTON.
+     *
+     * A Button here consumed the touch before the bar's own gesture saw it,
+     * which is why hold-and-slide never worked. The bar handles selection;
+     * this only draws. Accessibility still gets the trait and the action from
+     * the parent. */
     var body: some View {
-        Button(action: tap) {
+        Group {
             VStack(spacing: 2) {
                 Image(systemName: icon)
                     .font(.system(size: 19, weight: selected ? .semibold : .regular))
@@ -182,7 +217,6 @@ private struct TabItem: View {
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? [.isSelected] : [])
     }
 }
@@ -196,9 +230,20 @@ struct CookingContextHeader: View {
     /// Avatar and first name only.
     ///
     /// On a screen whose title already occupies the left of the bar, the full
-    /// pill would take the whole line and push the content down — which is
-    /// what put the shopping title 130pt from the top.
+    /// pill would take the whole line and push the content down.
     var compact: Bool = false
+
+    /// Draw our own glass, or let the toolbar supply it.
+    ///
+    /// TWO REASONS THIS EXISTS, BOTH MEASURED.
+    ///
+    /// 1. iOS 26 gives toolbar items the material automatically. Carrying our
+    ///    own on top produced two stacked capsules — the double outline.
+    ///
+    /// 2. A glass container swallows the first touch: `hitTest:` on it
+    ///    returns itself (FB18201935, already hit on the detail screen four
+    ///    times). That is why the pill needed two taps.
+    var ownGlass: Bool = true
 
     @Environment(AppState.self) private var etat
     /* THE SHEET IS NOT OURS TO OWN.
@@ -236,10 +281,11 @@ struct CookingContextHeader: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.tertiary)
             }
-            .padding(.horizontal, 13)
-            .padding(.vertical, 8)
-            .glass(Capsule())
+            .padding(.horizontal, ownGlass ? 13 : 4)
+            .padding(.vertical, ownGlass ? 8 : 2)
+            .contentShape(Capsule())
         }
+        .glassIf(ownGlass)
         .buttonStyle(.plain)
         .accessibilityLabel("\(title). \(subtitle). Tap to switch.")
     }
@@ -483,6 +529,15 @@ struct SearchSheet: View {
     @State private var query = ""
     @FocusState private var focused: Bool
 
+    /// Just tall enough for the groups that have something in them.
+    private var sheetHeight: CGFloat {
+        var h: CGFloat = 132
+        if !etat.recentSearches.isEmpty { h += 66 }
+        if !weekCuts.isEmpty { h += 66 }
+        h += 66
+        return min(h, 420)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
@@ -517,6 +572,13 @@ struct SearchSheet: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .background(Tone.canvas.ignoresSafeArea())
+        /* SIZED TO ITS CONTENT, NOT FULL SCREEN.
+         *
+         * Without a detent the sheet rises to the top and leaves a hole
+         * between the last chip and the keyboard — which is exactly the empty
+         * space in the screenshot. It grows to `.large` once there are
+         * results to scroll. */
+        .presentationDetents(query.isEmpty ? [.height(sheetHeight)] : [.large])
         .presentationDragIndicator(.visible)
         .task {
             /* The keyboard rises with the sheet. A search that needs a second

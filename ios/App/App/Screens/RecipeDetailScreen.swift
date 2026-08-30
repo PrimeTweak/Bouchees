@@ -205,14 +205,19 @@ struct RecipeDetailScreen: View {
     /// Glass circles over the photo, content scrolling beneath — the pattern
     /// the platform describes for fixed buttons.
     private var backButton: some View {
+        /* Glass OUTSIDE the label — the save button beside it already does
+         * this, and back did not. A glass container swallows the first touch,
+         * which is the same fault that made the pill and search need two
+         * taps. Same screen, same bug, one of two buttons. */
         Button { dismiss() } label: {
             Image(systemName: "chevron.left")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(.primary)
                 .frame(width: 42, height: 42)
-                .glass(Circle())
+                .contentShape(Circle())
         }
         .buttonStyle(.plain)
+        .glass(Circle())
         .accessibilityLabel("Back")
     }
 
