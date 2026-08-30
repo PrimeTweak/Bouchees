@@ -361,10 +361,16 @@ private struct WhoStep: View {
     }
 }
 
-struct AgeStage: Sendable {
+/* Not Sendable, and not LocalizedStringKey.
+ *
+ * LocalizedStringKey is not Sendable, so declaring the struct Sendable is a
+ * warning today and an error under Swift 6. Storing plain String keys and
+ * resolving them at display time is simpler and survives the language mode.
+ */
+struct AgeStage {
     let months: Int
-    let title: LocalizedStringKey
-    let detail: LocalizedStringKey
+    let title: String.LocalizationValue
+    let detail: String.LocalizationValue
 
     static let all: [AgeStage] = [
         .init(months: 7, title: "6–8 months", detail: "Smooth purées, soft sticks they can hold"),
@@ -383,9 +389,9 @@ private struct StageRow: View {
     var body: some View {
         Button(action: tap) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(stage.title)
+                Text(String(localized: stage.title))
                     .font(Type.secondary.weight(.semibold))
-                Text(stage.detail)
+                Text(String(localized: stage.detail))
                     .font(Type.caption)
                     .opacity(selected ? 0.85 : 1)
             }

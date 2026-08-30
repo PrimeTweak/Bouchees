@@ -330,6 +330,29 @@ def check():
                                     f"'{at}:'  (full labels: {', '.join(attendues)})")
                     break
 
+    # 7g. a Sendable struct holding a non-Sendable SwiftUI type.
+    #     LocalizedStringKey, Image, Font, AnyView and friends are not
+    #     Sendable. Declaring the struct Sendable is a warning under Swift 5
+    #     and an ERROR under Swift 6 — worth fixing before the language mode
+    #     moves rather than after.
+    # Only types the compiler actually refuses. Color and Font ARE Sendable
+    # since iOS 17 — listing them produced a false positive on DishArtwork,
+    # which has compiled cleanly all along. The list is what the build log
+    # named, not what I assumed.
+    NON_SENDABLE = ["LocalizedStringKey", "AnyView", "UIImage", "UIColor"]
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"struct (\w+)[^{]*\bSendable\b[^{]*\{((?:.|\n)*?)\n\}", code):
+            nom, corps = m.group(1), m.group(2)
+            ligne = code[:m.start()].count("\n") + 1
+            for t in NON_SENDABLE:
+                mm = re.search(r"^\s*(?:let|var)\s+(\w+)\s*:\s*" + t + r"\b", corps, re.M)
+                if mm:
+                    problems.append(f"{filename}:{ligne}: struct {nom} is Sendable but stores "
+                                    f"'{mm.group(1)}: {t}', which is not — a warning now, "
+                                    f"an error in Swift 6")
+                    break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

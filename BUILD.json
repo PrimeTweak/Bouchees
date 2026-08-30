@@ -1,9 +1,10 @@
 {
-  "build": 51,
+  "build": 52,
   "date": "2026-08-29",
   "carries": [
     "the whole redesign, 7 screens",
-    "pairFor label and sync() fixed",
-    "checker: argument labels on etat calls"
+    "pairFor label and sync()",
+    "AgeStage: LocalizationValue, no Sendable warning",
+    "checker: argument labels, Sendable stored properties"
   ]
 }
