@@ -81,7 +81,7 @@ struct SaveButton: View {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } label: {
             Image(systemName: isOn ? "bookmark.fill" : "bookmark")
-                .foregroundStyle(isOn ? Tint.betterave : Color.secondary)
+                .foregroundStyle(isOn ? Tone.brand : Color.secondary)
         }
         .accessibilityLabel(isOn ? "Remove from saved" : "Save this recipe")
         .accessibilityHint("A saved recipe stays available even after its week.")
@@ -110,7 +110,7 @@ struct TopRatedScreen: View {
                 .padding(.horizontal, 18)
                 .padding(.bottom, 32)
             }
-            .background(Tint.background.ignoresSafeArea())
+            .background(Tone.canvas.ignoresSafeArea())
             .navigationTitle("Best")
             .navigationBarTitleDisplayMode(.inline)
             .refreshable { await etat.loadTopRated() }
@@ -186,8 +186,8 @@ struct RankRow: View {
 
     private var rankColor: Color {
         switch rank {
-        case 1: return Tint.courge
-        case 2, 3: return Tint.betterave
+        case 1: return Tone.swap
+        case 2, 3: return Tone.brand
         default: return .secondary
         }
     }

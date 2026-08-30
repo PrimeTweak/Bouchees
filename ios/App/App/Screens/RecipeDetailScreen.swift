@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct RecipeDetailScreen: View {
+    @Environment(\.dismiss) private var dismiss
     let recipe: Recipe
     let result: AdaptedRecipe
     let firstName: String
@@ -15,18 +16,49 @@ struct RecipeDetailScreen: View {
 
     private var verdict: Verdict { Verdict(result, firstName: firstName) }
 
+    /// The photo runs to the top of the screen and the content scrolls
+    /// beneath the floating controls. No opaque navigation bar: a gradient
+    /// keeps the status bar legible, which is the platform's own pattern.
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 14) {
-                RecipeVisual(recipe: recipe, result: result)
-                    .aspectRatio(16/10, contentMode: .fill)
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: 280)
-                    .clipped()
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack(alignment: .bottomLeading) {
+                    RecipeVisual(recipe: recipe, result: result)
+                        .frame(height: 340)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                        .overlay(alignment: .bottom) {
+                            LinearGradient(
+                                colors: [.clear, Tone.canvas.opacity(0.6), Tone.canvas],
+                                startPoint: .top, endPoint: .bottom)
+                                .frame(height: 190)
+                        }
+                        .overlay(alignment: .top) {
+                            LinearGradient(colors: [.black.opacity(0.34), .clear],
+                                           startPoint: .top, endPoint: .bottom)
+                                .frame(height: 120)
+                        }
 
-                VStack(alignment: .leading, spacing: 14) {
-                    title
-                    banniereVerdict
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(soustitre)
+                            .font(Type.label)
+                            .foregroundStyle(Tone.brand)
+                            .textCase(.uppercase)
+                            .kerning(1.4)
+
+                        Text(recipe.name)
+                            .font(Type.display)
+                            .foregroundStyle(Tone.text)
+                            .padding(.top, 6)
+
+                        VerdictPill(result: result, firstName: firstName)
+                            .padding(.top, 13)
+                    }
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.bottom, 6)
+                }
+
+                VStack(alignment: .leading, spacing: 22) {
                     blocTexture
                     alerts
                     blocIngredients
@@ -34,59 +66,52 @@ struct RecipeDetailScreen: View {
                     blocPreparation
                     blocProvenance
                     Text(Settings.medicalDisclaimer)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                        .padding(.top, 8)
+                        .font(Type.caption)
+                        .foregroundStyle(Tone.textTertiary)
                 }
-                .padding(.horizontal, 18)
+                .padding(.horizontal, Layout.gutter)
+                .padding(.top, 22)
             }
-            .padding(.bottom, 36)
+            .padding(.bottom, 110)
         }
-        .background(Tint.background.ignoresSafeArea())
-        .navigationTitle(recipe.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                SaveButton(recipe: recipe)
-            }
+        .background(Tone.canvas.ignoresSafeArea())
+        .ignoresSafeArea(.container, edges: .top)
+        .toolbar(.hidden, for: .navigationBar)
+        .overlay(alignment: .topLeading) { backButton }
+        .overlay(alignment: .topTrailing) { saveButton }
+    }
+
+    /// Glass circles floating over the photo, with content scrolling beneath —
+    /// the exact pattern the platform describes for fixed buttons.
+    @ViewBuilder
+    private var backButton: some View {
+        Button { dismiss() } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Tone.text)
+                .glassCircle()
         }
+        .buttonStyle(.plain)
+        .padding(.leading, 16)
+        .padding(.top, 52)
+        .accessibilityLabel("Back")
+    }
+
+    @ViewBuilder
+    private var saveButton: some View {
+        SaveButton(recipe: recipe)
+            .glassCircle()
+            .padding(.trailing, 16)
+            .padding(.top, 52)
     }
 
     // MARK: - Sections
-
-    private var title: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(recipe.name)
-                .font(.system(size: 28, weight: .heavy, design: .rounded))
-                .lineLimit(3)
-            Text(soustitre)
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-        }
-    }
 
     private var soustitre: String {
         var bouts = [recipe.subtitle, "\(firstName), \(Format.age(etat.activeProfile.ageMonths))"]
         let noms = etat.allergenNames(etat.activeProfile.allergens)
         if !noms.isEmpty { bouts.append("no \(Format.liste(noms))") }
         return bouts.joined(separator: " · ")
-    }
-
-    private var banniereVerdict: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: verdict.symbol)
-                .font(.title3)
-                .foregroundStyle(verdict.color)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(verdict.title).font(.headline)
-                Text(verdict.detail).font(.subheadline).foregroundStyle(.secondary)
-            }
-        }
-        .padding(15)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(verdict.color.opacity(0.1),
-                    in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .accessibilityElement(children: .combine)
     }
 
     private var blocTexture: some View {
@@ -102,7 +127,7 @@ struct RecipeDetailScreen: View {
         .background(Color(.secondarySystemGroupedBackground),
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(alignment: .leading) {
-            Rectangle().frame(width: 4).foregroundStyle(Tint.betterave)
+            Rectangle().frame(width: 4).foregroundStyle(Tone.brand)
                 .clipShape(RoundedRectangle(cornerRadius: 2))
         }
     }
@@ -166,9 +191,9 @@ struct RecipeDetailScreen: View {
                 HStack(alignment: .top, spacing: 13) {
                     Text("\(index + 1)")
                         .font(.caption.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(Tint.betterave)
+                        .foregroundStyle(Tone.brand)
                         .frame(width: 25, height: 25)
-                        .overlay(Circle().strokeBorder(Tint.betterave, lineWidth: 1.5))
+                        .overlay(Circle().strokeBorder(Tone.brand, lineWidth: 1.5))
                     Text(step).font(.body)
                     Spacer(minLength: 0)
                 }
@@ -239,18 +264,18 @@ struct IngredientRow: View {
     private var name: some View {
         switch ingredient.status {
         case .swapped:
-            (Text(ingredient.name).strikethrough(true, color: Tint.canneberge).foregroundStyle(.secondary)
-             + Text("  →  ").foregroundStyle(Tint.betterave)
-             + Text(ingredient.toName ?? "").foregroundStyle(Tint.betterave))
+            (Text(ingredient.name).strikethrough(true, color: Tone.no).foregroundStyle(.secondary)
+             + Text("  →  ").foregroundStyle(Tone.brand)
+             + Text(ingredient.toName ?? "").foregroundStyle(Tone.brand))
                 .font(.subheadline.weight(.semibold))
         case .omitted:
-            (Text(ingredient.name).strikethrough(true, color: Tint.canneberge).foregroundStyle(.secondary)
-             + Text("  →  ").foregroundStyle(Tint.betterave)
-             + Text("we leave it out").foregroundStyle(Tint.betterave))
+            (Text(ingredient.name).strikethrough(true, color: Tone.no).foregroundStyle(.secondary)
+             + Text("  →  ").foregroundStyle(Tone.brand)
+             + Text("we leave it out").foregroundStyle(Tone.brand))
                 .font(.subheadline.weight(.semibold))
         case .blocked:
             Text(ingredient.name)
-                .strikethrough(true, color: Tint.canneberge)
+                .strikethrough(true, color: Tone.no)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
         case .kept, .unknown:
@@ -260,14 +285,14 @@ struct IngredientRow: View {
 
     private var etiquettes: [(texte: String, color: Color)] {
         var out: [(String, Color)] = []
-        if let m = ingredient.reason { out.append((m, Tint.betterave)) }
+        if let m = ingredient.reason { out.append((m, Tone.brand)) }
         if let r = ingredient.ratio,
            ingredient.status == .swapped || ingredient.status == .omitted {
-            out.append((r, Tint.pois))
+            out.append((r, Tone.yes))
         }
-        if let p = ingredient.prep { out.append((p, Tint.courge)) }
+        if let p = ingredient.prep { out.append((p, Tone.swap)) }
         if ingredient.status == .blocked {
-            out.append(("no safe replacement", Tint.canneberge))
+            out.append(("no safe replacement", Tone.no))
         }
         return out.map { (texte: $0.0, color: $0.1) }
     }

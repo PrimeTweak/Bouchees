@@ -35,7 +35,7 @@ struct ProfilesScreen: View {
                             Button {
                                 editing = p
                             } label: { Label("Edit", systemImage: "pencil") }
-                            .tint(Tint.betterave)
+                            .tint(Tone.brand)
                         }
                     }
                 } header: {
@@ -55,7 +55,7 @@ struct ProfilesScreen: View {
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
                             }
-                            .tint(Tint.betterave)
+                            .tint(Tone.brand)
                     }
                 }
 
@@ -91,7 +91,7 @@ struct ProfileRow: View {
     var tally: AppState.ProfileTally? = nil
 
     private var avatarColor: Color {
-        let teintes: [Color] = [Tint.betterave, Tint.pois, Tint.courge, Tint.canneberge]
+        let teintes: [Color] = [Tone.brand, Tone.yes, Tone.swap, Tone.no]
         var somme = 0
         for octet in profile.name.utf8 { somme = (somme &* 31 &+ Int(octet)) % 9973 }
         return teintes[somme % teintes.count]
@@ -118,7 +118,7 @@ struct ProfileRow: View {
             Spacer()
 
             if isOn {
-                Image(systemName: "checkmark").foregroundStyle(Tint.betterave).font(.headline)
+                Image(systemName: "checkmark").foregroundStyle(Tone.brand).font(.headline)
             }
         }
         .padding(.vertical, 4)
@@ -130,10 +130,10 @@ struct ProfileRow: View {
          * eat, and how much of it needs work. */
         if let t = tally, t.total > 0 {
             HStack(spacing: 16) {
-                TallyItem(count: t.asIs, label: "as is", color: Tint.pois)
-                TallyItem(count: t.adapted, label: "adapted", color: Tint.courge)
+                TallyItem(count: t.asIs, label: "as is", color: Tone.yes)
+                TallyItem(count: t.adapted, label: "adapted", color: Tone.swap)
                 if t.blocked > 0 {
-                    TallyItem(count: t.blocked, label: "blocked", color: Tint.canneberge)
+                    TallyItem(count: t.blocked, label: "blocked", color: Tone.no)
                 }
                 Spacer()
             }
@@ -198,7 +198,7 @@ struct ProfileEditor: View {
                 }
                 .padding(20)
             }
-            .background(Tint.background.ignoresSafeArea())
+            .background(Tone.canvas.ignoresSafeArea())
             .navigationTitle(profile.name.isEmpty ? "New child" : profile.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -267,7 +267,7 @@ struct SettingsScreen: View {
                         ProfilesScreen()
                     } label: {
                         Label("Add a child", systemImage: "plus")
-                            .foregroundStyle(Tint.betterave)
+                            .foregroundStyle(Tone.brand)
                     }
                 }
 
@@ -298,7 +298,7 @@ struct SettingsScreen: View {
                         Text(etat.subscribed ? "Active" : "No subscription")
                         Spacer()
                         Button(etat.subscribed ? "Manage" : "Subscribe") { showPaywall = true }
-                            .tint(Tint.betterave)
+                            .tint(Tone.brand)
                     }
                     Button("Restore purchases") {
                         Task { await etat.subscription.restore() }
@@ -334,7 +334,7 @@ struct SettingsScreen: View {
                         .disabled(!email.contains("@"))
                     }
                     if let m = accountMessage {
-                        Text(m).font(.footnote).foregroundStyle(Tint.canneberge)
+                        Text(m).font(.footnote).foregroundStyle(Tone.no)
                     }
                 } header: {
                     Text("Account")
@@ -411,7 +411,7 @@ struct PaywallScreen: View {
                             }
                             .padding(15)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Tint.courge.opacity(0.12),
+                            .background(Tone.swap.opacity(0.12),
                                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         } else {
                             ForEach(etat.subscription.products, id: \.id) { product in
@@ -428,10 +428,10 @@ struct PaywallScreen: View {
                         Task { await etat.subscription.restore() }
                     }
                     .font(.footnote)
-                    .tint(Tint.betterave)
+                    .tint(Tone.brand)
 
                     if let m = etat.subscription.message {
-                        Text(m).font(.footnote).foregroundStyle(Tint.courge)
+                        Text(m).font(.footnote).foregroundStyle(Tone.swap)
                     }
 
                     Text("""
@@ -449,7 +449,7 @@ struct PaywallScreen: View {
                 }
                 .padding(20)
             }
-            .background(Tint.background.ignoresSafeArea())
+            .background(Tone.canvas.ignoresSafeArea())
             .navigationTitle("Subscription")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -463,14 +463,14 @@ struct PaywallScreen: View {
 
     private var comparison: some View {
         VStack(spacing: 12) {
-            ComparisonBlock(title: "Always free", accent: Tint.pois, lines: [
+            ComparisonBlock(title: "Always free", accent: Tone.yes, lines: [
                 "Ingredient swaps for every allergen",
                 "Age and texture guidance",
                 "The product scanner",
                 "Your children’s profiles",
                 "The starter recipes"
             ])
-            ComparisonBlock(title: "With the subscription", accent: Tint.betterave, lines: [
+            ComparisonBlock(title: "With the subscription", accent: Tone.brand, lines: [
                 "A new batch of recipes every month",
                 "Targeted at the profiles you created",
                 "Every previous batch"
@@ -533,7 +533,7 @@ struct ProductButton: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(.bordered)
-        .tint(Tint.betterave)
+        .tint(Tone.brand)
         .disabled(isWorking)
     }
 }

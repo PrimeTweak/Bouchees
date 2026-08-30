@@ -1,12 +1,12 @@
 {
-  "build": 49,
+  "build": 50,
   "date": "2026-08-29",
   "carries": [
-    "icon 12 \u2014 the b with a bite",
-    "SwiftUI mark and launch screen",
-    "light / dark / system themes",
-    "onboarding: demo, who, offer",
-    "AllergenGlyph label fixed",
-    "checker: init argument labels"
+    "home: hero photo, the figure, a list",
+    "floating glass tab bar + search island",
+    "recipe detail: full-bleed photo, glass buttons",
+    "scanner: full-colour verdict",
+    "all 7 screens on Tone tokens",
+    "light / dark / system"
   ]
 }

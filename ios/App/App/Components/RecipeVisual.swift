@@ -129,7 +129,7 @@ struct StarRating: View {
                 } label: {
                     Image(systemName: (note ?? 0) >= i ? "star.fill" : "star")
                         .font(.system(size: size))
-                        .foregroundStyle((note ?? 0) >= i ? Tint.courge : Color.secondary.opacity(0.4))
+                        .foregroundStyle((note ?? 0) >= i ? Tone.swap : Color.secondary.opacity(0.4))
                         .contentTransition(.symbolEffect(.replace))
                 }
                 .buttonStyle(.plain)
@@ -158,7 +158,7 @@ struct RatingBadge: View {
                     Text("(\(votes))").font(.caption2).foregroundStyle(.tertiary)
                 }
             }
-            .foregroundStyle(Tint.courge)
+            .foregroundStyle(Tone.swap)
             .accessibilityLabel("Rated \(String(format: "%.1f", m)) out of 5 by \(votes) \(votes > 1 ? "people" : "person")")
         }
     }

@@ -151,7 +151,8 @@ struct ScannerScreen: View {
                                   * answer, not a refusal. */
                                  reset()
                                  tab?.wrappedValue = 0
-                             })
+                             },
+                             firstName: etat.activeProfile.firstName)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -229,6 +230,14 @@ struct ViewfinderFrame: View {
     }
 }
 
+/// FULL COLOUR, AT ARM'S LENGTH.
+///
+/// One hand on the stroller, one on the phone, grocery lighting. The rest of
+/// the app is calm because fear needs calm — this card is the one exception,
+/// and it is the one place glass gives way to solid colour.
+///
+/// The child's first name is in the verdict. "Not for Livia", not "Contains
+/// milk": the app does the translation, not the parent.
 struct ProductSheet: View {
     let product: GroceryProduct?
     let verdict: ProductVerdict?
@@ -236,73 +245,156 @@ struct ProductSheet: View {
     let error: String?
     let onDismiss: () -> Void
     var onFindAlternatives: () -> Void = {}
+    var firstName: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 13) {
+        VStack(alignment: .leading, spacing: 0) {
             if isWorking {
-                HStack(spacing: 10) {
-                    ProgressView()
-                    Text("Reading the label…").font(.subheadline)
+                HStack(spacing: 11) {
+                    ProgressView().tint(.white)
+                    Text("Reading the label…")
+                        .font(Type.secondary.weight(.medium))
+                        .foregroundStyle(.white)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             } else if let error {
-                Label(error, systemImage: "exclamationmark.triangle.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(Tint.courge)
-            } else if let product {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(product.name ?? "GroceryProduct \(product.code)")
-                        .font(.title3.weight(.bold))
-                        .lineLimit(2)
-                    if let m = product.marque, !m.isEmpty {
-                        Text(m).font(.footnote).foregroundStyle(.secondary)
-                    }
+                Text(error)
+                    .font(Type.secondary)
+                    .foregroundStyle(.white)
+            } else if let v = verdict, let p = product {
+                Text(headline(v))
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
+
+                Text(subline(v, p))
+                    .font(Type.secondary)
+                    .foregroundStyle(.white.opacity(0.88))
+                    .padding(.top, 7)
+
+                /* The offending allergen is solid white, the rest translucent.
+                 * The culprit is seen before anything is read. */
+                let names = Self.splitIngredients(p.ingredientsText)
+                if !names.isEmpty {
+                    FlowTags(names: Array(names.prefix(9)),
+                             highlighted: Set(v.allergensFound))
+                        .padding(.top, 15)
                 }
 
-                if let verdict { ProductVerdictBanner(verdict: verdict) }
-
-                if let attribution = product.attribution {
-                    Text(attribution).font(.caption2).foregroundStyle(.tertiary)
+                if let attribution = p.attribution {
+                    Text(attribution)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.white.opacity(0.55))
+                        .padding(.top, 12)
                 }
             }
 
-            /* A refusal is never the end of the journey.
-             *
-             * A parent standing in an aisle who is told "not for your child"
-             * has learned something useful and been left with nothing to do.
-             * The engine already knows what they CAN cook — offering it here
-             * turns a dead end into an answer. */
+            /* A refusal always opens a door. A parent in an aisle told "no" has
+             * learned something useful and been left with nothing to do. */
             if verdict?.status == .avoid {
-                Button {
-                    onFindAlternatives()
-                } label: {
-                    Label("See recipes that replace this", systemImage: "fork.knife")
+                Button(action: onFindAlternatives) {
+                    Text("See recipes that replace this")
+                        .font(Type.secondary.weight(.semibold))
+                        .foregroundStyle(background)
                         .frame(maxWidth: .infinity)
+                        .frame(height: Layout.tapTarget + 2)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Tint.betterave)
-                .controlSize(.large)
+                .buttonStyle(.plain)
+                .padding(.top, 17)
             }
 
-            /* Secondary once there is an alternative to offer: the useful
-             * action leads, scanning again follows. */
-            if verdict?.status == .avoid {
-                Button("Scan another product", action: onDismiss)
-                    .buttonStyle(.bordered)
-                    .tint(Tint.betterave)
-                    .controlSize(.large)
+            Button(action: onDismiss) {
+                Text("Scan another product")
+                    .font(Type.secondary.weight(verdict?.status == .avoid ? .medium : .semibold))
+                    .foregroundStyle(verdict?.status == .avoid ? Color.white : background)
                     .frame(maxWidth: .infinity)
-            } else {
-                Button("Scan another product", action: onDismiss)
-                    .buttonStyle(.borderedProminent)
-                    .tint(Tint.betterave)
-                    .controlSize(.large)
-                    .frame(maxWidth: .infinity)
+                    .frame(height: Layout.tapTarget + 2)
+                    .background(
+                        verdict?.status == .avoid
+                            ? AnyShapeStyle(Color.white.opacity(0.18))
+                            : AnyShapeStyle(Color.white),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 9)
+        }
+        .padding(21)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(background, in: RoundedRectangle(cornerRadius: Layout.sheetRadius, style: .continuous))
+        .shadow(color: .black.opacity(0.34), radius: 22, y: 8)
+        .padding(14)
+    }
+
+    /// The label arrives as one string. Split on the usual separators so the
+    /// offending ingredient can be highlighted on its own.
+    static func splitIngredients(_ text: String?) -> [String] {
+        guard let text, !text.isEmpty else { return [] }
+        return text
+            .components(separatedBy: CharacterSet(charactersIn: ",;()[]"))
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { $0.count > 1 && $0.count < 30 }
+    }
+
+    /// Solid colour, not a tinted banner. The verdict occupies the field of
+    /// view and is read without reading.
+    private var background: Color {
+        switch verdict?.status {
+        case .safe: return Tone.yes
+        case .avoid: return Tone.no
+        case .uncertain: return Tone.swap
+        case nil: return Tone.brand
+        }
+    }
+
+    private func headline(_ v: ProductVerdict) -> String {
+        let who = firstName.isEmpty ? String(localized: "your child") : firstName
+        switch v.status {
+        case .safe: return String(format: String(localized: "Good for %@"), who)
+        case .avoid: return String(format: String(localized: "Not for %@"), who)
+        case .uncertain: return String(localized: "I am not sure")
+        }
+    }
+
+    private func subline(_ v: ProductVerdict, _ p: GroceryProduct) -> String {
+        switch v.status {
+        case .safe:
+            return p.name ?? String(localized: "This product")
+        case .avoid:
+            let noms = v.allergensFound.joined(separator: ", ")
+            let label = p.name ?? String(localized: "This product")
+            return label + " — " + String(format: String(localized: "contains %@"), noms)
+        case .uncertain:
+            return String(localized: "Something on the label was not recognised. Check the package.")
+        }
+    }
+}
+
+/// Tags that wrap. The culprit is opaque white; the rest recede.
+private struct FlowTags: View {
+    let names: [String]
+    let highlighted: Set<String>
+
+    private let columns = [GridItem(.adaptive(minimum: 60), spacing: 6, alignment: .leading)]
+
+    var body: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 6) {
+            ForEach(names, id: \.self) { n in
+                Text(n)
+                    .font(.system(size: 11, weight: isHit(n) ? .bold : .regular))
+                    .lineLimit(1)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(isHit(n) ? Color.white : Color.white.opacity(0.18),
+                                in: Capsule())
+                    .foregroundStyle(isHit(n) ? Tone.no : Color.white)
             }
         }
-        .padding(18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .padding(14)
+    }
+
+    private func isHit(_ n: String) -> Bool {
+        highlighted.contains { n.localizedCaseInsensitiveContains($0) }
     }
 }
 
@@ -311,9 +403,9 @@ struct ProductVerdictBanner: View {
 
     private var color: Color {
         switch verdict.status {
-        case .safe: return Tint.pois
-        case .avoid: return Tint.canneberge
-        case .uncertain: return Tint.courge
+        case .safe: return Tone.yes
+        case .avoid: return Tone.no
+        case .uncertain: return Tone.swap
         }
     }
 

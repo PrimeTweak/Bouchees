@@ -56,21 +56,29 @@ struct RootView: View {
     /// "Children" was a tab you had to visit to learn who the app was filtering
     /// for. It is now the context header, in view on every screen, because
     /// knowing who you are cooking for is a state, not a destination.
+    /// THREE TABS, IN A FLOATING GLASS CAPSULE.
+    ///
+    /// iOS 26 detaches the tab bar from the screen edges — a pill, inset 21pt,
+    /// with content scrolling beneath it and fading out at the bottom. That is
+    /// the native geometry, not an interpretation of it.
+    ///
+    /// Glass belongs here and to almost nowhere else: it is the navigation
+    /// layer, floating above content. Applied to list rows it becomes mush.
     private var onglets: some View {
-        TabView(selection: $tab) {
-            RecipesScreen()
-                .tabItem { Label("Cook", systemImage: "fork.knife") }
-                .tag(0)
+        ZStack(alignment: .bottom) {
+            Group {
+                switch tab {
+                case 0: RecipesScreen()
+                case 1: ScannerScreen(tab: $tab)
+                default: SettingsScreen()
+                }
+            }
+            .ignoresSafeArea(.container, edges: .top)
 
-            ScannerScreen(tab: $tab)
-                .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
-                .tag(1)
-
-            SettingsScreen()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(2)
+            FloatingTabBar(selection: $tab)
+                .padding(.horizontal, Layout.tabInset)
+                .padding(.bottom, 6)
         }
-        .tint(Tint.betterave)
     }
 }
 
@@ -83,7 +91,7 @@ struct FatalErrorScreen: View {
         VStack(spacing: 14) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 44))
-                .foregroundStyle(Tint.canneberge)
+                .foregroundStyle(Tone.no)
             Text("Bouchées can’t start")
                 .font(.title2.weight(.bold))
                 .multilineTextAlignment(.center)
@@ -135,18 +143,18 @@ struct AgePicker: View {
                             .frame(width: 82, alignment: .leading)
                         Text(LocalizedStringKey(stage.texte))
                             .font(.footnote)
-                            .foregroundStyle(isOn ? Tint.betterave : Color.secondary)
+                            .foregroundStyle(isOn ? Tone.brand : Color.secondary)
                             .multilineTextAlignment(.leading)
                         Spacer(minLength: 0)
                     }
                     .padding(.horizontal, 15)
                     .padding(.vertical, 13)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(isOn ? Tint.betterave.opacity(0.1) : Color(.secondarySystemGroupedBackground),
+                    .background(isOn ? Tone.brand.opacity(0.1) : Color(.secondarySystemGroupedBackground),
                                 in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(isOn ? Tint.betterave : Color.primary.opacity(0.1),
+                            .strokeBorder(isOn ? Tone.brand : Color.primary.opacity(0.1),
                                           lineWidth: isOn ? 2 : 1.5)
                     )
                 }
@@ -218,7 +226,7 @@ struct AllergenGrid: View {
                                  otherCount), systemImage: "plus.circle")
                         .font(.subheadline.weight(.semibold))
                 }
-                .tint(Tint.betterave)
+                .tint(Tone.brand)
             }
         }
     }

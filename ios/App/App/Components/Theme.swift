@@ -5,13 +5,17 @@
 
 import SwiftUI
 
+/* Kept as an alias so nothing breaks, but every colour now resolves through
+ * Tone — one source, named by role, switching with the appearance. The asset
+ * catalogue entries are no longer read: they had dark variants, but they were
+ * a second place to keep in sync. */
 enum Tint {
-    static let betterave = Color("Betterave")
-    static let pois = Color("Pois")
-    static let courge = Color("Courge")
-    static let courgePale = Color("CourgePale")
-    static let canneberge = Color("Canneberge")
-    static let background = Color("Fond")
+    static let betterave = Tone.brand
+    static let pois = Tone.yes
+    static let courge = Tone.swap
+    static let courgePale = Tone.swapWash
+    static let canneberge = Tone.no
+    static let background = Tone.canvas
 }
 
 extension RecipeStatus {

@@ -82,7 +82,7 @@ struct ProfileAvatar: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(familyMode ? Tint.courge : Tint.betterave)
+            Circle().fill(familyMode ? Tone.swap : Tone.brand)
             if familyMode {
                 Image(systemName: "person.2.fill")
                     .font(.system(size: size * 0.4, weight: .semibold))
@@ -193,7 +193,7 @@ private struct ChildPickerRow: View {
             if isOn {
                 Image(systemName: "checkmark")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Tint.betterave)
+                    .foregroundStyle(Tone.brand)
             }
         }
         .padding(.vertical, 4)
@@ -209,7 +209,7 @@ private struct FamilyModeRow: View {
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
-                Circle().fill(Tint.courge)
+                Circle().fill(Tone.swap)
                 Image(systemName: "person.2.fill")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
@@ -238,7 +238,7 @@ private struct FamilyModeRow: View {
             if isOn {
                 Image(systemName: "checkmark")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Tint.betterave)
+                    .foregroundStyle(Tone.brand)
             }
         }
         .padding(.vertical, 4)
@@ -253,14 +253,14 @@ struct TallyLine: View {
     var body: some View {
         if tally.total > 0 {
             HStack(spacing: 4) {
-                Text("\(tally.asIs)").font(.caption2.weight(.bold)).foregroundStyle(Tint.pois)
+                Text("\(tally.asIs)").font(.caption2.weight(.bold)).foregroundStyle(Tone.yes)
                 Text("ready").font(.caption2).foregroundStyle(.secondary)
                 Text("·").font(.caption2).foregroundStyle(.tertiary)
-                Text("\(tally.adapted)").font(.caption2.weight(.bold)).foregroundStyle(Tint.courge)
+                Text("\(tally.adapted)").font(.caption2.weight(.bold)).foregroundStyle(Tone.swap)
                 Text("with swaps").font(.caption2).foregroundStyle(.secondary)
                 if tally.blocked > 0 {
                     Text("·").font(.caption2).foregroundStyle(.tertiary)
-                    Text("\(tally.blocked)").font(.caption2.weight(.bold)).foregroundStyle(Tint.canneberge)
+                    Text("\(tally.blocked)").font(.caption2.weight(.bold)).foregroundStyle(Tone.no)
                     Text("blocked").font(.caption2).foregroundStyle(.secondary)
                 }
             }
@@ -328,4 +328,104 @@ struct CountedSegments: View {
 /// become two more ways to narrow one list.
 enum RecipeFilter: String, CaseIterable, Sendable {
     case all, ready, swaps, saved
+}
+
+// MARK: - Floating tab bar
+
+/// The iOS 26 tab bar: a glass capsule, inset from the edges, with content
+/// scrolling underneath. Two to five destinations; three here.
+///
+/// The search island to the right is part of the same pattern — Apple moved
+/// search to the bottom precisely because the top of a phone is hard to reach
+/// one-handed, and this app is used one-handed by definition.
+struct FloatingTabBar: View {
+    @Binding var selection: Int
+    @State private var searching = false
+
+    private static let items: [(icon: String, label: LocalizedStringKey)] = [
+        ("fork.knife", "Cook"),
+        ("barcode.viewfinder", "Scan"),
+        ("gearshape", "Settings")
+    ]
+
+    var body: some View {
+        HStack(spacing: 9) {
+            HStack(spacing: 0) {
+                ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
+                    Button {
+                        selection = i
+                    } label: {
+                        VStack(spacing: 2) {
+                            Image(systemName: item.icon)
+                                .font(.system(size: 18, weight: selection == i ? .semibold : .regular))
+                            Text(item.label)
+                                .font(Type.label.weight(selection == i ? .semibold : .medium))
+                        }
+                        .foregroundStyle(selection == i ? Tone.brand : Tone.textTertiary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: Layout.tapTarget)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selection == i ? [.isSelected] : [])
+                }
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 5)
+            .glassCapsule()
+
+            Button {
+                searching = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(Tone.textTertiary)
+                    .glassCircle()
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Search")
+        }
+        .sheet(isPresented: $searching) { SearchSheet() }
+    }
+}
+
+/// Search opens as its own screen, per the platform pattern.
+struct SearchSheet: View {
+    @Environment(AppState.self) private var etat
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+
+    private var hits: [(recipe: Recipe, result: AdaptedRecipe)] {
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return [] }
+        return etat.pairs.filter { p in
+            p.recipe.name.lowercased().contains(q)
+                || p.recipe.category.lowercased().contains(q)
+                || p.recipe.ingredients.contains { u in
+                    (etat.definition(u.id)?.name ?? "").lowercased().contains(q)
+                }
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(hits, id: \.recipe.id) { p in
+                    RecipeRow(recipe: p.recipe, result: p.result)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Tone.canvas)
+                }
+            }
+            .listStyle(.plain)
+            .background(Tone.canvas)
+            .searchable(text: $query, prompt: Text("A recipe or an ingredient"))
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+    }
 }
