@@ -85,7 +85,8 @@ struct RootView: View {
         Group {
             switch tab {
             case 0: RecipesScreen(tab: $tab)
-            case 1: ScannerScreen(tab: $tab)
+            case 1: ShoppingScreen()
+            case 2: ScannerScreen(tab: $tab)
             default: SettingsScreen()
             }
         }

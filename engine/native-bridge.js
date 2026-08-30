@@ -72,6 +72,17 @@ var PONT = (function () {
     },
 
     /* Texture stage for a given age. */
+    /* The week's shopping list, aggregated on this side so Swift only has to
+     * display it. */
+    shoppingList: function (jsonRecipes, jsonProfile) {
+      var recettes = JSON.parse(jsonRecipes);
+      var profil = JSON.parse(jsonProfile);
+      return JSON.stringify(Moteur.listeEpicerie(recettes, {
+        allergens: profil.allergens || [],
+        ageMois: profil.ageMonths
+      }, donnees));
+    },
+
     stage: function (ageMois) {
       return JSON.stringify(Engine.stadePour(ageMois, required().base));
     },
@@ -129,7 +140,7 @@ var PONT = (function () {
         message = "Rien d\u2019interdit reconnu, mais des ingr\u00e9dients n\u2019ont pas \u00e9t\u00e9 identifi\u00e9s. Lisez l\u2019\u00e9tiquette.";
       } else {
         status = "safe";
-        message = "Aucun allerg\u00e8ne \u00e9vit\u00e9 d\u00e9tect\u00e9 dans la liste d\u2019ingr\u00e9dients.";
+        message = "No avoided allergen found in the ingredient list.";
       }
       return JSON.stringify({
         status: status,

@@ -61,7 +61,7 @@
       {
         "id": "apple",
         "qty": 4,
-        "unit": "unités"
+        "unit": "unit"
       },
       {
         "id": "dates",
@@ -122,7 +122,7 @@
       {
         "id": "carrot",
         "qty": 2,
-        "unit": "unités"
+        "unit": "unit"
       },
       {
         "id": "unsalted_broth",
@@ -168,7 +168,7 @@
       {
         "id": "sweet_potato",
         "qty": 2,
-        "unit": "unités"
+        "unit": "unit"
       },
       {
         "id": "green_peas",
@@ -213,7 +213,7 @@
       {
         "id": "sweet_potato",
         "qty": 3,
-        "unit": "unités"
+        "unit": "unit"
       },
       {
         "id": "olive_oil",

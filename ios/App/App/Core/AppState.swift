@@ -49,6 +49,28 @@ final class AppState {
         let chosen: Bool
     }
 
+    /// The recipes of the current batch — the week the subscription promises.
+    /// The batches were always weekly; nothing in the UI showed it.
+    var currentWeek: [Recipe] {
+        guard let batch = batches.last(where: { $0.unlocked }) else { return recipes }
+        let week = recipes.filter { $0.lot == batch.id }
+        return week.isEmpty ? recipes : week
+    }
+
+    /// The week's shopping list, already adapted for the active profile.
+    var shoppingList: [ShoppingItem] {
+        guard let moteur, moteur.pret else { return [] }
+        return (try? moteur.shoppingList(currentWeek, pour: activeProfile)) ?? []
+    }
+
+    var checkedItems: Set<String> {
+        local.loadChecked(week: batches.last(where: { $0.unlocked })?.id ?? "")
+    }
+
+    func saveCheckedItems(_ ids: Set<String>) {
+        local.saveChecked(ids, week: batches.last(where: { $0.unlocked })?.id ?? "")
+    }
+
     func substitutionOptions(for ingredientName: String) -> [SubstitutionOption] {
         /* Read from the table the app already carries rather than crossing the
          * bridge: the data is local, small, and this is a display concern. */
@@ -416,6 +438,12 @@ final class AppState {
 enum Format {
     /// "milk, eggs and peanuts" rather than "milk, eggs, peanuts".
     /// The joining word is localised: French needs "et", English "and".
+    /// A quantity without a trailing ".0". "375", not "375.0" — a shopping
+    /// list is read at a glance.
+    static func number(_ v: Double) -> String {
+        v == v.rounded() ? String(Int(v)) : String(format: "%.1f", v)
+    }
+
     static func liste(_ items: [String]) -> String {
         guard items.count > 1 else { return items.first ?? "" }
         let et = String(localized: "and", comment: "joins the last two items of a list")

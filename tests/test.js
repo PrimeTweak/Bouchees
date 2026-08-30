@@ -188,6 +188,78 @@ test("steps: a recipe with no swap keeps its steps identical", () => {
   assert.deepStrictEqual(res.steps, r.steps, "untouched when nothing is swapped");
 });
 
+/* ---------- units are English ---------- */
+
+/* "1 unité râpée" and "1 gousse" reached the screen because nothing checked
+ * the data. The engine was clean; the corpus was not. */
+
+test("units: no accented character in any unit", () => {
+  const fautifs = [];
+  recettes.forEach((r) => {
+    (r.ingredients || []).forEach((i) => {
+      if (i.unit && /[\u00C0-\u017F]/.test(i.unit)) fautifs.push(r.id + ": " + i.unit);
+    });
+  });
+  assert.deepStrictEqual(fautifs, [], "every unit is written in English");
+});
+
+test("units: the unit is a measure, not a preparation", () => {
+  /* "ml hachés" packed two things into one field. A unit is ml, g, unit,
+   * clove — the preparation belongs in its own key. */
+  const connus = ["ml", "g", "kg", "l", "unit", "clove", "pinch", "slice", "tsp", "tbsp", "cup"];
+  const inconnus = new Set();
+  recettes.forEach((r) => {
+    (r.ingredients || []).forEach((i) => {
+      if (i.unit && !connus.includes(i.unit)) inconnus.add(i.unit);
+    });
+  });
+  assert.deepStrictEqual([...inconnus], [], "no compound units");
+});
+
+/* ---------- the week's shopping list ---------- */
+
+test("shopping: the list carries the replacement, never the allergen", () => {
+  const liste = Engine.listeEpicerie(recettes.slice(0, 7),
+    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+  liste.forEach((l) => {
+    assert.ok(!/^(cow's milk|egg)$/i.test(l.name),
+      "an avoided ingredient never appears: " + l.name);
+  });
+});
+
+test("shopping: a swap says what it replaces", () => {
+  const liste = Engine.listeEpicerie(recettes.slice(0, 7),
+    { allergens: ["egg"], ageMois: 24 }, donnees);
+  const swaps = liste.filter((l) => l.replaces);
+  if (swaps.length) {
+    assert.ok(swaps.every((l) => typeof l.replaces === "string" && l.replaces.length),
+      "every swapped line names the original");
+  }
+});
+
+test("shopping: quantities add only within the same unit", () => {
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  liste.forEach((l) => {
+    const unites = l.quantities.map((q) => q.unit);
+    assert.strictEqual(new Set(unites).size, unites.length,
+      l.name + ": one entry per unit, never a total across units");
+  });
+});
+
+test("shopping: every line lands in a known aisle", () => {
+  const connus = ["produce", "protein", "refrigerated", "pantry", "frozen", "other"];
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  liste.forEach((l) => {
+    assert.ok(connus.includes(l.aisle), l.name + " has aisle " + l.aisle);
+  });
+});
+
+test("shopping: an ingredient shared by several recipes appears once", () => {
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  const noms = liste.map((l) => l.name.toLowerCase());
+  assert.strictEqual(new Set(noms).size, noms.length, "no duplicate line");
+});
+
 /* ---------- age rules ---------- */
 
 test("barres granola à 9 mois : miel → sirop d'érable (swap d'âge) + alerte ageMinBase", () => {

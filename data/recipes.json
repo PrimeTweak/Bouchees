@@ -121,7 +121,8 @@
       {
         "id": "carrot",
         "qty": 1,
-        "unit": "unité râpée"
+        "unit": "unit",
+        "prep": "grated"
       },
       {
         "id": "egg",
@@ -138,7 +139,7 @@
       {
         "id": "garlic",
         "qty": 1,
-        "unit": "gousse"
+        "unit": "clove"
       },
       {
         "id": "olive_oil",
@@ -170,7 +171,8 @@
       {
         "id": "sweet_potato",
         "qty": 1,
-        "unit": "grosse"
+        "unit": "unit",
+        "prep": "large"
       },
       {
         "id": "chicken",
@@ -219,7 +221,8 @@
       {
         "id": "apple",
         "qty": 1,
-        "unit": "unité râpée"
+        "unit": "unit",
+        "prep": "grated"
       },
       {
         "id": "cinnamon",
@@ -313,7 +316,7 @@
       {
         "id": "garlic",
         "qty": 2,
-        "unit": "gousses"
+        "unit": "clove"
       },
       {
         "id": "olive_oil",
@@ -417,7 +420,7 @@
       {
         "id": "garlic",
         "qty": 1,
-        "unit": "gousse"
+        "unit": "clove"
       },
       {
         "id": "water",
@@ -567,12 +570,14 @@
       {
         "id": "zucchini",
         "qty": 1,
-        "unit": "unité râpée"
+        "unit": "unit",
+        "prep": "grated"
       },
       {
         "id": "spinach",
         "qty": 60,
-        "unit": "ml hachés"
+        "unit": "ml",
+        "prep": "chopped"
       },
       {
         "id": "cheddar",
@@ -659,8 +664,9 @@
       {
         "id": "cheddar",
         "qty": 250,
-        "unit": "ml râpé",
-        "role": "dairy"
+        "unit": "ml",
+        "role": "dairy",
+        "prep": "grated"
       },
       {
         "id": "cow_milk",
@@ -671,7 +677,8 @@
       {
         "id": "butternut_squash",
         "qty": 250,
-        "unit": "ml en purée"
+        "unit": "ml",
+        "prep": "puréed"
       },
       {
         "id": "butter",
@@ -715,7 +722,8 @@
       {
         "id": "apple",
         "qty": 1,
-        "unit": "unité râpée"
+        "unit": "unit",
+        "prep": "grated"
       },
       {
         "id": "egg",
@@ -738,7 +746,7 @@
       {
         "id": "garlic",
         "qty": 1,
-        "unit": "gousse"
+        "unit": "clove"
       },
       {
         "id": "salt",
@@ -805,7 +813,8 @@
       {
         "id": "mango",
         "qty": 250,
-        "unit": "ml en cubes"
+        "unit": "ml",
+        "prep": "diced"
       },
       {
         "id": "banana",
@@ -948,7 +957,8 @@
       {
         "id": "cucumber",
         "qty": 0.5,
-        "unit": "unité râpé"
+        "unit": "unit",
+        "prep": "grated"
       },
       {
         "id": "lemon_juice",
@@ -958,12 +968,12 @@
       {
         "id": "garlic",
         "qty": 0.5,
-        "unit": "gousse"
+        "unit": "clove"
       },
       {
         "id": "raw_carrot",
         "qty": 2,
-        "unit": "unités"
+        "unit": "unit"
       }
     ],
     "steps": [

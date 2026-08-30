@@ -23,8 +23,13 @@ struct FloatingTabBar: View {
     @State private var searching = false
     @Namespace private var glassSpace
 
+    /* Four, not three. Shopping is the second gesture of the week — after
+     * "what do I cook", "what do I buy" — and it deserves a destination
+     * rather than a button buried in a list. The platform allows two to five
+     * before a More tab becomes necessary. */
     private static let items: [(icon: String, label: LocalizedStringKey)] = [
         ("fork.knife", "Recipes"),
+        ("cart", "Shopping"),
         ("barcode.viewfinder", "Scan"),
         ("gearshape", "Settings")
     ]
@@ -89,10 +94,10 @@ private struct TabItem: View {
         Button(action: tap) {
             VStack(spacing: 2) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: selected ? .semibold : .regular))
+                    .font(.system(size: 19, weight: selected ? .semibold : .regular))
                     .symbolEffect(.bounce, value: selected)
                 Text(label)
-                    .font(.system(size: 10.5, weight: selected ? .bold : .medium))
+                    .font(.system(size: 9.5, weight: selected ? .bold : .medium))
             }
             .foregroundStyle(selected ? Tone.brand : Tone.text2)
             .frame(maxWidth: .infinity)
@@ -114,65 +119,6 @@ private struct TabItem: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? [.isSelected] : [])
     }
-}
-
-// MARK: - Counted segments
-
-/// "15" is information. "Ready" is not. The counts recompute whenever the
-/// profile changes, which is what makes the engine's promise visible.
-struct CountedSegments: View {
-    @Binding var selection: RecipeFilter
-    let tally: AppState.ProfileTally
-    let savedCount: Int
-
-    var body: some View {
-        HStack(spacing: 7) {
-            seg(.all, tally.total, "All")
-            seg(.ready, tally.asIs, "Ready")
-            seg(.swaps, tally.adapted, "Swaps")
-            if savedCount > 0 { seg(.saved, savedCount, "Saved") }
-        }
-        .padding(.horizontal, Layout.gutter)
-    }
-
-    private func seg(_ f: RecipeFilter, _ n: Int, _ label: LocalizedStringKey) -> some View {
-        let on = selection == f
-        return Button {
-            withAnimation(.smooth(duration: 0.2)) { selection = f }
-        } label: {
-            VStack(spacing: 1) {
-                Text("\(n)")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(on ? .white : Tone.text)
-                    .contentTransition(.numericText())
-                Text(label)
-                    .font(.system(size: 10.5, weight: .semibold))
-                    .foregroundStyle(on ? .white.opacity(0.78) : Tone.text2)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 9)
-            .background {
-                /* The brand, not near-black. A solid black pill in light mode
-                 * is a hole in the page; the brand at full strength reads as a
-                 * selection. */
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(on ? AnyShapeStyle(Tone.brandGradient)
-                             : AnyShapeStyle(Tone.text.opacity(0.045)))
-                    .shadow(color: on ? Tone.brandDeep.opacity(0.32) : .clear,
-                            radius: 10, y: 5)
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(on ? .clear : Tone.hairline, lineWidth: 1)
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(on ? [.isSelected] : [])
-    }
-}
-
-enum RecipeFilter: String, CaseIterable {
-    case all, ready, swaps, saved
 }
 
 // MARK: - Context header

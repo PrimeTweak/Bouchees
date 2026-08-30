@@ -14,7 +14,7 @@ const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
 
 const ROLES = ["flour", "binder", "fat", "liquid", "dairy", "protein", "sweetener",
                "fruit", "vegetable", "seasoning", "leavening", "topping", "autre"];
-const UNITES = ["ml", "g", "unité", "unités", "gousse", "gousses", "tranche", "tranches",
+const UNITES = ["ml", "g", "unit", "unit", "clove", "clove", "tranche", "tranches",
                 "boîte", "boîtes", "filet", "filets", "au goût"];
 
 function valider(r, commande, donnees, idsExistants) {

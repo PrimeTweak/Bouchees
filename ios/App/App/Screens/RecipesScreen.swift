@@ -16,7 +16,7 @@ struct RecipesScreen: View {
     var tab: Binding<Int>?
     @Environment(AppState.self) private var etat
 
-    @State private var filter: RecipeFilter = .all
+    @State private var meal: String?
     @State private var openRecipeID: String?
     @State private var showPaywall = false
 
@@ -28,15 +28,14 @@ struct RecipesScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     hero
-                    counts
+                    weekHeader
+                    shoppingEntry
+                    mealChips
                     if let message = etat.syncMessage {
                         MessageBanner(texte: message)
                             .padding(.horizontal, Layout.gutter)
                             .padding(.top, 18)
                     }
-                    CountedSegments(selection: $filter, tally: tally,
-                                    savedCount: etat.saved.recipes.count)
-                        .padding(.top, 24)
                     list
                     locked
                     disclaimer
@@ -81,22 +80,37 @@ struct RecipesScreen: View {
                      * So the drawing gets a shorter frame, centred on a warm
                      * field, at the size it was drawn for. The photo, when
                      * there is one, fills the whole hero. */
-                    if etat.hasPhoto(h.recipe) {
-                        RecipeVisual(recipe: h.recipe, result: h.result)
-                            .frame(height: Layout.heroPhoto)
-                            .frame(maxWidth: .infinity)
-                            .clipped()
-                    } else {
-                        ZStack {
-                            Tone.heroField
+                    /* THE HERO IS DARK, WHATEVER THE THEME.
+                     *
+                     * White text over a photo needs a dark field under it. In
+                     * light mode my gradient faded to pale canvas and the
+                     * title landed white on beige — unreadable.
+                     *
+                     * Apple Music, Spotify, Airbnb all do this: the image area
+                     * never switches to light. What switches is everything
+                     * BELOW it. */
+                    ZStack {
+                        Tone.heroField
+                        if etat.hasPhoto(h.recipe) {
+                            RecipeVisual(recipe: h.recipe, result: h.result)
+                                .frame(height: Layout.heroPhoto)
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            /* The drawing was made for a 66pt thumbnail. At
+                             * its own size on the dark field it reads as
+                             * deliberate; blown up to 430 it was a beige
+                             * polygon. */
                             RecipeVisual(recipe: h.recipe, result: h.result,
                                          drawingBackground: false)
                                 .frame(width: 190, height: 190)
-                                .offset(y: -46)
+                                .offset(y: -42)
                         }
-                        .frame(height: Layout.heroPhoto)
-                        .frame(maxWidth: .infinity)
                     }
+                    .frame(height: Layout.heroPhoto)
+                    .frame(maxWidth: .infinity)
+                    /* Without this the transparent drawing paints over the
+                     * whole page — the beige smears behind the list. */
+                    .clipped()
 
                     LinearGradient(
                         stops: [.init(color: .black.opacity(0.42), location: 0),
@@ -143,65 +157,146 @@ struct RecipesScreen: View {
         }
     }
 
-    /// One line, not three tiles. "15 ready · 23 with swaps · 0 blocked" — the
-    /// zero is the strongest fact in the product and it fits in eleven
-    /// characters.
-    private var counts: some View {
-        HStack(spacing: 9) {
-            count(tally.asIs, "ready", Tone.yes)
-            Text("·").foregroundStyle(Tone.text3)
-            count(tally.adapted, "with swaps", Tone.swap)
-            Text("·").foregroundStyle(Tone.text3)
-            count(tally.blocked, "blocked",
-                  tally.blocked == 0 ? Tone.text3 : Tone.no)
-            Spacer(minLength: 0)
+    /* THE WEEK, NOT THE VERDICT.
+     *
+     * The old segments — All / Ready / Swaps — invented a hierarchy that does
+     * not exist. A recipe with two swaps is not lesser; it has two different
+     * lines on the shopping list. Sorting by it told the parent that twelve of
+     * their fifteen recipes were second choice.
+     *
+     * What a parent actually filters by is the meal. And the batches were
+     * always weekly — seven recipes each, which is exactly the subscription
+     * promise. Nothing in the UI ever showed it.
+     */
+    private var weekHeader: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("This week")
+                .font(.system(size: 19, weight: .bold))
+                .foregroundStyle(Tone.text)
+            Spacer(minLength: 8)
+            Text(String(format: String(localized: "%lld recipes"), week.count))
+                .font(.system(size: 12))
+                .foregroundStyle(Tone.text2)
         }
-        /* Not monospaced. Tabular figures align the numbers without making
-         * the words read like code — which is what the whole line did. */
-        .font(.system(size: 13.5))
-        .monospacedDigit()
-        .foregroundStyle(Tone.text2)
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 22)
+        .padding(.top, 20)
     }
 
-    private func count(_ n: Int, _ label: LocalizedStringKey, _ tone: Color) -> some View {
-        HStack(spacing: 5) {
-            Text("\(n)")
-                .font(.system(size: 15.5, weight: .bold))
-                .monospacedDigit()
-                .foregroundStyle(tone)
-                .contentTransition(.numericText())
-            Text(label)
+    /// The second gesture of the week, after "what do I cook": "what do I buy".
+    private var shoppingEntry: some View {
+        Button { tab?.wrappedValue = 1 } label: {
+            HStack(spacing: 11) {
+                Image(systemName: "cart.fill")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.white)
+                    .frame(width: 38, height: 38)
+                    .background {
+                        RoundedRectangle(cornerRadius: 13, style: .continuous)
+                            .fill(Tone.brandGradient)
+                            .shadow(color: Tone.brandDeep.opacity(0.34), radius: 8, y: 5)
+                    }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Shopping list")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Tone.text)
+                    Text(String(format: String(localized: "%lld items, already adapted"),
+                                etat.shoppingList.count))
+                        .font(.system(size: 11.5))
+                        .foregroundStyle(Tone.text2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(14)
+            .background {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(LinearGradient(colors: [Tone.brand.opacity(0.12), Tone.brand.opacity(0.04)],
+                                         startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .strokeBorder(Tone.brand.opacity(0.18), lineWidth: 1)
+                    }
+            }
         }
+        .buttonStyle(.plain)
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 16)
+    }
+
+    /// Breakfast, meals, snacks — how a parent thinks about a day.
+    private var mealChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 7) {
+                chip(nil, "All", week.count)
+                ForEach(mealTypes, id: \.self) { m in
+                    chip(m, LocalizedStringKey(m), week.filter { $0.category == m }.count)
+                }
+            }
+            .padding(.horizontal, Layout.gutter)
+        }
+        .padding(.top, 16)
+    }
+
+    private func chip(_ value: String?, _ label: LocalizedStringKey, _ n: Int) -> some View {
+        let on = meal == value
+        return Button {
+            withAnimation(.smooth(duration: 0.2)) { meal = value }
+        } label: {
+            HStack(spacing: 6) {
+                Text(label)
+                Text("\(n)").foregroundStyle(on ? Tone.canvas.opacity(0.6) : Tone.text3)
+            }
+            .font(.system(size: 12.5, weight: .semibold))
+            .foregroundStyle(on ? Tone.canvas : Tone.text2)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 7)
+            .background(on ? AnyShapeStyle(Tone.text) : AnyShapeStyle(Tone.text.opacity(0.05)),
+                        in: Capsule())
+            .overlay { Capsule().strokeBorder(on ? .clear : Tone.hairline, lineWidth: 1) }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(on ? [.isSelected] : [])
+    }
+
+    private var mealTypes: [String] {
+        var seen: [String] = []
+        for r in week where !seen.contains(r.category) { seen.append(r.category) }
+        return seen
     }
 
     // MARK: - List
 
+    /// Grouped by meal, in the order of a day. Mixing breakfast into the meals
+    /// made the list feel like a pile; grouping makes it a week.
     private var list: some View {
         LazyVStack(spacing: 0) {
-            if !rows.isEmpty {
-                Text("Also today").eyebrow()
+            ForEach(groups, id: \.meal) { group in
+                Text(LocalizedStringKey(group.meal))
+                    .eyebrow()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Layout.gutter)
-                    .padding(.top, 26)
-                    .padding(.bottom, 4)
-            }
+                    .padding(.top, 24)
+                    .padding(.bottom, 2)
 
-            ForEach(rows, id: \.recipe.id) { pair in
-                Button { openRecipeID = pair.recipe.id } label: {
-                    RecipeRow(recipe: pair.recipe, result: pair.result)
+                ForEach(group.items, id: \.recipe.id) { pair in
+                    Button { openRecipeID = pair.recipe.id } label: {
+                        RecipeRow(recipe: pair.recipe, result: pair.result)
+                    }
+                    .buttonStyle(.plain)
+
+                    if pair.recipe.id != group.items.last?.recipe.id {
+                        Divider().overlay(Tone.hairline)
+                            .padding(.leading, Layout.gutter + Layout.thumb + 15)
+                    }
                 }
-                .buttonStyle(.plain)
-
-                Divider().overlay(Tone.hairline)
-                    .padding(.leading, Layout.gutter + Layout.thumb + 15)
             }
 
-            if rows.isEmpty {
-                EmptyState(symbol: "magnifyingglass",
-                           title: "Nothing matches",
-                           message: "Try another filter.")
+            if groups.isEmpty {
+                EmptyState(symbol: "fork.knife",
+                           title: "Nothing here",
+                           message: "Try another meal.")
                     .padding(.top, 44)
             }
         }
@@ -211,25 +306,26 @@ struct RecipesScreen: View {
 
     private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] { etat.pairs }
 
+    private var week: [Recipe] { etat.currentWeek }
+
     private var heroPair: (recipe: Recipe, result: AdaptedRecipe)? {
-        guard filter == .all else { return nil }
-        return pairs.first { $0.result.status == .asIs && ($0.recipe.timeMinutes ?? 99) <= 40 }
-            ?? pairs.first { $0.result.status == .asIs }
-            ?? pairs.first
+        let inWeek = pairs.filter { p in week.contains { $0.id == p.recipe.id } }
+        let pool = inWeek.isEmpty ? pairs : inWeek
+        return pool.first { $0.result.status == .asIs && ($0.recipe.timeMinutes ?? 99) <= 40 }
+            ?? pool.first { $0.result.status == .asIs }
+            ?? pool.first
     }
 
-    private var rows: [(recipe: Recipe, result: AdaptedRecipe)] {
-        let base: [(recipe: Recipe, result: AdaptedRecipe)]
-        switch filter {
-        case .all:   base = pairs
-        case .ready: base = pairs.filter { $0.result.status == .asIs }
-        case .swaps: base = pairs.filter { $0.result.status == .adapted }
-        case .saved:
-            let ids = Set(etat.saved.recipes.map(\.id))
-            base = pairs.filter { ids.contains($0.recipe.id) }
-        }
-        guard let h = heroPair else { return base }
-        return base.filter { $0.recipe.id != h.recipe.id }
+    private var groups: [(meal: String, items: [(recipe: Recipe, result: AdaptedRecipe)])] {
+        let ids = Set(week.map(\.id))
+        var rows = pairs.filter { ids.contains($0.recipe.id) }
+        if rows.isEmpty { rows = pairs }
+        if let m = meal { rows = rows.filter { $0.recipe.category == m } }
+        if let h = heroPair { rows = rows.filter { $0.recipe.id != h.recipe.id } }
+
+        var order: [String] = []
+        for r in rows where !order.contains(r.recipe.category) { order.append(r.recipe.category) }
+        return order.map { m in (m, rows.filter { $0.recipe.category == m }) }
     }
 
     // MARK: - Tail

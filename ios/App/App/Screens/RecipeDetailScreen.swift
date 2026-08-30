@@ -25,15 +25,27 @@ struct RecipeDetailScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 ZStack(alignment: .bottomLeading) {
-                    RecipeVisual(recipe: recipe, result: result)
-                        .frame(height: Layout.detailPhoto)
-                        .frame(maxWidth: .infinity)
-                        .clipped()
-                        .overlay { PhotoScrim() }
+                    /* Dark field under the image, whatever the theme — white
+                     * text needs it. See RecipesScreen for the full note. */
+                    ZStack {
+                        Tone.heroField
+                        RecipeVisual(recipe: recipe, result: result,
+                                     drawingBackground: false)
+                            .frame(height: Layout.detailPhoto)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .frame(height: Layout.detailPhoto)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+                    .overlay { PhotoScrim() }
 
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(soustitre)
-                            .eyebrow(Tone.brand)
+                        /* The recipe only. The child is already named in the
+                         * verdict pill below and in the ingredients header —
+                         * repeating the whole profile here pushed the line to
+                         * two rows and buried the title. */
+                        Text(recipe.subtitle)
+                            .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.6), radius: 8)
 
                         Text(recipe.name)
@@ -69,9 +81,26 @@ struct RecipeDetailScreen: View {
         .background(Tone.canvas.ignoresSafeArea())
         .ignoresSafeArea(.container, edges: .top)
         .toolbar(.hidden, for: .navigationBar)
-        .overlay(alignment: .topLeading) { backButton }
-        .overlay(alignment: .topTrailing) { saveButton }
-        .overlay(alignment: .bottom) { startButton }
+        /* THE BACK BUTTON DID NOT WORK.
+         *
+         * It was an overlay on a ScrollView that ignores the top safe area,
+         * so it was DRAWN in the right place but sat outside its parent's hit
+         * region — exactly the bug the tab bar had. An inset owns its strip
+         * and receives taps. */
+        .safeAreaInset(edge: .top) {
+            HStack {
+                backButton
+                Spacer(minLength: 0)
+                saveButton
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 8)
+        }
+        /* As an inset, not an overlay: the content ends above it on its own,
+         * and it no longer collides with the tab bar — which is hidden here,
+         * as it is in any app once you are inside a detail. */
+        .safeAreaInset(edge: .bottom) { startButton }
+        .toolbar(.hidden, for: .tabBar)
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }
@@ -144,8 +173,6 @@ struct RecipeDetailScreen: View {
                 .glass(Circle())
         }
         .buttonStyle(.plain)
-        .padding(.leading, 18)
-        .padding(.top, 58)
         .accessibilityLabel("Back")
     }
 

@@ -158,7 +158,18 @@ final class RecipeEngine {
         return try decoder(TextureStage.self, brut, "stage")
     }
 
-    /// Reads the label of a scanned product.
+    /// Reads the label of a scanned product. The engine aggregates; Swift only displays.
+    func shoppingList(_ recipes: [Recipe], pour profile: ChildProfile) throws -> [ShoppingItem] {
+        guard pret else { throw EngineError.exception("data not loaded") }
+        let encodeur = JSONEncoder()
+        let jsonRecettes = String(decoding: try encodeur.encode(recipes), as: UTF8.self)
+        let jsonProfil = String(decoding: try encodeur.encode(
+            ProfilPourMoteur(ageMonths: profile.ageMonths,
+                             allergens: profile.allergens)), as: UTF8.self)
+        let brut = try appeler("shoppingList", [jsonRecettes, jsonProfil])
+        return try decoder([ShoppingItem].self, brut, "shoppingList")
+    }
+
     func evaluateLabel(_ texte: String, evites: [String]) throws -> ProductVerdict {
         let jsonEvites = String(decoding: try JSONEncoder().encode(evites), as: UTF8.self)
         let brut = try appeler("evaluateLabel", [texte, jsonEvites])

@@ -122,6 +122,95 @@
     return String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
+  /* THE WEEK'S SHOPPING LIST.
+   *
+   * Everything a parent buys for one batch, already adapted: no milk on the
+   * list, fortified soy beverage instead, with the swap noted so they know why
+   * when they are standing in front of the shelf.
+   *
+   * Quantities are added only when the units MATCH. The corpus mixes "125 ml"
+   * with "1 unit", and inventing a total across those would be a lie on a
+   * shopping list — mismatched entries are listed side by side instead.
+   */
+  function listeEpicerie(recettes, options, donnees) {
+    var catalogue = donnees.catalogue;
+    var lignes = {};
+
+    recettes.forEach(function (recette) {
+      var adaptee = adapterRecette(recette, options, donnees);
+
+      adaptee.ingredients.forEach(function (ing) {
+        if (ing.status === "omitted") return;
+
+        var nom = ing.toName || ing.name;
+        var cle = nom.toLowerCase();
+
+        if (!lignes[cle]) {
+          lignes[cle] = {
+            name: nom,
+            aisle: rayonPour(ing, catalogue),
+            quantities: [],
+            recipes: [],
+            replaces: ing.status === "swapped" ? ing.name : null
+          };
+        }
+
+        var ligne = lignes[cle];
+        if (ligne.recipes.indexOf(recette.name) === -1) {
+          ligne.recipes.push(recette.name);
+        }
+
+        /* qty arrives as a bare number from the published batches and as
+         * { value } from the local corpus. Accept both rather than depending
+         * on which path loaded the recipe. */
+        var valeur = typeof ing.qty === "number" ? ing.qty
+                   : (ing.qty && ing.qty.value) || 0;
+        if (valeur) {
+          var unite = ing.unit || "";
+          var existante = null;
+          for (var i = 0; i < ligne.quantities.length; i++) {
+            if (ligne.quantities[i].unit === unite) { existante = ligne.quantities[i]; break; }
+          }
+          if (existante) existante.value += valeur;
+          else ligne.quantities.push({ value: valeur, unit: unite });
+        }
+      });
+    });
+
+    var sortie = [];
+    for (var k in lignes) { if (lignes.hasOwnProperty(k)) sortie.push(lignes[k]); }
+
+    return sortie.sort(function (a, b) {
+      if (a.aisle !== b.aisle) {
+        return ORDRE_RAYONS.indexOf(a.aisle) - ORDRE_RAYONS.indexOf(b.aisle);
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  /* A parent walks a store by section, so a list ordered any other way costs
+   * them laps. The aisle comes from the ingredient's own role in the
+   * catalogue — no new data to maintain. */
+  var ORDRE_RAYONS = ["produce", "protein", "refrigerated", "pantry", "frozen", "other"];
+
+  var ROLE_VERS_RAYON = {
+    vegetable: "produce", fruit: "produce",
+    protein: "protein",
+    dairy: "refrigerated", liquid: "refrigerated",
+    flour: "pantry", binder: "pantry", sweetener: "pantry",
+    seasoning: "pantry", fat: "pantry", leavening: "pantry", topping: "pantry"
+  };
+
+  function rayonPour(ing, catalogue) {
+    var id = ing.to || ing.id;
+    var def = catalogue && catalogue[id];
+    var roles = (def && def.roles) || [];
+    for (var i = 0; i < roles.length; i++) {
+      if (ROLE_VERS_RAYON[roles[i]]) return ROLE_VERS_RAYON[roles[i]];
+    }
+    return "other";
+  }
+
   function stadePour(ageMois, base) {
     for (var i = 0; i < base.stages.length; i++) {
       var s = base.stages[i];
@@ -318,6 +407,7 @@
   return {
     analyserAllergenes: analyserAllergenes,
     adapterRecette: adapterRecette,
+    listeEpicerie: listeEpicerie,
     stadePour: stadePour,
     interditPour: interditPour,
     choisirSubstitut: choisirSubstitut,

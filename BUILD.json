@@ -1,9 +1,12 @@
 {
-  "build": 61,
+  "build": 62,
   "date": "2026-08-29",
   "carries": [
-    "backgroundGradient typed LinearGradient, not some View",
-    "runner moved to macos-latest for Xcode 26",
-    "checker: opaque type erasing ShapeStyle"
+    "hero always dark and clipped \u2014 no more bleed, readable in light",
+    "back button as safeAreaInset \u2014 it works now",
+    "38 French units translated across the whole repo, 2 tests",
+    "home is the week, grouped by meal; Ready/Swaps segments gone",
+    "shopping list: new screen, engine aggregator, 4th tab, 5 tests",
+    "Start cooking as inset, tab bar hidden on the detail"
   ]
 }

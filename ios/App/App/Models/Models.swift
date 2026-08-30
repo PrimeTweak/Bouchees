@@ -358,3 +358,35 @@ struct SubstitutionOptionRaw: Codable, Sendable {
     let note: String?
     let minAgeMonths: Int?
 }
+
+// MARK: - Shopping
+
+/// One line of the week's shopping list, as the engine produces it.
+///
+/// `quantities` is a LIST, not a number: the corpus mixes "125 ml" with
+/// "1 unit", and a single total across those would be wrong on a shopping
+/// list. Mismatched units sit side by side instead.
+struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
+    let name: String
+    let aisle: String
+    let quantities: [ShoppingQuantity]
+    let recipes: [String]
+    /// The ingredient this one stands in for, when the engine swapped it.
+    let replaces: String?
+
+    var id: String { name.lowercased() }
+
+    /// "375 ml", or "1 unit + 250 ml" when the units do not add up.
+    var quantityLabel: String {
+        quantities.map { q in
+            q.unit.isEmpty ? Format.number(q.value)
+                           : "\(Format.number(q.value)) \(q.unit)"
+        }
+        .joined(separator: " + ")
+    }
+}
+
+struct ShoppingQuantity: Codable, Hashable, Sendable {
+    let value: Double
+    let unit: String
+}

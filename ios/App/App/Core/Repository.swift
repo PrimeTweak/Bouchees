@@ -92,6 +92,18 @@ enum Settings {
 @MainActor
 final class LocalStore {
 
+    /* Ticked items, per week. A shopping list without memory is useless in an
+     * aisle — you put the phone away to pick something up and lose your place.
+     * Keyed by batch so a new week starts clean on its own. */
+    func saveChecked(_ ids: Set<String>, week: String) {
+        UserDefaults.standard.set(Array(ids), forKey: "checked.\(week)")
+    }
+
+    func loadChecked(week: String) -> Set<String> {
+        Set(UserDefaults.standard.stringArray(forKey: "checked.\(week)") ?? [])
+    }
+
+
     private let fm = FileManager.default
 
     private var folder: URL {
