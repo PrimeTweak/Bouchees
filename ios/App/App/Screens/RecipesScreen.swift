@@ -382,7 +382,7 @@ struct RecipesScreen: View {
 
     /// The date under a day header: "Monday 31", and the month when it turns.
     private func dayTitle(_ jour: Int, slot: WeekSlot) -> String {
-        let nom = String(localized: WeekDay.full[jour])
+        let nom = String(localized: WeekDay.fullValues[jour])
         guard let d = slot.date(day: jour) else { return nom }
         let cal = Calendar.current
         let f = DateFormatter()
