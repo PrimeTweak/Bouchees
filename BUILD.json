@@ -1,11 +1,11 @@
 {
-  "build": 97,
+  "build": 98,
   "date": "2026-08-29",
   "carries": [
-    "the splash condition was unreachable \u2014 recipes are bundled, never empty",
-    "fetch failed was never a timeout: measured, a timeout says aborted-due-to-timeout",
-    "the cause code was thrown away; three builds were spent guessing",
-    "photo cache was an unbounded dictionary \u2014 NSCache now, 80 MB ceiling",
-    "POST /api/rating had no rate limit"
+    "UND_ERR_HEADERS_TIMEOUT \u2014 undici gives a server five minutes to send its FIRST header",
+    "that limit is internal: an AbortSignal never reached it, mine was set to fifteen",
+    "Draw Things sends nothing until the render finishes, and 1408x1408 runs past five minutes",
+    "node:http has no such limit and is built in",
+    "checker rule: fetch() on the local renderer"
   ]
 }

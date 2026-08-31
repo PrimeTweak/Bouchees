@@ -128,6 +128,11 @@ fichiers.forEach(function (f) {
    * supported way to set them. */
   if (/writeHead|createServer|setHeader/.test(code)) return;
   if (f.indexOf("probe-") !== -1) return;
+
+  /* node:http REQUIRES Content-Length on a POST — the restriction is about
+   * what fetch forbids, and a file that uses http.request is not using
+   * fetch for that call. */
+  if (/http\.request\(/.test(code)) return;
   INTERDITS.forEach(function (h) {
     const motif = new RegExp('["\']' + h + '["\']\\s*:', "i");
     if (motif.test(code)) {
@@ -143,6 +148,35 @@ fichiers.forEach(function (f) {
     console.error("The specification forbids these — the runtime owns them.");
     console.error("Node strips or rejects them, and a working request");
     console.error("becomes \"fetch failed\" with no explanation.\n");
+    process.exit(1);
+  }
+})();
+
+/* fetch() ON A LOCAL RENDERER.
+ *
+ * undici — the client behind fetch — gives a server five minutes to send
+ * its FIRST header. The limit is internal: an AbortSignal does not reach
+ * it, and mine was set to fifteen while undici cut at five.
+ *
+ * Draw Things sends nothing until the render is done, and a 1408x1408
+ * image runs past five minutes. Every request died in the same place,
+ * reported as UND_ERR_HEADERS_TIMEOUT, and three builds were spent
+ * blaming headers, sleep and the model.
+ *
+ * node:http has no such limit and is built in. */
+(function fetchSurRenduLocal() {
+  const f = path.join(root, "generation", "image-engines.js");
+  if (!fs.existsSync(f)) return;
+  const code = fs.readFileSync(f, "utf8");
+  const bloc = code.slice(code.indexOf("const drawthings"),
+                          code.indexOf("const openai"));
+  if (/\bfetch\(/.test(bloc)) {
+    console.error("\nfetch() ON THE LOCAL RENDERER");
+    console.error("  x generation/image-engines.js uses fetch for Draw Things");
+    console.error("");
+    console.error("undici cuts after five minutes waiting for the first");
+    console.error("header, and no AbortSignal reaches that limit. A large");
+    console.error("render takes longer. Use node:http.\n");
     process.exit(1);
   }
 })();

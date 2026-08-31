@@ -9,6 +9,7 @@
  * Chaque adaptateur retourne { octets, largeur, hauteur, moteur }.
  */
 "use strict";
+const http = require("http");
 const zlib = require("zlib");
 const crypto = require("crypto");
 
@@ -142,44 +143,74 @@ const drawthings = {
     const minuteur = AbortSignal.timeout(
       Number(process.env.DRAWTHINGS_TIMEOUT_MS || 15 * 60 * 1000));
 
-    let rep;
-    try {
-      rep = await fetch(base + "/sdapi/v1/txt2img", {
+    /* node:http, NOT fetch.
+     *
+     * MEASURED, after three builds of guessing: the error is
+     * UND_ERR_HEADERS_TIMEOUT. undici — the HTTP client behind fetch — gives
+     * a server five minutes to send its FIRST header, and that limit is
+     * internal. An AbortSignal does not touch it; mine was set to fifteen
+     * minutes and undici cut at five regardless.
+     *
+     * Draw Things sends nothing at all until the render is finished. A
+     * 1408x1408 image on Turbo runs past five minutes on this machine, so
+     * every request died at exactly the same place.
+     *
+     * node:http has no such limit and is built in. probe-drawthings.js in
+     * this repo already used it for the same reason.
+     */
+    const rep = await new Promise(function (resolve, reject) {
+      const corpsTexte = JSON.stringify(corps);
+      const cible = new URL(base + "/sdapi/v1/txt2img");
+      const requete = http.request({
+        hostname: cible.hostname,
+        port: cible.port || 80,
+        path: cible.pathname,
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(corps),
-        signal: minuteur
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(corpsTexte)
+        }
+      }, function (res) {
+        const morceaux = [];
+        res.on("data", function (c) { morceaux.push(c); });
+        res.on("end", function () {
+          resolve({ status: res.statusCode,
+                    texte: Buffer.concat(morceaux).toString("utf8") });
+        });
       });
+
+      /* Our own ceiling, on the whole exchange rather than on the headers.
+       * Generous: a large image on a busy machine is slow, not broken. */
+      requete.setTimeout(Number(process.env.DRAWTHINGS_TIMEOUT_MS || 20 * 60 * 1000),
+        function () {
+          requete.destroy(new Error("Draw Things n'a pas repondu en 20 minutes"));
+        });
+
+      requete.on("error", function (e) {
+        const cause = e.code || e.message;
+        const explication = {
+          ECONNREFUSED: "Draw Things n'ecoute plus — l'API Server s'est ferme",
+          ECONNRESET: "Draw Things a coupe la connexion en cours de transfert",
+          EHOSTUNREACH: "l'adresse ne repond pas"
+        }[cause] || cause;
+        reject(new Error("connexion a Draw Things : " + explication));
+      });
+
+      requete.write(corpsTexte);
+      requete.end();
+    });
+
+    /* The body is JSON, or it is not — a desktop app can answer with a plain
+     * error string, and JSON.parse on that throws something unreadable. */
+    let d;
+    try {
+      d = JSON.parse(rep.texte);
     } catch (e) {
-      /* SAY WHY, NOT JUST THAT.
-       *
-       * "fetch failed" is all Node reports at the top level; the reason lives
-       * in e.cause.code and was being thrown away. Three builds were spent
-       * guessing between a timeout, a refused connection and a dropped socket
-       * — and they are three different problems:
-       *
-       *   ECONNREFUSED  nothing is listening. Draw Things closed its server,
-       *                 or the Mac slept.
-       *   ECONNRESET    it was listening and dropped mid-transfer.
-       *   TimeoutError  it accepted and never answered.
-       *
-       * Measured: a timeout reports "aborted due to timeout", NOT "fetch
-       * failed". So every "fetch failed" seen so far was the connection, not
-       * the delay — and the timeout I added could never have fixed it. */
-      const cause = (e.cause && (e.cause.code || e.cause.message)) || e.name;
-      const explication = {
-        ECONNREFUSED: "Draw Things n'ecoute plus — l'API Server s'est ferme, " +
-                      "ou le Mac s'est endormi pendant le rendu",
-        ECONNRESET: "Draw Things a coupe la connexion en cours de transfert",
-        ECONNABORTED: "la connexion a ete interrompue",
-        EHOSTUNREACH: "l'adresse ne repond pas",
-        TimeoutError: "Draw Things a accepte la requete et n'a jamais repondu"
-      }[cause] || cause;
-      throw new Error("connexion a Draw Things : " + explication +
-                      "  [" + cause + "]");
+      throw new Error("Draw Things a repondu " + rep.status +
+        " avec un corps illisible : " + rep.texte.slice(0, 120));
     }
-    const d = await rep.json();
-    if (!rep.ok || !d.images || !d.images.length) {
+
+    if (rep.status !== 200 || !d.images || !d.images.length) {
       const detail = d.errors || d.detail || d.error || rep.status;
       throw new Error("Draw Things refused the request: " +
         (typeof detail === "string" ? detail : JSON.stringify(detail)) +
