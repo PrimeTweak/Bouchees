@@ -227,15 +227,45 @@ async function cycleImages(donnees, options) {
      * enough that a card crop is not upscaled on an iPhone Pro Max (1320 px).
      * Adjustable through DRAWTHINGS_LARGEUR and DRAWTHINGS_HAUTEUR, but keep
      * them equal. */
-    try {
-      img = await mImage.generer({
-        prompt: p.prompt, negatif: p.negatif,
-        largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
-        hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
-      });
+    /* A DROPPED CONNECTION IS NOT A REFUSAL — RETRY IT.
+     *
+     * "fetch failed" abandoned the recipe outright, the same as a rejected
+     * request. But Draw Things is a desktop app rendering one image at a
+     * time: a socket dropping between two of nineteen requests says nothing
+     * about the prompt, and losing the recipe over it wastes the minutes
+     * already spent.
+     *
+     * Two attempts, twenty seconds apart. A real refusal fails both. */
+    const specImage = {
+      prompt: p.prompt, negatif: p.negatif,
+      largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+      hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
+    };
+    let erreurReseau = null;
+    for (let essai = 1; essai <= 2 && !img; essai++) {
+      try {
+        img = await mImage.generer(specImage);
+      } catch (e) {
+        erreurReseau = e;
+        const reseau = /fetch failed|ECONNRESET|socket|timeout|aborted/i.test(e.message);
+        if (!reseau || essai === 2) break;
+        console.log("     " + p.name + " — connexion perdue, seconde tentative");
+        await new Promise(function (r) { setTimeout(r, 20000); });
+      }
     }
-    catch (e) { journal.rejetees.push({ id: p.id, reason: "génération : " + e.message }); console.log("  x  " + p.name + " — " + e.message); continue; }
+    if (!img) {
+      const m = erreurReseau ? erreurReseau.message : "unknown";
+      journal.rejetees.push({ id: p.id, reason: "génération : " + m });
+      console.log("  x  " + p.name + " — " + m);
+      continue;
+    }
     journal.generees++;
+
+    /* Let the app settle before the next request. Draw Things has one
+     * renderer; firing the next call the instant the last byte arrives gives
+     * it no room, and that is one of the three explanations for a socket
+     * dropping mid-batch. */
+    await new Promise(function (r) { setTimeout(r, 3000); });
 
     let verdict = await Vision.verifier(img.octets, recette, donnees, { moteur: mVision, typeMime: "image/png" });
 

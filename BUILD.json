@@ -1,10 +1,10 @@
 {
-  "build": 94,
+  "build": 95,
   "date": "2026-08-29",
   "carries": [
-    "docs/PROMPT-CONVENTION.md \u2014 the seven parts, each with what went wrong without it",
-    "check-prompts.js enforces it, and found 17 faults I had not seen",
-    "fourteen recipes had a presentation with no count",
-    "the style repeated the light, costing 50 characters and contradicting it"
+    "fetch had no timeout \u2014 Node applied its own, shorter than a 1408 render",
+    "accept-encoding and keep-alive off: the repo already established they corrupt large bodies here",
+    "a dropped socket now retries once; a refusal still fails immediately",
+    "three seconds between images \u2014 Draw Things has one renderer"
   ]
 }

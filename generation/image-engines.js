@@ -117,10 +117,37 @@ const drawthings = {
     /* Noted before the request so only a file written afterwards counts. */
     const avant = Date.now();
 
+    /* THREE THINGS AT ONCE, BECAUSE EACH RETRY COSTS MINUTES.
+     *
+     * "fetch failed" is the connection dropping, not Draw Things refusing.
+     * Three causes fit and none can be told apart from the outside, so all
+     * three are handled rather than probed one at a time:
+     *
+     *   1. NO TIMEOUT. The call had none, so Node applied its own — and a
+     *      1408x1408 image on Turbo takes minutes. Fifteen now.
+     *
+     *   2. THE APP IS STILL BUSY. Draw Things is a desktop app with one
+     *      renderer. Firing the next request the instant the last byte
+     *      arrives gives it no time to settle.
+     *
+     *   3. THE BODY IS LARGE. tools/probe-drawthings.js in this repo already
+     *      established that Node's fetch adds accept-encoding and keep-alive
+     *      that curl does not, and that either can corrupt a multi-megabyte
+     *      body on a minimal HTTP implementation. Both are turned off.
+     */
+    const minuteur = AbortSignal.timeout(
+      Number(process.env.DRAWTHINGS_TIMEOUT_MS || 15 * 60 * 1000));
+
     const rep = await fetch(base + "/sdapi/v1/txt2img", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(corps)
+      headers: {
+        "Content-Type": "application/json",
+        /* Ask for the body uncompressed, and close the socket after. */
+        "Accept-Encoding": "identity",
+        "Connection": "close"
+      },
+      body: JSON.stringify(corps),
+      signal: minuteur
     });
     const d = await rep.json();
     if (!rep.ok || !d.images || !d.images.length) {
