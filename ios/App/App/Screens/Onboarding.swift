@@ -279,6 +279,16 @@ private struct AllergenTile: View {
 private struct CountLine: View {
     let tally: AppState.ProfileTally
 
+    private var detail: String {
+        let echanges = max(0, tally.total - tally.asIs)
+        if echanges == 0 {
+            return String(format: String(localized: "%lld with nothing to change"),
+                          tally.asIs)
+        }
+        return String(format: String(localized: "%lld as is · %lld with a swap"),
+                      tally.asIs, echanges)
+    }
+
     var body: some View {
         HStack(spacing: 13) {
             Text("\(tally.total)")
@@ -290,9 +300,20 @@ private struct CountLine: View {
                 Text("recipes still work")
                     .font(Type.secondary.weight(.medium))
                     .foregroundStyle(Tone.text)
-                Text("\(tally.asIs) with nothing to change")
+                /* BOTH HALVES, NOT THE SAME NUMBER TWICE.
+                 *
+                 * With nothing ticked, total and asIs are equal — the screen
+                 * read "15 recipes still work / 15 with nothing to change",
+                 * which says one thing twice and teaches nothing about what
+                 * the app does.
+                 *
+                 * Split, it becomes the demonstration: tick milk and the
+                 * as-is count drops while the swap count rises, and the total
+                 * barely moves. That IS the product. */
+                Text(detail)
                     .font(Type.caption)
                     .foregroundStyle(Tone.textSecondary)
+                    .contentTransition(.numericText())
             }
             Spacer(minLength: 0)
         }
