@@ -133,49 +133,93 @@ struct RootView: View {
     ///     which turns into a search field when selected
     ///   · `.tabBarMinimizeBehavior(.onScrollDown)`
     ///   · safe-area handling, which cost six builds to get wrong by hand
+    /// THE NATIVE TabView, BEHIND AN AVAILABILITY GATE.
+    ///
+    /// The deployment target is iOS 17. `Tab` is iOS 18, and
+    /// `tabBarMinimizeBehavior` is iOS 26 — I wrote both without checking, and
+    /// the build failed on fourteen errors that `grep deploymentTarget` would
+    /// have shown me first.
+    ///
+    /// The gate is the pattern this project already uses for `glassEffect` in
+    /// Tone.swift. On iOS 26 the system bar brings Liquid Glass, the
+    /// hold-and-slide lens, the search island and minimize-on-scroll, none of
+    /// which a hand-rolled bar can have. Below that, the plain TabView: the
+    /// same four destinations, no glass.
+    @ViewBuilder
     private var onglets: some View {
+        if #available(iOS 26, *) {
+            ongletsModernes
+        } else {
+            ongletsClassiques
+        }
+    }
+
+    @available(iOS 26, *)
+    private var ongletsModernes: some View {
         TabView(selection: $tab) {
             Tab("Recipes", systemImage: "fork.knife", value: 0) {
-                NavigationStack(path: $path) {
-                    RecipesScreen(tab: $tab).destinations()
-                }
+                NavigationStack(path: $path) { RecipesScreen(tab: $tab).destinations() }
             }
-
             Tab("Shopping", systemImage: "cart", value: 1) {
                 NavigationStack { ShoppingScreen().destinations() }
             }
-
             Tab("Scan", systemImage: "barcode.viewfinder", value: 2) {
                 NavigationStack { ScannerScreen(tab: $tab).destinations() }
             }
-
             Tab("Settings", systemImage: "gearshape", value: 3) {
                 NavigationStack { SettingsScreen().destinations() }
             }
-
             /* The search role gives the separated island for free, and iOS
-             * owns its transition into a field. Our own SearchSheet was a
-             * reimplementation of that. */
+             * owns its transition into a field. */
             Tab(value: 4, role: .search) {
                 NavigationStack { SearchScreen() }
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .environment(\.navigate, NavigateAction { route in path.append(route) })
-        .sheet(item: $sheet) { quoi in
-            switch quoi {
-            case .childPicker: ChildPickerSheet()
-            case .search: SearchSheet()
-            }
+        .modifier(CoquilleRacine(path: $path, sheet: $sheet))
+    }
+
+    /// iOS 17 and 18. `tabItem` rather than `Tab`, which is iOS 18.
+    private var ongletsClassiques: some View {
+        TabView(selection: $tab) {
+            NavigationStack(path: $path) { RecipesScreen(tab: $tab).destinations() }
+                .tabItem { Label("Recipes", systemImage: "fork.knife") }
+                .tag(0)
+            NavigationStack { ShoppingScreen().destinations() }
+                .tabItem { Label("Shopping", systemImage: "cart") }
+                .tag(1)
+            NavigationStack { ScannerScreen(tab: $tab).destinations() }
+                .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
+                .tag(2)
+            NavigationStack { SettingsScreen().destinations() }
+                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(3)
+            NavigationStack { SearchScreen() }
+                .tabItem { Label("Search", systemImage: "magnifyingglass") }
+                .tag(4)
         }
+        .modifier(CoquilleRacine(path: $path, sheet: $sheet))
+    }
+}
+
+/// What both tab bars share, so the two branches cannot drift apart.
+private struct CoquilleRacine: ViewModifier {
+    @Binding var path: [Route]
+    @Binding var sheet: AppSheet?
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.navigate, NavigateAction { route in path.append(route) })
+            .sheet(item: $sheet) { quoi in
+                switch quoi {
+                case .childPicker: ChildPickerSheet()
+                case .search: SearchSheet()
+                }
+            }
     }
 }
 
 /// Every destination the app can push, applied once.
-///
-/// Each tab owns a NavigationStack now — that is how TabView expects to be
-/// built, and it is what makes the bar behave. The destinations are shared so
-/// four stacks do not drift apart.
 extension View {
     func destinations() -> some View {
         navigationDestination(for: Route.self) { route in
@@ -202,9 +246,6 @@ private struct RouteDestination: View {
     }
 }
 
-extension RootView {
-
-}
 
 /// Everything the stack can push. One enum, so the destinations live in one
 /// place rather than being re-declared on each screen.
