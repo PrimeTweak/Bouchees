@@ -1,10 +1,8 @@
 {
-  "build": 101,
+  "build": 102,
   "date": "2026-08-29",
   "carries": [
-    "Tab is iOS 18 and tabBarMinimizeBehavior is iOS 26; the deployment target is 17",
-    "I wrote both without checking \u2014 grep deploymentTarget would have shown it in one second",
-    "gated the way Tone.swift already gates glassEffect, with a plain TabView below 26",
-    "checker rule: an API newer than the deployment target with no availability gate"
+    "@Binding var path: [Route] against @State var path = NavigationPath()",
+    "checker rule: a Binding whose type contradicts the State of the same name"
   ]
 }
