@@ -140,7 +140,8 @@ struct ShoppingScreen: View {
     @ViewBuilder
     private var weekStrip: some View {
         @Bindable var e = etat
-        WeekStrip(selected: $e.selectedDay)
+        DayStrip(selected: $e.selectedDay,
+                 counts: (0..<7).map { etat.recipes(on: $0).count })
             .padding(.horizontal, Layout.gutter)
             .padding(.top, 4)
     }
