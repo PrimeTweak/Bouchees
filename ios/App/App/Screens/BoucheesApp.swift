@@ -30,8 +30,12 @@ struct BoucheesApp: App {
 struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
-    @State private var path = NavigationPath()
-    @State private var sheet: AppSheet?
+    /* No path and no sheet here. Each tab owns both — see OngletPile.
+     *
+     * A path at the root sent a search result into the Recipes stack: nothing
+     * appeared, and the recipe was waiting in another tab when the parent
+     * switched. A sheet at the root never appeared at all — a TabView on
+     * iOS 26 owns the system bar, and a sheet it presents competes with it. */
 
     /// True until the launch animation has had time to play.
     @State private var launchPlayed = false
@@ -158,70 +162,95 @@ struct RootView: View {
     private var ongletsModernes: some View {
         TabView(selection: $tab) {
             Tab("Recipes", systemImage: "fork.knife", value: 0) {
-                NavigationStack(path: $path) { RecipesScreen(tab: $tab).destinations() }
+                OngletPile { RecipesScreen(tab: $tab) }
             }
             Tab("Shopping", systemImage: "cart", value: 1) {
-                NavigationStack { ShoppingScreen().destinations() }
+                OngletPile { ShoppingScreen() }
             }
             Tab("Scan", systemImage: "barcode.viewfinder", value: 2) {
-                NavigationStack { ScannerScreen(tab: $tab).destinations() }
+                OngletPile { ScannerScreen(tab: $tab) }
             }
             Tab("Settings", systemImage: "gearshape", value: 3) {
-                NavigationStack { SettingsScreen().destinations() }
+                OngletPile { SettingsScreen() }
             }
             /* The search role gives the separated island for free, and iOS
              * owns its transition into a field. */
             Tab(value: 4, role: .search) {
-                NavigationStack { SearchScreen() }
+                /* ITS OWN PATH.
+                 *
+                 * `navigate` is injected on the TabView, above every stack, so
+                 * a route appended from the search tab landed in the Recipes
+                 * stack — which is not on screen. Tapping a result did
+                 * nothing visible.
+                 *
+                 * Each tab that can push owns its path and overrides
+                 * `navigate` inside itself. */
+                OngletPile { SearchScreen() }
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .modifier(CoquilleRacine(path: $path, sheet: $sheet))
     }
 
     /// iOS 17 and 18. `tabItem` rather than `Tab`, which is iOS 18.
     private var ongletsClassiques: some View {
         TabView(selection: $tab) {
-            NavigationStack(path: $path) { RecipesScreen(tab: $tab).destinations() }
+            OngletPile { RecipesScreen(tab: $tab) }
                 .tabItem { Label("Recipes", systemImage: "fork.knife") }
                 .tag(0)
-            NavigationStack { ShoppingScreen().destinations() }
+            OngletPile { ShoppingScreen() }
                 .tabItem { Label("Shopping", systemImage: "cart") }
                 .tag(1)
-            NavigationStack { ScannerScreen(tab: $tab).destinations() }
+            OngletPile { ScannerScreen(tab: $tab) }
                 .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
                 .tag(2)
-            NavigationStack { SettingsScreen().destinations() }
+            OngletPile { SettingsScreen() }
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(3)
-            NavigationStack { SearchScreen() }
+            OngletPile { SearchScreen() }
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
                 .tag(4)
         }
-        .modifier(CoquilleRacine(path: $path, sheet: $sheet))
     }
 }
 
-/// What both tab bars share, so the two branches cannot drift apart.
-private struct CoquilleRacine: ViewModifier {
-    /* NavigationPath, not [Route].
-     *
-     * Line 33 declares `@State private var path = NavigationPath()` and I
-     * wrote the modifier against [Route] without looking. Both accept
-     * append(_:), which is the only operation used, so the type-erased one
-     * wins — it is what the root already holds. */
-    @Binding var path: NavigationPath
-    @Binding var sheet: AppSheet?
+/// A tab that can push, with the stack it pushes into.
+///
+/// `navigate` used to be injected once on the TabView, above every stack — so
+/// a route appended from Scan or Search landed in the Recipes stack, which is
+/// not on screen. Tapping a result did nothing visible.
+///
+/// Each tab owns its path and overrides `navigate` inside itself, so a push
+/// goes where the finger is.
+private struct OngletPile<Contenu: View>: View {
+    @ViewBuilder var contenu: () -> Contenu
 
-    func body(content: Content) -> some View {
-        content
-            .environment(\.navigate, NavigateAction { route in path.append(route) })
-            .sheet(item: $sheet) { quoi in
-                switch quoi {
-                case .childPicker: ChildPickerSheet()
-                case .search: SearchSheet()
-                }
+    /// This tab's own stack.
+    ///
+    /// A single path at the root sent a search result into the Recipes stack:
+    /// nothing appeared, and the recipe was waiting in another tab when the
+    /// parent switched. One path per tab, and nothing above declares navigate.
+    @State private var path = NavigationPath()
+
+    /// This tab's own sheet.
+    ///
+    /// It was attached to the TabView, and tapping the child strip did
+    /// nothing at all. A sheet on a TabView is presented BY the TabView,
+    /// which on iOS 26 also owns the system bar — the two compete and neither
+    /// wins. Each tab presents its own.
+    @State private var sheet: AppSheet?
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            contenu().destinations()
+        }
+        .environment(\.navigate, NavigateAction { route in path.append(route) })
+        .environment(\.presentSheet, PresentSheetAction(show: { quoi in sheet = quoi }))
+        .sheet(item: $sheet) { quoi in
+            switch quoi {
+            case .childPicker: ChildPickerSheet()
+            case .search: SearchSheet()
             }
+        }
     }
 }
 
