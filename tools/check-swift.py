@@ -1005,6 +1005,40 @@ def check():
                             f"nowhere in this file — a helper that was deleted "
                             f"while a call survived")
 
+    # 7ad. a permission switch whose branches do not all fill the screen.
+    #      Only the authorised branch held a camera preview, which is greedy
+    #      by nature; the other two sized themselves to their text. The tab
+    #      bar is a safeAreaInset of the content, so it rose to meet them and
+    #      sat in the middle of the screen until permission was granted.
+    #
+    #      The frame belongs on the switch, so a fourth state cannot forget it.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"switch\s+(\w*[Aa]uthoriz\w*|\w*[Pp]ermission\w*)\s*\{",
+                             code):
+            # the closing brace of the switch
+            prof = 0
+            i = m.end() - 1
+            fin = None
+            for j in range(i, min(len(code), i + 1200)):
+                if code[j] == "{":
+                    prof += 1
+                elif code[j] == "}":
+                    prof -= 1
+                    if prof == 0:
+                        fin = j
+                        break
+            if fin is None:
+                continue
+            # a frame in the 300 characters that follow?
+            apres = code[fin:fin + 300]
+            if "maxHeight: .infinity" not in apres:
+                ligne = code[:m.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: a permission switch with no "
+                                f"frame(maxHeight: .infinity) after it — a branch "
+                                f"that sizes to its text lets the tab bar rise "
+                                f"into the middle of the screen")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
