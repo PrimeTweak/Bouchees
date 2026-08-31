@@ -1010,6 +1010,8 @@ def check():
                        "unsafeBitCast", "type", "String", "localized",
                        # compiler directives, not calls
                        # SwiftUI methods used unqualified inside an extension
+                       # Swift syntax that looks like a call
+                       "selector", "keyPath", "available", "file", "line",
                        "navigationDestination", "toolbar", "searchable",
                        "overlay", "background", "padding", "frame",
                        "canImport", "available", "compiler", "targetEnvironment",
