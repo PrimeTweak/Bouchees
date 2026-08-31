@@ -1,12 +1,12 @@
 {
-  "build": 99,
+  "build": 100,
   "date": "2026-08-29",
   "carries": [
-    "AllergenGlyphs matched French ids against English ones \u2014 1 of 11",
-    "a standalone DragGesture won on contact, so the long press never fired",
-    "the launch mark fills 55% of its box: size 64 drew 35pt",
-    "only the authorised camera branch filled the screen",
-    "the onboarding count showed the same number twice",
-    "the cycle now prints three numbers that must agree before you push"
+    "the native TabView replaces ten attempts at a hand-rolled bar",
+    "Liquid Glass, the hold-and-slide lens and the search island are the SYSTEM bar and nothing else",
+    "the photo no longer requires status == asIs \u2014 35 of 38 were invisible by construction",
+    "an adapted recipe shows the photo marked Original recipe",
+    "a probe answers the splash flash instead of a fourth guess",
+    "onboarding: spring on the tile, the glyph leads, haptics on the tick"
   ]
 }
