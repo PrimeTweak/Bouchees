@@ -26,3 +26,6 @@ ios/App/App/Bundled/
 
 # Rejected images: written for inspection, never published.
 images/rejected/
+
+# The vision key, written by PHOTOS.command. Never leaves this machine.
+.env

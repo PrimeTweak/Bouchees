@@ -1,8 +1,8 @@
 {
-  "build": 85,
+  "build": 89,
   "date": "2026-08-29",
   "carries": [
-    "a call to chips() survived the helper being deleted",
-    "checker rule: a call to a helper declared nowhere in the file"
+    "PHOTOS.command asks for the vision key once and keeps it in .env",
+    ".env added to .gitignore \u2014 the key was one push away from GitHub"
   ]
 }
