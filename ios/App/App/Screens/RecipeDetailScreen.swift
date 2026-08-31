@@ -38,7 +38,8 @@ struct RecipeDetailScreen: View {
                     ZStack {
                         Tone.heroField
                         RecipeVisual(recipe: recipe, result: result,
-                                     drawingBackground: false)
+                                     drawingBackground: false,
+                                     showsOriginLabel: true)
                             .frame(height: Layout.detailPhoto)
                             .frame(maxWidth: .infinity)
                     }
@@ -250,8 +251,19 @@ struct RecipeDetailScreen: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground),
+        /* A TINT AND AN EDGE, NOT A WHITE BLOCK.
+         *
+         * The card was pure white on a canvas of 0xFBF9F6 with no border: two
+         * per cent apart, so it had no boundary at all and the list read as
+         * floating on the page. The palette's own card colour is the same
+         * white, so swapping it changes nothing — the edge is what was
+         * missing. This is the treatment the rest of the app already uses. */
+        .background(Tone.text.opacity(0.04),
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
         .overlay(alignment: .leading) {
             Rectangle().frame(width: 4).foregroundStyle(Tone.brand)
                 .clipShape(RoundedRectangle(cornerRadius: 2))
@@ -300,8 +312,19 @@ struct RecipeDetailScreen: View {
         }
         .padding(17)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground),
+        /* A TINT AND AN EDGE, NOT A WHITE BLOCK.
+         *
+         * The card was pure white on a canvas of 0xFBF9F6 with no border: two
+         * per cent apart, so it had no boundary at all and the list read as
+         * floating on the page. The palette's own card colour is the same
+         * white, so swapping it changes nothing — the edge is what was
+         * missing. This is the treatment the rest of the app already uses. */
+        .background(Tone.text.opacity(0.04),
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
     }
 
     /// The steps, on the page rather than in a card.
@@ -399,8 +422,12 @@ struct RecipeDetailScreen: View {
             }
             .padding(17)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemGroupedBackground),
+            .background(Tone.text.opacity(0.04),
                         in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(Tone.hairline, lineWidth: 1)
+            }
         }
     }
 }

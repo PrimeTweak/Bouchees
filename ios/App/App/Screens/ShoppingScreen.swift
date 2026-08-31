@@ -18,6 +18,17 @@ import UIKit
 struct ShoppingScreen: View {
     @Environment(AppState.self) private var etat
     @State private var checked: Set<String> = []
+
+    /// Aisles the shopper has opened or closed by hand.
+    ///
+    /// Only what was TOUCHED is stored. An untouched aisle follows the rule —
+    /// open while it still owes something, shut once everything in it is in
+    /// the cart, which is the moment a shopper wants it out of the way. A tap
+    /// records an answer here and that answer then wins, in both directions,
+    /// so a finished aisle can always be opened again.
+    ///
+    /// Screen state, not disk: every aisle comes back open next launch.
+    @State private var aisleOpened: [String: Bool] = [:]
     @State private var loaded = false
 
     /// The whole week, or one day when the strip is narrowed.
@@ -67,37 +78,59 @@ struct ShoppingScreen: View {
                 }
                 progress
                 ForEach(byAisle, id: \.aisle) { group in
-                    /* A COUNT PER AISLE.
+                    /* A COUNT PER AISLE, AND A WAY TO SHUT IT.
                      *
                      * "1/6" tells a parent when they can leave the aisle,
                      * which is the only question being asked while standing
-                     * in one. The overall figure does not answer it. */
-                    HStack(spacing: 8) {
-                        Image(systemName: Self.aisleSymbol(group.aisle))
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(Tone.text2)
-                            .frame(width: 20, height: 20)
-                            .background(Tone.text.opacity(0.055),
-                                        in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-                        Text(Self.aisleLabel(group.aisle)).eyebrow()
-                        Spacer(minLength: 0)
-                        Text("\(group.items.filter { checked.contains($0.id) }.count)/\(group.items.count)")
-                            .font(.system(size: 9.5, weight: .semibold))
-                            .foregroundStyle(Tone.text3)
-                    }
+                     * in one. The overall figure does not answer it.
+                     *
+                     * The whole header is the button. It carried 20pt of
+                     * height and no action; it now runs the full tap target
+                     * and folds its rows away. The count stays visible when
+                     * shut, because the count is the reason to shut it. */
+                    let open = isOpen(group)
+                    Button {
+                        withAnimation(.smooth(duration: 0.28)) {
+                            aisleOpened[group.aisle] = !open
+                        }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: Self.aisleSymbol(group.aisle))
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundStyle(Tone.text2)
+                                .frame(width: 20, height: 20)
+                                .background(Tone.text.opacity(0.055),
+                                            in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            Text(Self.aisleLabel(group.aisle)).eyebrow()
+                            Spacer(minLength: 0)
+                            Text("\(group.items.filter { checked.contains($0.id) }.count)/\(group.items.count)")
+                                .font(.system(size: 9.5, weight: .semibold))
+                                .foregroundStyle(Tone.text3)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(Tone.text3)
+                                .rotationEffect(.degrees(open ? 90 : 0))
+                        }
+                        .frame(height: Layout.tapTarget)
                         .padding(.horizontal, Layout.gutter)
-                        .padding(.top, 20)
-                        .padding(.bottom, 4)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 8)
 
-                    ForEach(group.items) { item in
-                        ShoppingRow(item: item,
-                                    done: checked.contains(item.id)) {
-                            toggle(item)
+                    if open {
+                        ForEach(group.items) { item in
+                            ShoppingRow(item: item,
+                                        done: checked.contains(item.id)) {
+                                toggle(item)
+                            }
+                            if item.id != group.items.last?.id {
+                                Divider().overlay(Tone.hairline)
+                                    .padding(.leading, Layout.gutter + 35)
+                            }
                         }
-                        if item.id != group.items.last?.id {
-                            Divider().overlay(Tone.hairline)
-                                .padding(.leading, Layout.gutter + 35)
-                        }
+                        .transition(.opacity)
                     }
                 }
 
@@ -289,6 +322,16 @@ struct ShoppingScreen: View {
 
     private var ratio: CGFloat {
         items.isEmpty ? 0 : CGFloat(checked.count) / CGFloat(items.count)
+    }
+
+    /// Whether an aisle shows its rows.
+    ///
+    /// A hand-set answer wins, in both directions — that is what makes a
+    /// finished aisle re-openable. Untouched, an aisle stays open until every
+    /// item in it is in the cart.
+    private func isOpen(_ group: (aisle: String, items: [ShoppingItem])) -> Bool {
+        if let choix = aisleOpened[group.aisle] { return choix }
+        return !group.items.allSatisfy { checked.contains($0.id) }
     }
 
     private func toggle(_ item: ShoppingItem) {

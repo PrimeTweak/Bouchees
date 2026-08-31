@@ -23,6 +23,13 @@ struct RecipeVisual: View {
     /// Off in the hero, where the drawing sits on its own field.
     var drawingBackground = true
 
+    /// Whether the origin warning is spelled out.
+    ///
+    /// True only on the recipe page, where the photo runs 430pt and the parent
+    /// is about to cook from it. Everywhere else the same view renders at 60,
+    /// where fourteen characters at 9pt break mid-word.
+    var showsOriginLabel = false
+
     @State private var photo: UIImage?
     @State private var echec = false
 
@@ -55,22 +62,8 @@ struct RecipeVisual: View {
                     .resizable()
                     .scaledToFill()
                     .transition(.opacity)
-                    /* SAY WHEN THE PICTURE IS OF THE ORIGINAL.
-                     *
-                     * Without this the photo would quietly claim to be the
-                     * adapted dish. A parent cooking a milk-free version has
-                     * to know the picture shows the version with milk. */
-                    .overlay(alignment: .bottomTrailing) {
-                        if photoDuPlatOriginal {
-                            Text("Original recipe")
-                                .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.black.opacity(0.42), in: Capsule())
-                                .padding(10)
-                        }
-                    }
+                    /* SAY WHEN THE PICTURE IS OF THE ORIGINAL. */
+                    .overlay(alignment: .bottomTrailing) { originWarning }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)
@@ -78,6 +71,42 @@ struct RecipeVisual: View {
         }
         .task(id: recipe.id) { await load() }
         .animation(.easeInOut(duration: 0.2), value: photo != nil)
+    }
+
+    /// The warning that the picture is of the dish BEFORE the swaps.
+    ///
+    /// Without it the photo would quietly claim to be the adapted dish. A
+    /// parent cooking a milk-free version has to know the picture shows the
+    /// version with milk.
+    ///
+    /// Two forms of one warning. The words on the recipe page, where the photo
+    /// runs 430pt and the parent meets the sentence once. The mark everywhere
+    /// else, in the amber the swap count already uses one column over, so the
+    /// two read as a single fact rather than as two.
+    ///
+    /// Both are fixed-size corner pieces. Neither unfolds, so neither needs to
+    /// reserve height in the layout.
+    @ViewBuilder
+    private var originWarning: some View {
+        if photoDuPlatOriginal {
+            if showsOriginLabel {
+                Text("Original recipe")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.black.opacity(0.42), in: Capsule())
+                    .padding(10)
+            } else {
+                Image(systemName: "arrow.uturn.backward")
+                    .font(.system(size: 8.5, weight: .bold))
+                    .foregroundStyle(Tone.swap)
+                    .frame(width: 17, height: 17)
+                    .background(.black.opacity(0.62), in: Circle())
+                    .padding(5)
+                    .accessibilityLabel(Text("Original recipe"))
+            }
+        }
     }
 
     private func load() async {

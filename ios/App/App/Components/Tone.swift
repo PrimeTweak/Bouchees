@@ -368,10 +368,25 @@ struct PhotoScrim: View {
             }
             VStack(spacing: 0) {
                 Spacer(minLength: 0)
+                /* THE FADE PASSES THROUGH BLACK BEFORE IT REACHES CANVAS.
+                 *
+                 * It used to run straight from clear to canvas, so at the
+                 * height of the title the photo was already three quarters
+                 * covered in cream — and the title is white. White on cream.
+                 * It held only while every photo was a dark drawing.
+                 *
+                 * The shape here is the one the week hero already uses and
+                 * that reads correctly on a real photograph: darken under the
+                 * text, then return to the page below it. The title sits in
+                 * the black stretch, not in the cream one. */
                 LinearGradient(
                     stops: [.init(color: .clear, location: 0),
-                            .init(color: Tone.canvas.opacity(0.55), location: 0.42),
-                            .init(color: Tone.canvas, location: 0.88)],
+                            .init(color: .black.opacity(0.24), location: 0.26),
+                            .init(color: .black.opacity(0.52), location: 0.44),
+                            .init(color: .black.opacity(0.74), location: 0.62),
+                            .init(color: .black.opacity(0.60), location: 0.74),
+                            .init(color: Tone.canvas.opacity(0.55), location: 0.90),
+                            .init(color: Tone.canvas, location: 1)],
                     startPoint: .top, endPoint: .bottom)
                     .frame(height: fade)
             }
