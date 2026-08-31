@@ -838,6 +838,15 @@ struct SearchScreen: View {
             .padding(.bottom, 24)
         }
         .background(Tone.canvas.ignoresSafeArea())
+        /* THE SAME FIELD AS THE OTHER TABS.
+         *
+         * Applied to the scroll view rather than outside the toolbar
+         * modifiers, so the navigation stack still reads the title, the
+         * search field and the clear button from the modifiers below.
+         *
+         * The bar itself is empty: this screen carries no pill, only the
+         * fade that stops rows from meeting the status bar on a line. */
+        .softTopBar { EmptyView() }
         /* The system field, not one of ours. `Tab(role: .search)` places it
          * and animates it; declaring our own would fight that. */
         /* A WAY OUT.
@@ -863,6 +872,14 @@ struct SearchScreen: View {
         }
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
+        /* The hard band under the title, removed.
+         *
+         * Hiding the bar entirely would have taken the title and the clear
+         * button with it, and on the systems where `searchable` places its
+         * field in the navigation bar it would have taken the field too.
+         * Hiding only the background leaves all three floating over the
+         * fade, which is how the pill sits on Recipes and Shopping. */
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 
     @ViewBuilder
