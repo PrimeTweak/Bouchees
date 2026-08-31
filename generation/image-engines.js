@@ -86,25 +86,27 @@ const drawthings = {
       process.env.DRAWTHINGS_ETAPES ? { steps: Number(process.env.DRAWTHINGS_ETAPES) } : {},
       process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
       process.env.DRAWTHINGS_SAMPLER ? { sampler_name: process.env.DRAWTHINGS_SAMPLER } : {},
-      spec.graine !== undefined ? { seed: spec.graine } : {},
-      /* NAME THE MODEL, OPTIONALLY.
-       *
-       * Steps and sampler still come from the app — that lesson holds: an
-       * SDXL solver on a distilled model produces the embossed anaglyph.
-       * But WHICH model is a different question, and leaving it to whatever
-       * happened to be selected is how a batch ran on Krea 2 Raw at 52 steps.
-       *
-       * MEASURED CAVEAT: Draw Things implements txt2img and img2img and
-       * skips the introspection endpoints AUTOMATIC1111 exposes. There is no
-       * published confirmation that it honours override_settings either, so
-       * this may be ignored silently. The preflight reads the model actually
-       * loaded and refuses Raw regardless, which is the check that holds.
-       *
-       * Set DRAWTHINGS_MODELE to pin it. Unset, nothing changes. */
-      process.env.DRAWTHINGS_MODELE
-        ? { override_settings: { sd_model_checkpoint: process.env.DRAWTHINGS_MODELE } }
-        : {}
+      spec.graine !== undefined ? { seed: spec.graine } : {}
     );
+
+    /* ONLY KEYS DRAW THINGS IS KNOWN TO ACCEPT.
+     *
+     * It validates its payload strictly and rejects the whole request on an
+     * unknown key — "Unrecognized keys: [...]", 38 recipes failed at once on
+     * an override_settings I had never confirmed was supported.
+     *
+     * This list is what has actually worked. Adding to it means testing one
+     * request first, not shipping a guess. */
+    const CONNUES = ["prompt", "negative_prompt", "width", "height",
+                     "steps", "cfg_scale", "sampler_name", "seed"];
+    const inconnues = Object.keys(corps).filter(function (k) {
+      return CONNUES.indexOf(k) === -1;
+    });
+    if (inconnues.length) {
+      throw new Error("refusing to send keys Draw Things does not accept: " +
+                      inconnues.join(", ") + ". Add them to CONNUES only after " +
+                      "one request has been proven to work.");
+    }
 
     if (process.env.DRAWTHINGS_TRACE) {
       console.log("\n--- request sent to " + base + "/sdapi/v1/txt2img ---");

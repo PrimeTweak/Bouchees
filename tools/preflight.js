@@ -88,11 +88,6 @@ async function demander(chemin) {
     }
   }
 
-  /* 2b. If a model is pinned, say so — it overrides the selection above. */
-  if (process.env.DRAWTHINGS_MODELE) {
-    notes.push("modele impose : " + process.env.DRAWTHINGS_MODELE);
-  }
-
   /* 3. How many images would run, and what does that cost? */
   const path = require("path");
   const fs = require("fs");

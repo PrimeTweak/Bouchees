@@ -57,9 +57,15 @@ fi
 
 # --------------------------------------------------------- 3. Draw Things
 #
-# Steps and sampler still come from the app: an SDXL solver on a distilled
-# model produces an embossed anaglyph. Only the model is pinned.
-export DRAWTHINGS_MODELE="Krea 2 Turbo"
+# NOTHING IS SENT BUT THE PROMPT AND THE SIZE.
+#
+# I tried pinning the model with override_settings. Draw Things refused every
+# single request — "Unrecognized keys" — and 38 recipes failed at once. The
+# code even carried a comment saying no source confirmed the key was
+# supported, and it shipped anyway.
+#
+# The preflight is the right mechanism: it READS the model actually loaded and
+# refuses to start on Raw. That check works; the override never did.
 
 # THE PORT IS THE APP'S TO CHOOSE, NOT MINE.
 #

@@ -1,27 +1,161 @@
 {
-  "le": "2026-08-26T19:57:37.991Z",
+  "le": "2026-08-31T00:38:02.828Z",
   "recettes": null,
   "images": {
-    "generees": 3,
-    "acceptees": 1,
+    "generees": 0,
+    "acceptees": 0,
     "rejetees": [
       {
+        "id": "banana-oat-muffins",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
         "id": "fluffy-pancakes",
-        "reason": "no ingredient from the recipe is recognisable in the image",
-        "detectes": [
-          "pancake",
-          "butter",
-          "syrup",
-          "berry",
-          "whipped cream"
-        ],
-        "fichier": "images/rejected/fluffy-pancakes.png"
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
       },
       {
         "id": "lentil-and-carrot-patties",
-        "reason": "the vision judged the image unreadable: image appears to be a heavily filtered or embossed version of a food photo, making individual ingredients impossible to identify with certainty, possible plate or bowl shape visible, possible round food item on plate",
-        "detectes": [],
-        "fichier": "images/rejected/lentil-and-carrot-patties.png"
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "sweet-potato-and-chicken-puree",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "apple-cinnamon-oatmeal",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "date-energy-bites",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "pasta-in-rose-sauce-with-chicken",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "baked-fish-nuggets",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "silky-hummus",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "banana-bread",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "oatmeal-raisin-cookies",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "mini-vegetable-frittatas",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "squash-and-coconut-soup",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "mac-and-cheese-with-hidden-squash",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "turkey-and-apple-meatballs",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "vanilla-rice-pudding",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "mango-banana-smoothie",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "chewy-granola-bars",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "vanilla-chia-pudding",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "yogurt-dip-with-vegetable-sticks",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "chicken-couscous",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "creamy-shrimp-and-pea-risotto",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "soft-apricot-granola",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "mild-chicken-quesadillas",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "tomato-alphabet-soup",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "crispy-tofu-with-sweet-maple-sauce",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "carrot-and-maple-muffins",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "creamy-salmon-pasta",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "banana-oat-pancakes",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "vegetable-fried-rice",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "coconut-rice-pudding-with-mango",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "apple-and-date-cinnamon-sauce",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "lentil-squash-and-carrot-puree",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "chicken-sweet-potato-and-green-peas",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "roasted-sweet-potato-sticks",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "soft-banana-oat-patties",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "creamy-mango-oatmeal",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+      },
+      {
+        "id": "tender-rice-flour-crepes",
+        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
       }
     ]
   }

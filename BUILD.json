@@ -1,9 +1,10 @@
 {
-  "build": 91,
+  "build": 92,
   "date": "2026-08-29",
   "carries": [
-    "the run fell back to the simulated engine and wrote 37 colour blocks",
-    "cycle.js now refuses to run simulated unless asked",
-    "the launcher forces MOTEUR_IMAGE and asks for the port when no probe answers"
+    "override_settings was never supported \u2014 Draw Things rejected all 38 requests",
+    "the code carried a comment saying no source confirmed it, and it shipped anyway",
+    "the preflight already proved Turbo was selected; pinning was never needed",
+    "a guard now refuses to send any key not proven to work"
   ]
 }
