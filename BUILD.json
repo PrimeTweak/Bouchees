@@ -1,8 +1,10 @@
 {
-  "build": 105,
+  "build": 106,
   "date": "2026-08-29",
   "carries": [
-    "String(localized:) was given a LocalizedStringKey \u2014 Text takes the key, String(localized:) wants a LocalizationValue",
-    "checker rule for it, scoped to qualified names after two false positives on shared field names"
+    "two navigate actions coexisted \u2014 the root one won for Recipes, so a search result landed in the wrong stack",
+    "the sheet was on the TabView, which owns the system bar on iOS 26; it never appeared",
+    "each tab now owns its path AND its sheet",
+    "search gains a Clear button \u2014 another tab was the only way out"
   ]
 }
