@@ -378,3 +378,6 @@
 "Week of %@" = "Week of %@";
 "%lld recipes, already adapted" = "%lld recipes, already adapted";
 "You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription." = "You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription.";
+"%lld recipes · %lld items" = "%lld recipes · %lld items";
+"left to buy" = "left to buy";
+"%lld in the cart" = "%lld in the cart";
