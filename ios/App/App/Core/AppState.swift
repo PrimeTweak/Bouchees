@@ -62,7 +62,75 @@ final class AppState {
     var plan: WeekPlan = .empty
 
     /// The day the strip is showing. Starts on today.
+    ///
+    /// Kept for the drag-and-drop and for Shopping, which still groups by day.
     var selectedDay: Int = WeekDay.today
+
+    /// Which week the rail is showing: -1 past, 0 current, +1 next.
+    var selectedWeek: Int = 0
+
+    /// The three weeks the rail offers.
+    ///
+    /// Built from the manifest rather than guessed: the batch ids carry the
+    /// ISO week, and `unlocked` is what the server already decided. A week
+    /// with no batch still appears — it holds zero recipes and says so, which
+    /// is honest and keeps the rail three wide.
+    var weekSlots: [WeekSlot] {
+        let ouvertes = batches.filter { $0.unlocked }.map(\.id)
+        let courante = currentBatchID
+        let index = courante.flatMap { id in batches.firstIndex { $0.id == id } }
+
+        return [-1, 0, 1].map { decalage -> WeekSlot in
+            guard let i = index else {
+                return WeekSlot(offset: decalage, batchID: nil, count: 0,
+                                unlocked: decalage == 0)
+            }
+            let j = i + decalage
+            guard j >= 0, j < batches.count else {
+                return WeekSlot(offset: decalage, batchID: nil, count: 0,
+                                unlocked: false)
+            }
+            let lot = batches[j]
+            let n = recipes.filter { $0.batch == lot.id }.count
+            return WeekSlot(offset: decalage, batchID: lot.id,
+                            count: n > 0 ? n : lot.count,
+                            unlocked: ouvertes.contains(lot.id))
+        }
+    }
+
+    /// The slot the rail has selected.
+    var currentSlot: WeekSlot {
+        weekSlots.first { $0.offset == selectedWeek }
+            ?? WeekSlot(offset: 0, batchID: currentBatchID, count: 0, unlocked: true)
+    }
+
+    /// The recipes of the week the rail is showing.
+    ///
+    /// A locked week still returns its recipes: the list shows names, times
+    /// and verdicts, and hides the rest. Hiding the row entirely would leave
+    /// nothing to subscribe FOR.
+    var selectedWeekRecipes: [Recipe] {
+        guard selectedWeek != 0 else { return weekRecipes }
+        guard let id = currentSlot.batchID else { return [] }
+        return recipes.filter { $0.batch == id }
+    }
+
+    /// Which recipes fall on a day of the SELECTED week.
+    ///
+    /// The plan is stored for the current week only — a parent does not
+    /// rearrange a week they cannot open. Other weeks are laid out
+    /// deterministically from the recipe order, so the same week always
+    /// looks the same.
+    func recipesOfSelectedWeek(on day: Int) -> [Recipe] {
+        if selectedWeek == 0 { return recipes(on: day) }
+        let plats = selectedWeekRecipes
+        guard !plats.isEmpty else { return [] }
+        /* Weeknights first, the same shape the plan uses: five days carry a
+         * recipe, two are left open on purpose. */
+        return plats.enumerated().compactMap { i, r in
+            WeekPlan.defaultDay(forIndex: i) == day ? r : nil
+        }
+    }
 
     /// The recipes assigned to one day, in the order the parent put them.
     func recipes(on day: Int) -> [Recipe] {
