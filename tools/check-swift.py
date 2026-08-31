@@ -954,8 +954,23 @@ def check():
                     if prof == 0:
                         corps = code[i:j]
                         # a state-driven reveal, not a static decoration
-                        if re.search(r"\bif\s+(?:show|expand|is)\w*\b", corps) and \
-                           len(corps) > 120:
+                        # A badge inside a FIXED-HEIGHT container reserves
+                        # nothing because nothing needs reserving — the frame
+                        # is already set. The rule is about an overlay on
+                        # content whose height is its own.
+                        # WHAT THE RULE IS ABOUT: an overlay that UNFOLDS.
+                        #
+                        # `if showDetails` reveals a list that lands across the
+                        # content below, because an overlay reserves no height.
+                        # `if isOn` on a badge does not: a checkmark on a tile
+                        # covers the tile, which is the point.
+                        #
+                        # The distinction is the verb, not the size. A reveal
+                        # is named show/expand/open; a selection is isOn,
+                        # isSelected, selected.
+                        revele = re.search(r"\bif\s+(?:show|expand|open|reveal)\w*\b",
+                                           corps, re.I)
+                        if revele and len(corps) > 120:
                             ligne = code[:m.start()].count("\n") + 1
                             problems.append(
                                 f"{filename}:{ligne}: an .overlay that appears on "
