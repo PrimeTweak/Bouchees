@@ -1,13 +1,14 @@
 {
-  "build": 107,
-  "date": "2026-08-29",
+  "build": 108,
+  "date": "2026-08-31",
   "carries": [
-    "the black Bouchees flash is the CACHED snapshot of a launch image that no longer ships",
-    "iOS keeps it in Library/SplashBoard and force-quitting does not clear it \u2014 the app deletes it at startup",
-    "the child pill moves to the trailing edge of a shared floating bar on both screens",
-    "the bar is an overlay, so the Shopping title sits at padding(.top, 8) like Settings",
-    "the scope picker goes from 32 to 44pt, full width \u2014 it was under Apple minimum",
-    "the day strip appears only in day mode; it was 7 dead tiles at full height",
-    "left-to-buy replaces of-thirty-in-the-cart, and each aisle carries its own count"
+    "the launch wordmark was still declared in ios/project.yml, which is what XcodeGen reads",
+    "Info.plist had the key removed by hand, and the build overwrote that file every time",
+    "the launch colour was Fond while the app canvas is Canvas, so the field changed shade",
+    "both launch imagesets are gone: one was referenced only by the removed key, one by nothing",
+    "Shopping takes the same 112pt fade as Recipes; at 88 it ended above the pill",
+    "Settings and Search take the same fade, Search by hiding only the bar background",
+    "the scope segments were 38pt, not the 44 the comment claimed, and declared no content shape",
+    "the day strip sat 4pt under the picker on a screen whose other gaps are 20"
   ]
 }
