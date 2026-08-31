@@ -1,0 +1,115 @@
+#!/bin/bash
+# Double-clique ceci. Il fabrique le paquet de produits hors ligne.
+#
+# Deux sources, deux fichiers, jamais fusionnes -- c'est la licence, pas du
+# rangement. L'americaine est en domaine public, la canadienne est sous ODbL.
+cd "$(dirname "$0")"
+
+TELECHARGEMENTS="$HOME/Downloads"
+TRAVAIL="./pack/sources"
+
+echo ""
+echo "  BOUCHEES — PAQUET DE PRODUITS HORS LIGNE"
+echo "  ========================================"
+echo ""
+
+# ---------------------------------------------------------------- 1. Node
+if ! command -v node > /dev/null 2>&1; then
+  echo "  NODE N'EST PAS INSTALLE"
+  echo ""
+  echo "  Va sur  nodejs.org , prends le bouton vert LTS."
+  echo "  Puis ferme cette fenetre et double-clique a nouveau."
+  echo ""
+  read -n 1 -p "  Appuie sur une touche pour fermer."
+  exit 1
+fi
+
+mkdir -p "$TRAVAIL"
+
+# ------------------------------------------------- 2. Le fichier americain
+#
+# L'adresse de telechargement d'USDA porte la date du mois, donc elle change.
+# Je ne la devine pas : tu la prends dans ton navigateur, une fois par mois.
+USDA_CSV=$(ls "$TRAVAIL"/branded_food.csv 2>/dev/null | head -1)
+
+if [ -z "$USDA_CSV" ]; then
+  ZIP=$(ls "$TELECHARGEMENTS"/FoodData_Central_branded_food_csv_*.zip 2>/dev/null | head -1)
+  if [ -n "$ZIP" ]; then
+    echo "  Trouve dans tes telechargements :"
+    echo "    $(basename "$ZIP")"
+    echo "  Decompression..."
+    unzip -o -j -q "$ZIP" "*branded_food.csv" -d "$TRAVAIL"
+    USDA_CSV=$(ls "$TRAVAIL"/branded_food.csv 2>/dev/null | head -1)
+  fi
+fi
+
+if [ -z "$USDA_CSV" ]; then
+  echo "  IL MANQUE LE FICHIER AMERICAIN"
+  echo ""
+  echo "  1. Ouvre  fdc.nal.usda.gov/download-datasets"
+  echo "  2. Prends  Branded Foods , format CSV"
+  echo "  3. Laisse le .zip dans ton dossier Telechargements"
+  echo "  4. Double-clique ce fichier a nouveau"
+  echo ""
+  echo "  Ces donnees sont en domaine public (CC0). Rien a signer."
+  echo ""
+  read -n 1 -p "  Appuie sur une touche pour fermer."
+  exit 1
+fi
+
+# --------------------------------------------------- 3. Le fichier canadien
+#
+# Celle-la ne change pas d'adresse, alors on la prend nous-memes. Environ
+# 7 Go : compte une bonne demi-heure sur une connexion ordinaire. Le fichier
+# reste sur ton disque, donc la fois suivante il n'y a rien a retelecharger.
+OFF_GZ="$TRAVAIL/openfoodfacts-products.jsonl.gz"
+
+if [ ! -f "$OFF_GZ" ]; then
+  echo "  Telechargement de la base Open Food Facts (~7 Go)."
+  echo "  Tu peux laisser tourner et revenir plus tard."
+  echo ""
+  curl -L --fail --progress-bar \
+    -H "User-Agent: ${OFF_USER_AGENT:-Bouchees/1.0 (https://bouchees.onrender.com)}" \
+    -o "$OFF_GZ.partiel" \
+    "https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz"
+  if [ $? -ne 0 ]; then
+    rm -f "$OFF_GZ.partiel"
+    echo ""
+    echo "  LE TELECHARGEMENT A ECHOUE."
+    echo "  Relance : il reprend a zero, mais rien n'est casse."
+    echo ""
+    read -n 1 -p "  Appuie sur une touche pour fermer."
+    exit 1
+  fi
+  mv "$OFF_GZ.partiel" "$OFF_GZ"
+else
+  echo "  Base Open Food Facts deja sur le disque."
+  echo "  Efface  pack/sources/openfoodfacts-products.jsonl.gz  pour la rafraichir."
+fi
+
+# --------------------------------------------------------- 4. La fabrication
+echo ""
+node tools/build-product-pack.js --usda "$USDA_CSV" --off "$OFF_GZ"
+if [ $? -ne 0 ]; then
+  echo ""
+  read -n 1 -p "  Appuie sur une touche pour fermer."
+  exit 1
+fi
+
+# ---------------------------------------------------------- 5. Le controle
+echo "  CONTROLE DU PAQUET"
+node tools/check-pack.js
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "  LE PAQUET N'EST PAS CONFORME. Ne le publie pas."
+  echo ""
+  read -n 1 -p "  Appuie sur une touche pour fermer."
+  exit 1
+fi
+
+echo ""
+echo "  ENSUITE"
+echo "  Les fichiers sont dans  pack/  et ne vont PAS dans Git."
+echo "  Ils se deposent comme fichiers de Release sur GitHub."
+echo ""
+read -n 1 -p "  Appuie sur une touche pour fermer."

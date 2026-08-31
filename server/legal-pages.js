@@ -142,11 +142,28 @@ const CONFIDENTIALITE = GABARIT("Privacy Policy", `
 </ul>
 
 <h2>Barcode scanning</h2>
-<p>When you scan a product, the barcode is sent to our server, which forwards it
-to Open Food Facts and returns the result. The lookup is not stored and is not
-linked to your account. Product data is used under the
-<a href="https://opendatacommons.org/licenses/odbl/1-0/">ODbL licence</a> and is
-never merged into our own database.</p>
+<p>Most scans are answered on your device, from a product pack downloaded once
+after installation. Nothing leaves the phone for those, and the scanner works
+without a signal. When a barcode is not in the pack, it is sent to our server,
+which forwards it to Open Food Facts and returns the result. That lookup is not
+stored and is not linked to your account.</p>
+
+<h2>Where product data comes from</h2>
+<p>American products come from
+<a href="https://fdc.nal.usda.gov">USDA FoodData Central</a>, Branded Foods.
+That data is in the public domain under CC0 1.0. Suggested citation: U.S.
+Department of Agriculture, Agricultural Research Service, FoodData Central.</p>
+<p>Canadian products contain information from
+<a href="https://world.openfoodfacts.org">Open Food Facts</a>, which is made
+available here under the
+<a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License
+(ODbL)</a>. That Canadian set is kept as a separate file and is available on
+request under the same licence.</p>
+<p>The two sets are never joined to each other, and neither is merged into our
+own ingredient and substitution tables. Allergens are worked out from the
+printed ingredient list by our own catalogue, at the moment you scan. A
+database's own allergen tags are treated as indicative only, never as the
+answer.</p>
 
 <h2>Children</h2>
 <p>Bouchées is intended for parents and caregivers, not for children. We do not

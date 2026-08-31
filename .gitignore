@@ -29,3 +29,11 @@ images/rejected/
 
 # The vision key, written by PHOTOS.command. Never leaves this machine.
 .env
+
+# Le paquet de produits hors ligne et ses sources brutes. ~150 Mo pour le
+# paquet, ~7 Go pour le dump d'Open Food Facts. Git garde chaque version :
+# un seul commit accidentel et le depot est irrecuperable.
+#
+# Le paquet se depose comme fichier de Release sur GitHub, et l'app le
+# telecharge au premier lancement. Il se refabrique avec PAQUET.command.
+pack/
