@@ -709,10 +709,19 @@ def check():
     #     A view PRESENTED as a sheet is its own hierarchy and may own a
     #     stack; that is the one exception, and it is named rather than
     #     guessed.
+    #     SUPERSEDED BY THE NATIVE TabView. Each Tab owns its own
+    #     NavigationStack — that is the structure Apple documents, and it is
+    #     what makes the Liquid Glass bar behave. The rule was written for a
+    #     hand-rolled bar where one stack at the root was correct; with
+    #     TabView it would forbid the right answer.
+    #
+    #     Kept, narrowed: a file holding a TabView is exempt.
     PRESENTEES = ("ProfileEditor", "PaywallScreen", "SubstitutionRuleSheet",
                   "ChildPickerSheet", "SearchSheet", "TagFlow")
     stacks = []
     for path_, (_, code) in sources.items():
+        if "TabView" in code:
+            continue
         for m in re.finditer(r"NavigationStack\s*[({]", code):
             avant = code[:m.start()]
             proprios = re.findall(r"(?:^|\n)(?:private )?(?:struct|final class|class) (\w+)",
@@ -985,6 +994,9 @@ def check():
                        "withCheckedContinuation", "withTaskGroup",
                        "unsafeBitCast", "type", "String", "localized",
                        # compiler directives, not calls
+                       # SwiftUI methods used unqualified inside an extension
+                       "navigationDestination", "toolbar", "searchable",
+                       "overlay", "background", "padding", "frame",
                        "canImport", "available", "compiler", "targetEnvironment",
                        "swift", "os", "arch"):
                 continue
