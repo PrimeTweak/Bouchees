@@ -26,8 +26,26 @@ struct RecipeVisual: View {
     @State private var photo: UIImage?
     @State private var echec = false
 
+    /* THE PHOTO SHOWS WHENEVER THERE IS ONE.
+     *
+     * It used to require `status == .asIs`, so a photo only appeared on a
+     * recipe that needed no swap. MEASURED for a child avoiding milk, egg and
+     * peanut: three recipes of thirty-eight qualify. Thirty-five photos were
+     * invisible by construction, whatever the pipeline produced.
+     *
+     * The rule existed for a real reason — the photo is of the ORIGINAL dish,
+     * and showing a milk-and-egg muffin on a page whose whole point is that
+     * both were replaced would be a lie in the place it matters most.
+     *
+     * So the photo shows, and it SAYS SO. A caption on an adapted recipe
+     * names what is different. That keeps the promise and shows the food. */
     private var photoPertinente: Bool {
-        recipe.image != nil && result.status == .asIs && !echec
+        recipe.image != nil && !echec
+    }
+
+    /// True when the picture is of the dish BEFORE the swaps.
+    private var photoDuPlatOriginal: Bool {
+        photoPertinente && result.status != .asIs
     }
 
     var body: some View {
@@ -37,6 +55,22 @@ struct RecipeVisual: View {
                     .resizable()
                     .scaledToFill()
                     .transition(.opacity)
+                    /* SAY WHEN THE PICTURE IS OF THE ORIGINAL.
+                     *
+                     * Without this the photo would quietly claim to be the
+                     * adapted dish. A parent cooking a milk-free version has
+                     * to know the picture shows the version with milk. */
+                    .overlay(alignment: .bottomTrailing) {
+                        if photoDuPlatOriginal {
+                            Text("Original recipe")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(.black.opacity(0.42), in: Capsule())
+                                .padding(10)
+                        }
+                    }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)

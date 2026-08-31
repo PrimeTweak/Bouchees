@@ -63,24 +63,6 @@ struct BoucheesMark: View {
     private var markColour: Color { Tone.brand }
 }
 
-/// Mark plus name. Used on the launch screen and at the top of onboarding —
-/// and nowhere else. An app does not need to remind someone of its name
-/// straight after they opened it.
-struct BoucheesLockup: View {
-    var size: CGFloat = 34
-
-    var body: some View {
-        HStack(spacing: size * 0.35) {
-            BoucheesMark(size: size)
-            Text("Bouchées")
-                .font(.system(size: size * 0.74, weight: .bold))
-                .foregroundStyle(Tone.text)
-                .kerning(-size * 0.02)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Bouchées")
-    }
-}
 
 /// What shows while the engine loads its tables. It replaces a white flash
 /// with the app's own colour, and it follows the theme.
@@ -101,6 +83,28 @@ struct LaunchView: View {
     @State private var named = false
     @State private var slow = false
 
+    /* THE FLASH: A PROBE, NOT A GUESS.
+     *
+     * François sees a black "Bouchées" before this view. Two candidates, and
+     * the code cannot tell them apart:
+     *
+     *   A. this view rendering its title before the animation starts. Ruled
+     *      out on paper — `named` starts false, so opacity is 0 on the first
+     *      frame — but paper is not a device.
+     *
+     *   B. iOS drawing CFBundleDisplayName during the zoom from the home
+     *      screen, which is outside the app entirely.
+     *
+     * Set BOUCHEES_SPLASH_PROBE=1 and the title is removed altogether. If the
+     * flash remains, it is B and no code here can touch it. If it goes, it is
+     * A and I fix it properly.
+     *
+     * One probe that answers the whole question, rather than three builds
+     * changing one thing each. */
+    private var sonde: Bool {
+        ProcessInfo.processInfo.environment["BOUCHEES_SPLASH_PROBE"] == "1"
+    }
+
     var body: some View {
         ZStack {
             Tone.canvas.ignoresSafeArea()
@@ -120,7 +124,7 @@ struct LaunchView: View {
                     .opacity(settled ? 1 : 0)
 
                 /* The product name, the one French word the app keeps. */
-                Text(verbatim: "Bouchées")
+                Text(verbatim: sonde ? "" : "Bouchées")
                     .font(.system(size: 29, weight: .bold))
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
