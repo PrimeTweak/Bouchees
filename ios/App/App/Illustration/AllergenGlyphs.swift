@@ -27,8 +27,19 @@ struct AllergenGlyph: View {
 
         func point(_ x: Double, _ y: Double) -> CGPoint { CGPoint(x: x * e, y: y * e) }
 
+        /* THE IDS ARE ENGLISH.
+         *
+         * These cases were "lait", "oeuf", "arachide", "ble" — and the
+         * allergen ids in data/base.json are milk, egg, peanut, wheat. Exactly
+         * one of eleven matched: sesame, the same in both languages.
+         *
+         * So the onboarding drew one glyph and ten empty circles, and nothing
+         * failed loudly: an unmatched id falls to the default, which is a
+         * circle. A silent default is why this shipped.
+         *
+         * check-swift now cross-checks these cases against base.json. */
         switch id {
-        case "lait":
+        case "milk":
             // Berlingot
             p.move(to: point(7, 3)); p.addLine(to: point(13, 3))
             p.addLine(to: point(13, 6)); p.addLine(to: point(15, 9))
@@ -37,14 +48,14 @@ struct AllergenGlyph: View {
             p.closeSubpath()
             p.move(to: point(7, 6)); p.addLine(to: point(13, 6))
 
-        case "oeuf":
+        case "egg":
             p.move(to: point(10, 3))
             p.addCurve(to: point(15, 11), control1: point(13, 3), control2: point(15, 7.5))
             p.addCurve(to: point(10, 17), control1: point(15, 14.5), control2: point(12.8, 17))
             p.addCurve(to: point(5, 11), control1: point(7.2, 17), control2: point(5, 14.5))
             p.addCurve(to: point(10, 3), control1: point(5, 7.5), control2: point(7, 3))
 
-        case "arachide":
+        case "peanut":
             // Gousse en huit
             p.move(to: point(10, 3))
             p.addCurve(to: point(10, 10), control1: point(14.5, 3.5), control2: point(14, 8))
@@ -54,7 +65,7 @@ struct AllergenGlyph: View {
             p.move(to: point(7.5, 6.5)); p.addLine(to: point(12.5, 6.5))
             p.move(to: point(7.5, 13.5)); p.addLine(to: point(12.5, 13.5))
 
-        case "noix":
+        case "tree_nut":
             p.addEllipse(in: CGRect(x: 3.5 * e, y: 3.5 * e, width: 13 * e, height: 13 * e))
             p.move(to: point(10, 3.5)); p.addLine(to: point(10, 16.5))
             p.move(to: point(7, 5.2))
@@ -62,7 +73,7 @@ struct AllergenGlyph: View {
             p.move(to: point(13, 5.2))
             p.addCurve(to: point(13, 14.8), control1: point(11.4, 8), control2: point(11.4, 12))
 
-        case "ble":
+        case "wheat":
             // Wheat ear
             p.move(to: point(10, 17.5)); p.addLine(to: point(10, 6))
             for level in [6.0, 10.0, 13.5] {
@@ -78,7 +89,7 @@ struct AllergenGlyph: View {
                            control1: point(6.7, level - 1.7), control2: point(7.8, level - 0.3))
             }
 
-        case "soya":
+        case "soy":
             // Pod with beans
             p.move(to: point(4.5, 12.5))
             p.addCurve(to: point(12, 5), control1: point(4.5, 8.5), control2: point(8, 5))
@@ -94,7 +105,7 @@ struct AllergenGlyph: View {
                                         width: 3.6 * e, height: 5.6 * e))
             }
 
-        case "poisson":
+        case "fish":
             p.move(to: point(3.5, 10))
             p.addCurve(to: point(16, 10), control1: point(6.5, 4.5), control2: point(13, 4.5))
             p.addCurve(to: point(3.5, 10), control1: point(13, 15.5), control2: point(6.5, 15.5))
@@ -102,7 +113,7 @@ struct AllergenGlyph: View {
             p.addLine(to: point(1.5, 13)); p.addLine(to: point(3.5, 10))
             p.addEllipse(in: CGRect(x: 12.1 * e, y: 8.3 * e, width: 1.6 * e, height: 1.6 * e))
 
-        case "crustaces_mollusques":
+        case "shellfish":
             // Curved shrimp
             p.move(to: point(15, 5.5))
             p.addCurve(to: point(7.5, 11), control1: point(11, 5.5), control2: point(7.5, 8))
@@ -113,7 +124,7 @@ struct AllergenGlyph: View {
             p.move(to: point(15, 5.5)); p.addLine(to: point(17.3, 3))
             p.addEllipse(in: CGRect(x: 13.6 * e, y: 6.8 * e, width: 1.6 * e, height: 1.6 * e))
 
-        case "moutarde":
+        case "mustard":
             // Pot
             p.move(to: point(8, 3)); p.addLine(to: point(12, 3))
             p.addLine(to: point(12, 5.2)); p.addLine(to: point(13.6, 7.5))
@@ -122,7 +133,7 @@ struct AllergenGlyph: View {
             p.closeSubpath()
             p.move(to: point(6.4, 10)); p.addLine(to: point(13.6, 10))
 
-        case "sulfites":
+        case "sulphites":
             // Fiole
             p.move(to: point(8, 3)); p.addLine(to: point(12, 3))
             p.addLine(to: point(12, 7.4)); p.addLine(to: point(15.3, 14.5))
