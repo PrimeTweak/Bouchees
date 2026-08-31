@@ -133,5 +133,227 @@
         "la vision hésite sur : possible tahini blended into hummus but not distinctly visible, possible lemon juice blended in but not visible"
       ]
     }
+  },
+  "oatmeal-raisin-cookies": {
+    "fichier": "images/oatmeal-raisin-cookies-b0f94efd28b1.png",
+    "empreinte": "b0f94efd28b1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T10:42:17.736Z",
+      "detectes": [
+        "oat",
+        "raisin"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": []
+    }
+  },
+  "mini-vegetable-frittatas": {
+    "fichier": "images/mini-vegetable-frittatas-bbc198f62d4a.png",
+    "empreinte": "bbc198f62d4a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T11:38:17.816Z",
+      "detectes": [
+        "egg",
+        "spinach",
+        "zucchini",
+        "cheddar cheese",
+        "ricotta cheese"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : ricotta cheese or cottage cheese, possible feta cheese"
+      ]
+    }
+  },
+  "squash-and-coconut-soup": {
+    "fichier": "images/squash-and-coconut-soup-06cc7f3798a6.png",
+    "empreinte": "06cc7f3798a6",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T12:39:29.652Z",
+      "detectes": [
+        "butternut squash",
+        "onion",
+        "potato"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : potato or turnip or parsnip for the white chunks"
+      ]
+    }
+  },
+  "mac-and-cheese-with-hidden-squash": {
+    "fichier": "images/mac-and-cheese-with-hidden-squash-469210f77621.png",
+    "empreinte": "469210f77621",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T13:57:24.562Z",
+      "detectes": [
+        "macaroni",
+        "cheddar cheese",
+        "butternut squash",
+        "cream sauce"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : butternut squash or sweet potato, type of cheese (cheddar or colby)"
+      ]
+    }
+  },
+  "turkey-and-apple-meatballs": {
+    "fichier": "images/turkey-and-apple-meatballs-b391f838a623.png",
+    "empreinte": "b391f838a623",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T14:48:28.584Z",
+      "detectes": [
+        "ground meat",
+        "apple",
+        "breadcrumb"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : type of meat (pork, veal, turkey?), possible onion or herb inside meatballs, fruits in background tray (apple, tomato?)"
+      ]
+    }
+  },
+  "vanilla-rice-pudding": {
+    "fichier": "images/vanilla-rice-pudding-e61848422858.png",
+    "empreinte": "e61848422858",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T15:27:32.226Z",
+      "detectes": [
+        "rice",
+        "milk"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : rice pudding vs plain cooked rice, possible sugar or cream mixed in"
+      ]
+    }
+  },
+  "mango-banana-smoothie": {
+    "fichier": "images/mango-banana-smoothie-457ae7636f2c.png",
+    "empreinte": "457ae7636f2c",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T16:01:14.818Z",
+      "detectes": [
+        "banana",
+        "mango",
+        "peach",
+        "milk"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : exact fruits blended are uncertain, could contain yogurt, could contain pineapple"
+      ]
+    }
+  },
+  "chewy-granola-bars": {
+    "fichier": "images/chewy-granola-bars-f996855da0de.png",
+    "empreinte": "f996855da0de",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T17:09:31.333Z",
+      "detectes": [
+        "oat",
+        "raisin",
+        "dried cranberry",
+        "dried cherry"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : dried cranberry or dried cherry (small red-orange pieces), binding agent unclear: honey, peanut butter, or syrup"
+      ]
+    }
+  },
+  "vanilla-chia-pudding": {
+    "fichier": "images/vanilla-chia-pudding-2b8f2630f91b.png",
+    "empreinte": "2b8f2630f91b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T18:44:20.493Z",
+      "detectes": [
+        "blueberry",
+        "chia seed",
+        "milk"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : the liquid base could be dairy milk, plant-based milk, or yogurt"
+      ]
+    }
+  },
+  "yogurt-dip-with-vegetable-sticks": {
+    "fichier": "images/yogurt-dip-with-vegetable-sticks-a8e08ac6f465.png",
+    "empreinte": "a8e08ac6f465",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T19:38:57.100Z",
+      "detectes": [
+        "carrot",
+        "cucumber",
+        "yogurt",
+        "herb"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : the dip could be tzatziki, ranch, or sour cream-based, the herb mixed into the dip is not clearly identifiable"
+      ]
+    }
   }
 }

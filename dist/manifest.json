@@ -9,7 +9,7 @@
       "access": "free",
       "note": "The foundation: a full week of eating, whatever the profile.",
       "count": 8,
-      "checksum": "05f354050e27",
+      "checksum": "748d042ccd56",
       "weekly": false,
       "inWindow": true
     },
@@ -20,7 +20,7 @@
       "access": "free",
       "note": "For starting solids — purées, coarse mash, first finger foods.",
       "count": 7,
-      "checksum": "7a2b6a2c8afb",
+      "checksum": "75c002af5b22",
       "weekly": false,
       "inWindow": true
     },
@@ -30,7 +30,7 @@
       "access": "subscriber",
       "note": "Seven recipes aimed at the least-served profiles.",
       "count": 7,
-      "checksum": "0ccd3d8b5575",
+      "checksum": "bc03e81670b7",
       "weekly": true,
       "inWindow": false
     },
@@ -74,6 +74,6 @@
     "2026-S33",
     "2026-S32"
   ],
-  "currentWeek": "2026-S35",
+  "currentWeek": "2026-S36",
   "windowSize": 3
 }

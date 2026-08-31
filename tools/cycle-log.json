@@ -1,161 +1,123 @@
 {
-  "le": "2026-08-31T00:38:02.828Z",
+  "le": "2026-08-31T19:38:57.118Z",
   "recettes": null,
   "images": {
-    "generees": 0,
-    "acceptees": 0,
+    "generees": 19,
+    "acceptees": 15,
     "rejetees": [
       {
-        "id": "banana-oat-muffins",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "fluffy-pancakes",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "lentil-and-carrot-patties",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
         "id": "sweet-potato-and-chicken-puree",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "apple-cinnamon-oatmeal",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "date-energy-bites",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "the image shows \"butter\" while the recipe contains no milk ; only one ingredient recognised out of 4, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "sweet potato",
+          "butter"
+        ],
+        "fichier": "images/rejected/sweet-potato-and-chicken-puree.png"
       },
       {
         "id": "pasta-in-rose-sauce-with-chicken",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "the image shows \"tuna\" while the recipe contains no fish",
+        "detectes": [
+          "spaghetti",
+          "tomato",
+          "onion",
+          "tuna",
+          "chicken"
+        ],
+        "fichier": "images/rejected/pasta-in-rose-sauce-with-chicken.png"
       },
       {
         "id": "baked-fish-nuggets",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "silky-hummus",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "the image shows \"crab\" while the recipe contains no crustaceans and molluscs ; the image shows \"shrimp\" while the recipe contains no crustaceans and molluscs ; the recipe is Baked fish nuggets but the image shows four crab cakes — the dish does not match",
+        "detectes": [
+          "crab",
+          "shrimp",
+          "onion",
+          "breadcrumb",
+          "egg"
+        ],
+        "fichier": "images/rejected/baked-fish-nuggets.png"
       },
       {
         "id": "banana-bread",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "oatmeal-raisin-cookies",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "mini-vegetable-frittatas",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "squash-and-coconut-soup",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "mac-and-cheese-with-hidden-squash",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "turkey-and-apple-meatballs",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "vanilla-rice-pudding",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "mango-banana-smoothie",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "chewy-granola-bars",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "vanilla-chia-pudding",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
-      },
-      {
-        "id": "yogurt-dip-with-vegetable-sticks",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "the image shows \"walnut\" while the recipe contains no tree nuts ; only one ingredient recognised out of 8, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "banana",
+          "walnut"
+        ],
+        "fichier": "images/rejected/banana-bread.png"
       },
       {
         "id": "chicken-couscous",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "creamy-shrimp-and-pea-risotto",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "soft-apricot-granola",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "mild-chicken-quesadillas",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "tomato-alphabet-soup",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "crispy-tofu-with-sweet-maple-sauce",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "carrot-and-maple-muffins",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "creamy-salmon-pasta",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "banana-oat-pancakes",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "vegetable-fried-rice",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "coconut-rice-pudding-with-mango",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "apple-and-date-cinnamon-sauce",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "lentil-squash-and-carrot-puree",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "chicken-sweet-potato-and-green-peas",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "roasted-sweet-potato-sticks",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "soft-banana-oat-patties",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "creamy-mango-oatmeal",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       },
       {
         "id": "tender-rice-flour-crepes",
-        "reason": "génération : Draw Things refused the request: Unrecognized keys: [\"override_settings\"]  (asked for 1408x1408, 8 steps)"
+        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
       }
     ]
   }
