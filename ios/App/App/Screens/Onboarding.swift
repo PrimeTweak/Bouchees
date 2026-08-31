@@ -16,6 +16,8 @@
 //  believe you.
 
 import SwiftUI
+/* UIImpactFeedbackGenerator. */
+import UIKit
 
 struct OnboardingFlow: View {
     @Environment(AppState.self) private var etat
@@ -228,12 +230,21 @@ private struct AllergenPad: View {
                              toggle: { toggle(a.id) })
             }
         }
-        .animation(.smooth(duration: 0.22), value: selected)
+        /* A SETTLE, NOT A FADE.
+         *
+         * This grid is the demonstration: tick milk and the card above
+         * changes, the counts diverge, the recipe is re-adapted in front of
+         * you. A 0.22 crossfade made that read as a state change; the
+         * overshoot makes it read as a consequence. */
+        .animation(.spring(response: 0.34, dampingFraction: 0.66), value: selected)
     }
 
     private func toggle(_ id: String) {
         if selected.contains(id) { selected.removeAll { $0 == id } }
         else { selected.append(id) }
+        /* The tick is a decision about a child's food. It deserves the same
+         * feedback as a switch, not silence. */
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 }
 
@@ -246,31 +257,81 @@ private struct AllergenTile: View {
     let isOn: Bool
     let toggle: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The press, the settle, and nothing in between.
+    ///
+    /// A 0.22 crossfade read as a state change. The overshoot reads as a
+    /// consequence, which is what this screen exists to show: tick milk and
+    /// the recipe above rewrites itself.
+    private var settle: Animation {
+        reduceMotion ? .easeInOut(duration: 0.15)
+                     : .spring(response: 0.3, dampingFraction: 0.58)
+    }
+
     var body: some View {
         Button(action: toggle) {
             VStack(spacing: 5) {
-                AllergenGlyph(identifier: allergen.id, size: 20)
+                AllergenGlyph(identifier: allergen.id, size: 23)
+                    .foregroundStyle(isOn ? Color.white : Tone.text2)
+                    /* The glyph leads by 40ms. It is what the eye is on, so it
+                     * has to move before the rectangle behind it. */
+                    .scaleEffect(isOn ? 1.1 : 1)
+                    .animation(reduceMotion ? .easeInOut(duration: 0.15)
+                                            : .spring(response: 0.26,
+                                                      dampingFraction: 0.5),
+                               value: isOn)
+
                 Text(allergen.name)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: 9, weight: .semibold))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.75)
+                    .foregroundStyle(isOn ? Color.white : Tone.text2)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 66)
+            .frame(height: 68)
             .background {
-                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(isOn ? AnyShapeStyle(Tone.brandGradient)
-                               : AnyShapeStyle(Tone.text.opacity(0.05)))
-                    .shadow(color: isOn ? Tone.brandDeep.opacity(0.4) : .clear, radius: 11, y: 6)
+                               : AnyShapeStyle(Tone.text.opacity(0.045)))
+                    .shadow(color: isOn ? Tone.brandDeep.opacity(0.32) : .clear,
+                            radius: 10, y: 5)
             }
             .overlay {
-                RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .strokeBorder(isOn ? .white.opacity(0.3) : Tone.hairline, lineWidth: 1)
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(isOn ? .clear : Tone.hairline, lineWidth: 1)
             }
-            .foregroundStyle(isOn ? Color.white : Tone.textSecondary)
+            /* A TICK, NOT JUST A COLOUR.
+             *
+             * Eleven tiles is too many to scan by colour alone, and it is the
+             * only cue for a parent who cannot separate the two. */
+            .overlay(alignment: .topTrailing) {
+                if isOn {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 14, height: 14)
+                        .background(Color.white.opacity(0.26), in: Circle())
+                        .padding(5)
+                        .transition(.scale(scale: 0.6).combined(with: .opacity))
+                }
+            }
+            .scaleEffect(isOn ? 1.04 : 1)
+            .animation(settle, value: isOn)
         }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isOn ? [.isSelected] : [])
+        .buttonStyle(PressedTile())
+        .accessibilityLabel(Text(allergen.name))
+        .accessibilityAddTraits(isOn ? [.isSelected, .isButton] : .isButton)
+    }
+}
+
+/// The press itself: down to 0.94, then the settle takes over.
+private struct PressedTile: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.94 : 1)
+            .animation(.spring(response: 0.22, dampingFraction: 0.7),
+                       value: configuration.isPressed)
     }
 }
 
@@ -278,6 +339,22 @@ private struct AllergenTile: View {
 /// thing a parent does not expect.
 private struct CountLine: View {
     let tally: AppState.ProfileTally
+
+    /// How much of the bar is "nothing to change".
+    private var partAsIs: CGFloat {
+        guard tally.total > 0 else { return 1 }
+        return CGFloat(tally.asIs) / CGFloat(tally.total)
+    }
+
+    private var detail: String {
+        let echanges = max(0, tally.total - tally.asIs)
+        if echanges == 0 {
+            return String(format: String(localized: "%lld with nothing to change"),
+                          tally.asIs)
+        }
+        return String(format: String(localized: "%lld as is · %lld with a swap"),
+                      tally.asIs, echanges)
+    }
 
     var body: some View {
         HStack(spacing: 13) {
@@ -290,9 +367,37 @@ private struct CountLine: View {
                 Text("recipes still work")
                     .font(Type.secondary.weight(.medium))
                     .foregroundStyle(Tone.text)
-                Text("\(tally.asIs) with nothing to change")
+                /* BOTH HALVES, NOT THE SAME NUMBER TWICE.
+                 *
+                 * With nothing ticked, total and asIs are equal — the screen
+                 * read "15 recipes still work / 15 with nothing to change",
+                 * which says one thing twice and teaches nothing about what
+                 * the app does.
+                 *
+                 * Split, it becomes the demonstration: tick milk and the
+                 * as-is count drops while the swap count rises, and the total
+                 * barely moves. That IS the product. */
+                Text(detail)
                     .font(Type.caption)
                     .foregroundStyle(Tone.textSecondary)
+                    .contentTransition(.numericText())
+
+                /* THE SPLIT, WITHOUT READING THE NUMBERS.
+                 *
+                 * Tick milk and the green retreats while the amber advances.
+                 * That movement is the demonstration — a parent sees the cost
+                 * of an allergy before reading a single figure. */
+                GeometryReader { geo in
+                    HStack(spacing: 0) {
+                        Rectangle().fill(Tone.yes)
+                            .frame(width: geo.size.width * partAsIs)
+                        Rectangle().fill(Tone.swap)
+                    }
+                }
+                .frame(height: 4)
+                .clipShape(Capsule())
+                .padding(.top, 7)
+                .animation(.smooth(duration: 0.4), value: tally.asIs)
             }
             Spacer(minLength: 0)
         }

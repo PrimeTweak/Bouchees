@@ -397,6 +397,71 @@ async function principal() {
     console.log("  journal   : tools/cycle-log.json");
   }
 
+  /* THE THREE NUMBERS THAT DECIDE WHETHER A PHOTO REACHES THE APP.
+   *
+   * MEASURED on a pushed repository: 1 file on disk, 1 manifest entry, and 0
+   * recipes carrying an `image` field — after a run that had generated 37.
+   * The cycle printed "Terminé" and said nothing.
+   *
+   * They must agree. A file with no manifest entry is invisible; a manifest
+   * entry with no published field is invisible; a published field with no
+   * file is a broken link. */
+  (function bilanPhotos() {
+    const fsx = require("fs");
+    const dossier = path.join(__dirname, "..", "images");
+    const surDisque = fsx.existsSync(dossier)
+      ? fsx.readdirSync(dossier).filter(function (f) { return /\.(png|jpe?g|webp)$/i.test(f); }).length
+      : 0;
+
+    let entrees = 0;
+    try {
+      const man = JSON.parse(fsx.readFileSync(
+        path.join(__dirname, "..", "generation", "images", "manifest.json"), "utf8"));
+      entrees = Object.keys(man).filter(function (k) {
+        return man[k] && man[k].fichier && man[k].revisePar;
+      }).length;
+    } catch (e) { /* none yet */ }
+
+    let publiees = 0;
+    try {
+      const lots = path.join(__dirname, "..", "dist", "batches");
+      fsx.readdirSync(lots).forEach(function (f) {
+        JSON.parse(fsx.readFileSync(path.join(lots, f), "utf8")).forEach(function (r) {
+          if (r.image) publiees++;
+        });
+      });
+    } catch (e) { /* not published yet */ }
+
+    console.log("");
+    console.log("Photos — les trois nombres");
+    console.log("──────────────────────────");
+    console.log("  fichiers dans images/            " + surDisque);
+    console.log("  entrees completes du manifeste   " + entrees);
+    console.log("  recettes publiees avec image     " + publiees);
+
+    if (surDisque === entrees && entrees === publiees && surDisque > 0) {
+      console.log("");
+      console.log("  Les trois concordent. Pousse images/, generation/ et dist/.");
+    } else if (surDisque === 0) {
+      console.log("");
+      console.log("  Aucune photo. Rien a pousser.");
+    } else {
+      console.log("");
+      console.log("  ILS NE CONCORDENT PAS.");
+      console.log("");
+      if (entrees < surDisque) {
+        console.log("  Des fichiers existent sans entree au manifeste : le cycle");
+        console.log("  a ete interrompu, ou la vision les a rejetes.");
+      }
+      if (publiees < entrees) {
+        console.log("  Le manifeste est en avance sur dist/ : relance le cycle");
+        console.log("  pour republier, sinon l'app ne saura pas quoi demander.");
+      }
+      console.log("");
+      console.log("  Ne pousse pas encore — l'app ne montrerait rien.");
+    }
+  })();
+
   console.log("\n  What the cycle CANNOT check: taste, rise, real texture.");
   console.log("  A recipe that was never cooked can be bad — never unsafe: safety lives");
   console.log("  in the deterministic tables, not in the kitchen test.\n");

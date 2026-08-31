@@ -709,10 +709,19 @@ def check():
     #     A view PRESENTED as a sheet is its own hierarchy and may own a
     #     stack; that is the one exception, and it is named rather than
     #     guessed.
+    #     SUPERSEDED BY THE NATIVE TabView. Each Tab owns its own
+    #     NavigationStack — that is the structure Apple documents, and it is
+    #     what makes the Liquid Glass bar behave. The rule was written for a
+    #     hand-rolled bar where one stack at the root was correct; with
+    #     TabView it would forbid the right answer.
+    #
+    #     Kept, narrowed: a file holding a TabView is exempt.
     PRESENTEES = ("ProfileEditor", "PaywallScreen", "SubstitutionRuleSheet",
                   "ChildPickerSheet", "SearchSheet", "TagFlow")
     stacks = []
     for path_, (_, code) in sources.items():
+        if "TabView" in code:
+            continue
         for m in re.finditer(r"NavigationStack\s*[({]", code):
             avant = code[:m.start()]
             proprios = re.findall(r"(?:^|\n)(?:private )?(?:struct|final class|class) (\w+)",
@@ -945,8 +954,23 @@ def check():
                     if prof == 0:
                         corps = code[i:j]
                         # a state-driven reveal, not a static decoration
-                        if re.search(r"\bif\s+(?:show|expand|is)\w*\b", corps) and \
-                           len(corps) > 120:
+                        # A badge inside a FIXED-HEIGHT container reserves
+                        # nothing because nothing needs reserving — the frame
+                        # is already set. The rule is about an overlay on
+                        # content whose height is its own.
+                        # WHAT THE RULE IS ABOUT: an overlay that UNFOLDS.
+                        #
+                        # `if showDetails` reveals a list that lands across the
+                        # content below, because an overlay reserves no height.
+                        # `if isOn` on a badge does not: a checkmark on a tile
+                        # covers the tile, which is the point.
+                        #
+                        # The distinction is the verb, not the size. A reveal
+                        # is named show/expand/open; a selection is isOn,
+                        # isSelected, selected.
+                        revele = re.search(r"\bif\s+(?:show|expand|open|reveal)\w*\b",
+                                           corps, re.I)
+                        if revele and len(corps) > 120:
                             ligne = code[:m.start()].count("\n") + 1
                             problems.append(
                                 f"{filename}:{ligne}: an .overlay that appears on "
@@ -985,6 +1009,11 @@ def check():
                        "withCheckedContinuation", "withTaskGroup",
                        "unsafeBitCast", "type", "String", "localized",
                        # compiler directives, not calls
+                       # SwiftUI methods used unqualified inside an extension
+                       # Swift syntax that looks like a call
+                       "selector", "keyPath", "available", "file", "line",
+                       "navigationDestination", "toolbar", "searchable",
+                       "overlay", "background", "padding", "frame",
                        "canImport", "available", "compiler", "targetEnvironment",
                        "swift", "os", "arch"):
                 continue
@@ -1004,6 +1033,170 @@ def check():
             problems.append(f"{filename}:{ligne}: {nom}(…) is called but declared "
                             f"nowhere in this file — a helper that was deleted "
                             f"while a call survived")
+
+    # 7ad. a permission switch whose branches do not all fill the screen.
+    #      Only the authorised branch held a camera preview, which is greedy
+    #      by nature; the other two sized themselves to their text. The tab
+    #      bar is a safeAreaInset of the content, so it rose to meet them and
+    #      sat in the middle of the screen until permission was granted.
+    #
+    #      The frame belongs on the switch, so a fourth state cannot forget it.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"switch\s+(\w*[Aa]uthoriz\w*|\w*[Pp]ermission\w*)\s*\{",
+                             code):
+            # the closing brace of the switch
+            prof = 0
+            i = m.end() - 1
+            fin = None
+            for j in range(i, min(len(code), i + 1200)):
+                if code[j] == "{":
+                    prof += 1
+                elif code[j] == "}":
+                    prof -= 1
+                    if prof == 0:
+                        fin = j
+                        break
+            if fin is None:
+                continue
+            # a frame in the 300 characters that follow?
+            apres = code[fin:fin + 300]
+            if "maxHeight: .infinity" not in apres:
+                ligne = code[:m.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: a permission switch with no "
+                                f"frame(maxHeight: .infinity) after it — a branch "
+                                f"that sizes to its text lets the tab bar rise "
+                                f"into the middle of the screen")
+
+    # 7ae. an API newer than the deployment target, with no availability gate.
+    #      `Tab`, `TabView(selection:content:)` and `tabBarMinimizeBehavior`
+    #      were written against a project whose deploymentTarget is iOS 17.
+    #      Fourteen compiler errors, and `grep deploymentTarget ios/project.yml`
+    #      would have shown it in one second.
+    #
+    #      The table is what this project actually uses. It grows when a new
+    #      API is adopted, not speculatively.
+    APIS_RECENTES = {
+        # symbol            first available
+        "Tab(":                     18,
+        "tabBarMinimizeBehavior":   26,
+        "tabViewBottomAccessory":   26,
+        "glassEffect":              26,
+        "GlassEffectContainer":     26,
+        "scrollEdgeEffect":         26,
+        "backgroundExtensionEffect": 26,
+        "symbolColorRenderingMode": 26,
+    }
+
+    cible = 17
+    projet = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "ios", "project.yml")
+    if os.path.exists(projet):
+        m = re.search(r"iOS:\s*['\"]?(\d+)", open(projet, encoding="utf-8").read())
+        if m:
+            cible = int(m.group(1))
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        # the line ranges covered by an availability gate
+        protegees = set()
+        for m in re.finditer(r"(?:if\s+#available\(iOS\s+(\d+)|@available\(iOS\s+(\d+))",
+                             code):
+            version = int(m.group(1) or m.group(2))
+            debut = code[:m.start()].count("\n") + 1
+            # the gate covers its block; approximate by brace depth
+            prof, fin = 0, debut
+            vu = False
+            for j in range(m.end(), len(code)):
+                if code[j] == "{":
+                    prof += 1; vu = True
+                elif code[j] == "}":
+                    prof -= 1
+                    if vu and prof <= 0:
+                        fin = code[:j].count("\n") + 1
+                        break
+            for ligne in range(debut, fin + 2):
+                protegees.add((ligne, version))
+
+        for symbole, requis in APIS_RECENTES.items():
+            if requis <= cible:
+                continue
+            for m in re.finditer(re.escape(symbole), code):
+                ligne = code[:m.start()].count("\n") + 1
+                # inside a comment?
+                debut_ligne = code.rfind("\n", 0, m.start()) + 1
+                avant = code[debut_ligne:m.start()]
+                if "//" in avant or "*" in avant.strip()[:2]:
+                    continue
+                couvert = any(l == ligne and v >= requis for l, v in protegees)
+                if not couvert:
+                    problems.append(f"{filename}:{ligne}: {symbole} needs iOS "
+                                    f"{requis}, the deployment target is {cible} "
+                                    f"— wrap it in `if #available(iOS {requis}, *)` "
+                                    f"or mark the property @available")
+
+    # 7af. a @Binding whose type contradicts the @State it is bound to.
+    #      The root holds `@State private var path = NavigationPath()` and a
+    #      modifier declared `@Binding var path: [Route]`. Two build failures
+    #      on the same pair, because nothing compared them.
+    #
+    #      Matched by NAME within a file: a @State of a known type, and a
+    #      @Binding of the same name declared as something else.
+    TYPES_CONNUS = {
+        "NavigationPath()": "NavigationPath",
+        "[]": None,          # ambiguous, skip
+    }
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        etats = {}
+        for m in re.finditer(r"@State\s+(?:private\s+)?var\s+(\w+)\s*=\s*([A-Z]\w*)\(\)",
+                             code):
+            etats[m.group(1)] = m.group(2)
+        for m in re.finditer(r"@Binding\s+var\s+(\w+)\s*:\s*([^\n=]+)", code):
+            nom, declare = m.group(1), m.group(2).strip()
+            attendu = etats.get(nom)
+            if attendu and attendu not in declare:
+                ligne = code[:m.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: @Binding var {nom}: {declare} "
+                                f"— but @State var {nom} in this file is "
+                                f"{attendu}. The binding cannot convert")
+
+    # 7ag. String(localized:) fed something declared LocalizedStringKey.
+    #      Text() takes a LocalizedStringKey; String(localized:) takes a
+    #      String.LocalizationValue. They look interchangeable, they are not,
+    #      and the compiler message names the conversion rather than the array
+    #      that caused it.
+    #
+    #      Matched by name: any array or property declared
+    #      `[LocalizedStringKey]` in the project, then any use of it inside a
+    #      String(localized:) anywhere.
+    #      QUALIFIED NAMES ONLY.
+    #
+    #      A first pass matched bare field names and fired on two structs that
+    #      happen to share `title` and `detail` — one declares them
+    #      LocalizedStringKey, the other String.LocalizationValue, and neither
+    #      was misused. Comparing bare names across a project is guessing.
+    #
+    #      So: only `Type.member` uses, where the type is unambiguous.
+    cles = set()
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"(?:^|\n)\s*(?:public\s+)?(?:static\s+)"
+                             r"let\s+(\w+)\s*:\s*\[?LocalizedStringKey\]?", code):
+            cles.add(m.group(1))
+
+    if cles:
+        for path_, (_, code) in sources.items():
+            filename = os.path.basename(path_)
+            for m in re.finditer(r"String\(localized:\s*([^)]*)\)", code):
+                arg = m.group(1)
+                for nom in cles:
+                    if re.search(r"\b[A-Z]\w*\." + re.escape(nom) + r"\b", arg):
+                        ligne = code[:m.start()].count("\n") + 1
+                        problems.append(f"{filename}:{ligne}: String(localized:) is given "
+                                        f"{nom}, declared LocalizedStringKey — it wants a "
+                                        f"String.LocalizationValue. Text() takes the key; "
+                                        f"String(localized:) does not")
+                        break
 
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly

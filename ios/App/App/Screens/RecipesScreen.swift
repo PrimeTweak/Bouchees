@@ -66,17 +66,7 @@ struct RecipesScreen: View {
          * two surfaces touching instead of one becoming the other. Now the
          * bar falls off downward and the photo lightens upward over the same
          * distance; where they overlap there is no edge. */
-        .softTopBar {
-            HStack {
-                if let message = etat.syncMessage {
-                    MessageBanner(texte: message)
-                } else {
-                    CookingContextHeader()
-                    Spacer(minLength: 0)
-                }
-            }
-            .padding(.horizontal, Layout.gutter)
-        }
+        .softTopBar { ChildTopBar() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
         .refreshable { await etat.sync() }
     }
@@ -303,54 +293,136 @@ struct RecipesScreen: View {
     @ViewBuilder
     private var weekStrip: some View {
         @Bindable var e = etat
-        WeekStrip(selected: $e.selectedDay)
+        WeekRail(selected: $e.selectedWeek, slots: etat.weekSlots)
             .padding(.horizontal, Layout.gutter)
             .padding(.top, 16)
     }
 
-    /// The chosen day's recipes, draggable onto another day.
+    /// The seven days of the selected week.
+    ///
+    /// It used to show ONE day, the one the strip had selected. Seven pills to
+    /// answer "what is on Thursday" — and to see Thursday you had to tap
+    /// Thursday. Now every day is there and the page scrolls, which is what
+    /// was missing: five of seven days hold a single recipe, so one day at a
+    /// time ended above the fold.
     private var list: some View {
-        let jour = etat.selectedDay
-        let plats = etat.recipes(on: jour).compactMap { r in
+        let slot = etat.currentSlot
+        return LazyVStack(spacing: 0) {
+            ForEach(0..<7, id: \.self) { jour in
+                daySection(jour, slot: slot)
+            }
+            if !slot.unlocked { lockedFooter(slot) }
+        }
+    }
+
+    @ViewBuilder
+    private func daySection(_ jour: Int, slot: WeekSlot) -> some View {
+        let plats = etat.recipesOfSelectedWeek(on: jour).compactMap { r in
             etat.resultFor(r).map { (recipe: r, result: $0) }
         }
 
-        return LazyVStack(spacing: 0) {
-            Text(WeekDay.full[jour])
-                .eyebrow()
-                .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text(dayTitle(jour, slot: slot)).eyebrow()
+            if slot.offset == 0 && jour == WeekDay.today {
+                Text("today").eyebrow(Tone.brand)
+            }
+            Spacer(minLength: 0)
+            Text("\(plats.count)")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(Tone.text3)
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 19)
+        .padding(.bottom, 2)
+
+        if plats.isEmpty {
+            EmptyDay(day: jour)
                 .padding(.horizontal, Layout.gutter)
-                .padding(.top, 22)
-                .padding(.bottom, 2)
-
-            if plats.isEmpty {
-                EmptyDay(day: jour)
-                    .padding(.horizontal, Layout.gutter)
-                    .padding(.top, 8)
-            } else {
-                ForEach(plats, id: \.recipe.id) { pair in
-                    Button { navigate(.recipe(pair.recipe.id)) } label: {
-                        RecipeRow(recipe: pair.recipe, result: pair.result)
-                    }
-                    .buttonStyle(.plain)
-                    /* Drag a recipe onto another day in the strip. The
-                     * preview is the row itself, so what you pick up is what
-                     * you saw. */
-                    .draggable(pair.recipe.id) {
-                        RecipeRow(recipe: pair.recipe, result: pair.result)
-                            .frame(width: 260)
-                            .background(Tone.cardTop, in: RoundedRectangle(cornerRadius: 16,
-                                                                       style: .continuous))
-                    }
-
-                    if pair.recipe.id != plats.last?.recipe.id {
-                        Divider().overlay(Tone.hairline)
-                            .padding(.leading, Layout.gutter + Layout.thumb + 15)
-                    }
+                .padding(.top, 6)
+        } else {
+            ForEach(plats, id: \.recipe.id) { pair in
+                row(pair, slot: slot)
+                if pair.recipe.id != plats.last?.recipe.id {
+                    Divider().overlay(Tone.hairline)
+                        .padding(.leading, Layout.gutter + Layout.thumb + 15)
                 }
             }
         }
     }
+
+    @ViewBuilder
+    private func row(_ pair: (recipe: Recipe, result: AdaptedRecipe),
+                     slot: WeekSlot) -> some View {
+        if slot.unlocked {
+            Button { navigate(.recipe(pair.recipe.id)) } label: {
+                RecipeRow(recipe: pair.recipe, result: pair.result)
+            }
+            .buttonStyle(.plain)
+            /* Only the current week can be rearranged. A parent does not
+             * reorder a week they cannot open, and a past week is history. */
+            .modifier(DraggableIf(active: slot.offset == 0,
+                                  recipe: pair.recipe, result: pair.result))
+        } else {
+            Button { showPaywall = true } label: {
+                RecipeRow(recipe: pair.recipe, result: pair.result, locked: true)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// The date under a day header: "Monday 31", and the month when it turns.
+    private func dayTitle(_ jour: Int, slot: WeekSlot) -> String {
+        let nom = String(localized: WeekDay.fullValues[jour])
+        guard let d = slot.date(day: jour) else { return nom }
+        let cal = Calendar.current
+        let f = DateFormatter()
+        f.locale = .current
+        /* The month appears on the first of a month and on the first day of
+         * the week — enough to place the week without repeating it seven
+         * times. */
+        let premierDuMois = cal.component(.day, from: d) == 1
+        f.setLocalizedDateFormatFromTemplate(premierDuMois || jour == 0 ? "dMMM" : "d")
+        return nom + " " + f.string(from: d)
+    }
+
+    /// What a locked week offers, at the foot of its list.
+    @ViewBuilder
+    private func lockedFooter(_ slot: WeekSlot) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(String(format: String(localized: "Week of %@"), slot.span()))
+                .eyebrow(Tone.brand)
+            Text(String(format: String(localized: "%lld recipes, already adapted"),
+                        slot.count))
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(Tone.text)
+                .padding(.top, 3)
+            Text("You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription.")
+                .font(.system(size: 11))
+                .foregroundStyle(Tone.text2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 4)
+            Button { showPaywall = true } label: {
+                Text("Try 7 days free")
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Layout.tapTarget)
+            }
+            .buttonStyle(PrimaryButton())
+            .padding(.top, 11)
+        }
+        .padding(16)
+        .background {
+            RoundedRectangle(cornerRadius: 19, style: .continuous)
+                .fill(Tone.brand.opacity(0.07))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 19, style: .continuous)
+                        .strokeBorder(Tone.brand.opacity(0.16), lineWidth: 1)
+                }
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 16)
+    }
+
 
     // (EmptyDay follows the screen, at file scope)
 }
@@ -551,15 +623,60 @@ struct VerdictPill: View {
 }
 
 /// A row, not a card. 62pt thumbnail, name, meta, verdict.
+/// Draggable only on the week the parent can rearrange.
+///
+/// `.draggable` cannot be applied conditionally inside a ViewBuilder without
+/// changing the view's type, which breaks the list's identity and makes rows
+/// animate as if they were replaced. A modifier keeps one type.
+private struct DraggableIf: ViewModifier {
+    let active: Bool
+    let recipe: Recipe
+    let result: AdaptedRecipe
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if active {
+            content.draggable(recipe.id) {
+                RecipeRow(recipe: recipe, result: result)
+                    .frame(width: 260)
+                    .background(Tone.cardTop,
+                                in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+        } else {
+            content
+        }
+    }
+}
+
 struct RecipeRow: View {
     let recipe: Recipe
     let result: AdaptedRecipe
 
+    /// A week the parent has not paid for.
+    ///
+    /// The name, the time and the verdict stay — they are what the row is FOR,
+    /// and hiding them leaves nothing to subscribe for. The picture goes: a
+    /// photo of the dish is content.
+    var locked: Bool = false
+
     var body: some View {
         HStack(spacing: 15) {
-            RecipeVisual(recipe: recipe, result: result)
-                .frame(width: Layout.thumb, height: Layout.thumb)
-                .clipShape(RoundedRectangle(cornerRadius: Layout.thumbRadius, style: .continuous))
+            Group {
+                if locked {
+                    RoundedRectangle(cornerRadius: Layout.thumbRadius, style: .continuous)
+                        .fill(Tone.text.opacity(0.05))
+                        .overlay {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(Tone.text3)
+                        }
+                } else {
+                    RecipeVisual(recipe: recipe, result: result)
+                        .clipShape(RoundedRectangle(cornerRadius: Layout.thumbRadius,
+                                                    style: .continuous))
+                }
+            }
+            .frame(width: Layout.thumb, height: Layout.thumb)
                 .shadow(color: .black.opacity(0.4), radius: 7, y: 4)
                 .saturation(result.status == .notAdaptable ? 0.3 : 1)
 

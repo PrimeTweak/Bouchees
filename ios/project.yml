@@ -43,9 +43,20 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
+        # THIS FILE IS THE SOURCE OF THE LAUNCH SCREEN, not Info.plist.
+        # XcodeGen writes App/App/Info.plist from these properties on every
+        # build, so a change made there is overwritten and has no effect.
+        #
+        # No UIImageName. A launch image is drawn at its native size and
+        # centred: the wordmark asset is wider than the screen, so it appeared
+        # cut off for the fraction of a second before the first SwiftUI frame.
+        # The colour alone matches the canvas and the mark is drawn in
+        # LaunchView, with an animation an image cannot have.
+        #
+        # Canvas, not Fond: Tone.canvas is 0xFBF9F6 and Fond is 0xF1F3EC, so
+        # the launch field was a different colour from the screen replacing it.
         UILaunchScreen:
-          UIColorName: Fond
-          UIImageName: MarqueLancement
+          UIColorName: Canvas
           UIImageRespectsSafeAreaInsets: true
         UISupportedInterfaceOrientations:
         - UIInterfaceOrientationPortrait

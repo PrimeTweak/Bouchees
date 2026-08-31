@@ -63,24 +63,6 @@ struct BoucheesMark: View {
     private var markColour: Color { Tone.brand }
 }
 
-/// Mark plus name. Used on the launch screen and at the top of onboarding —
-/// and nowhere else. An app does not need to remind someone of its name
-/// straight after they opened it.
-struct BoucheesLockup: View {
-    var size: CGFloat = 34
-
-    var body: some View {
-        HStack(spacing: size * 0.35) {
-            BoucheesMark(size: size)
-            Text("Bouchées")
-                .font(.system(size: size * 0.74, weight: .bold))
-                .foregroundStyle(Tone.text)
-                .kerning(-size * 0.02)
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Bouchées")
-    }
-}
 
 /// What shows while the engine loads its tables. It replaces a white flash
 /// with the app's own colour, and it follows the theme.
@@ -106,13 +88,22 @@ struct LaunchView: View {
             Tone.canvas.ignoresSafeArea()
 
             VStack(spacing: 14) {
-                BoucheesMark(size: 64, bite: bitten ? 1 : 0)
+                /* 116, NOT 64.
+                 *
+                 * The glyph occupies about 55% of its 100-unit box — the stem
+                 * runs x=28.75 to 37.25, the bowl to x=69.5 — so `size: 64`
+                 * drew a mark 35pt wide. On a 393pt screen that is a twelfth
+                 * of the width, where a launch mark wants a fifth.
+                 *
+                 * 116 gives roughly 64pt of visible glyph, which is the size
+                 * it looked like it already was. */
+                BoucheesMark(size: 116, bite: bitten ? 1 : 0)
                     .scaleEffect(settled ? 1 : 0.82)
                     .opacity(settled ? 1 : 0)
 
                 /* The product name, the one French word the app keeps. */
                 Text(verbatim: "Bouchées")
-                    .font(.system(size: 21, weight: .bold))
+                    .font(.system(size: 29, weight: .bold))
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
                     .offset(y: named ? 0 : 7)

@@ -448,17 +448,89 @@ struct WeekPlan: Codable, Equatable {
         var plan = WeekPlan.empty
         /* Weeknights first — Monday through Friday is when a plan helps. The
          * weekend is left open on purpose. */
-        let ordre = [0, 1, 2, 3, 4, 5, 6]
         for (i, r) in recipes.enumerated() {
-            plan.days[ordre[i % ordre.count], default: []].append(r.id)
+            plan.days[defaultDay(forIndex: i), default: []].append(r.id)
         }
         return plan
     }
+
+    /// Which day a recipe lands on, by position.
+    ///
+    /// Exposed rather than inlined: a week the parent cannot rearrange — a
+    /// locked one — is laid out with this same rule, and two copies of it
+    /// would drift.
+    static func defaultDay(forIndex i: Int) -> Int { i % 7 }
 }
 
 /// Day names, short, for the strip.
+/// One entry in the week rail: the week before, this week, the week after.
+///
+/// The rail replaced seven day pills. A day pill answered "what is on
+/// Thursday", which the list now answers by simply showing Thursday; the rail
+/// answers "what is coming", which nothing answered before.
+struct WeekSlot: Identifiable, Hashable {
+    /// -1 past, 0 current, +1 next. The id, since only three exist.
+    let offset: Int
+    /// The batch this week draws from, when there is one.
+    let batchID: String?
+    /// How many recipes it holds — shown even when the week is locked.
+    let count: Int
+    /// False when the parent has to subscribe to open it.
+    let unlocked: Bool
+
+    var id: Int { offset }
+
+    /// Monday of this slot.
+    func monday(calendar: Calendar = .current) -> Date? {
+        let base = calendar.date(byAdding: .day, value: -WeekDay.today, to: Date())
+        return base.flatMap { calendar.date(byAdding: .day, value: offset * 7, to: $0) }
+    }
+
+    /// The span, formatted in the parent locale.
+    func span(calendar: Calendar = .current, locale: Locale = .current) -> String {
+        guard let monday_ = monday(calendar: calendar),
+              let sunday_ = calendar.date(byAdding: .day, value: 6, to: monday_)
+        else { return "" }
+
+        let day_ = DateFormatter()
+        day_.locale = locale
+        day_.setLocalizedDateFormatFromTemplate("d")
+
+        let dayMonth = DateFormatter()
+        dayMonth.locale = locale
+        dayMonth.setLocalizedDateFormatFromTemplate("dMMM")
+
+        /* The month is named once when the week does not cross one, and twice
+         * when it does. Naming it once on a week that crosses a month hides
+         * that the week started in the previous one. */
+        let sameMonth = calendar.component(.month, from: monday_)
+            == calendar.component(.month, from: sunday_)
+        let start = sameMonth ? day_.string(from: monday_) : dayMonth.string(from: monday_)
+        return start + " – " + dayMonth.string(from: sunday_)
+    }
+
+    /// The calendar date of a day within this slot.
+    func date(day: Int, calendar: Calendar = .current) -> Date? {
+        monday(calendar: calendar).flatMap {
+            calendar.date(byAdding: .day, value: day, to: $0)
+        }
+    }
+}
+
 enum WeekDay {
     static let short: [LocalizedStringKey] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    /// The same names as `full`, resolvable to a String.
+    ///
+    /// `LocalizedStringKey` is what a `Text` accepts; it is NOT what
+    /// `String(localized:)` accepts, which wants a `String.LocalizationValue`.
+    /// Passing one for the other is a compile error, and it is the third time
+    /// a build has died on a type I assumed rather than checked.
+    ///
+    /// Two arrays rather than one conversion: the conversion does not exist,
+    /// and a computed bridge would just hide the same mistake.
+    static let fullValues: [String.LocalizationValue] =
+        ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
     static let full: [LocalizedStringKey] = ["Monday", "Tuesday", "Wednesday",
                                              "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -466,5 +538,24 @@ enum WeekDay {
     static var today: Int {
         let c = Calendar.current.component(.weekday, from: Date())
         return (c + 5) % 7
+    }
+
+    /// The calendar date for a slot in the plan.
+    ///
+    /// The strip used to print `day + 1` — a plan INDEX, one through seven,
+    /// under a real weekday name. On Monday 31 August it read "Mon 1", which
+    /// looks like a date and is not one, and the mismatch is worse than no
+    /// number at all.
+    static func dateFor(day: Int, calendar: Calendar = .current) -> Date? {
+        let maintenant = Date()
+        let monday_ = calendar.date(byAdding: .day, value: -today, to: maintenant)
+        return monday_.flatMap { calendar.date(byAdding: .day, value: day, to: $0) }
+    }
+
+    /// The day of the month for a slot, or the index if the date cannot be
+    /// resolved — a number is better than a blank tile.
+    static func dayNumber(for day: Int, calendar: Calendar = .current) -> Int {
+        guard let d = dateFor(day: day, calendar: calendar) else { return day + 1 }
+        return calendar.component(.day, from: d)
     }
 }

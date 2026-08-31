@@ -4,222 +4,14 @@
 //  three pieces that appear on more than one screen.
 
 import SwiftUI
+/* UIApplication, for dropping the keyboard. */
+import UIKit
 
 // MARK: - Tab bar
 
 /// A GLASS CAPSULE, INSET 21pt, WITH A SEARCH ISLAND.
 ///
-/// iOS 26 detached the tab bar from the screen edges: a pill floating over the
-/// content, which scrolls beneath it and fades out at the bottom. Search sits
-/// in its own circle to the right — Apple moved it to the bottom precisely
-/// because the top of a phone is hard to reach one-handed, and this app is
-/// used one-handed by definition.
-struct FloatingTabBar: View {
-    /* No `reservedHeight` any more. The bar became a safeAreaInset in build
-     * 61, which means it reserves its own height — and every screen was still
-     * adding a second reservation on top. Two sources of truth for one
-     * measurement is what left the shopping list clipped and the recipe list
-     * floating. */
 
-    @Binding var selection: Int
-
-    @Environment(\.presentSheet) private var present
-    @Namespace private var glassSpace
-
-    /// True while the finger is down on the bar. Grows the selection bubble.
-    @State private var held = false
-
-    /// Which tab sits under a given x.
-    private func index(at x: CGFloat, largeur: CGFloat) -> Int {
-        guard largeur > 0 else { return selection }
-        return max(0, min(Self.items.count - 1, Int(x / largeur)))
-    }
-
-    /* Four, not three. Shopping is the second gesture of the week — after
-     * "what do I cook", "what do I buy" — and it deserves a destination
-     * rather than a button buried in a list. The platform allows two to five
-     * before a More tab becomes necessary. */
-    private static let items: [(icon: String, label: LocalizedStringKey)] = [
-        ("fork.knife", "Recipes"),
-        ("cart", "Shopping"),
-        ("barcode.viewfinder", "Scan"),
-        ("gearshape", "Settings")
-    ]
-
-    var body: some View {
-        /* SPACING ZERO. THE TWO PIECES STAY TWO.
-         *
-         * A GlassEffectContainer merges glass closer together than its
-         * spacing. The capsule and the search island sit 10pt apart and the
-         * container allowed 14 — so iOS fused them into ONE shape, wider and
-         * taller than either, and that shape's outline is the band that
-         * appeared above the bar.
-         *
-         * iOS does the same thing itself: its capsule and its search island
-         * are two separate pieces of glass, never blended. Merging is for
-         * buttons that belong to one group, not for two destinations. */
-        GlassGroup(spacing: 0) {
-        HStack(spacing: 10) {
-            /* A SLIDING INDICATOR, NOT A COLOUR SWAP.
-             *
-             * The iOS 26 bar moves a lit shape between destinations rather
-             * than recolouring a label. matchedGeometryEffect gives the same
-             * behaviour here: one capsule, animated from tab to tab, so the
-             * bar reads as a single piece of glass with light travelling
-             * across it. */
-            /* HOLD AND SLIDE.
-             *
-             * iOS 26 turns the selection highlight into a bubble on a long
-             * press and lets you slide it across the bar. The system version
-             * adds lensing and chromatic aberration, which is a renderer, not
-             * an API — so this is the geometry and the haptics without the
-             * optics. MacStories on the original: "pretty cool, pretty
-             * useless" — the part that earns its place is the SLIDE, which
-             * moves between tabs without lifting a finger. */
-            GeometryReader { geo in
-                let largeur = geo.size.width / CGFloat(Self.items.count)
-                HStack(spacing: 0) {
-                    ForEach(Array(Self.items.enumerated()), id: \.offset) { i, item in
-                        TabItem(icon: item.icon, label: item.label,
-                                selected: selection == i,
-                                held: held,
-                                namespace: glassSpace)
-                    }
-                }
-                .contentShape(.rect)
-                /* ONE GESTURE ON THE BAR, NOT A BUTTON PER TAB.
-                 *
-                 * Each item used to be a Button, and a Button consumes the
-                 * touch before a parent `.gesture` ever sees it — SwiftUI
-                 * gives children priority. That is why the long press never
-                 * fired and the slide never started.
-                 *
-                 * The bar owns the whole interaction now: a tap selects the
-                 * item under the finger, a hold raises the bubble, and a drag
-                 * moves it. The items are drawings. */
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onEnded { valeur in
-                            /* A tap is a drag that went nowhere. */
-                            guard !held else { return }
-                            let cible = index(at: valeur.location.x, largeur: largeur)
-                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
-                                selection = cible
-                            }
-                        }
-                )
-                .simultaneousGesture(
-                    LongPressGesture(minimumDuration: 0.28)
-                        .onEnded { _ in
-                            withAnimation(.smooth(duration: 0.2, extraBounce: 0.3)) {
-                                held = true
-                            }
-                            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-                        }
-                        .sequenced(before: DragGesture(minimumDistance: 0))
-                        .onChanged { valeur in
-                            guard case .second(_, let drag?) = valeur else { return }
-                            let borne = index(at: drag.location.x, largeur: largeur)
-                            guard borne != selection else { return }
-                            withAnimation(.smooth(duration: 0.22)) { selection = borne }
-                            /* One tick per crossing — the bar reads as a
-                             * physical track rather than a set of buttons. */
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        }
-                        .onEnded { _ in
-                            withAnimation(.smooth(duration: 0.26)) { held = false }
-                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
-                        }
-                )
-            }
-            .frame(height: 46)
-            .padding(.horizontal, 5)
-            .padding(.vertical, 6)
-            .glass(Capsule())
-
-            /* GLASS ON THE BUTTON, NOT INSIDE ITS LABEL.
-             *
-             * A glass container swallows the first touch — `hitTest:` on it
-             * returns itself (FB18201935). Inside the label, it sat between
-             * the finger and the button, which is why search needed two taps.
-             * Outside, the button owns the hit area and the glass is only a
-             * material. */
-            Button { present(.search) } label: {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 19, weight: .medium))
-                    /* .primary, not a fixed colour: SwiftUI gives text on
-                     * glass a vibrant tone that adapts to whatever passes
-                     * behind it. Naming a colour switches that off. */
-                    .foregroundStyle(.primary)
-                    .frame(width: 54, height: 54)
-                    .contentShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .glass(Circle())
-            .accessibilityLabel("Search")
-        }
-        }
-        .padding(.horizontal, Layout.tabInset)
-        .padding(.top, 6)
-        .padding(.bottom, 10)
-        /* No background band. The gradient I put here rendered as a visible
-         * strip under the capsule. A scroll-edge fade belongs to the content
-         * that scrolls, not to the bar that floats over it. */
-    }
-}
-
-private struct TabItem: View {
-    let icon: String
-    let label: LocalizedStringKey
-    let selected: Bool
-    /// The finger is down on the bar: the indicator becomes the bubble.
-    var held: Bool = false
-    let namespace: Namespace.ID
-
-    /* A DRAWING, NOT A BUTTON.
-     *
-     * A Button here consumed the touch before the bar's own gesture saw it,
-     * which is why hold-and-slide never worked. The bar handles selection;
-     * this only draws. Accessibility still gets the trait and the action from
-     * the parent. */
-    var body: some View {
-        Group {
-            VStack(spacing: 2) {
-                Image(systemName: icon)
-                    .font(.system(size: 19, weight: selected ? .semibold : .regular))
-                    .symbolEffect(.bounce, value: selected)
-                Text(label)
-                    .font(.system(size: 9.5, weight: selected ? .bold : .medium))
-            }
-            .foregroundStyle(selected ? Tone.brand : Tone.text2)
-            .frame(maxWidth: .infinity)
-            .frame(height: Layout.tap + 4)
-            .background {
-                if selected {
-                    /* The lit shape that travels between destinations. It is
-                     * one view, moved — not three views recoloured.
-                     *
-                     * Held, it becomes the bubble: brighter, slightly larger,
-                     * lifted off the bar. That is the readable half of what
-                     * iOS does; the refraction is the system's own renderer. */
-                    Capsule()
-                        .fill(held ? AnyShapeStyle(.regularMaterial)
-                                   : AnyShapeStyle(Tone.brand.opacity(0.14)))
-                        .overlay {
-                            Capsule().stroke(Tone.brand.opacity(held ? 0.34 : 0.22),
-                                             lineWidth: held ? 1 : 0.75)
-                        }
-                        .shadow(color: .black.opacity(held ? 0.16 : 0),
-                                radius: held ? 8 : 0, y: held ? 3 : 0)
-                        .scaleEffect(held ? 1.1 : 1)
-                        .matchedGeometryEffect(id: "tabIndicator", in: namespace)
-                }
-            }
-            .contentShape(Rectangle())
-        }
-        .accessibilityAddTraits(selected ? [.isSelected] : [])
-    }
-}
 
 // MARK: - Context header
 
@@ -761,43 +553,188 @@ struct SearchSheet: View {
 /// landed and lets the parent move one, which is the only decision worth
 /// offering.
 ///
-/// Two days are usually empty, and that stays true. Seven recipes do not make
-/// seven suppers, and spreading them to look complete would be a lie about
-/// what the app provides.
-struct WeekStrip: View {
+/// The bar every main screen wears: the child on the right, on a fade.
+///
+/// One place, so Recipes and Shopping cannot drift. The pill sits on the
+/// TRAILING edge — it is a control, and a control belongs where the thumb is,
+/// not where the eye starts reading.
+///
+/// It is an overlay, not a safeAreaInset, which is what makes the title
+/// underneath land at the same height as Settings: the bar floats, the content
+/// scrolls beneath it, and nothing is pushed down.
+struct ChildTopBar: View {
     @Environment(AppState.self) private var etat
 
+    var body: some View {
+        HStack {
+            if let message = etat.syncMessage {
+                MessageBanner(texte: message)
+                Spacer(minLength: 0)
+            } else {
+                Spacer(minLength: 0)
+                CookingContextHeader(compact: true)
+            }
+        }
+        .padding(.horizontal, Layout.gutter)
+    }
+}
+
+/// Seven days, for Shopping.
+///
+/// Recipes moved to a week rail, because a day pill answered a question the
+/// list now answers by itself. Shopping is the opposite case: "what do I buy
+/// for Wednesday" is asked in an aisle, out loud, and the answer has to be one
+/// tap away. So the day pills stay here.
+struct DayStrip: View {
     @Binding var selected: Int
-    /// A recipe being dragged onto another day.
-    @State private var dragging: String?
+    /// How many recipes sit on each day, for the dots.
+    let counts: [Int]
 
     var body: some View {
         HStack(spacing: 5) {
-            ForEach(0..<7, id: \.self) { jour in
-                DayCell(day: jour,
-                        selected: selected == jour,
-                        today: jour == WeekDay.today,
-                        recipes: etat.recipes(on: jour))
-                    .contentShape(.rect)
-                    .onTapGesture {
-                        withAnimation(.smooth(duration: 0.24)) { selected = jour }
+            ForEach(0..<7, id: \.self) { day in
+                Button {
+                    withAnimation(.smooth(duration: 0.26, extraBounce: 0.1)) {
+                        selected = day
                     }
-                    /* Drop target. Dragging a recipe from one day onto
-                     * another is the whole editing model — no long press, no
-                     * edit mode, no confirmation. */
-                    .dropDestination(for: String.self) { ids, _ in
-                        guard let id = ids.first,
-                              let r = etat.weekRecipes.first(where: { $0.id == id })
-                        else { return false }
-                        withAnimation(.smooth(duration: 0.28)) {
-                            etat.move(r, to: jour)
-                            selected = jour
-                        }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        return true
-                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    DayTile(day: day, selected: day == selected,
+                            count: day < counts.count ? counts[day] : 0)
+                }
+                .buttonStyle(.plain)
             }
         }
+    }
+}
+
+private struct DayTile: View {
+    let day: Int
+    let selected: Bool
+    let count: Int
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(WeekDay.short[day])
+                .font(.system(size: 8, weight: .bold, design: .monospaced))
+                .kerning(0.8)
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
+
+            /* The day of the MONTH, not the index in the plan. "Mon 1" on a
+             * Monday the 31st looked like a date and was not one. */
+            Text("\(WeekDay.dayNumber(for: day))")
+                .font(.system(size: 13.5, weight: .bold))
+                .kerning(-0.3)
+                .foregroundStyle(selected ? Tone.canvas : Tone.text)
+                .padding(.top, 2)
+
+            HStack(spacing: 2.5) {
+                if count == 0 {
+                    Capsule().frame(width: 9, height: 1.5)
+                        .foregroundStyle(Tone.text.opacity(0.14))
+                } else {
+                    ForEach(0..<min(count, 3), id: \.self) { _ in
+                        Circle().frame(width: 4, height: 4)
+                            .foregroundStyle(selected ? Tone.canvas.opacity(0.85) : Tone.brand)
+                    }
+                }
+            }
+            .frame(height: 5)
+            .padding(.top, 3)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 7)
+        .background {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(selected ? AnyShapeStyle(Tone.text)
+                               : AnyShapeStyle(Tone.text.opacity(0.042)))
+        }
+        .contentShape(.rect)
+    }
+}
+
+/// Three weeks: the one before, this one, the one after.
+///
+/// It replaced seven day pills. A day pill answered "what is on Thursday",
+/// which the list now answers by showing Thursday; the rail answers "what is
+/// coming", which nothing answered before.
+///
+/// A locked week keeps its count and shows a padlock. Hiding it would leave
+/// nothing to subscribe FOR.
+struct WeekRail: View {
+    @Binding var selected: Int
+    let slots: [WeekSlot]
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(slots) { slot in
+                Button {
+                    withAnimation(.smooth(duration: 0.3, extraBounce: 0.12)) {
+                        selected = slot.offset
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    WeekTile(slot: slot, selected: slot.offset == selected)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+private struct WeekTile: View {
+    let slot: WeekSlot
+    let selected: Bool
+
+    private var title: LocalizedStringKey {
+        switch slot.offset {
+        case -1: return "Last week"
+        case 0:  return "This week"
+        default: return "Next week"
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.system(size: 7.5, weight: .bold, design: .monospaced))
+                .kerning(0.7)
+                .textCase(.uppercase)
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
+
+            Text(slot.span())
+                .font(.system(size: 12, weight: .bold))
+                .kerning(-0.2)
+                .foregroundStyle(selected ? Tone.canvas : Tone.text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            if slot.unlocked {
+                Text(String(format: String(localized: "%lld recipes"), slot.count))
+                    .font(.system(size: 8))
+                    .foregroundStyle(selected ? Tone.canvas.opacity(0.5) : Tone.text3)
+                    .lineLimit(1)
+            } else {
+                HStack(spacing: 3) {
+                    Image(systemName: "lock.fill").font(.system(size: 7))
+                    Text("\(slot.count)").font(.system(size: 8, weight: .semibold))
+                }
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.62) : Tone.text3)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .background {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(selected ? AnyShapeStyle(Tone.text)
+                               : AnyShapeStyle(Tone.text.opacity(0.045)))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(selected ? .clear : Tone.hairline, lineWidth: 1)
+        }
+        .contentShape(.rect)
     }
 }
 
@@ -814,7 +751,9 @@ private struct DayCell: View {
                 .kerning(0.8)
                 .foregroundStyle(labelColour)
 
-            Text("\(day + 1)")
+            /* The day of the MONTH, not the index in the plan. "Mon 1" on
+             * Monday 31 August looked like a date and was not one. */
+            Text("\(WeekDay.dayNumber(for: day))")
                 .font(.system(size: 13.5, weight: .bold))
                 .kerning(-0.3)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text)
@@ -861,5 +800,160 @@ private struct DayCell: View {
     private var labelColour: Color {
         if selected { return Tone.canvas.opacity(0.6) }
         return today ? Tone.brand : Tone.text3
+    }
+}
+
+// MARK: - Search, as a tab
+
+/// The search destination behind `Tab(role: .search)`.
+///
+/// iOS owns the transition from the floating island into a search field —
+/// that is what the role is for. This supplies what appears once the field is
+/// active, and reuses the same groups the sheet showed: recipes, not counts.
+struct SearchScreen: View {
+    @Environment(AppState.self) private var etat
+    @Environment(\.navigate) private var navigate
+
+    @State private var query = ""
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                if query.isEmpty {
+                    zeroState
+                } else if results.isEmpty {
+                    noResults
+                } else {
+                    ForEach(results, id: \.recipe.id) { pair in
+                        Button {
+                            etat.rememberSearch(query)
+                            navigate(.recipe(pair.recipe.id))
+                        } label: {
+                            RecipeRow(recipe: pair.recipe, result: pair.result)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        /* THE SAME FIELD AS THE OTHER TABS.
+         *
+         * Applied to the scroll view rather than outside the toolbar
+         * modifiers, so the navigation stack still reads the title, the
+         * search field and the clear button from the modifiers below.
+         *
+         * The bar itself is empty: this screen carries no pill, only the
+         * fade that stops rows from meeting the status bar on a line. */
+        .softTopBar { EmptyView() }
+        /* The system field, not one of ours. `Tab(role: .search)` places it
+         * and animates it; declaring our own would fight that. */
+        /* A WAY OUT.
+         *
+         * `Tab(role: .search)` places the field and animates it, but it does
+         * not give the parent a way back — the only exit was another tab, and
+         * that is not an exit, it is a detour.
+         *
+         * The button clears the query and drops the keyboard, which returns
+         * the tab to its browsing state. */
+        .searchable(text: $query, prompt: Text("Recipes and ingredients"))
+        .toolbar {
+            if !query.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Clear") {
+                        query = ""
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Search")
+        .navigationBarTitleDisplayMode(.inline)
+        /* The hard band under the title, removed.
+         *
+         * Hiding the bar entirely would have taken the title and the clear
+         * button with it, and on the systems where `searchable` places its
+         * field in the navigation bar it would have taken the field too.
+         * Hiding only the background leaves all three floating over the
+         * fade, which is how the pill sits on Recipes and Shopping. */
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+
+    @ViewBuilder
+    private var zeroState: some View {
+        ForEach(groupes, id: \.titre) { groupe in
+            HStack(alignment: .firstTextBaseline) {
+                Text(groupe.titre).eyebrow()
+                Spacer(minLength: 0)
+                Text("\(groupe.plats.count)")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 18)
+
+            ForEach(groupe.plats, id: \.recipe.id) { pair in
+                Button { navigate(.recipe(pair.recipe.id)) } label: {
+                    RecipeRow(recipe: pair.recipe, result: pair.result)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var groupes: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] {
+        let semaine = etat.weekRecipes.compactMap { r in
+            etat.resultFor(r).map { (recipe: r, result: $0) }
+        }
+        var out: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] = []
+
+        let pretes = semaine.filter { $0.result.status == .asIs }
+        if !pretes.isEmpty { out.append((String(localized: "Ready as is"), pretes)) }
+
+        let rapides = semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 }
+        if !rapides.isEmpty { out.append((String(localized: "Under 20 minutes"), rapides)) }
+
+        let vus = Set((pretes + rapides).map(\.recipe.id))
+        let reste = semaine.filter { !vus.contains($0.recipe.id) }
+        if !reste.isEmpty { out.append((String(localized: "This week"), reste)) }
+        return out
+    }
+
+    private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
+        let q = query.lowercased().trimmingCharacters(in: .whitespaces)
+        guard q.count > 1 else { return [] }
+        return etat.recipes.filter { r in
+            r.name.lowercased().contains(q)
+                || r.ingredients.contains { $0.id.lowercased().contains(q) }
+        }
+        .prefix(20)
+        .compactMap { r in etat.resultFor(r).map { (recipe: r, result: $0) } }
+    }
+
+    @ViewBuilder
+    private var noResults: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(String(format: String(localized: "Nothing for “%@” this week"), query))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Tone.text)
+            Text("It may arrive in a later week. Meanwhile, these are close.")
+                .font(.system(size: 12))
+                .foregroundStyle(Tone.text2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 22)
+
+        ForEach(etat.weekRecipes.prefix(2).compactMap { r in
+            etat.resultFor(r).map { (recipe: r, result: $0) }
+        }, id: \.recipe.id) { pair in
+            Button { navigate(.recipe(pair.recipe.id)) } label: {
+                RecipeRow(recipe: pair.recipe, result: pair.result)
+            }
+            .buttonStyle(.plain)
+        }
     }
 }

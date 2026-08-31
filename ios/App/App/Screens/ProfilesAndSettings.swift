@@ -264,6 +264,15 @@ struct SettingsScreen: View {
         }
         .background(Tone.canvas.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        /* THE SAME FIELD AS THE OTHER TABS, WITHOUT A BAR IN IT.
+         *
+         * Content used to pass under the status bar on a hard edge. The field
+         * is the same modifier Recipes and Shopping use; it carries no pill
+         * here because this screen names the children in a section of its own.
+         *
+         * Canvas over canvas, so it is invisible until something scrolls into
+         * it — which is the whole point. */
+        .softTopBar { EmptyView() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
     }
 

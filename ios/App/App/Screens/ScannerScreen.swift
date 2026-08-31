@@ -141,6 +141,16 @@ struct ScannerScreen: View {
             default: prompt
             }
         }
+        /* ALL THREE STATES FILL THE SCREEN.
+         *
+         * Only `content` did — it holds a camera preview, which is greedy by
+         * nature. `prompt` and `denied` sized themselves to their text, so the
+         * tab bar, which is a safeAreaInset of the content, rose to meet them
+         * and sat in the middle of the screen until permission was granted.
+         *
+         * The frame belongs here, on the switch, so a fourth state cannot
+         * forget it. */
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("Scan")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear { scanner.stop() }
@@ -192,7 +202,10 @@ struct ScannerScreen: View {
     private var prompt: some View {
         EmptyState(symbol: "barcode.viewfinder",
                  title: "Scan a product",
-                 message: "Point at a barcode: Bouchées reads the ingredient list and runs it through the same engine as your recipes.",
+                 /* What it does, and what it does NOT do. A parent asked for
+                  * camera access on behalf of their child deserves the second
+                  * half before saying yes. */
+                 message: "Point at a barcode: Bouchées reads the ingredient list and runs it through the same engine as your recipes. Nothing is recorded or sent.",
                  titreAction: "Allow camera access") {
             AVCaptureDevice.requestAccess(for: .video) { accorde in
                 Task { @MainActor in

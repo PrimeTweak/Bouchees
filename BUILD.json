@@ -1,11 +1,14 @@
 {
-  "build": 98,
-  "date": "2026-08-29",
+  "build": 108,
+  "date": "2026-08-31",
   "carries": [
-    "UND_ERR_HEADERS_TIMEOUT \u2014 undici gives a server five minutes to send its FIRST header",
-    "that limit is internal: an AbortSignal never reached it, mine was set to fifteen",
-    "Draw Things sends nothing until the render finishes, and 1408x1408 runs past five minutes",
-    "node:http has no such limit and is built in",
-    "checker rule: fetch() on the local renderer"
+    "the launch wordmark was still declared in ios/project.yml, which is what XcodeGen reads",
+    "Info.plist had the key removed by hand, and the build overwrote that file every time",
+    "the launch colour was Fond while the app canvas is Canvas, so the field changed shade",
+    "both launch imagesets are gone: one was referenced only by the removed key, one by nothing",
+    "Shopping takes the same 112pt fade as Recipes; at 88 it ended above the pill",
+    "Settings and Search take the same fade, Search by hiding only the bar background",
+    "the scope segments were 38pt, not the 44 the comment claimed, and declared no content shape",
+    "the day strip sat 4pt under the picker on a screen whose other gaps are 20"
   ]
 }

@@ -12,6 +12,8 @@
 //  would be a lie on a shopping list.
 
 import SwiftUI
+/* UIImpactFeedbackGenerator. */
+import UIKit
 
 struct ShoppingScreen: View {
     @Environment(AppState.self) private var etat
@@ -42,23 +44,49 @@ struct ShoppingScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 header
-                HStack {
-                    scopePicker
-                    Spacer(minLength: 0)
+
+                /* THE SPACE THE PILL LEFT BEHIND.
+                 *
+                 * Moving it into the floating bar freed about 46pt. Twelve go
+                 * to the picker, ten to the gap above it, eight below — and
+                 * the rest stays empty. Filling a screen because there is room
+                 * is how a screen gets heavy, and the real problem here is
+                 * that seventeen of thirty items are cupboard staples. */
+                scopePicker
+                    .padding(.horizontal, Layout.gutter)
+                    .padding(.top, 24)
+
+                /* SHOWN ONLY IN DAY MODE.
+                 *
+                 * It used to sit at 42% opacity with hit testing off — seven
+                 * dead tiles at full height, in a list whose whole job is to
+                 * be short. */
+                if dayFilter {
+                    weekStrip
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
-                .padding(.horizontal, Layout.gutter)
-                .padding(.top, 16)
-                /* Dimmed on "whole week": the days are still there, they
-                 * simply are not filtering anything. */
-                weekStrip
-                    .opacity(dayFilter ? 1 : 0.42)
-                    .allowsHitTesting(dayFilter)
                 progress
                 ForEach(byAisle, id: \.aisle) { group in
-                    Text(Self.aisleLabel(group.aisle))
-                        .eyebrow()
+                    /* A COUNT PER AISLE.
+                     *
+                     * "1/6" tells a parent when they can leave the aisle,
+                     * which is the only question being asked while standing
+                     * in one. The overall figure does not answer it. */
+                    HStack(spacing: 8) {
+                        Image(systemName: Self.aisleSymbol(group.aisle))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(Tone.text2)
+                            .frame(width: 20, height: 20)
+                            .background(Tone.text.opacity(0.055),
+                                        in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        Text(Self.aisleLabel(group.aisle)).eyebrow()
+                        Spacer(minLength: 0)
+                        Text("\(group.items.filter { checked.contains($0.id) }.count)/\(group.items.count)")
+                            .font(.system(size: 9.5, weight: .semibold))
+                            .foregroundStyle(Tone.text3)
+                    }
                         .padding(.horizontal, Layout.gutter)
-                        .padding(.top, 24)
+                        .padding(.top, 20)
                         .padding(.bottom, 4)
 
                     ForEach(group.items) { item in
@@ -83,22 +111,20 @@ struct ShoppingScreen: View {
             .padding(.bottom, 24)
         }
         .background(Tone.canvas.ignoresSafeArea())
-        /* The bar is visible but transparent: it carries the pill and lets
-         * iOS 26 apply the scroll edge effect, which is what keeps the status
-         * bar legible over a scrolling list. */
-        /* HIDDEN, LIKE SETTINGS.
-         *
-         * Settings hides its navigation bar; Shopping kept one to carry the
-         * pill. Both titles had `padding(.top, 8)`, so the whole difference
-         * in height was that bar. Same treatment on both sides, and the pill
-         * rides in the content instead. */
         .toolbar(.hidden, for: .navigationBar)
-        /* Who you are shopping for matters as much as who you are cooking
-         * for — the list is adapted to them. */
-
-        /* Below iOS 26 there is no scroll edge effect, so the last row
-         * would read through the floating bar. Harmless where the effect
-         * exists. */
+        /* THE SAME BAR AS RECIPES.
+         *
+         * An overlay, not a safeAreaInset: it floats and the content scrolls
+         * beneath it. That is what lets the title sit at `padding(.top, 8)`
+         * and land at the same height as Settings, while the pill still shows
+         * top-trailing and stays there through the scroll.
+         *
+         * The same 112 as Recipes. It ran at 88, which ended the fade above
+         * the bottom of the pill: the two screens carried the same bar over
+         * fields of different lengths, and the seam showed on this one. The
+         * field is canvas over canvas, so the extra distance costs nothing
+         * where there is nothing to cover. */
+        .softTopBar { ChildTopBar() }
         .onAppear {
             guard !loaded else { return }
             checked = etat.checkedItems
@@ -113,24 +139,43 @@ struct ShoppingScreen: View {
     ///
     /// It scrolls away like Settings' does. Pinned, it held the bar for a
     /// screen whose whole purpose is the list below it.
+    /// The title, and nothing above it.
+    ///
+    /// The pill used to be the FIRST element of this stack, with the title
+    /// underneath — so the title started about 50pt lower than Settings, and
+    /// no padding value could fix that because the cause was the order.
+    ///
+    /// The pill now rides in the floating top bar, which is an overlay: it
+    /// does not push. So the title is the first thing in the scroll, at
+    /// `padding(.top, 8)`, exactly like Settings.
+    ///
+    /// "Shopping", not "Shopping list" — the tab says Shopping, and a screen
+    /// that renames itself between the tab and the title is two names for one
+    /// place.
     private var header: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Spacer(minLength: 0)
-                CookingContextHeader(compact: true)
-            }
-            Text("Shopping list")
+        VStack(alignment: .leading, spacing: 3) {
+            Text("Shopping")
                 .font(Type.display)
                 .foregroundStyle(Tone.text)
+            Text(subtitle)
+                .font(.system(size: 11))
+                .foregroundStyle(Tone.text2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Layout.gutter)
         .padding(.top, 8)
     }
 
+    /// The scale of the job, which is what this screen was missing.
+    ///
+    /// It used to name the child — but the pill above already does, and the
+    /// property was computed and never displayed. What a parent wants here is
+    /// how big the list is before they walk into a shop.
     private var subtitle: String {
-        String(format: String(localized: "This week · %lld recipes · for %@"),
-               etat.weekRecipes.count, etat.activeProfile.firstName)
+        String(format: String(localized: "%lld recipes · %lld items"),
+               dayFilter ? etat.recipes(on: etat.selectedDay).count
+                         : etat.weekRecipes.count,
+               items.count)
     }
 
     /// Touching a day narrows the list to what that day needs.
@@ -140,9 +185,14 @@ struct ShoppingScreen: View {
     @ViewBuilder
     private var weekStrip: some View {
         @Bindable var e = etat
-        WeekStrip(selected: $e.selectedDay)
+        /* 12, not 4. Every other gap on this screen is 20 or more, so 4 read
+         * as a control glued to the one above it rather than a row under it.
+         * Short of 20 on purpose: the scope and the day it narrows to are one
+         * decision in two steps, and the tighter gap says so. */
+        DayStrip(selected: $e.selectedDay,
+                 counts: (0..<7).map { etat.recipes(on: $0).count })
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 4)
+            .padding(.top, 12)
     }
 
     /// Scope first, then which day.
@@ -154,20 +204,34 @@ struct ShoppingScreen: View {
     /// Above the days, because that is the order of the decision — whole week
     /// or one day, and only then which day. Underneath, it asked for the
     /// consequence before the cause.
+    /// Full width, at the full tap target.
+    ///
+    /// It was 32, then `Layout.tapTarget - 6`. `Layout.tap` is 44, so the
+    /// second value was 38 — still under Apple's minimum, while the comment
+    /// beside it claimed 44. The height is now the constant itself, and the
+    /// only arithmetic left is the 3pt trough the capsule sits in.
+    ///
+    /// `contentShape` because the unselected segment fills with a clear style:
+    /// the day tiles beside it declare their shape and this did not, so half
+    /// the control took taps only where the text was.
     private var scopePicker: some View {
-        HStack(spacing: 2) {
-            ForEach([false, true], id: \.self) { parJour in
+        HStack(spacing: 3) {
+            ForEach([false, true], id: \.self) { byDay in
                 Button {
-                    withAnimation(.smooth(duration: 0.24)) { dayFilter = parJour }
+                    withAnimation(.smooth(duration: 0.26, extraBounce: 0.1)) {
+                        dayFilter = byDay
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
-                    Text(parJour ? "By day" : "Whole week")
-                        .font(.system(size: 11.5, weight: .semibold))
-                        .foregroundStyle(dayFilter == parJour ? Tone.canvas : Tone.text2)
-                        .padding(.horizontal, 13)
-                        .padding(.vertical, 6)
-                        .background(dayFilter == parJour ? AnyShapeStyle(Tone.text)
-                                                         : AnyShapeStyle(Color.clear),
+                    Text(byDay ? "By day" : "Whole week")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(dayFilter == byDay ? Tone.canvas : Tone.text2)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: Layout.tapTarget)
+                        .background(dayFilter == byDay ? AnyShapeStyle(Tone.text)
+                                                       : AnyShapeStyle(Color.clear),
                                     in: Capsule())
+                        .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
             }
@@ -176,25 +240,51 @@ struct ShoppingScreen: View {
         .background(Tone.text.opacity(0.05), in: Capsule())
     }
 
+    /// What is LEFT, not what is done.
+    ///
+    /// It read "4 of 30 in the cart". Standing at the door of a shop, the
+    /// question is how much is left to find — the number already in the basket
+    /// is the one you can see by looking down.
     private var progress: some View {
-        VStack(alignment: .leading, spacing: 9) {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 7) {
+                Text("\(items.count - checked.count)")
+                    .font(.system(size: 22, weight: .bold))
+                    .kerning(-0.6)
+                    .foregroundStyle(Tone.text)
+                    .contentTransition(.numericText())
+                Text("left to buy")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Tone.text)
+                Spacer(minLength: 0)
+                Text(String(format: String(localized: "%lld in the cart"), checked.count))
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(Tone.text2)
+                    .contentTransition(.numericText())
+            }
+
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Tone.text.opacity(0.07))
+                    Capsule().fill(Tone.text.opacity(0.08))
                     Capsule()
                         .fill(Tone.brandGradient)
                         .frame(width: geo.size.width * ratio)
                 }
             }
             .frame(height: 5)
-
-            Text(String(format: String(localized: "%lld of %lld in the cart"),
-                        checked.count, items.count))
-                .font(.system(size: 11.5))
-                .foregroundStyle(Tone.text2)
+            .padding(.top, 9)
+        }
+        .padding(13)
+        .background {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Tone.text.opacity(0.035))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Tone.hairline, lineWidth: 1)
+                }
         }
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 18)
+        .padding(.top, 20)
         .animation(.smooth(duration: 0.3), value: checked.count)
     }
 
@@ -208,6 +298,22 @@ struct ShoppingScreen: View {
             else { checked.insert(item.id) }
         }
         etat.saveCheckedItems(checked)
+    }
+
+    /// One symbol per aisle, mirroring `aisleLabel`.
+    ///
+    /// A shop is navigated by section, and a glyph is read faster than a word
+    /// while walking. The two switches list the same cases, and the agreement
+    /// checker holds them together.
+    private static func aisleSymbol(_ a: String) -> String {
+        switch a {
+        case "produce": return "carrot.fill"
+        case "protein": return "fish.fill"
+        case "refrigerated": return "thermometer.snowflake"
+        case "pantry": return "cabinet.fill"
+        case "frozen": return "snowflake"
+        default: return "bag.fill"
+        }
     }
 
     private static func aisleLabel(_ a: String) -> LocalizedStringKey {

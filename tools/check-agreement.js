@@ -169,6 +169,35 @@ if (w && Number(w) < 1320) {
 
 checked.push("label lexicon");
 
+/* EVERY ALLERGEN NEEDS A GLYPH.
+ *
+ * AllergenGlyphs.swift matched on "lait", "oeuf", "arachide" while base.json
+ * says milk, egg, peanut. One case in eleven matched — sesame, spelled the
+ * same in both languages — so onboarding drew one icon and ten empty circles.
+ *
+ * Nothing failed: an unmatched id falls through to a default circle. A silent
+ * default is exactly how this reached a device. */
+(function glyphesAllergenes() {
+  const swift = path.join(__dirname, "..", "ios", "App", "App",
+                          "Illustration", "AllergenGlyphs.swift");
+  if (!fs.existsSync(swift)) return;
+  const code = fs.readFileSync(swift, "utf8");
+  const cas = (code.match(/case "[a-z_]+"/g) || [])
+    .map(function (c) { return c.slice(6, -1); });
+
+  const base = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "..", "data", "base.json"), "utf8"));
+
+  (base.allergens || []).forEach(function (a) {
+    if (cas.indexOf(a.id) === -1) {
+      problems.push("allergen '" + a.id + "' has no glyph in AllergenGlyphs.swift " +
+        "— it falls through to a plain circle, silently");
+    }
+  });
+})();
+
+checked.push("allergen glyphs");
+
 if (!problems.length) {
   console.log("Agreement check passed — " + checked.length + " vocabularies line up: " +
     checked.join(", ") + ".");

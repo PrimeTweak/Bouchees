@@ -27,11 +27,37 @@ struct BoucheesApp: App {
     }
 }
 
+/// Clears the cached launch snapshot.
+///
+/// MEASURED, after three wrong explanations from me. An earlier build shipped
+/// a `UIImageName` launch image carrying the wordmark — the plist still
+/// documents it, and the banner overflowed the screen. That image is gone from
+/// the bundle, but iOS keeps a SNAPSHOT of it under
+/// Library/SplashBoard/Snapshots and draws it on every launch.
+///
+/// Apple's own forums call this "first used launch screen file is forever
+/// cached": force-quitting does not clear it, and neither does deleting the
+/// app on its own. Removing the directory does.
+///
+/// Runs once. If the directory is absent — a fresh install — there is nothing
+/// to do and the failure is expected, not an error.
+enum LaunchCache {
+    static func clear() {
+        let chemin = NSHomeDirectory() + "/Library/SplashBoard"
+        guard FileManager.default.fileExists(atPath: chemin) else { return }
+        try? FileManager.default.removeItem(atPath: chemin)
+    }
+}
+
 struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
-    @State private var path = NavigationPath()
-    @State private var sheet: AppSheet?
+    /* No path and no sheet here. Each tab owns both — see OngletPile.
+     *
+     * A path at the root sent a search result into the Recipes stack: nothing
+     * appeared, and the recipe was waiting in another tab when the parent
+     * switched. A sheet at the root never appeared at all — a TabView on
+     * iOS 26 owns the system bar, and a sheet it presents competes with it. */
 
     /// True until the launch animation has had time to play.
     @State private var launchPlayed = false
@@ -67,6 +93,10 @@ struct RootView: View {
             /* Long enough for the mark to rise and the bite to settle, short
              * enough that nobody waits on it. Measured against the animation
              * in Mark.swift, not guessed. */
+            /* Before the sleep, not after: the parent should not wait on a
+             * file operation, and the cache only matters at the NEXT launch
+             * anyway. */
+            LaunchCache.clear()
             try? await Task.sleep(for: .milliseconds(1100))
             launchPlayed = true
         }
@@ -115,49 +145,132 @@ struct RootView: View {
     ///
     /// With a single stack the inset reaches the content, pushed screens hide
     /// the bar the way iOS intends, and no screen has to guess.
+    /// THE NATIVE TabView. Ten attempts at a hand-rolled bar end here.
+    ///
+    /// Apple, on iOS 26: Liquid Glass on a TabView is AUTOMATIC — "the effect
+    /// applies to system components, no configuration is needed" — and it
+    /// "cannot be disabled or replaced with a custom material".
+    ///
+    /// Which means the hold-and-slide lens, with its refraction and chromatic
+    /// aberration, belongs to the system tab bar and to nothing else. A ZStack
+    /// of buttons will never have it, however carefully the gestures are
+    /// written. I reimplemented the geometry three times and broke tap doing
+    /// it; the honest fix is to stop reimplementing.
+    ///
+    /// What comes free, correct, and maintained by Apple:
+    ///   · the glass, and the lens on a long press
+    ///   · `Tab(role: .search)` — the floating island, visually separated,
+    ///     which turns into a search field when selected
+    ///   · `.tabBarMinimizeBehavior(.onScrollDown)`
+    ///   · safe-area handling, which cost six builds to get wrong by hand
+    /// THE NATIVE TabView, BEHIND AN AVAILABILITY GATE.
+    ///
+    /// The deployment target is iOS 17. `Tab` is iOS 18, and
+    /// `tabBarMinimizeBehavior` is iOS 26 — I wrote both without checking, and
+    /// the build failed on fourteen errors that `grep deploymentTarget` would
+    /// have shown me first.
+    ///
+    /// The gate is the pattern this project already uses for `glassEffect` in
+    /// Tone.swift. On iOS 26 the system bar brings Liquid Glass, the
+    /// hold-and-slide lens, the search island and minimize-on-scroll, none of
+    /// which a hand-rolled bar can have. Below that, the plain TabView: the
+    /// same four destinations, no glass.
+    @ViewBuilder
     private var onglets: some View {
-        NavigationStack(path: $path) {
-            Group {
-                switch tab {
-                case 0: RecipesScreen(tab: $tab)
-                case 1: ShoppingScreen()
-                case 2: ScannerScreen(tab: $tab)
-                default: SettingsScreen()
-                }
+        if #available(iOS 26, *) {
+            ongletsModernes
+        } else {
+            ongletsClassiques
+        }
+    }
+
+    @available(iOS 26, *)
+    private var ongletsModernes: some View {
+        TabView(selection: $tab) {
+            Tab("Recipes", systemImage: "fork.knife", value: 0) {
+                OngletPile { RecipesScreen(tab: $tab) }
             }
-            /* THE INSET GOES INSIDE THE STACK.
-             *
-             * Placed on the NavigationStack it sat OUTSIDE, and a stack does
-             * not hand its parent's safe area down to the scrolling content
-             * inside it. That is the same trap as before, one level up: the
-             * bar reserved space nobody could see.
-             *
-             * Inside, on the screen itself, it does both halves of what Apple
-             * describes — the list passes behind the glass, and the scroll
-             * gains enough inset that its last row clears the bar. */
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                FloatingTabBar(selection: $tab)
+            Tab("Shopping", systemImage: "cart", value: 1) {
+                OngletPile { ShoppingScreen() }
             }
-            .navigationDestination(for: Route.self) { route in
-                switch route {
-                case .recipe(let id):
-                    if let pair = etat.pairFor(pour: id) {
-                        RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
-                                           firstName: etat.activeProfile.firstName)
-                    }
-                case .saved:
-                    SavedScreen()
-                case .topRated:
-                    TopRatedScreen()
-                case .profiles:
-                    ProfilesScreen()
-                }
+            Tab("Scan", systemImage: "barcode.viewfinder", value: 2) {
+                OngletPile { ScannerScreen(tab: $tab) }
+            }
+            Tab("Settings", systemImage: "gearshape", value: 3) {
+                OngletPile { SettingsScreen() }
+            }
+            /* The search role gives the separated island for free, and iOS
+             * owns its transition into a field. */
+            Tab(value: 4, role: .search) {
+                /* ITS OWN PATH.
+                 *
+                 * `navigate` is injected on the TabView, above every stack, so
+                 * a route appended from the search tab landed in the Recipes
+                 * stack — which is not on screen. Tapping a result did
+                 * nothing visible.
+                 *
+                 * Each tab that can push owns its path and overrides
+                 * `navigate` inside itself. */
+                OngletPile { SearchScreen() }
             }
         }
-        .ignoresSafeArea(.keyboard)
+        .tabBarMinimizeBehavior(.onScrollDown)
+    }
+
+    /// iOS 17 and 18. `tabItem` rather than `Tab`, which is iOS 18.
+    private var ongletsClassiques: some View {
+        TabView(selection: $tab) {
+            OngletPile { RecipesScreen(tab: $tab) }
+                .tabItem { Label("Recipes", systemImage: "fork.knife") }
+                .tag(0)
+            OngletPile { ShoppingScreen() }
+                .tabItem { Label("Shopping", systemImage: "cart") }
+                .tag(1)
+            OngletPile { ScannerScreen(tab: $tab) }
+                .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
+                .tag(2)
+            OngletPile { SettingsScreen() }
+                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(3)
+            OngletPile { SearchScreen() }
+                .tabItem { Label("Search", systemImage: "magnifyingglass") }
+                .tag(4)
+        }
+    }
+}
+
+/// A tab that can push, with the stack it pushes into.
+///
+/// `navigate` used to be injected once on the TabView, above every stack — so
+/// a route appended from Scan or Search landed in the Recipes stack, which is
+/// not on screen. Tapping a result did nothing visible.
+///
+/// Each tab owns its path and overrides `navigate` inside itself, so a push
+/// goes where the finger is.
+private struct OngletPile<Contenu: View>: View {
+    @ViewBuilder var contenu: () -> Contenu
+
+    /// This tab's own stack.
+    ///
+    /// A single path at the root sent a search result into the Recipes stack:
+    /// nothing appeared, and the recipe was waiting in another tab when the
+    /// parent switched. One path per tab, and nothing above declares navigate.
+    @State private var path = NavigationPath()
+
+    /// This tab's own sheet.
+    ///
+    /// It was attached to the TabView, and tapping the child strip did
+    /// nothing at all. A sheet on a TabView is presented BY the TabView,
+    /// which on iOS 26 also owns the system bar — the two compete and neither
+    /// wins. Each tab presents its own.
+    @State private var sheet: AppSheet?
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            contenu().destinations()
+        }
         .environment(\.navigate, NavigateAction { route in path.append(route) })
-        .environment(\.presentSheet, PresentSheetAction { sheet = $0 })
-        /* On the root, which never gets rebuilt by a scrolling layout. */
+        .environment(\.presentSheet, PresentSheetAction(show: { quoi in sheet = quoi }))
         .sheet(item: $sheet) { quoi in
             switch quoi {
             case .childPicker: ChildPickerSheet()
@@ -165,8 +278,35 @@ struct RootView: View {
             }
         }
     }
-
 }
+
+/// Every destination the app can push, applied once.
+extension View {
+    func destinations() -> some View {
+        navigationDestination(for: Route.self) { route in
+            RouteDestination(route: route)
+        }
+    }
+}
+
+private struct RouteDestination: View {
+    let route: Route
+    @Environment(AppState.self) private var etat
+
+    var body: some View {
+        switch route {
+        case .recipe(let id):
+            if let pair = etat.pairFor(pour: id) {
+                RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
+                                   firstName: etat.activeProfile.firstName)
+            }
+        case .saved: SavedScreen()
+        case .topRated: TopRatedScreen()
+        case .profiles: ProfilesScreen()
+        }
+    }
+}
+
 
 /// Everything the stack can push. One enum, so the destinations live in one
 /// place rather than being re-declared on each screen.
