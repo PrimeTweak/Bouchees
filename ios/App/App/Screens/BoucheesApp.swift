@@ -115,49 +115,53 @@ struct RootView: View {
     ///
     /// With a single stack the inset reaches the content, pushed screens hide
     /// the bar the way iOS intends, and no screen has to guess.
+    /// THE NATIVE TabView. Ten attempts at a hand-rolled bar end here.
+    ///
+    /// Apple, on iOS 26: Liquid Glass on a TabView is AUTOMATIC — "the effect
+    /// applies to system components, no configuration is needed" — and it
+    /// "cannot be disabled or replaced with a custom material".
+    ///
+    /// Which means the hold-and-slide lens, with its refraction and chromatic
+    /// aberration, belongs to the system tab bar and to nothing else. A ZStack
+    /// of buttons will never have it, however carefully the gestures are
+    /// written. I reimplemented the geometry three times and broke tap doing
+    /// it; the honest fix is to stop reimplementing.
+    ///
+    /// What comes free, correct, and maintained by Apple:
+    ///   · the glass, and the lens on a long press
+    ///   · `Tab(role: .search)` — the floating island, visually separated,
+    ///     which turns into a search field when selected
+    ///   · `.tabBarMinimizeBehavior(.onScrollDown)`
+    ///   · safe-area handling, which cost six builds to get wrong by hand
     private var onglets: some View {
-        NavigationStack(path: $path) {
-            Group {
-                switch tab {
-                case 0: RecipesScreen(tab: $tab)
-                case 1: ShoppingScreen()
-                case 2: ScannerScreen(tab: $tab)
-                default: SettingsScreen()
+        TabView(selection: $tab) {
+            Tab("Recipes", systemImage: "fork.knife", value: 0) {
+                NavigationStack(path: $path) {
+                    RecipesScreen(tab: $tab).destinations()
                 }
             }
-            /* THE INSET GOES INSIDE THE STACK.
-             *
-             * Placed on the NavigationStack it sat OUTSIDE, and a stack does
-             * not hand its parent's safe area down to the scrolling content
-             * inside it. That is the same trap as before, one level up: the
-             * bar reserved space nobody could see.
-             *
-             * Inside, on the screen itself, it does both halves of what Apple
-             * describes — the list passes behind the glass, and the scroll
-             * gains enough inset that its last row clears the bar. */
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                FloatingTabBar(selection: $tab)
+
+            Tab("Shopping", systemImage: "cart", value: 1) {
+                NavigationStack { ShoppingScreen().destinations() }
             }
-            .navigationDestination(for: Route.self) { route in
-                switch route {
-                case .recipe(let id):
-                    if let pair = etat.pairFor(pour: id) {
-                        RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
-                                           firstName: etat.activeProfile.firstName)
-                    }
-                case .saved:
-                    SavedScreen()
-                case .topRated:
-                    TopRatedScreen()
-                case .profiles:
-                    ProfilesScreen()
-                }
+
+            Tab("Scan", systemImage: "barcode.viewfinder", value: 2) {
+                NavigationStack { ScannerScreen(tab: $tab).destinations() }
+            }
+
+            Tab("Settings", systemImage: "gearshape", value: 3) {
+                NavigationStack { SettingsScreen().destinations() }
+            }
+
+            /* The search role gives the separated island for free, and iOS
+             * owns its transition into a field. Our own SearchSheet was a
+             * reimplementation of that. */
+            Tab(value: 4, role: .search) {
+                NavigationStack { SearchScreen() }
             }
         }
-        .ignoresSafeArea(.keyboard)
+        .tabBarMinimizeBehavior(.onScrollDown)
         .environment(\.navigate, NavigateAction { route in path.append(route) })
-        .environment(\.presentSheet, PresentSheetAction { sheet = $0 })
-        /* On the root, which never gets rebuilt by a scrolling layout. */
         .sheet(item: $sheet) { quoi in
             switch quoi {
             case .childPicker: ChildPickerSheet()
@@ -165,6 +169,40 @@ struct RootView: View {
             }
         }
     }
+}
+
+/// Every destination the app can push, applied once.
+///
+/// Each tab owns a NavigationStack now — that is how TabView expects to be
+/// built, and it is what makes the bar behave. The destinations are shared so
+/// four stacks do not drift apart.
+extension View {
+    func destinations() -> some View {
+        navigationDestination(for: Route.self) { route in
+            RouteDestination(route: route)
+        }
+    }
+}
+
+private struct RouteDestination: View {
+    let route: Route
+    @Environment(AppState.self) private var etat
+
+    var body: some View {
+        switch route {
+        case .recipe(let id):
+            if let pair = etat.pairFor(pour: id) {
+                RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
+                                   firstName: etat.activeProfile.firstName)
+            }
+        case .saved: SavedScreen()
+        case .topRated: TopRatedScreen()
+        case .profiles: ProfilesScreen()
+        }
+    }
+}
+
+extension RootView {
 
 }
 

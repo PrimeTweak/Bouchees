@@ -16,6 +16,8 @@
 //  believe you.
 
 import SwiftUI
+/* UIImpactFeedbackGenerator. */
+import UIKit
 
 struct OnboardingFlow: View {
     @Environment(AppState.self) private var etat
@@ -228,12 +230,21 @@ private struct AllergenPad: View {
                              toggle: { toggle(a.id) })
             }
         }
-        .animation(.smooth(duration: 0.22), value: selected)
+        /* A SETTLE, NOT A FADE.
+         *
+         * This grid is the demonstration: tick milk and the card above
+         * changes, the counts diverge, the recipe is re-adapted in front of
+         * you. A 0.22 crossfade made that read as a state change; the
+         * overshoot makes it read as a consequence. */
+        .animation(.spring(response: 0.34, dampingFraction: 0.66), value: selected)
     }
 
     private func toggle(_ id: String) {
         if selected.contains(id) { selected.removeAll { $0 == id } }
         else { selected.append(id) }
+        /* The tick is a decision about a child's food. It deserves the same
+         * feedback as a switch, not silence. */
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 }
 
@@ -250,6 +261,11 @@ private struct AllergenTile: View {
         Button(action: toggle) {
             VStack(spacing: 5) {
                 AllergenGlyph(identifier: allergen.id, size: 20)
+                    /* The glyph leads: it grows a little ahead of the tile,
+                     * so the icon is what you see change rather than the
+                     * rectangle behind it. */
+                    .scaleEffect(isOn ? 1.12 : 1)
+                    .animation(.spring(response: 0.28, dampingFraction: 0.55), value: isOn)
                 Text(allergen.name)
                     .font(.system(size: 10, weight: .semibold))
                     .lineLimit(1)
@@ -262,6 +278,7 @@ private struct AllergenTile: View {
                     .fill(isOn ? AnyShapeStyle(Tone.brandGradient)
                                : AnyShapeStyle(Tone.text.opacity(0.05)))
                     .shadow(color: isOn ? Tone.brandDeep.opacity(0.4) : .clear, radius: 11, y: 6)
+                    .scaleEffect(isOn ? 1.04 : 1)
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 17, style: .continuous)
