@@ -1,12 +1,10 @@
 {
-  "build": 100,
+  "build": 101,
   "date": "2026-08-29",
   "carries": [
-    "the native TabView replaces ten attempts at a hand-rolled bar",
-    "Liquid Glass, the hold-and-slide lens and the search island are the SYSTEM bar and nothing else",
-    "the photo no longer requires status == asIs \u2014 35 of 38 were invisible by construction",
-    "an adapted recipe shows the photo marked Original recipe",
-    "a probe answers the splash flash instead of a fourth guess",
-    "onboarding: spring on the tile, the glyph leads, haptics on the tick"
+    "Tab is iOS 18 and tabBarMinimizeBehavior is iOS 26; the deployment target is 17",
+    "I wrote both without checking \u2014 grep deploymentTarget would have shown it in one second",
+    "gated the way Tone.swift already gates glassEffect, with a plain TabView below 26",
+    "checker rule: an API newer than the deployment target with no availability gate"
   ]
 }
