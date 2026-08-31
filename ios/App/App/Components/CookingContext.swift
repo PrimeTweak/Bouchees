@@ -551,43 +551,162 @@ struct SearchSheet: View {
 /// landed and lets the parent move one, which is the only decision worth
 /// offering.
 ///
-/// Two days are usually empty, and that stays true. Seven recipes do not make
-/// seven suppers, and spreading them to look complete would be a lie about
-/// what the app provides.
-struct WeekStrip: View {
-    @Environment(AppState.self) private var etat
-
+/// Seven days, for Shopping.
+///
+/// Recipes moved to a week rail, because a day pill answered a question the
+/// list now answers by itself. Shopping is the opposite case: "what do I buy
+/// for Wednesday" is asked in an aisle, out loud, and the answer has to be one
+/// tap away. So the day pills stay here.
+struct DayStrip: View {
     @Binding var selected: Int
-    /// A recipe being dragged onto another day.
-    @State private var dragging: String?
+    /// How many recipes sit on each day, for the dots.
+    let counts: [Int]
 
     var body: some View {
         HStack(spacing: 5) {
-            ForEach(0..<7, id: \.self) { jour in
-                DayCell(day: jour,
-                        selected: selected == jour,
-                        today: jour == WeekDay.today,
-                        recipes: etat.recipes(on: jour))
-                    .contentShape(.rect)
-                    .onTapGesture {
-                        withAnimation(.smooth(duration: 0.24)) { selected = jour }
+            ForEach(0..<7, id: \.self) { day in
+                Button {
+                    withAnimation(.smooth(duration: 0.26, extraBounce: 0.1)) {
+                        selected = day
                     }
-                    /* Drop target. Dragging a recipe from one day onto
-                     * another is the whole editing model — no long press, no
-                     * edit mode, no confirmation. */
-                    .dropDestination(for: String.self) { ids, _ in
-                        guard let id = ids.first,
-                              let r = etat.weekRecipes.first(where: { $0.id == id })
-                        else { return false }
-                        withAnimation(.smooth(duration: 0.28)) {
-                            etat.move(r, to: jour)
-                            selected = jour
-                        }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        return true
-                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    DayTile(day: day, selected: day == selected,
+                            count: day < counts.count ? counts[day] : 0)
+                }
+                .buttonStyle(.plain)
             }
         }
+    }
+}
+
+private struct DayTile: View {
+    let day: Int
+    let selected: Bool
+    let count: Int
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(WeekDay.short[day])
+                .font(.system(size: 8, weight: .bold, design: .monospaced))
+                .kerning(0.8)
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
+
+            /* The day of the MONTH, not the index in the plan. "Mon 1" on a
+             * Monday the 31st looked like a date and was not one. */
+            Text("\(WeekDay.dayNumber(for: day))")
+                .font(.system(size: 13.5, weight: .bold))
+                .kerning(-0.3)
+                .foregroundStyle(selected ? Tone.canvas : Tone.text)
+                .padding(.top, 2)
+
+            HStack(spacing: 2.5) {
+                if count == 0 {
+                    Capsule().frame(width: 9, height: 1.5)
+                        .foregroundStyle(Tone.text.opacity(0.14))
+                } else {
+                    ForEach(0..<min(count, 3), id: \.self) { _ in
+                        Circle().frame(width: 4, height: 4)
+                            .foregroundStyle(selected ? Tone.canvas.opacity(0.85) : Tone.brand)
+                    }
+                }
+            }
+            .frame(height: 5)
+            .padding(.top, 3)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 7)
+        .background {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(selected ? AnyShapeStyle(Tone.text)
+                               : AnyShapeStyle(Tone.text.opacity(0.042)))
+        }
+        .contentShape(.rect)
+    }
+}
+
+/// Three weeks: the one before, this one, the one after.
+///
+/// It replaced seven day pills. A day pill answered "what is on Thursday",
+/// which the list now answers by showing Thursday; the rail answers "what is
+/// coming", which nothing answered before.
+///
+/// A locked week keeps its count and shows a padlock. Hiding it would leave
+/// nothing to subscribe FOR.
+struct WeekRail: View {
+    @Binding var selected: Int
+    let slots: [WeekSlot]
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(slots) { slot in
+                Button {
+                    withAnimation(.smooth(duration: 0.3, extraBounce: 0.12)) {
+                        selected = slot.offset
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    WeekTile(slot: slot, selected: slot.offset == selected)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+private struct WeekTile: View {
+    let slot: WeekSlot
+    let selected: Bool
+
+    private var title: LocalizedStringKey {
+        switch slot.offset {
+        case -1: return "Last week"
+        case 0:  return "This week"
+        default: return "Next week"
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.system(size: 7.5, weight: .bold, design: .monospaced))
+                .kerning(0.7)
+                .textCase(.uppercase)
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
+
+            Text(slot.span())
+                .font(.system(size: 12, weight: .bold))
+                .kerning(-0.2)
+                .foregroundStyle(selected ? Tone.canvas : Tone.text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            if slot.unlocked {
+                Text(String(format: String(localized: "%lld recipes"), slot.count))
+                    .font(.system(size: 8))
+                    .foregroundStyle(selected ? Tone.canvas.opacity(0.5) : Tone.text3)
+                    .lineLimit(1)
+            } else {
+                HStack(spacing: 3) {
+                    Image(systemName: "lock.fill").font(.system(size: 7))
+                    Text("\(slot.count)").font(.system(size: 8, weight: .semibold))
+                }
+                .foregroundStyle(selected ? Tone.canvas.opacity(0.62) : Tone.text3)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .background {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(selected ? AnyShapeStyle(Tone.text)
+                               : AnyShapeStyle(Tone.text.opacity(0.045)))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(selected ? .clear : Tone.hairline, lineWidth: 1)
+        }
+        .contentShape(.rect)
     }
 }
 
@@ -604,7 +723,9 @@ private struct DayCell: View {
                 .kerning(0.8)
                 .foregroundStyle(labelColour)
 
-            Text("\(day + 1)")
+            /* The day of the MONTH, not the index in the plan. "Mon 1" on
+             * Monday 31 August looked like a date and was not one. */
+            Text("\(WeekDay.dayNumber(for: day))")
                 .font(.system(size: 13.5, weight: .bold))
                 .kerning(-0.3)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text)
