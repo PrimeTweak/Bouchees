@@ -529,33 +529,27 @@ struct SearchSheet: View {
     @State private var query = ""
     @FocusState private var focused: Bool
 
-    /// Just tall enough for the groups that have something in them.
+    /// Tall enough to reach the keyboard, never taller than the screen.
+    ///
+    /// The old sheet sat low and left a hole between the last chip and the
+    /// keyboard. With recipes rather than chips there is enough to fill it —
+    /// so it opens high and scrolls.
     private var sheetHeight: CGFloat {
-        var h: CGFloat = 132
-        if !etat.recentSearches.isEmpty { h += 66 }
-        if !weekCuts.isEmpty { h += 66 }
-        h += 66
-        return min(h, 420)
+        let entetes = CGFloat(groupes.count) * 34
+        let lignes = CGFloat(groupes.reduce(0) { $0 + $1.plats.count }) * 58
+        return min(96 + entetes + lignes, 560)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
-                Text("Search")
-                    .font(.system(size: 21, weight: .bold))
-                    .kerning(-0.5)
-                    .foregroundStyle(Tone.text)
-                Spacer(minLength: 0)
-                Button("Cancel") { dismiss() }
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Tone.brand)
-            }
-            .padding(.horizontal, Layout.gutter)
-            .padding(.top, 18)
-
+            /* THE FIELD IS THE TITLE.
+             *
+             * "Search" written above a search field is a duplicate — the
+             * field already says what it is, and the row it occupied was the
+             * height of two recipes. */
             field
                 .padding(.horizontal, Layout.gutter)
-                .padding(.top, 13)
+                .padding(.top, 16)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -607,75 +601,83 @@ struct SearchSheet: View {
                 }
                 .buttonStyle(.plain)
             }
+            Button("Cancel") { dismiss() }
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Tone.brand)
         }
-        .padding(.horizontal, 13)
-        .padding(.vertical, 10)
-        .background(Tone.text.opacity(0.055),
-                    in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        /* Raised, not sunken. A white field on the canvas reads as the thing
+         * you type into; a grey well reads as a disabled row. */
+        .background(Tone.cardTop,
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(0.04), radius: 3, y: 1)
     }
 
-    /// Three groups, never more than eight rows in view.
+    /// Recipes, not counts.
     ///
-    /// "This week" is the group nothing else can offer: seven recipes is small
-    /// enough that "ready as is" is a complete answer rather than a filter.
+    /// "Ready as is · 2" is a number; a parent searching wants to SEE dishes.
+    /// The count becomes a section title and the recipes sit under it, with
+    /// their thumbnail and their verdict — the same row used everywhere else.
+    ///
+    /// There are only seven recipes in a week. Showing them costs less than a
+    /// filter you have to assemble.
     @ViewBuilder
     private var zeroState: some View {
-        if !etat.recentSearches.isEmpty {
-            Text("Recent").eyebrow()
-                .padding(.horizontal, Layout.gutter).padding(.top, 20)
-            chips(etat.recentSearches.prefix(3).map { ($0, false) })
-        }
+        ForEach(groupes, id: \.titre) { groupe in
+            HStack(alignment: .firstTextBaseline) {
+                Text(groupe.titre).eyebrow()
+                Spacer(minLength: 0)
+                Text("\(groupe.plats.count)")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 18)
 
-        Text("This week").eyebrow()
-            .padding(.horizontal, Layout.gutter).padding(.top, 20)
-        chips(weekCuts, hot: true)
-
-        Text("Browse").eyebrow()
-            .padding(.horizontal, Layout.gutter).padding(.top, 20)
-        chips([("Snacks", false), ("Meals", false),
-               ("Breakfast", false), ("Saved", false)])
-    }
-
-    /// Cuts of this week that are worth one tap, with their counts.
-    private var weekCuts: [(String, Bool)] {
-        let semaine = etat.weekRecipes
-        var out: [(String, Bool)] = []
-
-        let pretes = semaine.filter { etat.resultFor($0)?.status == .asIs }.count
-        if pretes > 0 { out.append(("Ready as is · \(pretes)", true)) }
-
-        let rapides = semaine.filter { ($0.timeMinutes ?? 99) <= 20 }.count
-        if rapides > 0 { out.append(("Under 20 min · \(rapides)", true)) }
-
-        let dej = semaine.filter { $0.category == "breakfast" }.count
-        if dej > 0 { out.append(("Breakfast · \(dej)", true)) }
-
-        return out
-    }
-
-    private func chips(_ items: [(String, Bool)], hot: Bool = false) -> some View {
-        WrappingRow(spacing: 6, lineSpacing: 6) {
-            ForEach(items, id: \.0) { texte, _ in
-                Button { query = texte.components(separatedBy: " · ").first ?? texte } label: {
-                    Text(texte)
-                        .font(.system(size: 11.5, weight: .semibold))
-                        .foregroundStyle(hot ? Tone.brand : Tone.text)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 6)
-                        .background(hot ? AnyShapeStyle(Tone.brand.opacity(0.08))
-                                        : AnyShapeStyle(Tone.text.opacity(0.05)),
-                                    in: Capsule())
-                        .overlay {
-                            Capsule().strokeBorder(hot ? Tone.brand.opacity(0.16)
-                                                       : Tone.hairline, lineWidth: 1)
-                        }
+            ForEach(groupe.plats, id: \.recipe.id) { pair in
+                Button {
+                    dismiss()
+                    navigate(.recipe(pair.recipe.id))
+                } label: {
+                    RecipeRow(recipe: pair.recipe, result: pair.result)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, Layout.gutter)
-        .padding(.top, 8)
     }
+
+    /// The cuts worth one tap, each carrying its recipes.
+    private var groupes: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] {
+        let semaine = etat.weekRecipes.compactMap { r in
+            etat.resultFor(r).map { (recipe: r, result: $0) }
+        }
+        var out: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] = []
+
+        let pretes = semaine.filter { $0.result.status == .asIs }
+        if !pretes.isEmpty {
+            out.append((String(localized: "Ready as is"), pretes))
+        }
+
+        let rapides = semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 }
+        if !rapides.isEmpty {
+            out.append((String(localized: "Under 20 minutes"), rapides))
+        }
+
+        /* Everything else, so the sheet never runs out before the keyboard. */
+        let vus = Set((pretes + rapides).map(\.recipe.id))
+        let reste = semaine.filter { !vus.contains($0.recipe.id) }
+        if !reste.isEmpty {
+            out.append((String(localized: "This week"), reste))
+        }
+        return out
+    }
+
+
 
     private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
         let q = query.lowercased().trimmingCharacters(in: .whitespaces)

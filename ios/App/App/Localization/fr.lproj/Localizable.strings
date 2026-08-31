@@ -357,3 +357,13 @@
 "She can have these tonight" = "Elle peut manger ça ce soir";
 "Unnamed product" = "Produit sans nom";
 "From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags." = "Données d’Open Food Facts, licence ODbL. Bouchées redérive chaque allergène depuis la liste d’ingrédients plutôt que de se fier aux étiquettes de la base.";
+"For %@" = "Pour %@";
+"%lld items" = "%lld ingrédients";
+"%lld steps" = "%lld étapes";
+"The reason" = "La raison";
+"Contains %@" = "Contient %@";
+"Read from the ingredient list, not from a database tag." = "Lu dans la liste d’ingrédients, pas dans une étiquette de la base.";
+"%@ — none present, no trace warning." = "%@ — absents, aucune mention de traces.";
+"%lld read · %lld recognised" = "%lld lus · %lld reconnus";
+"%@ can have these tonight" = "%@ peut manger ça ce soir";
+"Under 20 minutes" = "Moins de 20 minutes";

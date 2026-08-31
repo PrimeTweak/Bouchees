@@ -144,17 +144,28 @@ struct RecipeDetailScreen: View {
      * in the way. */
     private var ingredientList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(String(format: String(localized: "Ingredients for %@"), firstName))
-                .eyebrow()
-                .padding(.top, 24)
-                .padding(.bottom, 10)
+            /* NO RULES BETWEEN LINES.
+             *
+             * A full-width divider between two columns is an invoice.
+             * Spacing separates perfectly well, and removing them leaves the
+             * amber swap as the only marked thing in the list — which is what
+             * it should be: the swap is what this app does that nothing else
+             * does. */
+            HStack(alignment: .firstTextBaseline) {
+                Text(String(format: String(localized: "For %@"), firstName))
+                    .eyebrow()
+                Spacer(minLength: 0)
+                Text(String(format: String(localized: "%lld items"),
+                            result.ingredients.count))
+                    .font(.system(size: 10))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.top, 22)
+            .padding(.bottom, 4)
 
             ForEach(result.ingredients) { item in
                 IngredientLine(item: item) {
                     if item.status == .swapped { openRule = item }
-                }
-                if item.listID != result.ingredients.last?.listID {
-                    Divider().overlay(Tone.hairline)
                 }
             }
         }
@@ -293,34 +304,82 @@ struct RecipeDetailScreen: View {
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
+    /// The steps, on the page rather than in a card.
+    ///
+    /// A white card floating on cream is a 2019 pattern: the card adds an
+    /// outline and nothing else, and it fights the canvas the rest of the
+    /// screen sits on.
+    ///
+    /// The number does the structuring instead — large and pale, so it reads
+    /// as a landmark rather than a badge. Hairlines between steps, not around
+    /// them.
     private var blocPreparation: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Preparation")
-                .font(.caption.weight(.semibold))
-                .textCase(.uppercase)
-                .kerning(1.2)
-                .foregroundStyle(.tertiary)
-                .padding(.bottom, 12)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Preparation").eyebrow()
+                Spacer(minLength: 0)
+                Text(String(format: String(localized: "%lld steps"), result.steps.count))
+                    .font(.system(size: 10))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.top, 26)
+            .padding(.bottom, 4)
 
             ForEach(Array(result.steps.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: 13) {
                     Text("\(index + 1)")
-                        .font(.caption.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(Tone.brand)
-                        .frame(width: 25, height: 25)
-                        .overlay(Circle().strokeBorder(Tone.brand, lineWidth: 1.5))
-                    Text(step).font(.body)
+                        .font(.system(size: 21, weight: .bold, design: .default))
+                        .kerning(-0.6)
+                        .monospacedDigit()
+                        .foregroundStyle(Tone.text.opacity(0.14))
+                        .frame(width: 26, alignment: .leading)
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(step)
+                            .font(.system(size: 14))
+                            .foregroundStyle(Tone.text)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        /* A duration inside a step becomes a pill. It is the
+                         * thing an eye hunts for with hands in the batter. */
+                        if let minutes = Self.duree(dans: step) {
+                            Label(minutes, systemImage: "timer")
+                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(Tone.swap)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Tone.swap.opacity(0.1), in: Capsule())
+                        }
+                    }
                     Spacer(minLength: 0)
                 }
-                .padding(.vertical, 7)
+                .padding(.vertical, 11)
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Step \(index + 1). \(step)")
+
+                if index < result.steps.count - 1 {
+                    Divider().overlay(Tone.hairline).padding(.leading, 39)
+                }
             }
         }
-        .padding(17)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground),
-                    in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    /// A duration written in a step, if there is one.
+    ///
+    /// Reads what the step already says rather than adding a field to the
+    /// data: "Bake at 200 °C for 18 to 20 minutes" already carries it.
+    static func duree(dans texte: String) -> String? {
+        /* "to" and its French twin (U+00E0): a Quebec recipe writes the range
+         * with the French word, and matching only the English half would
+         * silently drop the pill on half the corpus. */
+        let motif = #"(\d+)(?:\s*(?:to|\u{2013}|-|\u{00e0})\s*(\d+))?\s*(?:min|minute)"#
+        guard let r = texte.range(of: motif, options: .regularExpression) else { return nil }
+        let brut = String(texte[r])
+        let nombres = brut.split(whereSeparator: { !$0.isNumber }).map(String.init)
+        guard let premier = nombres.first else { return nil }
+        if nombres.count > 1 { return "\(premier)–\(nombres[1]) min" }
+        return "\(premier) min"
     }
 
     @ViewBuilder

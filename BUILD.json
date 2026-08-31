@@ -1,11 +1,13 @@
 {
-  "build": 83,
+  "build": 84,
   "date": "2026-08-29",
   "carries": [
-    "tab bar: the items were Buttons, which ate the touch before the parent gesture",
-    "glass inside a label swallows the first touch \u2014 pill, search, and back button",
-    "shopping hides its navigation bar like Settings does",
-    "search sheet sized to its content instead of full screen",
-    "checker rule: .glass() inside a label: block \u2014 found a fifth case on the detail screen"
+    "recipe: no rules between ingredients, the swap is the only coloured thing",
+    "recipe: steps on the page, large pale numbers, duration as a pill",
+    "search: the field is the title; sections show recipes, not counts",
+    "scan: one card for the reason, the clear allergens on one line",
+    "scan: the offending word highlighted in the full list",
+    "scan BUG: the expansion was an overlay, so it drew across the content below",
+    "checker rule: a state-driven .overlay reserves no height"
   ]
 }

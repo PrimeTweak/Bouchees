@@ -925,6 +925,36 @@ def check():
                                 f"touch; put it on the Button instead")
                         break
 
+    # 7ab. an overlay that expands with state.
+    #      `.overlay { if expanded { … } }` draws ON TOP without reserving
+    #      height, so the revealed content lands across whatever is below it.
+    #      That is the ingredient list overlapping the cards under it.
+    #
+    #      Anything that grows belongs in the layout — a VStack — not an
+    #      overlay.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        for m in re.finditer(r"\.overlay\s*(?:\([^)]*\)\s*)?\{", code):
+            prof = 0
+            i = m.end() - 1
+            for j in range(i, min(len(code), i + 1600)):
+                if code[j] == "{":
+                    prof += 1
+                elif code[j] == "}":
+                    prof -= 1
+                    if prof == 0:
+                        corps = code[i:j]
+                        # a state-driven reveal, not a static decoration
+                        if re.search(r"\bif\s+(?:show|expand|is)\w*\b", corps) and \
+                           len(corps) > 120:
+                            ligne = code[:m.start()].count("\n") + 1
+                            problems.append(
+                                f"{filename}:{ligne}: an .overlay that appears on "
+                                f"state — an overlay reserves no height, so what "
+                                f"it reveals lands across the content below; put "
+                                f"it in the layout")
+                        break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

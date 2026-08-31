@@ -624,24 +624,27 @@ struct ProductDetailSheet: View {
     let verdict: ProductVerdict
     @Environment(AppState.self) private var etat
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.navigate) private var navigate
 
     @State private var showFullList = false
 
     private var profile: ChildProfile { etat.activeProfile }
 
+    /// The allergens that are a problem, and the ones that are not.
+    private var bloquants: [String] {
+        profile.allergens.filter { a in
+            verdict.allergensFound.contains { $0.caseInsensitiveCompare(a) == .orderedSame }
+        }
+    }
+    private var sains: [String] { profile.allergens.filter { !bloquants.contains($0) } }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 head
-                ForEach(profile.allergens, id: \.self) { allergen in
-                    AllergenCard(name: etat.allergenNames([allergen]).first ?? allergen,
-                                 state: state(for: allergen))
-                        .padding(.horizontal, Layout.gutter)
-                        .padding(.top, 11)
-                }
+                reason
+                clearLine
                 ingredientCard
-                    .padding(.horizontal, Layout.gutter)
-                    .padding(.top, 11)
                 alternatives
                 attribution
             }
@@ -653,7 +656,7 @@ struct ProductDetailSheet: View {
 
     private var head: some View {
         HStack(alignment: .top, spacing: 13) {
-            ProductThumb()
+            PackageThumb()
             VStack(alignment: .leading, spacing: 3) {
                 Text(product.name ?? String(localized: "Unnamed product"))
                     .font(.system(size: 17, weight: .bold))
@@ -677,70 +680,149 @@ struct ProductDetailSheet: View {
         .padding(.top, 20)
     }
 
-    /// Contains, traces, or clear — derived from the ingredient list, never
-    /// from the database's own allergen tags.
-    private func state(for allergen: String) -> AllergenState {
-        if verdict.allergensFound.contains(where: {
-            $0.caseInsensitiveCompare(allergen) == .orderedSame
-        }) { return .contains }
-        /* No traces state yet.
-         *
-         * "May contain" lives in the database's `traces_tags`, which the
-         * server does not relay and `GroceryProduct` does not carry. Rather
-         * than guess, this reports what the engine actually measured: the
-         * allergen is in the ingredient list, or it is not.
-         *
-         * Adding traces means relaying the field and re-deriving it the same
-         * way — a separate change, and one worth making. */
-        return .clear
-    }
+    /// ONE CARD FOR THE REASON.
+    ///
+    /// The old sheet stacked one card per allergen, so three identical green
+    /// "Clear" boxes filled half the screen and said the same thing three
+    /// times — giving the things that are FINE the same weight as the one
+    /// thing that is not.
+    ///
+    /// Proportion carries the verdict now: what blocks takes space, what is
+    /// fine takes a line.
+    @ViewBuilder
+    private var reason: some View {
+        if !bloquants.isEmpty {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("The reason")
+                    .font(.system(size: 8.5, weight: .bold, design: .monospaced))
+                    .kerning(1.6)
+                    .foregroundStyle(Tone.no)
 
-    private var ingredientCard: some View {
-        Button { showFullList.toggle() } label: {
-            HStack(spacing: 11) {
-                Image(systemName: "list.bullet")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 27, height: 27)
-                    .background(Tone.text.opacity(0.7),
-                                in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Full ingredient list")
-                        .font(.system(size: 12.5, weight: .semibold))
-                        .foregroundStyle(Tone.text)
-                    Text(String(format: String(localized: "%lld read, %lld recognised"),
-                                readCount, readCount - verdict.unknownIngredients.count))
-                        .font(.system(size: 10.5))
-                        .foregroundStyle(Tone.text2)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: showFullList ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Tone.text3)
-            }
-            .padding(13)
-            .background(Tone.text.opacity(0.035),
-                        in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
-                    .strokeBorder(Tone.hairline, lineWidth: 1)
-            }
-        }
-        .buttonStyle(.plain)
-        .overlay(alignment: .bottom) {
-            if showFullList, let texte = product.ingredientsText {
-                Text(texte)
-                    .font(.system(size: 11))
+                Text(String(format: String(localized: "Contains %@"),
+                            etat.allergenNames(bloquants).joined(separator: ", ")))
+                    .font(.system(size: 16, weight: .bold))
+                    .kerning(-0.3)
+                    .foregroundStyle(Tone.text)
+
+                Text("Read from the ingredient list, not from a database tag.")
+                    .font(.system(size: 11.5))
                     .foregroundStyle(Tone.text2)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(13)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(15)
+            .background(
+                LinearGradient(colors: [Tone.no.opacity(0.09), Tone.no.opacity(0.04)],
+                               startPoint: .topLeading, endPoint: .bottomTrailing),
+                in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .strokeBorder(Tone.no.opacity(0.18), lineWidth: 1)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 16)
+        }
+    }
+
+    /// Everything that is fine, on one line.
+    @ViewBuilder
+    private var clearLine: some View {
+        if !sains.isEmpty {
+            HStack(spacing: 10) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 20, height: 20)
+                    .background(Tone.yes, in: Circle())
+
+                Text(String(format: String(localized: "%@ — none present, no trace warning."),
+                            etat.allergenNames(sains).joined(separator: ", ")))
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Tone.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 11)
+            .background(Tone.yes.opacity(0.06),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(Tone.yes.opacity(0.14), lineWidth: 1)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 11)
+        }
+    }
+
+    /// The full list, with the offending word marked.
+    ///
+    /// THE EXPANSION PUSHES. It used to be an `.overlay`, which draws on top
+    /// without reserving height — so the text landed across the content below
+    /// it. A VStack was the whole fix.
+    private var ingredientCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(.smooth(duration: 0.22)) { showFullList.toggle() }
+            } label: {
+                HStack(spacing: 11) {
+                    Text("Full ingredient list")
+                        .font(.system(size: 11.5, weight: .semibold))
+                        .foregroundStyle(Tone.text)
+                    Spacer(minLength: 0)
+                    Text(String(format: String(localized: "%lld read · %lld recognised"),
+                                readCount, max(0, readCount - verdict.unknownIngredients.count)))
+                        .font(.system(size: 9.5))
+                        .foregroundStyle(Tone.text3)
+                    Image(systemName: showFullList ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Tone.text3)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 11)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .background(Tone.text.opacity(0.025))
+
+            if showFullList, let texte = product.ingredientsText {
+                marked(texte)
+                    .font(.system(size: 10))
+                    .foregroundStyle(Tone.text2)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Tone.text.opacity(0.03),
-                                in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-                    .offset(y: 0)
-                    .alignmentGuide(.bottom) { $0[.top] - 9 }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 12)
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Tone.hairline, lineWidth: 1)
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 11)
+    }
+
+    /// The word that produced the verdict, highlighted in the list.
+    ///
+    /// A parent should be able to check the app rather than take its word.
+    private func marked(_ texte: String) -> Text {
+        let cibles = etat.allergenNames(bloquants).map { $0.lowercased() }
+        var out = Text("")
+        var reste = Substring(texte)
+
+        while let plage = reste.range(of: cibles.first(where: {
+            reste.lowercased().contains($0)
+        }) ?? "\u{0}", options: .caseInsensitive) {
+            out = out + Text(reste[..<plage.lowerBound])
+            out = out + Text(reste[plage])
+                .foregroundColor(Tone.no)
+                .fontWeight(.semibold)
+            reste = reste[plage.upperBound...]
+        }
+        return out + Text(reste)
     }
 
     private var readCount: Int {
@@ -751,10 +833,6 @@ struct ProductDetailSheet: View {
     }
 
     /// A recipe, not another product.
-    ///
-    /// Competitors offer a different bar. This app can offer something the
-    /// parent can actually make tonight, already adapted to this child —
-    /// which nobody else is in a position to do.
     @ViewBuilder
     private var alternatives: some View {
         if verdict.status == .avoid {
@@ -762,11 +840,19 @@ struct ProductDetailSheet: View {
                 etat.resultFor(r).map { (recipe: r, result: $0) }
             }
             if !pool.isEmpty {
-                Text("She can have these tonight").eyebrow()
+                Text(String(format: String(localized: "%@ can have these tonight"),
+                            profile.firstName))
+                    .eyebrow()
                     .padding(.horizontal, Layout.gutter)
                     .padding(.top, 24)
                 ForEach(pool, id: \.recipe.id) { pair in
-                    RecipeRow(recipe: pair.recipe, result: pair.result)
+                    Button {
+                        dismiss()
+                        navigate(.recipe(pair.recipe.id))
+                    } label: {
+                        RecipeRow(recipe: pair.recipe, result: pair.result)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -782,113 +868,42 @@ struct ProductDetailSheet: View {
     }
 }
 
-/// Contains, traces, or clear.
-enum AllergenState {
-    case contains
-    case traces
-    case clear
-}
 
-private struct AllergenCard: View {
-    let name: String
-    let state: AllergenState
-
-    var body: some View {
-        HStack(spacing: 11) {
-            Image(systemName: symbol)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 27, height: 27)
-                .background(tint, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(name.capitalized)
-                    .font(.system(size: 12.5, weight: .semibold))
-                    .foregroundStyle(Tone.text)
-                Text(detail)
-                    .font(.system(size: 10.5))
-                    .foregroundStyle(Tone.text2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer(minLength: 8)
-
-            Text(badge)
-                .font(.system(size: 9.5, weight: .bold))
-                .foregroundStyle(tint)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(tint.opacity(0.12), in: Capsule())
-        }
-        .padding(13)
-        .background(Tone.text.opacity(0.035),
-                    in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .strokeBorder(Tone.hairline, lineWidth: 1)
-        }
-    }
-
-    private var symbol: String {
-        switch state {
-        case .contains: return "exclamationmark.triangle.fill"
-        case .traces: return "exclamationmark.circle.fill"
-        case .clear: return "checkmark"
-        }
-    }
-
-    private var tint: Color {
-        switch state {
-        case .contains: return Tone.no
-        case .traces: return Tone.swap
-        case .clear: return Tone.yes
-        }
-    }
-
-    private var badge: LocalizedStringKey {
-        switch state {
-        case .contains: return "Contains"
-        case .traces: return "Traces"
-        case .clear: return "Clear"
-        }
-    }
-
-    private var detail: LocalizedStringKey {
-        switch state {
-        case .contains: return "Listed in the ingredients."
-        case .traces: return "“May contain” — shared equipment."
-        case .clear: return "Not present, and no trace warning."
-        }
-    }
-}
-
-/// The package, when the database has a photo of it.
+/// A package, drawn.
 ///
-/// A placeholder rather than a blank when it does not — recognising the box
-/// you are holding is half of trusting the verdict.
-private struct ProductThumb: View {
-    /* No image. `GroceryProduct` carries a code, a name, a brand and the
-     * ingredient text — nothing else. The database has photos, but the app
-     * does not relay them, and inventing a `product.image` was me writing
-     * against a model I had not read. A shape that says "package" is honest;
-     * a broken image view is not. */
+/// `GroceryProduct` carries a code, a name, a brand and the ingredient text —
+/// no image. The database HAS photos; the app does not relay them yet. A grey
+/// icon in a square says "something is missing"; a box with a barcode says
+/// "this is a package", which is true and enough.
+private struct PackageThumb: View {
     var body: some View {
-        placeholder
-        .frame(width: 64, height: 78)
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        ZStack {
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
+                .fill(LinearGradient(colors: [Tone.cardTop, Tone.cardBottom],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+
+            VStack(spacing: 7) {
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(Tone.text.opacity(0.1))
+                    .frame(height: 20)
+
+                /* Bars, not an icon. It is what the camera just read. */
+                HStack(spacing: 1.5) {
+                    ForEach(0..<11, id: \.self) { i in
+                        Rectangle()
+                            .fill(Tone.text.opacity(i % 3 == 0 ? 0.4 : 0.24))
+                            .frame(width: i % 4 == 0 ? 2 : 1.2)
+                    }
+                }
+                .frame(height: 13)
+            }
+            .padding(.horizontal, 9)
+        }
+        .frame(width: 58, height: 72)
         .overlay {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .strokeBorder(Tone.hairline, lineWidth: 1)
         }
-    }
-
-    private var placeholder: some View {
-        LinearGradient(colors: [Tone.cardTop, Tone.cardBottom],
-                       startPoint: .topLeading, endPoint: .bottomTrailing)
-            .overlay {
-                Image(systemName: "shippingbox")
-                    .font(.system(size: 19))
-                    .foregroundStyle(Tone.text3)
-            }
     }
 }
 

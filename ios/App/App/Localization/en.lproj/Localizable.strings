@@ -359,3 +359,13 @@
 "She can have these tonight" = "She can have these tonight";
 "Unnamed product" = "Unnamed product";
 "From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags." = "From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.";
+"For %@" = "For %@";
+"%lld items" = "%lld items";
+"%lld steps" = "%lld steps";
+"The reason" = "The reason";
+"Contains %@" = "Contains %@";
+"Read from the ingredient list, not from a database tag." = "Read from the ingredient list, not from a database tag.";
+"%@ — none present, no trace warning." = "%@ — none present, no trace warning.";
+"%lld read · %lld recognised" = "%lld read · %lld recognised";
+"%@ can have these tonight" = "%@ can have these tonight";
+"Under 20 minutes" = "Under 20 minutes";

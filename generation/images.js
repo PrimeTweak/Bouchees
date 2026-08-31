@@ -40,11 +40,27 @@ const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
  * "Worn wooden table" and "one corner of the table visible" are what pulled
  * the camera back far enough to include a room. The surface is still there —
  * it is simply not the subject, and naming it made it one. */
+/* WHERE IT SITS, AND WHAT IS BEHIND IT.
+ *
+ * The kitchen has to be believable and out of focus at the same time. Named
+ * without a distance it became the subject; named WITH one it is depth.
+ *
+ * Every entry is a surface plus what falls away behind it, so the background
+ * reads as a real kitchen rather than a wall or a ledge. */
+const SURFACES = [
+  "on a honed marble counter, warm wood cabinetry blurred behind",
+  "on a pale oak worktop, a softly lit kitchen falling away behind",
+  "on a matte ceramic plate on dark stone, warm light and soft shapes behind",
+  "on a light concrete counter, the warm blur of a kitchen behind"
+];
+
 const STYLE = [
   "candid home photo, handheld",
-  "soft window light from one side",
-  "shallow depth of field, 85mm macro",
-  "background thrown out of focus"
+  /* Directional and warm. The flat grey window that came back was light with
+   * no direction and no colour — technically correct, and it looked like a
+   * ledge rather than a kitchen. */
+  "warm directional light from one side, soft shadows",
+  "shallow depth of field, 85mm macro"
 ].join(", ");
 
 /* Two of these are drawn per recipe. More than two and the picture starts to
@@ -83,10 +99,10 @@ const IMPERFECTIONS = [
  * looks like when it worked. A room does neither. Every framing now states
  * the distance, and every one is close. */
 const CADRAGES = [
-  "close-up filling the frame, camera about 30 cm away, background falling out of focus",
-  "three-quarter angle from 40 degrees, very close, only the dish and a hand's width of surface",
-  "tight overhead crop, the dish filling most of the frame, edges cut off",
-  "low eye-level, close enough to see the crumb, background reduced to soft tone"
+  "close-up filling the frame, camera about 30 cm away",
+  "three-quarter angle from 40 degrees, very close",
+  "tight overhead crop, the dish filling most of the frame",
+  "low eye-level, close enough to see the crumb"
 ];
 
 const MOMENTS = [
@@ -103,11 +119,18 @@ const NEGATIF = [
   /* The catalogue tells: these are what made every render look bought
    * rather than baked. */
   "not a cookbook photo", "no food styling", "no perfect symmetry",
-  /* What produced a beige room instead of a muffin: the model showed
-   * everything the prompt named, and it had been given furniture. */
-  "no room in the background", "no wall", "no window frame", "no furniture",
+  /* THE FRAMING STOPS THE ROOM, NOT THESE.
+   *
+   * Naming furniture pulled the camera back only because nothing said how
+   * close to stand. Now every framing states a distance, so the surface can
+   * come back — and it has to, because with the room forbidden AND nothing
+   * named, the model invented the one background left to it: a grey
+   * windowsill.
+   *
+   * What stays banned is the WIDE SHOT, which is the actual fault. */
   "not shot from across a room", "no wide shot", "no empty space around the dish",
-  "no blown-out highlights",
+  "no blown-out highlights", "no bare wall behind the dish",
+  "no cluttered background", "no visible room corners",
   "no wiped plate rim", "no garnish placed for the photo",
   "no props arranged around the dish", "no even studio-flat lighting",
   "blurry", "grainy", "noisy", "distorted", "deformed", "low quality",
@@ -264,6 +287,8 @@ function promptPour(recette, donnees) {
 
   const g = graine(recette.id);
   const cadrage = CADRAGES[g % CADRAGES.length];
+  /* Same seed as the framing, so one recipe always gets the same kitchen. */
+  const surface = SURFACES[g % SURFACES.length];
   const moment = MOMENTS[Math.floor(g / CADRAGES.length) % MOMENTS.length];
   const plat = PLATS_EN[recette.category] || "home-cooked dish";
 
@@ -294,6 +319,7 @@ function promptPour(recette, donnees) {
       presentationPour(recette),
       "made with " + visibles.slice(0, 4).join(", "),
       cadrage,
+      surface,
       moment,
       /* Named imperfections, before the style block. The subject still
        * leads; these say the picture was taken, not assembled. */
