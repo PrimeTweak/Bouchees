@@ -1159,6 +1159,43 @@ def check():
                                 f"— but @State var {nom} in this file is "
                                 f"{attendu}. The binding cannot convert")
 
+    # 7ag. String(localized:) fed something declared LocalizedStringKey.
+    #      Text() takes a LocalizedStringKey; String(localized:) takes a
+    #      String.LocalizationValue. They look interchangeable, they are not,
+    #      and the compiler message names the conversion rather than the array
+    #      that caused it.
+    #
+    #      Matched by name: any array or property declared
+    #      `[LocalizedStringKey]` in the project, then any use of it inside a
+    #      String(localized:) anywhere.
+    #      QUALIFIED NAMES ONLY.
+    #
+    #      A first pass matched bare field names and fired on two structs that
+    #      happen to share `title` and `detail` — one declares them
+    #      LocalizedStringKey, the other String.LocalizationValue, and neither
+    #      was misused. Comparing bare names across a project is guessing.
+    #
+    #      So: only `Type.member` uses, where the type is unambiguous.
+    cles = set()
+    for path_, (_, code) in sources.items():
+        for m in re.finditer(r"(?:^|\n)\s*(?:public\s+)?(?:static\s+)"
+                             r"let\s+(\w+)\s*:\s*\[?LocalizedStringKey\]?", code):
+            cles.add(m.group(1))
+
+    if cles:
+        for path_, (_, code) in sources.items():
+            filename = os.path.basename(path_)
+            for m in re.finditer(r"String\(localized:\s*([^)]*)\)", code):
+                arg = m.group(1)
+                for nom in cles:
+                    if re.search(r"\b[A-Z]\w*\." + re.escape(nom) + r"\b", arg):
+                        ligne = code[:m.start()].count("\n") + 1
+                        problems.append(f"{filename}:{ligne}: String(localized:) is given "
+                                        f"{nom}, declared LocalizedStringKey — it wants a "
+                                        f"String.LocalizationValue. Text() takes the key; "
+                                        f"String(localized:) does not")
+                        break
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
