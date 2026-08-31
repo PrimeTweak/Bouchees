@@ -65,5 +65,73 @@
         "la vision hésite sur : quinoa or breadcrumb as binder, carrot or sweet potato (orange chunks)"
       ]
     }
+  },
+  "apple-cinnamon-oatmeal": {
+    "fichier": "images/apple-cinnamon-oatmeal-2fc4c8865097.png",
+    "empreinte": "2fc4c8865097",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T03:02:07.662Z",
+      "detectes": [
+        "oat",
+        "apple"
+      ],
+      "reconnus": 2,
+      "attendus": 4,
+      "avertissements": [
+        "la vision hésite sur : liquid base could be water or milk, fruit pieces could be apple or pear"
+      ]
+    }
+  },
+  "date-energy-bites": {
+    "fichier": "images/date-energy-bites-ac096890077d.png",
+    "empreinte": "ac096890077d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T04:10:13.860Z",
+      "detectes": [
+        "oat",
+        "chia seed",
+        "raisin",
+        "date",
+        "peanut butter",
+        "flaxseed"
+      ],
+      "reconnus": 4,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : raisin or dried cranberry, peanut butter or almond butter, flaxseed or sesame seed"
+      ]
+    }
+  },
+  "silky-hummus": {
+    "fichier": "images/silky-hummus-ee2d60d8b5d1.png",
+    "empreinte": "ee2d60d8b5d1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T07:38:24.842Z",
+      "detectes": [
+        "chickpea",
+        "olive oil",
+        "hummus"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : possible tahini blended into hummus but not distinctly visible, possible lemon juice blended in but not visible"
+      ]
+    }
   }
 }
