@@ -97,18 +97,16 @@ struct FloatingTabBar: View {
                  * The bar owns the whole interaction now: a tap selects the
                  * item under the finger, a hold raises the bubble, and a drag
                  * moves it. The items are drawings. */
+                /* ONE GESTURE, NOT TWO.
+                 *
+                 * A standalone DragGesture(minimumDistance: 0) recognises on
+                 * CONTACT. Placed first it won every time, and the 0.28s long
+                 * press never got to fire — which is why the bubble never
+                 * appeared and the slide never started.
+                 *
+                 * The sequence handles both: a quick release selects, a hold
+                 * raises the bubble, a drag moves it. */
                 .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onEnded { valeur in
-                            /* A tap is a drag that went nowhere. */
-                            guard !held else { return }
-                            let cible = index(at: valeur.location.x, largeur: largeur)
-                            withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
-                                selection = cible
-                            }
-                        }
-                )
-                .simultaneousGesture(
                     LongPressGesture(minimumDuration: 0.28)
                         .onEnded { _ in
                             withAnimation(.smooth(duration: 0.2, extraBounce: 0.3)) {
@@ -126,7 +124,15 @@ struct FloatingTabBar: View {
                              * physical track rather than a set of buttons. */
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
-                        .onEnded { _ in
+                        .onEnded { valeur in
+                            /* A tap that never became a hold still selects:
+                             * the sequence ends before `held` was ever set. */
+                            if case .second(_, let drag?) = valeur, !held {
+                                let cible = index(at: drag.location.x, largeur: largeur)
+                                withAnimation(.smooth(duration: 0.32, extraBounce: 0.12)) {
+                                    selection = cible
+                                }
+                            }
                             withAnimation(.smooth(duration: 0.26)) { held = false }
                             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                         }
