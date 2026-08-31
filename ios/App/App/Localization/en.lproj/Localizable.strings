@@ -372,3 +372,9 @@
 "Point at a barcode: Bouchées reads the ingredient list and runs it through the same engine as your recipes. Nothing is recorded or sent." = "Point at a barcode: Bouchées reads the ingredient list and runs it through the same engine as your recipes. Nothing is recorded or sent.";
 "%lld as is · %lld with a swap" = "%lld as is · %lld with a swap";
 "Original recipe" = "Original recipe";
+"Last week" = "Last week";
+"Next week" = "Next week";
+"today" = "today";
+"Week of %@" = "Week of %@";
+"%lld recipes, already adapted" = "%lld recipes, already adapted";
+"You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription." = "You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription.";
