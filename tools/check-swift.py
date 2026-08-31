@@ -1118,6 +1118,32 @@ def check():
                                     f"— wrap it in `if #available(iOS {requis}, *)` "
                                     f"or mark the property @available")
 
+    # 7af. a @Binding whose type contradicts the @State it is bound to.
+    #      The root holds `@State private var path = NavigationPath()` and a
+    #      modifier declared `@Binding var path: [Route]`. Two build failures
+    #      on the same pair, because nothing compared them.
+    #
+    #      Matched by NAME within a file: a @State of a known type, and a
+    #      @Binding of the same name declared as something else.
+    TYPES_CONNUS = {
+        "NavigationPath()": "NavigationPath",
+        "[]": None,          # ambiguous, skip
+    }
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        etats = {}
+        for m in re.finditer(r"@State\s+(?:private\s+)?var\s+(\w+)\s*=\s*([A-Z]\w*)\(\)",
+                             code):
+            etats[m.group(1)] = m.group(2)
+        for m in re.finditer(r"@Binding\s+var\s+(\w+)\s*:\s*([^\n=]+)", code):
+            nom, declare = m.group(1), m.group(2).strip()
+            attendu = etats.get(nom)
+            if attendu and attendu not in declare:
+                ligne = code[:m.start()].count("\n") + 1
+                problems.append(f"{filename}:{ligne}: @Binding var {nom}: {declare} "
+                                f"— but @State var {nom} in this file is "
+                                f"{attendu}. The binding cannot convert")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
