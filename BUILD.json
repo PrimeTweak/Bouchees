@@ -1,11 +1,12 @@
 {
-  "build": 98,
+  "build": 99,
   "date": "2026-08-29",
   "carries": [
-    "UND_ERR_HEADERS_TIMEOUT \u2014 undici gives a server five minutes to send its FIRST header",
-    "that limit is internal: an AbortSignal never reached it, mine was set to fifteen",
-    "Draw Things sends nothing until the render finishes, and 1408x1408 runs past five minutes",
-    "node:http has no such limit and is built in",
-    "checker rule: fetch() on the local renderer"
+    "AllergenGlyphs matched French ids against English ones \u2014 1 of 11",
+    "a standalone DragGesture won on contact, so the long press never fired",
+    "the launch mark fills 55% of its box: size 64 drew 35pt",
+    "only the authorised camera branch filled the screen",
+    "the onboarding count showed the same number twice",
+    "the cycle now prints three numbers that must agree before you push"
   ]
 }
