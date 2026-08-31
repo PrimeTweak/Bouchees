@@ -376,3 +376,6 @@
 "Week of %@" = "Semaine du %@";
 "%lld recipes, already adapted" = "%lld recettes, déjà adaptées";
 "You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription." = "Vous voyez les noms et le verdict. Les ingrédients, les étapes et l’épicerie arrivent avec l’abonnement.";
+"%lld recipes · %lld items" = "%lld recettes · %lld articles";
+"left to buy" = "à acheter";
+"%lld in the cart" = "%lld dans le panier";
