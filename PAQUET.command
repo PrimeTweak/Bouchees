@@ -85,24 +85,59 @@ echo "  Fichier americain : $(basename "$USDA_CSV")"
 
 # --------------------------------------------------- 3. Le fichier canadien
 #
-# Celle-la ne change pas d'adresse, alors on la prend nous-memes. Environ
-# 7 Go : compte une bonne demi-heure sur une connexion ordinaire. Le fichier
-# reste sur ton disque, donc la fois suivante il n'y a rien a retelecharger.
+# Celle-la ne change pas d'adresse, alors on la prend nous-memes.
+#
+# LA REPRISE COMPTE ICI. Sept gigaoctets sur une connexion residentielle, ca
+# se coupe. Sans -C - une coupure a 90 % renvoie a zero, et le fichier partiel
+# est GARDE en cas d'echec precisement pour que le prochain lancement reprenne
+# ou celui-ci s'est arrete.
 OFF_GZ="$TRAVAIL/openfoodfacts-products.jsonl.gz"
+OFF_URL="https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz"
+AGENT="${OFF_USER_AGENT:-Bouchees/1.0 (https://bouchees.onrender.com)}"
 
 if [ ! -f "$OFF_GZ" ]; then
-  echo "  Telechargement de la base Open Food Facts (~7 Go)."
-  echo "  Tu peux laisser tourner et revenir plus tard."
-  echo ""
-  curl -L --fail --progress-bar \
-    -H "User-Agent: ${OFF_USER_AGENT:-Bouchees/1.0 (https://bouchees.onrender.com)}" \
-    -o "$OFF_GZ.partiel" \
-    "https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz"
-  if [ $? -ne 0 ]; then
-    rm -f "$OFF_GZ.partiel"
+  # Place disponible, en Go. Il faut le telechargement, le CSV americain
+  # deja ouvert, et de quoi ecrire le paquet.
+  LIBRE=$(df -g "$TRAVAIL" 2>/dev/null | awk 'NR==2 {print $4}')
+  if [ -n "$LIBRE" ] && [ "$LIBRE" -lt 14 ]; then
+    echo "  ESPACE DISQUE INSUFFISANT"
     echo ""
-    echo "  LE TELECHARGEMENT A ECHOUE."
-    echo "  Relance : il reprend a zero, mais rien n'est casse."
+    echo "  Il reste $LIBRE Go. Il en faut environ 14 :"
+    echo "    7 a 10 Go  la base Open Food Facts"
+    echo "    2,9 Go     le CSV americain deja ouvert"
+    echo "    le reste   le paquet lui-meme"
+    echo ""
+    read -n 1 -p "  Appuie sur une touche pour fermer."
+    exit 1
+  fi
+
+  if [ -f "$OFF_GZ.partiel" ]; then
+    DEJA=$(du -h "$OFF_GZ.partiel" | cut -f1)
+    echo "  Reprise du telechargement precedent ($DEJA deja recus)."
+  else
+    echo "  Telechargement de la base Open Food Facts (7 a 10 Go)."
+  fi
+  echo "  Tu peux laisser tourner et revenir plus tard."
+  echo "  Si ca coupe, relance : ca reprendra ou c'etait rendu."
+  echo ""
+
+  curl -L --fail --progress-bar -C - -H "User-Agent: $AGENT" \
+       -o "$OFF_GZ.partiel" "$OFF_URL"
+  CODE=$?
+
+  # 33 : le serveur refuse la reprise. On repart proprement, une fois.
+  if [ $CODE -eq 33 ]; then
+    echo "  Reprise refusee par le serveur, on repart du debut."
+    rm -f "$OFF_GZ.partiel"
+    curl -L --fail --progress-bar -H "User-Agent: $AGENT" \
+         -o "$OFF_GZ.partiel" "$OFF_URL"
+    CODE=$?
+  fi
+
+  if [ $CODE -ne 0 ]; then
+    echo ""
+    echo "  LE TELECHARGEMENT S'EST ARRETE."
+    echo "  Ce qui est recu est garde. Relance ce fichier : ca reprendra."
     echo ""
     read -n 1 -p "  Appuie sur une touche pour fermer."
     exit 1
@@ -137,5 +172,8 @@ echo ""
 echo "  ENSUITE"
 echo "  Les fichiers sont dans  pack/  et ne vont PAS dans Git."
 echo "  Ils se deposent comme fichiers de Release sur GitHub."
+echo ""
+echo "  Tu peux effacer  pack/sources/  pour recuperer une dizaine de Go."
+echo "  Garde-le si tu comptes refabriquer le paquet bientot."
 echo ""
 read -n 1 -p "  Appuie sur une touche pour fermer."
