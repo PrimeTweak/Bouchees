@@ -1,10 +1,11 @@
 {
-  "build": 95,
+  "build": 97,
   "date": "2026-08-29",
   "carries": [
-    "fetch had no timeout \u2014 Node applied its own, shorter than a 1408 render",
-    "accept-encoding and keep-alive off: the repo already established they corrupt large bodies here",
-    "a dropped socket now retries once; a refusal still fails immediately",
-    "three seconds between images \u2014 Draw Things has one renderer"
+    "the splash condition was unreachable \u2014 recipes are bundled, never empty",
+    "fetch failed was never a timeout: measured, a timeout says aborted-due-to-timeout",
+    "the cause code was thrown away; three builds were spent guessing",
+    "photo cache was an unbounded dictionary \u2014 NSCache now, 80 MB ceiling",
+    "POST /api/rating had no rate limit"
   ]
 }

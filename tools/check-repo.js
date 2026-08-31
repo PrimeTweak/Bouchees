@@ -92,9 +92,64 @@ if (!missing.length && !thin.length) {
  * zip had not been applied — emptying the folder in the Finder leaves .github
  * and other hidden files behind, and nothing said so. One line here saves a
  * fifteen-minute build. */
+/* FORBIDDEN FETCH HEADERS.
+ *
+ * The fetch specification refuses to let a caller set Connection,
+ * Accept-Encoding, Host, and a dozen others — the runtime owns them. Node
+ * strips or rejects them and the behaviour varies by version, so setting one
+ * turns a working request into "fetch failed" with no explanation.
+ *
+ * Measured the hard way: three of them added at once broke a path that had
+ * just succeeded. */
+(function enTetesInterdits() {
+const INTERDITS = ["connection", "accept-encoding", "keep-alive", "host",
+                   "content-length", "transfer-encoding", "upgrade",
+                   "te", "trailer", "expect"];
+  const fautes = [];
+const fichiers = [];
+(function marcher(dir) {
+  fs.readdirSync(dir, { withFileTypes: true }).forEach(function (e) {
+    if (e.name === "node_modules" || e.name.startsWith(".")) return;
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) marcher(p);
+    else if (e.name.endsWith(".js")) fichiers.push(p);
+  });
+})(root);
+
+fichiers.forEach(function (f) {
+  const code = fs.readFileSync(f, "utf8");
+  if (code.indexOf("fetch(") === -1) return;
+
+  /* A SERVER SETS THESE LEGITIMATELY.
+   *
+   * server.js writes content-length on its RESPONSES — that is its job,
+   * and the restriction applies to what a client SENDS. probe-drawthings
+   * exists precisely to test these headers with raw http, which is the
+   * supported way to set them. */
+  if (/writeHead|createServer|setHeader/.test(code)) return;
+  if (f.indexOf("probe-") !== -1) return;
+  INTERDITS.forEach(function (h) {
+    const motif = new RegExp('["\']' + h + '["\']\\s*:', "i");
+    if (motif.test(code)) {
+      fautes.push(path.relative(root, f) + ' sets "' + h + '"');
+    }
+  });
+});
+
+  if (fautes.length) {
+    console.error("\nFORBIDDEN FETCH HEADER");
+    fautes.forEach(function (f) { console.error("  x " + f); });
+    console.error("");
+    console.error("The specification forbids these — the runtime owns them.");
+    console.error("Node strips or rejects them, and a working request");
+    console.error("becomes \"fetch failed\" with no explanation.\n");
+    process.exit(1);
+  }
+})();
+
 try {
   const b = JSON.parse(fs.readFileSync(path.join(root, "BUILD.json"), "utf8"));
-  console.log("Build " + b.build + " — " + b.date);
+console.log("Build " + b.build + " — " + b.date);
 } catch (e) {
   console.log("Build unknown — BUILD.json missing");
 }

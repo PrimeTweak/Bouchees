@@ -33,14 +33,27 @@ struct RootView: View {
     @State private var path = NavigationPath()
     @State private var sheet: AppSheet?
 
+    /// True until the launch animation has had time to play.
+    @State private var launchPlayed = false
+
+    private var showLaunch: Bool { !launchPlayed || etat.isLoading }
+
     var body: some View {
         Group {
             if let error = etat.fatalError {
                 FatalErrorScreen(message: error)
-            } else if etat.isLoading && etat.recipes.isEmpty {
-                /* The mark on the theme's canvas, rather than a spinner on
-                 * white. It removes the flash between launch and first frame,
-                 * and it is the first thing the app says about itself. */
+            } else if showLaunch {
+                /* THE CONDITION USED TO BE UNREACHABLE.
+                 *
+                 * It was `isLoading && recipes.isEmpty`. The recipes are
+                 * BUNDLED, decoded synchronously from local files, so they are
+                 * never empty — and the whole of start() takes a few
+                 * milliseconds. The view was built and never visibly rendered.
+                 *
+                 * A splash is not a progress indicator: it exists so the app
+                 * does not appear mid-thought. It is shown for its own
+                 * duration, and dismissed when the animation has played AND
+                 * loading is done, whichever is later. */
                 LaunchView()
             } else if etat.needsOnboarding {
                 OnboardingFlow()
@@ -49,6 +62,14 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: etat.needsOnboarding)
+        .animation(.easeInOut(duration: 0.32), value: showLaunch)
+        .task {
+            /* Long enough for the mark to rise and the bite to settle, short
+             * enough that nobody waits on it. Measured against the animation
+             * in Mark.swift, not guessed. */
+            try? await Task.sleep(for: .milliseconds(1100))
+            launchPlayed = true
+        }
     }
 
     /// THREE TABS, NOT FIVE.

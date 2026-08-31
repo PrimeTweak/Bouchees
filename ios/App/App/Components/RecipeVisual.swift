@@ -64,7 +64,20 @@ actor PhotoCache {
     static let partage = PhotoCache()
 
     private let fm = FileManager.default
-    private var enMemoire: [String: UIImage] = [:]
+    /* NSCache, NOT A DICTIONARY.
+     *
+     * A dictionary grows until the app dies. Each photo is 1408x1408 — about
+     * 8 MB decoded — so twenty opened recipes is 160 MB of RAM that is never
+     * given back, on a device that will terminate the app before it complains.
+     *
+     * NSCache hands memory back under pressure, which is the whole reason it
+     * exists. The limit is a ceiling, not a target. */
+    private let enMemoire: NSCache<NSString, UIImage> = {
+        let c = NSCache<NSString, UIImage>()
+        c.countLimit = 24
+        c.totalCostLimit = 80 * 1024 * 1024
+        return c
+    }()
 
     private var folder: URL {
         let d = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -83,11 +96,12 @@ actor PhotoCache {
     }
 
     func image(_ file: String) async -> UIImage? {
-        if let deja = enMemoire[file] { return deja }
+        if let deja = enMemoire.object(forKey: file as NSString) { return deja }
 
         let local = cheminLocal(file)
         if let d = try? Data(contentsOf: local), let img = UIImage(data: d) {
-            enMemoire[file] = img
+            enMemoire.setObject(img, forKey: file as NSString,
+                                cost: d.count)
             return img
         }
 
@@ -99,7 +113,7 @@ actor PhotoCache {
               let img = UIImage(data: data) else { return nil }
 
         try? data.write(to: local, options: .atomic)
-        enMemoire[file] = img
+        enMemoire.setObject(img, forKey: file as NSString, cost: data.count)
         return img
     }
 
@@ -111,7 +125,11 @@ actor PhotoCache {
         for f in items where !gardes.contains(f.lastPathComponent) {
             try? fm.removeItem(at: f)
         }
-        enMemoire = enMemoire.filter { fichiers.contains($0.key) }
+        /* NSCache has no enumeration — by design, since entries can vanish
+         * under memory pressure at any moment. Emptying it is correct here:
+         * this runs when batches rotate, and whatever is still needed is
+         * one disk read away. */
+        enMemoire.removeAllObjects()
     }
 }
 

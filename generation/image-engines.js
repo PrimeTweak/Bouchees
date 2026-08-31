@@ -130,25 +130,54 @@ const drawthings = {
      *      renderer. Firing the next request the instant the last byte
      *      arrives gives it no time to settle.
      *
-     *   3. THE BODY IS LARGE. tools/probe-drawthings.js in this repo already
-     *      established that Node's fetch adds accept-encoding and keep-alive
-     *      that curl does not, and that either can corrupt a multi-megabyte
-     *      body on a minimal HTTP implementation. Both are turned off.
+     * NOT the headers. I set Accept-Encoding and Connection here and BROKE a
+     * path that worked: the first image had succeeded before, and failed
+     * after. Both are FORBIDDEN header names in the fetch specification —
+     * Node strips or rejects them, and the behaviour varies by version.
+     *
+     * Three changes at once on a working path, which is the one thing I keep
+     * telling François not to do. The timeout stays because waiting longer
+     * cannot break anything; the headers are gone.
      */
     const minuteur = AbortSignal.timeout(
       Number(process.env.DRAWTHINGS_TIMEOUT_MS || 15 * 60 * 1000));
 
-    const rep = await fetch(base + "/sdapi/v1/txt2img", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        /* Ask for the body uncompressed, and close the socket after. */
-        "Accept-Encoding": "identity",
-        "Connection": "close"
-      },
-      body: JSON.stringify(corps),
-      signal: minuteur
-    });
+    let rep;
+    try {
+      rep = await fetch(base + "/sdapi/v1/txt2img", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corps),
+        signal: minuteur
+      });
+    } catch (e) {
+      /* SAY WHY, NOT JUST THAT.
+       *
+       * "fetch failed" is all Node reports at the top level; the reason lives
+       * in e.cause.code and was being thrown away. Three builds were spent
+       * guessing between a timeout, a refused connection and a dropped socket
+       * — and they are three different problems:
+       *
+       *   ECONNREFUSED  nothing is listening. Draw Things closed its server,
+       *                 or the Mac slept.
+       *   ECONNRESET    it was listening and dropped mid-transfer.
+       *   TimeoutError  it accepted and never answered.
+       *
+       * Measured: a timeout reports "aborted due to timeout", NOT "fetch
+       * failed". So every "fetch failed" seen so far was the connection, not
+       * the delay — and the timeout I added could never have fixed it. */
+      const cause = (e.cause && (e.cause.code || e.cause.message)) || e.name;
+      const explication = {
+        ECONNREFUSED: "Draw Things n'ecoute plus — l'API Server s'est ferme, " +
+                      "ou le Mac s'est endormi pendant le rendu",
+        ECONNRESET: "Draw Things a coupe la connexion en cours de transfert",
+        ECONNABORTED: "la connexion a ete interrompue",
+        EHOSTUNREACH: "l'adresse ne repond pas",
+        TimeoutError: "Draw Things a accepte la requete et n'a jamais repondu"
+      }[cause] || cause;
+      throw new Error("connexion a Draw Things : " + explication +
+                      "  [" + cause + "]");
+    }
     const d = await rep.json();
     if (!rep.ok || !d.images || !d.images.length) {
       const detail = d.errors || d.detail || d.error || rep.status;

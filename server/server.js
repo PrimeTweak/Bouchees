@@ -169,6 +169,14 @@ const routes = {
    * personne de voter cent fois. */
   "POST /api/rating": async function (req, res, ctx) {
     if (!ctx.account) return json(res, 401, { error: "connexion requise pour noter" });
+    /* One rating per second per account.
+     *
+     * Authentication stops a stranger writing, not a signed-in client looping.
+     * A rating is a human gesture; anything faster than once a second is a bug
+     * or a script, and neither should reach the store. */
+    if (!limiteDebit(ctx.account.email)) {
+      return json(res, 429, { error: "trop de requetes" });
+    }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
     catch (e) { return json(res, 400, { error: "JSON invalide" }); }
@@ -460,6 +468,28 @@ const routes = {
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                 ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8",
                 ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
+
+/* A minute of recent calls per key, nothing persisted.
+ *
+ * Deliberately in memory: a restart forgetting who wrote a second ago is the
+ * correct behaviour, and a rate limiter that needs a database is a second
+ * thing that can fail. */
+const _debits = new Map();
+function limiteDebit(cle, parMinute) {
+  const max = parMinute || 60;
+  const maintenant = Date.now();
+  const vus = (_debits.get(cle) || []).filter(function (t) {
+    return maintenant - t < 60000;
+  });
+  if (vus.length >= max) { _debits.set(cle, vus); return false; }
+  vus.push(maintenant);
+  _debits.set(cle, vus);
+  /* Bounded: without this the map grows one entry per account, forever. */
+  if (_debits.size > 5000) {
+    for (const k of _debits.keys()) { _debits.delete(k); if (_debits.size <= 4000) break; }
+  }
+  return true;
+}
 
 const ALLOWED_IMAGE_EXT = [".png", ".webp", ".jpg", ".jpeg"];
 
