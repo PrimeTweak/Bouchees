@@ -32,9 +32,16 @@ struct RecipesScreen: View {
                  * floats over it. Everything after it is ordinary content
                  * and must clear the status bar on its own. */
                 hero
+                /* THE SHELVES SIT ABOVE THE WEEK.
+                 *
+                 * They used to fall between the subscription block and the
+                 * week rail, which put them under the "This week" heading —
+                 * inside a section they have nothing to do with. Saved and
+                 * top rated hold recipes from ANY week, so they belong before
+                 * the week starts, not in the middle of it. */
+                shelves
                 weekHeader
                 upsell
-                savedEntry
                 weekStrip
                 list
                 disclaimer
@@ -220,61 +227,69 @@ struct RecipesScreen: View {
     /// shortlist the screen behind it could not be reached at all. Top rated
     /// had no caller anywhere.
     ///
-    /// Both rows are permanent now and say what they hold when they hold
-    /// nothing, which is also where a parent learns the bookmark exists.
-    private var savedEntry: some View {
+    /// Both are permanent now and say what they hold when they hold nothing,
+    /// which is also where a parent learns the bookmark exists.
+    ///
+    /// Side by side rather than stacked full width: these are doors, not
+    /// content, and a door should not take as much room as the week it sits
+    /// above. Two tiles cost one row of height instead of two.
+    private var shelves: some View {
         let n = etat.saved.recipes.count
         let votes = etat.topRated.count
-        return VStack(spacing: 9) {
-            shortcut(icon: "bookmark.fill",
-                     title: "Saved recipes",
-                     detail: n > 0
-                        ? String(format: String(localized: "%lld saved · your own shortlist"), n)
-                        : String(localized: "Nothing saved yet · tap the bookmark on a recipe"),
-                     route: .saved)
+        return HStack(spacing: 8) {
+            shelf(icon: "bookmark.fill",
+                  title: "Saved",
+                  detail: n > 0
+                     ? String(format: String(localized: "%lld kept"), n)
+                     : String(localized: "Nothing yet"),
+                  route: .saved)
 
-            shortcut(icon: "star.fill",
-                     title: "Top rated",
-                     detail: votes > 0
-                        ? String(format: String(localized: "%lld rated by other parents"), votes)
-                        : String(localized: "Waiting on enough votes to rank"),
-                     route: .topRated)
+            shelf(icon: "star.fill",
+                  title: "Top rated",
+                  detail: votes > 0
+                     ? String(format: String(localized: "%lld ranked"), votes)
+                     : String(localized: "Building up"),
+                  route: .topRated)
         }
         .padding(.horizontal, Layout.gutter)
         .padding(.top, 14)
     }
 
-    private func shortcut(icon: String,
-                          title: LocalizedStringKey,
-                          detail: String,
-                          route: Route) -> some View {
+    /// One tile.
+    ///
+    /// About 130pt of text width at half the screen, so both lines are held to
+    /// one line each and the subtitles are written at three words or fewer.
+    private func shelf(icon: String,
+                       title: LocalizedStringKey,
+                       detail: String,
+                       route: Route) -> some View {
         Button { navigate(route) } label: {
-            HStack(spacing: 11) {
+            HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.white)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 26, height: 26)
                     .background(Tone.brandGradient,
-                                in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                                in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
-                        .font(.system(size: 13.5, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(Tone.text)
+                        .lineLimit(1)
                     Text(detail)
-                        .font(.system(size: 10.5))
+                        .font(.system(size: 9.5))
                         .foregroundStyle(Tone.text2)
+                        .lineLimit(1)
                 }
-                Spacer(minLength: 8)
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Tone.text3)
+                Spacer(minLength: 0)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(Tone.text.opacity(0.04),
-                        in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        in: RoundedRectangle(cornerRadius: 13, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
                     .strokeBorder(Tone.hairline, lineWidth: 1)
             }
             .contentShape(.rect)

@@ -1,13 +1,14 @@
 {
-  "build": 110,
+  "build": 111,
   "date": "2026-08-31",
   "carries": [
-    "the origin warning has two forms: the words on the 430pt recipe photo, a 17pt amber mark everywhere else",
-    "the mark reuses the amber the swap count already carries one column over, so both read as one fact",
-    "the detail photo fades through black before it reaches canvas; the white title used to sit in cream",
-    "the three ingredient cards take a 4 per cent ink tint and a hairline, because they had no edge at all",
-    "the palette's own card colour is the same white as the system one, so the fix is the edge and not the colour",
-    "shopping aisles fold: the whole header is the button, at the full tap target, with the count still visible when shut",
-    "an untouched aisle shuts once everything in it is in the cart, and a tap reopens it"
+    "substitutionOptions returned chosen false for every option, so the sheet could never mark the one the engine took",
+    "the swap sheet reads taken out, put in, why, then all the choices, with the taken one checked",
+    "the ratio folds under the substitute instead of holding a titled block for three characters",
+    "every option in the table named an internal concept; the minimum age is spelled out instead of abbreviated",
+    "a swapped ingredient row carries a chevron, because the amber already means replaced and cannot also mean tappable",
+    "the saved and top rated shelves move above the This week heading, where they no longer sit inside a week they do not belong to",
+    "they become two half width tiles: doors, not content",
+    "the segmented control leaves Best, whose second half rendered the saved list a second time; the choice is made once, outside"
   ]
 }

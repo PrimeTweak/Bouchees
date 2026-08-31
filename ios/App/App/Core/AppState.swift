@@ -237,7 +237,14 @@ final class AppState {
         local.saveChecked(ids, week: currentWeek ?? "")
     }
 
-    func substitutionOptions(for ingredientName: String) -> [SubstitutionOption] {
+    /// Every option the table holds for an ingredient.
+    ///
+    /// `chosenName` is the substitute the engine actually took. It used to be
+    /// absent and every option came back with `chosen` false, so the sheet's
+    /// highlight never fired: the substitute appeared in the heading and then
+    /// again, unmarked, in a list of alternatives, with nothing tying the two.
+    func substitutionOptions(for ingredientName: String,
+                             chosen chosenName: String? = nil) -> [SubstitutionOption] {
         /* Read from the table the app already carries rather than crossing the
          * bridge: the data is local, small, and this is a display concern. */
         guard let table = substitutionTable else { return [] }
@@ -251,9 +258,15 @@ final class AppState {
             var detail = o.ratio ?? ""
             if let age = o.minAgeMonths, age > 0 {
                 detail += detail.isEmpty ? "" : " · "
-                detail += String(format: String(localized: "%lld m+"), age)
+                /* Spelled out. "6 m+" is an abbreviation nothing on screen
+                 * explains, in the one place a parent is checking whether a
+                 * swap is safe for the age of their child. */
+                detail += String(format: String(localized: "from %lld months"), age)
             }
-            return SubstitutionOption(name: nom, detail: detail, chosen: false)
+            let pris = chosenName.map {
+                nom.caseInsensitiveCompare($0) == .orderedSame
+            } ?? false
+            return SubstitutionOption(name: nom, detail: detail, chosen: pris)
         }
     }
 

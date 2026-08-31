@@ -582,6 +582,17 @@ struct IngredientLine: View {
                             Capsule().strokeBorder(Tone.swap.opacity(0.35), lineWidth: 1)
                         }
                         .padding(.top, 2)
+
+                    /* SAY THAT THE ROW OPENS.
+                     *
+                     * The row has always been a button, disabled unless the
+                     * ingredient was swapped, and nothing on it said so. The
+                     * amber already means "this was replaced", so it cannot
+                     * also mean "there is more here". A chevron can. */
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Tone.swap.opacity(0.6))
+                        .padding(.top, 4)
                 }
             }
             .padding(.vertical, 11)
@@ -610,32 +621,67 @@ struct SubstitutionRuleSheet: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("\(item.name) → \(item.toName ?? "")")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(Tone.text)
-                    .padding(.top, 6)
+                /* THE SWAP AS A SWAP, NOT AS A SENTENCE WITH AN ARROW.
+                 *
+                 * "Butter → Dairy-free margarine" ran to two lines on any
+                 * ordinary pair of names and broke across the arrow, which is
+                 * the one character carrying the meaning. Stacked and labelled,
+                 * it holds at any length and says which way it goes. */
+                Text("Taken out").eyebrow()
+                Text(item.name)
+                    .font(.system(size: 17))
+                    .foregroundStyle(Tone.text2)
+                    .strikethrough(true, color: Tone.text3)
+                    .padding(.top, 3)
+
+                Text("Put in").eyebrow().padding(.top, 13)
+                Text(item.toName ?? "")
+                    .font(.system(size: 21, weight: .semibold))
+                    .foregroundStyle(Tone.swap)
+                    .padding(.top, 3)
+
+                /* The ratio folds under the substitute it belongs to. It had a
+                 * titled block and a rule of its own for three characters. */
+                if let ratio = item.ratio {
+                    Text(ratio)
+                        .font(.system(size: 11.5, design: .monospaced))
+                        .foregroundStyle(Tone.text2)
+                        .padding(.top, 4)
+                }
 
                 if let reason = item.reason {
-                    field("Why", reason)
-                }
-                if let ratio = item.ratio {
-                    field("Ratio", ratio, mono: true)
+                    rule
+                    Text(String(format: String(localized: "Why it is out for %@"),
+                                etat.activeProfile.name))
+                        .eyebrow()
+                    Text(reason)
+                        .font(.system(size: 14.5))
+                        .foregroundStyle(Tone.text)
+                        .padding(.top, 6)
                 }
 
-                Text("Every option in the table")
-                    .eyebrow()
-                    .padding(.top, 22)
-                    .padding(.bottom, 8)
+                rule
 
-                ForEach(etat.substitutionOptions(for: item.name), id: \.name) { opt in
-                    HStack(alignment: .firstTextBaseline, spacing: 11) {
+                /* "Every option in the table" named an internal concept: the
+                 * table is ours, not the parent's. */
+                Text("All the choices").eyebrow().padding(.bottom, 8)
+
+                ForEach(etat.substitutionOptions(for: item.name,
+                                                 chosen: item.toName), id: \.name) { opt in
+                    HStack(alignment: .firstTextBaseline, spacing: 9) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(opt.chosen ? Tone.swap : .clear)
+                            .frame(width: 12, alignment: .leading)
                         Text(opt.name)
-                            .font(.system(size: 13.5))
-                            .foregroundStyle(opt.chosen ? Tone.swap : Tone.text2)
+                            .font(.system(size: 13.5,
+                                          weight: opt.chosen ? .semibold : .regular))
+                            .foregroundStyle(opt.chosen ? Tone.swap : Tone.text)
                         Spacer(minLength: 8)
                         Text(opt.detail)
-                            .font(.system(size: 11, design: .monospaced))
-                            .foregroundStyle(Tone.text3)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Tone.text2)
+                            .multilineTextAlignment(.trailing)
                     }
                     .padding(.vertical, 8)
                     Divider().overlay(Tone.hairline)
@@ -648,6 +694,7 @@ struct SubstitutionRuleSheet: View {
                     .padding(.top, 22)
             }
             .padding(.horizontal, Layout.gutter)
+            .padding(.top, 6)
             .padding(.bottom, 40)
         }
         .background(Tone.canvas)
@@ -655,17 +702,9 @@ struct SubstitutionRuleSheet: View {
         .presentationDragIndicator(.visible)
     }
 
-    private func field(_ key: LocalizedStringKey, _ value: String, mono: Bool = false) -> some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Text(key).eyebrow()
-            Text(value)
-                .font(.system(size: 14.5, design: mono ? .monospaced : .default))
-                .foregroundStyle(Tone.text)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 15)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Tone.hairline).frame(height: 1)
-        }
+    private var rule: some View {
+        Rectangle().fill(Tone.hairline)
+            .frame(height: 1)
+            .padding(.vertical, 16)
     }
 }

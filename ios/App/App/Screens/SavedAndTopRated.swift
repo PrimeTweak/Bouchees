@@ -93,24 +93,25 @@ struct SaveButton: View {
 struct TopRatedScreen: View {
     @Environment(AppState.self) private var etat
     @Environment(\.navigate) private var navigate
-    @State private var section = 0
-
+    /* ONE SHELF, NOT TWO BEHIND A SWITCH.
+     *
+     * This screen carried a segmented control whose second half rendered the
+     * saved list a second time, while SavedScreen already existed and held
+     * the same list. Two doors on the Recipes page then led here, one of them
+     * asking again which shelf you meant.
+     *
+     * The choice is made once, outside, on the two tiles above the week. The
+     * title matches the tile that opens it. */
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Picker("", selection: $section) {
-                    Text("Top rated").tag(0)
-                    Text("My saved").tag(1)
-                }
-                .pickerStyle(.segmented)
-
-                if section == 0 { ranking } else { saved }
+                ranking
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 32)
         }
         .background(Tone.canvas.ignoresSafeArea())
-        .navigationTitle("Best")
+        .navigationTitle("Top rated")
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await etat.loadTopRated() }
         .task { await etat.loadTopRated() }
@@ -142,33 +143,6 @@ struct TopRatedScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var saved: some View {
-        if etat.saved.recipes.isEmpty {
-            EmptyState(symbol: "bookmark",
-                     title: "Nothing saved yet",
-                     message: "Save a recipe and it stays here for good — even after its week has passed.")
-        } else {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("Your saved recipes stay on this device, outside the weekly rotation.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                LazyVGrid(columns: Grid.colonnes, spacing: 14) {
-                    ForEach(etat.saved.recipes, id: \.id) { recipe in
-                        if let res = etat.resultFor(recipe) {
-                            Button {
-                                navigate(.recipe(recipe.id))
-                            } label: {
-                                RecipeCard(recipe: recipe, result: res)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 struct RankRow: View {
