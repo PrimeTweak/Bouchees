@@ -104,9 +104,21 @@ copied somewhere else still says what it is.
 
 ## Rebuilding
 
-`PAQUET.command`, once a month. It wants the USDA CSV from
-`fdc.nal.usda.gov/download-datasets` — the address carries the month, so it is
-not guessed — and downloads the Open Food Facts dump itself.
+`PAQUET.command`.
+
+Not on a monthly cadence, which is what this document said first and got
+wrong. USDA's Branded database updates monthly, but its BULK EXPORT is cut
+about twice a year — April and December in recent releases. Re-downloading
+427 MB every month fetches the same file. Rebuild when a newer release appears
+on the page.
+
+Open Food Facts is different: their dump is regenerated nightly, so the
+Canadian half is worth refreshing whenever the pack is rebuilt.
+
+The launcher wants the USDA CSV from `fdc.nal.usda.gov/download-datasets` —
+the address carries the release date, so it is not guessed — and downloads the
+Open Food Facts dump itself. It accepts the archive whether or not the browser
+has already expanded it.
 
 The pack is not committed. It is published as a GitHub Release asset and
 fetched by the app on first launch.

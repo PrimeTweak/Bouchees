@@ -28,18 +28,36 @@ mkdir -p "$TRAVAIL"
 
 # ------------------------------------------------- 2. Le fichier americain
 #
-# L'adresse de telechargement d'USDA porte la date du mois, donc elle change.
-# Je ne la devine pas : tu la prends dans ton navigateur, une fois par mois.
+# L'adresse de telechargement d'USDA porte la date de la version, donc elle
+# change. Je ne la devine pas : tu la prends dans ton navigateur.
+#
+# Trois formes possibles, parce que Safari decompresse les archives tout seul
+# par defaut : le CSV deja range ici, un .zip dans les telechargements, ou un
+# dossier deja ouvert par Safari. On regarde les trois.
 USDA_CSV=$(ls "$TRAVAIL"/branded_food.csv 2>/dev/null | head -1)
 
 if [ -z "$USDA_CSV" ]; then
-  ZIP=$(ls "$TELECHARGEMENTS"/FoodData_Central_branded_food_csv_*.zip 2>/dev/null | head -1)
+  ZIP=$(ls -t "$TELECHARGEMENTS"/*branded_food*.zip \
+                "$TELECHARGEMENTS"/FoodData_Central*.zip 2>/dev/null | head -1)
   if [ -n "$ZIP" ]; then
-    echo "  Trouve dans tes telechargements :"
+    echo "  Archive trouvee dans tes telechargements :"
     echo "    $(basename "$ZIP")"
-    echo "  Decompression..."
-    unzip -o -j -q "$ZIP" "*branded_food.csv" -d "$TRAVAIL"
+    echo "  Extraction de branded_food.csv (2,9 Go une fois ouvert)..."
+    unzip -o -j -q "$ZIP" "*branded_food.csv" -d "$TRAVAIL" 2>/dev/null
     USDA_CSV=$(ls "$TRAVAIL"/branded_food.csv 2>/dev/null | head -1)
+  fi
+fi
+
+if [ -z "$USDA_CSV" ]; then
+  # Safari a deja ouvert l'archive : on cherche le CSV dans les dossiers.
+  TROUVE=$(find "$TELECHARGEMENTS" -maxdepth 3 -name "branded_food.csv" \
+           -type f 2>/dev/null | head -1)
+  if [ -n "$TROUVE" ]; then
+    echo "  CSV trouve deja decompresse :"
+    echo "    $TROUVE"
+    echo "  Copie en cours..."
+    cp "$TROUVE" "$TRAVAIL/branded_food.csv"
+    USDA_CSV="$TRAVAIL/branded_food.csv"
   fi
 fi
 
@@ -47,15 +65,23 @@ if [ -z "$USDA_CSV" ]; then
   echo "  IL MANQUE LE FICHIER AMERICAIN"
   echo ""
   echo "  1. Ouvre  fdc.nal.usda.gov/download-datasets"
-  echo "  2. Prends  Branded Foods , format CSV"
-  echo "  3. Laisse le .zip dans ton dossier Telechargements"
-  echo "  4. Double-clique ce fichier a nouveau"
+  echo "  2. Dans le tableau  Latest Downloads , va a la ligne  Branded"
+  echo "  3. Clique le bouton  December 2025 (CSV)"
+  echo "     427 Mo a telecharger, 2,9 Go une fois ouvert."
+  echo "  4. Laisse le resultat dans ton dossier Telechargements,"
+  echo "     que le .zip soit ouvert par Safari ou non — les deux marchent."
+  echo "  5. Double-clique ce fichier a nouveau"
   echo ""
   echo "  Ces donnees sont en domaine public (CC0). Rien a signer."
+  echo ""
+  echo "  A refaire seulement quand USDA sort une nouvelle version,"
+  echo "  environ deux fois par an. Pas chaque mois."
   echo ""
   read -n 1 -p "  Appuie sur une touche pour fermer."
   exit 1
 fi
+
+echo "  Fichier americain : $(basename "$USDA_CSV")"
 
 # --------------------------------------------------- 3. Le fichier canadien
 #
