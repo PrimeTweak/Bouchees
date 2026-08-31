@@ -204,7 +204,13 @@ struct RootView: View {
 
 /// What both tab bars share, so the two branches cannot drift apart.
 private struct CoquilleRacine: ViewModifier {
-    @Binding var path: [Route]
+    /* NavigationPath, not [Route].
+     *
+     * Line 33 declares `@State private var path = NavigationPath()` and I
+     * wrote the modifier against [Route] without looking. Both accept
+     * append(_:), which is the only operation used, so the type-erased one
+     * wins — it is what the root already holds. */
+    @Binding var path: NavigationPath
     @Binding var sheet: AppSheet?
 
     func body(content: Content) -> some View {
