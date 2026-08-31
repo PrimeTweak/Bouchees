@@ -519,6 +519,18 @@ struct WeekSlot: Identifiable, Hashable {
 
 enum WeekDay {
     static let short: [LocalizedStringKey] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    /// The same names as `full`, resolvable to a String.
+    ///
+    /// `LocalizedStringKey` is what a `Text` accepts; it is NOT what
+    /// `String(localized:)` accepts, which wants a `String.LocalizationValue`.
+    /// Passing one for the other is a compile error, and it is the third time
+    /// a build has died on a type I assumed rather than checked.
+    ///
+    /// Two arrays rather than one conversion: the conversion does not exist,
+    /// and a computed bridge would just hide the same mistake.
+    static let fullValues: [String.LocalizationValue] =
+        ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
     static let full: [LocalizedStringKey] = ["Monday", "Tuesday", "Wednesday",
                                              "Thursday", "Friday", "Saturday", "Sunday"]
 
