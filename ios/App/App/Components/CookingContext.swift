@@ -444,28 +444,45 @@ struct SearchSheet: View {
     }
 
     /// The cuts worth one tap, each carrying its recipes.
+    ///
+    /// EVERY GROUP EXCLUDES THE ONES ABOVE IT. They used to be computed
+    /// independently from the whole week, so a recipe that was both as-is and
+    /// under twenty minutes landed in two of them — the same `recipe.id`
+    /// twice in one lazy stack. SwiftUI keeps the first and drops the second,
+    /// which is why a heading could show a count with no rows under it.
     private var groupes: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] {
         let semaine = etat.weekRecipes.compactMap { r in
             etat.resultFor(r).map { (recipe: r, result: $0) }
         }
         var out: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] = []
+        var vus = Set<String>()
 
-        let pretes = semaine.filter { $0.result.status == .asIs }
-        if !pretes.isEmpty {
-            out.append((String(localized: "Ready as is"), pretes))
+        func ajoute(_ titre: String, _ plats: [(recipe: Recipe, result: AdaptedRecipe)]) {
+            let neufs = plats.filter { !vus.contains($0.recipe.id) }
+            guard !neufs.isEmpty else { return }
+            out.append((titre, neufs))
+            vus.formUnion(neufs.map(\.recipe.id))
         }
 
-        let rapides = semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 }
-        if !rapides.isEmpty {
-            out.append((String(localized: "Under 20 minutes"), rapides))
-        }
+        /* What is planned for today, which is the question at five o'clock. */
+        let aujourdhui = Set(etat.recipes(on: WeekDay.today).map(\.id))
+        ajoute(String(localized: "Tonight"),
+               semaine.filter { aujourdhui.contains($0.recipe.id) })
 
-        /* Everything else, so the sheet never runs out before the keyboard. */
-        let vus = Set((pretes + rapides).map(\.recipe.id))
-        let reste = semaine.filter { !vus.contains($0.recipe.id) }
-        if !reste.isEmpty {
-            out.append((String(localized: "This week"), reste))
-        }
+        /* Named for the child, because the verdict belongs to one profile. */
+        ajoute(String(format: String(localized: "Ready for %@"), etat.activeProfile.name),
+               semaine.filter { $0.result.status == .asIs })
+
+        ajoute(String(localized: "Under 20 minutes"),
+               semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 })
+
+        /* Top rated reaches outside the window on purpose — it is the one cut
+         * here that can surface a recipe this week does not carry. */
+        ajoute(String(localized: "Top rated"),
+               etat.topRated.compactMap { r in
+                   etat.resultFor(r).map { (recipe: r, result: $0) }
+               })
+
         return out
     }
 
@@ -904,21 +921,46 @@ struct SearchScreen: View {
         }
     }
 
+    /// The cuts worth one tap, each carrying its recipes.
+    ///
+    /// EVERY GROUP EXCLUDES THE ONES ABOVE IT. They used to be computed
+    /// independently from the whole week, so a recipe that was both as-is and
+    /// under twenty minutes landed in two of them — the same `recipe.id`
+    /// twice in one lazy stack. SwiftUI keeps the first and drops the second,
+    /// which is why a heading could show a count with no rows under it.
     private var groupes: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] {
         let semaine = etat.weekRecipes.compactMap { r in
             etat.resultFor(r).map { (recipe: r, result: $0) }
         }
         var out: [(titre: String, plats: [(recipe: Recipe, result: AdaptedRecipe)])] = []
+        var vus = Set<String>()
 
-        let pretes = semaine.filter { $0.result.status == .asIs }
-        if !pretes.isEmpty { out.append((String(localized: "Ready as is"), pretes)) }
+        func ajoute(_ titre: String, _ plats: [(recipe: Recipe, result: AdaptedRecipe)]) {
+            let neufs = plats.filter { !vus.contains($0.recipe.id) }
+            guard !neufs.isEmpty else { return }
+            out.append((titre, neufs))
+            vus.formUnion(neufs.map(\.recipe.id))
+        }
 
-        let rapides = semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 }
-        if !rapides.isEmpty { out.append((String(localized: "Under 20 minutes"), rapides)) }
+        /* What is planned for today, which is the question at five o'clock. */
+        let aujourdhui = Set(etat.recipes(on: WeekDay.today).map(\.id))
+        ajoute(String(localized: "Tonight"),
+               semaine.filter { aujourdhui.contains($0.recipe.id) })
 
-        let vus = Set((pretes + rapides).map(\.recipe.id))
-        let reste = semaine.filter { !vus.contains($0.recipe.id) }
-        if !reste.isEmpty { out.append((String(localized: "This week"), reste)) }
+        /* Named for the child, because the verdict belongs to one profile. */
+        ajoute(String(format: String(localized: "Ready for %@"), etat.activeProfile.name),
+               semaine.filter { $0.result.status == .asIs })
+
+        ajoute(String(localized: "Under 20 minutes"),
+               semaine.filter { ($0.recipe.timeMinutes ?? 99) <= 20 })
+
+        /* Top rated reaches outside the window on purpose — it is the one cut
+         * here that can surface a recipe this week does not carry. */
+        ajoute(String(localized: "Top rated"),
+               etat.topRated.compactMap { r in
+                   etat.resultFor(r).map { (recipe: r, result: $0) }
+               })
+
         return out
     }
 

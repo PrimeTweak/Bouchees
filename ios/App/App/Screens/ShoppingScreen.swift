@@ -185,14 +185,13 @@ struct ShoppingScreen: View {
     @ViewBuilder
     private var weekStrip: some View {
         @Bindable var e = etat
-        /* 12, not 4. Every other gap on this screen is 20 or more, so 4 read
-         * as a control glued to the one above it rather than a row under it.
-         * Short of 20 on purpose: the scope and the day it narrows to are one
-         * decision in two steps, and the tighter gap says so. */
+        /* 20, the same gap the progress card takes under the picker in week
+         * mode. It ran at 4, then at 12; both made the strip read as glued to
+         * the control above rather than as the next row on the screen. */
         DayStrip(selected: $e.selectedDay,
                  counts: (0..<7).map { etat.recipes(on: $0).count })
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 12)
+            .padding(.top, 20)
     }
 
     /// Scope first, then which day.

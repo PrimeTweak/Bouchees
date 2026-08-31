@@ -67,7 +67,6 @@ private struct LiveDemoStep: View {
         return etat.adaptPreview(r, for: draft)
     }
 
-    private var tally: AppState.ProfileTally { etat.tally(for: draft) }
 
     var body: some View {
         ScrollView {
@@ -98,9 +97,6 @@ private struct LiveDemoStep: View {
 
                 AllergenPad(selected: $draft.allergens, families: etat.knownAllergens)
                     .padding(.top, 16)
-
-                CountLine(tally: tally)
-                    .padding(.top, 16)
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 16)
@@ -121,7 +117,7 @@ private struct LiveDemoStep: View {
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 12)
-            .background(.regularMaterial)
+            .softFooter()
         }
     }
 }
@@ -335,86 +331,6 @@ private struct PressedTile: ButtonStyle {
     }
 }
 
-/// The promise, in one number. It holds while allergens are added, which is the
-/// thing a parent does not expect.
-private struct CountLine: View {
-    let tally: AppState.ProfileTally
-
-    /// How much of the bar is "nothing to change".
-    private var partAsIs: CGFloat {
-        guard tally.total > 0 else { return 1 }
-        return CGFloat(tally.asIs) / CGFloat(tally.total)
-    }
-
-    private var detail: String {
-        let echanges = max(0, tally.total - tally.asIs)
-        if echanges == 0 {
-            return String(format: String(localized: "%lld with nothing to change"),
-                          tally.asIs)
-        }
-        return String(format: String(localized: "%lld as is · %lld with a swap"),
-                      tally.asIs, echanges)
-    }
-
-    var body: some View {
-        HStack(spacing: 13) {
-            Text("\(tally.total)")
-                .font(Type.figure)
-                .foregroundStyle(Tone.yes)
-                .contentTransition(.numericText())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("recipes still work")
-                    .font(Type.secondary.weight(.medium))
-                    .foregroundStyle(Tone.text)
-                /* BOTH HALVES, NOT THE SAME NUMBER TWICE.
-                 *
-                 * With nothing ticked, total and asIs are equal — the screen
-                 * read "15 recipes still work / 15 with nothing to change",
-                 * which says one thing twice and teaches nothing about what
-                 * the app does.
-                 *
-                 * Split, it becomes the demonstration: tick milk and the
-                 * as-is count drops while the swap count rises, and the total
-                 * barely moves. That IS the product. */
-                Text(detail)
-                    .font(Type.caption)
-                    .foregroundStyle(Tone.textSecondary)
-                    .contentTransition(.numericText())
-
-                /* THE SPLIT, WITHOUT READING THE NUMBERS.
-                 *
-                 * Tick milk and the green retreats while the amber advances.
-                 * That movement is the demonstration — a parent sees the cost
-                 * of an allergy before reading a single figure. */
-                GeometryReader { geo in
-                    HStack(spacing: 0) {
-                        Rectangle().fill(Tone.yes)
-                            .frame(width: geo.size.width * partAsIs)
-                        Rectangle().fill(Tone.swap)
-                    }
-                }
-                .frame(height: 4)
-                .clipShape(Capsule())
-                .padding(.top, 7)
-                .animation(.smooth(duration: 0.4), value: tally.asIs)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(15)
-        .background {
-            RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
-                .fill(LinearGradient(colors: [Tone.yes.opacity(0.14), Tone.yes.opacity(0.05)],
-                                     startPoint: .topLeading, endPoint: .bottomTrailing))
-                .overlay {
-                    RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
-                        .strokeBorder(Tone.yes.opacity(0.22), lineWidth: 1)
-                }
-        }
-        .animation(.smooth(duration: 0.3), value: tally.total)
-    }
-}
-
 // MARK: - Step 2 — who
 
 /// Name and age on one screen. They are two taps, not two decisions; splitting
@@ -496,7 +412,7 @@ private struct WhoStep: View {
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 12)
-            .background(.regularMaterial)
+            .softFooter()
         }
         .onAppear { focused = true }
     }
@@ -625,7 +541,7 @@ private struct OfferStep: View {
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 10)
-            .background(.regularMaterial)
+            .softFooter()
         }
     }
 }

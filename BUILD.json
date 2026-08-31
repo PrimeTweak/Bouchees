@@ -1,14 +1,16 @@
 {
-  "build": 108,
+  "build": 109,
   "date": "2026-08-31",
   "carries": [
-    "the launch wordmark was still declared in ios/project.yml, which is what XcodeGen reads",
-    "Info.plist had the key removed by hand, and the build overwrote that file every time",
-    "the launch colour was Fond while the app canvas is Canvas, so the field changed shade",
-    "both launch imagesets are gone: one was referenced only by the removed key, one by nothing",
-    "Shopping takes the same 112pt fade as Recipes; at 88 it ended above the pill",
-    "Settings and Search take the same fade, Search by hiding only the bar background",
-    "the scope segments were 38pt, not the 44 the comment claimed, and declared no content shape",
-    "the day strip sat 4pt under the picker on a screen whose other gaps are 20"
+    "the top field is split: a status strip that is always on, and an extension that arrives with the scroll",
+    "the strip spans only the safe area, so it covers the clock and reaches no title",
+    "the extension is what used to wash Shopping and Settings at rest; it now waits for content to pass under it",
+    "scroll tracking is gated to iOS 18; below that the extension is always on, as before",
+    "Saved recipes and Top rated are permanent rows, so neither screen depends on having content to be reachable",
+    "search groups exclude one another; independent filters put one recipe id in two groups and SwiftUI dropped the second",
+    "search cuts are now tonight, ready for the child, under twenty minutes, top rated",
+    "the day strip gap matches the rest of the screen at 20",
+    "the onboarding recipe-count bar is gone, struct included",
+    "the three onboarding footers fade upward instead of ending on a material edge"
   ]
 }

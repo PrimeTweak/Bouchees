@@ -381,3 +381,7 @@
 "%lld recipes · %lld items" = "%lld recipes · %lld items";
 "left to buy" = "left to buy";
 "%lld in the cart" = "%lld in the cart";
+"Ready for %@" = "Ready for %@";
+"Nothing saved yet · tap the bookmark on a recipe" = "Nothing saved yet · tap the bookmark on a recipe";
+"%lld rated by other parents" = "%lld rated by other parents";
+"Waiting on enough votes to rank" = "Waiting on enough votes to rank";

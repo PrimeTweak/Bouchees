@@ -379,3 +379,7 @@
 "%lld recipes · %lld items" = "%lld recettes · %lld articles";
 "left to buy" = "à acheter";
 "%lld in the cart" = "%lld dans le panier";
+"Ready for %@" = "Prêtes pour %@";
+"Nothing saved yet · tap the bookmark on a recipe" = "Rien d'enregistré · touchez le signet sur une recette";
+"%lld rated by other parents" = "%lld notées par d'autres parents";
+"Waiting on enough votes to rank" = "En attente d'assez de votes pour classer";

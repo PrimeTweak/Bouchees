@@ -213,43 +213,73 @@ struct RecipesScreen: View {
      * bookmark on the detail page has always written to it. Nothing ever read
      * it back — tapping it saved into a void. */
     @ViewBuilder
+    /// THE TWO SIDE DOORS, ALWAYS OPEN.
+    ///
+    /// The saved row used to render only when something was saved, and it was
+    /// the single caller of `navigate(.saved)` in the app — so with an empty
+    /// shortlist the screen behind it could not be reached at all. Top rated
+    /// had no caller anywhere.
+    ///
+    /// Both rows are permanent now and say what they hold when they hold
+    /// nothing, which is also where a parent learns the bookmark exists.
     private var savedEntry: some View {
         let n = etat.saved.recipes.count
-        if n > 0 {
-            Button { navigate(.saved) } label: {
-                HStack(spacing: 11) {
-                    Image(systemName: "bookmark.fill")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.white)
-                        .frame(width: 32, height: 32)
-                        .background(Tone.brandGradient,
-                                    in: RoundedRectangle(cornerRadius: 11, style: .continuous))
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Saved recipes")
-                            .font(.system(size: 13.5, weight: .semibold))
-                            .foregroundStyle(Tone.text)
-                        Text(String(format: String(localized: "%lld saved · your own shortlist"), n))
-                            .font(.system(size: 10.5))
-                            .foregroundStyle(Tone.text2)
-                    }
-                    Spacer(minLength: 8)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Tone.text3)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .background(Tone.text.opacity(0.04),
-                            in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(Tone.hairline, lineWidth: 1)
-                }
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, Layout.gutter)
-            .padding(.top, 14)
+        let votes = etat.topRated.count
+        return VStack(spacing: 9) {
+            shortcut(icon: "bookmark.fill",
+                     title: "Saved recipes",
+                     detail: n > 0
+                        ? String(format: String(localized: "%lld saved · your own shortlist"), n)
+                        : String(localized: "Nothing saved yet · tap the bookmark on a recipe"),
+                     route: .saved)
+
+            shortcut(icon: "star.fill",
+                     title: "Top rated",
+                     detail: votes > 0
+                        ? String(format: String(localized: "%lld rated by other parents"), votes)
+                        : String(localized: "Waiting on enough votes to rank"),
+                     route: .topRated)
         }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 14)
+    }
+
+    private func shortcut(icon: String,
+                          title: LocalizedStringKey,
+                          detail: String,
+                          route: Route) -> some View {
+        Button { navigate(route) } label: {
+            HStack(spacing: 11) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 32)
+                    .background(Tone.brandGradient,
+                                in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(.system(size: 13.5, weight: .semibold))
+                        .foregroundStyle(Tone.text)
+                    Text(detail)
+                        .font(.system(size: 10.5))
+                        .foregroundStyle(Tone.text2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(Tone.text.opacity(0.04),
+                        in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Tone.hairline, lineWidth: 1)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 
 

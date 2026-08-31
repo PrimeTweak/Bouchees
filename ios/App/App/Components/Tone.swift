@@ -16,6 +16,7 @@
 //    Accents gain luminosity in dark: brighter, less saturated.
 
 import SwiftUI
+import UIKit
 
 // MARK: - Appearance
 
@@ -508,40 +509,42 @@ struct SoftTopBar<Bar: View>: ViewModifier {
     let bar: Bar
     var height: CGFloat = 112
 
-    func body(content: Content) -> some View {
-        content.overlay(alignment: .top) {
-            ZStack(alignment: .top) {
-                LinearGradient(
-                    stops: [
-                        .init(color: Tone.canvas.opacity(0.99), location: 0),
-                        .init(color: Tone.canvas.opacity(0.97), location: 0.30),
-                        .init(color: Tone.canvas.opacity(0.86), location: 0.52),
-                        .init(color: Tone.canvas.opacity(0.56), location: 0.70),
-                        .init(color: Tone.canvas.opacity(0.24), location: 0.85),
-                        .init(color: Tone.canvas.opacity(0), location: 1)
-                    ],
-                    startPoint: .top, endPoint: .bottom)
-                    .background(.ultraThinMaterial)
-                    .mask {
-                        LinearGradient(
-                            stops: [
-                                .init(color: .black, location: 0),
-                                .init(color: .black, location: 0.48),
-                                .init(color: .black.opacity(0.6), location: 0.74),
-                                .init(color: .clear, location: 1)
-                            ],
-                            startPoint: .top, endPoint: .bottom)
-                    }
-                    .frame(height: height)
-                    /* The FIELD ignores the safe area — filling to the edge is
-                     * its whole job. */
-                    .ignoresSafeArea(edges: .top)
-                    .allowsHitTesting(false)
+    /// How much of the extension is drawn, 0 at rest and 1 once scrolled.
+    @State private var reveal: CGFloat = 0
 
-                /* The CONTENT does not. Applying the modifier to the ZStack
-                 * gave it to both, so `padding(.top, 46)` measured from the
-                 * physical edge — and a Dynamic Island occupies 59. The pill
-                 * ended up underneath it.
+    /// The distance over which the extension arrives. A third of a flick:
+    /// long enough not to snap, short enough that the first row never meets
+    /// the status bar undressed.
+    private let travel: CGFloat = 24
+
+    func body(content: Content) -> some View {
+        tracked(content).overlay(alignment: .top) {
+            ZStack(alignment: .top) {
+                /* THE STRIP. Always drawn, in every tab.
+                 *
+                 * It spans the safe area and stops there, so it covers the
+                 * clock, the signal and the battery and reaches no content:
+                 * a scroll view starts BELOW the inset, so a title cannot be
+                 * under this. That is what lets it stay on over the hero
+                 * photo without touching "Shopping" or "Settings".
+                 *
+                 * The inset is read from the window rather than assumed. A
+                 * GeometryReader placed in this overlay reports zero, because
+                 * the overlay is already laid out inside the inset. */
+                field(height: SafeArea.top, cutoff: 0.62)
+
+                /* THE EXTENSION. Only while content passes under it.
+                 *
+                 * This is the part that used to wash the titles: it reaches
+                 * well past the inset, and at rest there was nothing beneath
+                 * it to justify the cost. It now arrives with the scroll. */
+                field(height: height, cutoff: 1)
+                    .opacity(reveal)
+
+                /* The CONTENT does not ignore the safe area. Applying the
+                 * modifier to the ZStack gave it to both, so `padding(.top,
+                 * 46)` measured from the physical edge — and a Dynamic Island
+                 * occupies 59. The pill ended up underneath it.
                  *
                  * A safe area is the right number on a notch, on an island
                  * and on an iPad; a constant is right on none of them. */
@@ -549,6 +552,75 @@ struct SoftTopBar<Bar: View>: ViewModifier {
                     .padding(.top, 4)
             }
         }
+    }
+
+    /// One layer of the field. `cutoff` is where the fall-off finishes, as a
+    /// fraction of the height — the strip dies early so it clears the title,
+    /// the extension runs the full distance.
+    private func field(height: CGFloat, cutoff: CGFloat) -> some View {
+        LinearGradient(
+            stops: [
+                .init(color: Tone.canvas.opacity(0.99), location: 0),
+                .init(color: Tone.canvas.opacity(0.97), location: 0.30 * cutoff),
+                .init(color: Tone.canvas.opacity(0.86), location: 0.52 * cutoff),
+                .init(color: Tone.canvas.opacity(0.56), location: 0.70 * cutoff),
+                .init(color: Tone.canvas.opacity(0.24), location: 0.85 * cutoff),
+                .init(color: Tone.canvas.opacity(0), location: cutoff),
+                .init(color: Tone.canvas.opacity(0), location: 1)
+            ],
+            startPoint: .top, endPoint: .bottom)
+            .background(.ultraThinMaterial)
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0),
+                        .init(color: .black, location: 0.48 * cutoff),
+                        .init(color: .black.opacity(0.6), location: 0.74 * cutoff),
+                        .init(color: .clear, location: cutoff),
+                        .init(color: .clear, location: 1)
+                    ],
+                    startPoint: .top, endPoint: .bottom)
+            }
+            .frame(height: height)
+            /* The FIELD ignores the safe area — filling to the edge is its
+             * whole job. */
+            .ignoresSafeArea(edges: .top)
+            .allowsHitTesting(false)
+    }
+
+    /// Reads the scroll offset where the system offers it.
+    ///
+    /// `onScrollGeometryChange` is iOS 18 and the deployment target is 17.
+    /// Below it the extension is simply always on, which is the behaviour
+    /// this modifier had before the split.
+    @ViewBuilder
+    private func tracked(_ content: Content) -> some View {
+        if #available(iOS 18, *) {
+            content.onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y + geometry.contentInsets.top
+            } action: { _, offset in
+                let next = min(max(offset / travel, 0), 1)
+                if abs(next - reveal) > 0.01 { reveal = next }
+            }
+        } else {
+            content.onAppear { reveal = 1 }
+        }
+    }
+}
+
+/// The window's top inset.
+///
+/// 59 on a Dynamic Island, 47 on a notch, 24 on an iPad — a constant is wrong
+/// on all three. The fallback is only reached before a window exists.
+enum SafeArea {
+    static var top: CGFloat {
+        for scene in UIApplication.shared.connectedScenes {
+            guard let windowScene = scene as? UIWindowScene else { continue }
+            for window in windowScene.windows where window.isKeyWindow {
+                return window.safeAreaInsets.top
+            }
+        }
+        return 47
     }
 }
 
@@ -559,6 +631,43 @@ extension View {
         modifier(SoftTopBar(bar: bar(), height: height))
     }
 
+    /// The same field, upside down, behind a pinned footer.
+    ///
+    /// `.regularMaterial` on a bottom inset ends on a line: the material has
+    /// a top edge and the content slides under it and stops there. The
+    /// gradient and the blur fall off together instead, so the button sits on
+    /// the page rather than on a plate laid over it.
+    ///
+    /// The negative top padding gives the fall-off room above the footer,
+    /// where there is no layout to push.
+    func softFooter(reach: CGFloat = 44) -> some View {
+        background {
+            LinearGradient(
+                stops: [
+                    .init(color: Tone.canvas.opacity(0), location: 0),
+                    .init(color: Tone.canvas.opacity(0.24), location: 0.16),
+                    .init(color: Tone.canvas.opacity(0.56), location: 0.31),
+                    .init(color: Tone.canvas.opacity(0.86), location: 0.49),
+                    .init(color: Tone.canvas.opacity(0.97), location: 0.68),
+                    .init(color: Tone.canvas.opacity(0.99), location: 1)
+                ],
+                startPoint: .top, endPoint: .bottom)
+                .background(.ultraThinMaterial)
+                .mask {
+                    LinearGradient(
+                        stops: [
+                            .init(color: .clear, location: 0),
+                            .init(color: .black.opacity(0.6), location: 0.27),
+                            .init(color: .black, location: 0.53),
+                            .init(color: .black, location: 1)
+                        ],
+                        startPoint: .top, endPoint: .bottom)
+                }
+                .padding(.top, -reach)
+                .ignoresSafeArea(edges: .bottom)
+                .allowsHitTesting(false)
+        }
+    }
 }
 
 extension View {
