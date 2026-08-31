@@ -119,10 +119,12 @@ struct ShoppingScreen: View {
          * and land at the same height as Settings, while the pill still shows
          * top-trailing and stays there through the scroll.
          *
-         * Shorter than the 112 Recipes uses: there the bar fades over a photo
-         * and needs the distance, here it fades over text and 88 is enough to
-         * separate the status bar without washing out the title. */
-        .softTopBar(height: 88) { ChildTopBar() }
+         * The same 112 as Recipes. It ran at 88, which ended the fade above
+         * the bottom of the pill: the two screens carried the same bar over
+         * fields of different lengths, and the seam showed on this one. The
+         * field is canvas over canvas, so the extra distance costs nothing
+         * where there is nothing to cover. */
+        .softTopBar { ChildTopBar() }
         .onAppear {
             guard !loaded else { return }
             checked = etat.checkedItems
@@ -183,10 +185,14 @@ struct ShoppingScreen: View {
     @ViewBuilder
     private var weekStrip: some View {
         @Bindable var e = etat
+        /* 12, not 4. Every other gap on this screen is 20 or more, so 4 read
+         * as a control glued to the one above it rather than a row under it.
+         * Short of 20 on purpose: the scope and the day it narrows to are one
+         * decision in two steps, and the tighter gap says so. */
         DayStrip(selected: $e.selectedDay,
                  counts: (0..<7).map { etat.recipes(on: $0).count })
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 4)
+            .padding(.top, 12)
     }
 
     /// Scope first, then which day.
@@ -198,32 +204,34 @@ struct ShoppingScreen: View {
     /// Above the days, because that is the order of the decision — whole week
     /// or one day, and only then which day. Underneath, it asked for the
     /// consequence before the cause.
-    /// 44pt, full width.
+    /// Full width, at the full tap target.
     ///
-    /// It was 32 — twelve under Apple's minimum target, and eighteen shorter
-    /// than the day tiles beside it. It was also the only control on this
-    /// screen that did not span the width, pinned left by a Spacer.
+    /// It was 32, then `Layout.tapTarget - 6`. `Layout.tap` is 44, so the
+    /// second value was 38 — still under Apple's minimum, while the comment
+    /// beside it claimed 44. The height is now the constant itself, and the
+    /// only arithmetic left is the 3pt trough the capsule sits in.
     ///
-    /// 44 rather than the 49 of the tiles: a segmented control carries one
-    /// line, a tile carries three. Matching the tiles would make it taller
-    /// than its contents.
+    /// `contentShape` because the unselected segment fills with a clear style:
+    /// the day tiles beside it declare their shape and this did not, so half
+    /// the control took taps only where the text was.
     private var scopePicker: some View {
         HStack(spacing: 3) {
-            ForEach([false, true], id: \.self) { parJour in
+            ForEach([false, true], id: \.self) { byDay in
                 Button {
                     withAnimation(.smooth(duration: 0.26, extraBounce: 0.1)) {
-                        dayFilter = parJour
+                        dayFilter = byDay
                     }
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
-                    Text(parJour ? "By day" : "Whole week")
+                    Text(byDay ? "By day" : "Whole week")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(dayFilter == parJour ? Tone.canvas : Tone.text2)
+                        .foregroundStyle(dayFilter == byDay ? Tone.canvas : Tone.text2)
                         .frame(maxWidth: .infinity)
-                        .frame(height: Layout.tapTarget - 6)
-                        .background(dayFilter == parJour ? AnyShapeStyle(Tone.text)
-                                                         : AnyShapeStyle(Color.clear),
+                        .frame(height: Layout.tapTarget)
+                        .background(dayFilter == byDay ? AnyShapeStyle(Tone.text)
+                                                       : AnyShapeStyle(Color.clear),
                                     in: Capsule())
+                        .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
             }
