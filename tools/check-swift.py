@@ -1051,6 +1051,73 @@ def check():
                                 f"that sizes to its text lets the tab bar rise "
                                 f"into the middle of the screen")
 
+    # 7ae. an API newer than the deployment target, with no availability gate.
+    #      `Tab`, `TabView(selection:content:)` and `tabBarMinimizeBehavior`
+    #      were written against a project whose deploymentTarget is iOS 17.
+    #      Fourteen compiler errors, and `grep deploymentTarget ios/project.yml`
+    #      would have shown it in one second.
+    #
+    #      The table is what this project actually uses. It grows when a new
+    #      API is adopted, not speculatively.
+    APIS_RECENTES = {
+        # symbol            first available
+        "Tab(":                     18,
+        "tabBarMinimizeBehavior":   26,
+        "tabViewBottomAccessory":   26,
+        "glassEffect":              26,
+        "GlassEffectContainer":     26,
+        "scrollEdgeEffect":         26,
+        "backgroundExtensionEffect": 26,
+        "symbolColorRenderingMode": 26,
+    }
+
+    cible = 17
+    projet = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "ios", "project.yml")
+    if os.path.exists(projet):
+        m = re.search(r"iOS:\s*['\"]?(\d+)", open(projet, encoding="utf-8").read())
+        if m:
+            cible = int(m.group(1))
+
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        # the line ranges covered by an availability gate
+        protegees = set()
+        for m in re.finditer(r"(?:if\s+#available\(iOS\s+(\d+)|@available\(iOS\s+(\d+))",
+                             code):
+            version = int(m.group(1) or m.group(2))
+            debut = code[:m.start()].count("\n") + 1
+            # the gate covers its block; approximate by brace depth
+            prof, fin = 0, debut
+            vu = False
+            for j in range(m.end(), len(code)):
+                if code[j] == "{":
+                    prof += 1; vu = True
+                elif code[j] == "}":
+                    prof -= 1
+                    if vu and prof <= 0:
+                        fin = code[:j].count("\n") + 1
+                        break
+            for ligne in range(debut, fin + 2):
+                protegees.add((ligne, version))
+
+        for symbole, requis in APIS_RECENTES.items():
+            if requis <= cible:
+                continue
+            for m in re.finditer(re.escape(symbole), code):
+                ligne = code[:m.start()].count("\n") + 1
+                # inside a comment?
+                debut_ligne = code.rfind("\n", 0, m.start()) + 1
+                avant = code[debut_ligne:m.start()]
+                if "//" in avant or "*" in avant.strip()[:2]:
+                    continue
+                couvert = any(l == ligne and v >= requis for l, v in protegees)
+                if not couvert:
+                    problems.append(f"{filename}:{ligne}: {symbole} needs iOS "
+                                    f"{requis}, the deployment target is {cible} "
+                                    f"— wrap it in `if #available(iOS {requis}, *)` "
+                                    f"or mark the property @available")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.
