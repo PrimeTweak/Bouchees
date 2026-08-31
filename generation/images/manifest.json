@@ -20,5 +20,26 @@
         "la vision hésite sur : type of nut on top (could be peanut, cashew, or oat flake)"
       ]
     }
+  },
+  "fluffy-pancakes": {
+    "fichier": "images/fluffy-pancakes-3f38cb47e869.png",
+    "empreinte": "3f38cb47e869",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-08-31T02:03:06.741Z",
+      "detectes": [
+        "pancake"
+      ],
+      "reconnus": 0,
+      "attendus": 5,
+      "avertissements": [
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "la vision hésite sur : possible whole wheat or buckwheat flour based on color and texture"
+      ]
+    }
   }
 }
