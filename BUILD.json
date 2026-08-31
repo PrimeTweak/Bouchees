@@ -1,10 +1,10 @@
 {
-  "build": 92,
+  "build": 94,
   "date": "2026-08-29",
   "carries": [
-    "override_settings was never supported \u2014 Draw Things rejected all 38 requests",
-    "the code carried a comment saying no source confirmed it, and it shipped anyway",
-    "the preflight already proved Turbo was selected; pinning was never needed",
-    "a guard now refuses to send any key not proven to work"
+    "docs/PROMPT-CONVENTION.md \u2014 the seven parts, each with what went wrong without it",
+    "check-prompts.js enforces it, and found 17 faults I had not seen",
+    "fourteen recipes had a presentation with no count",
+    "the style repeated the light, costing 50 characters and contradicting it"
   ]
 }

@@ -161,6 +161,21 @@ async function cycleImages(donnees, options) {
 
   const mImage = options.moteurImage || MoteursImage.choisir();
   const mVision = options.moteurVision || Vision.choisir();
+  /* THE CONVENTION, BEFORE ANY IMAGE IS PAID FOR.
+   *
+   * A malformed prompt costs a full generation to discover — several minutes
+   * each, nineteen of them. Reading the prompts takes milliseconds. */
+  try {
+    require("child_process").execFileSync(process.execPath,
+      [path.join(__dirname, "check-prompts.js")], { stdio: "inherit" });
+  } catch (e) {
+    console.log("");
+    console.log("  ARRET — des prompts sortent de la convention.");
+    console.log("  Rien n'a ete genere. Corrige, puis relance.");
+    console.log("");
+    process.exit(1);
+  }
+
   console.log("  image engine: " + mImage.name + (mImage.name === "simule" ? "  (no engine — placeholder files)" : ""));
 
   /* A SIMULATED RUN IS NOT A RUN. STOP.

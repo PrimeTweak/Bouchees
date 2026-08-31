@@ -54,12 +54,14 @@ const SURFACES = [
   "on a light concrete counter, the warm blur of a kitchen behind"
 ];
 
+/* NO LIGHT HERE. The MOMENTS line already says it, two clauses earlier.
+ *
+ * Saying it twice cost 50 characters and pushed three prompts over the 500
+ * limit — where the clause that gets dropped is this one, the style. It also
+ * used to CONTRADICT the moment, which is what produced the flat grey
+ * windowsill. */
 const STYLE = [
   "candid home photo, handheld",
-  /* Directional and warm. The flat grey window that came back was light with
-   * no direction and no colour — technically correct, and it looked like a
-   * ledge rather than a kitchen. */
-  "warm directional light from one side, soft shadows",
   "shallow depth of field, 85mm macro"
 ].join(", ");
 
@@ -105,10 +107,19 @@ const CADRAGES = [
   "low eye-level, close enough to see the crumb"
 ];
 
+/* WARM AND DIRECTIONAL, ALL THREE.
+ *
+ * Two of the old entries asked for cool diffuse light — a morning window, an
+ * overcast afternoon — while STYLE asked for warm directional light two lines
+ * later. The model got opposite instructions, and the flat grey windowsill in
+ * the first muffin photo is what that looks like.
+ *
+ * They vary by ANGLE and QUALITY now, not by colour temperature. A kitchen
+ * that reads as professional is lit, not merely daylit. */
 const MOMENTS = [
-  "morning light through a kitchen window",
-  "soft overcast afternoon light",
-  "warm late-day light falling across the counter"
+  "warm light raking across from the left, deep soft shadows",
+  "warm light from behind and to the side, the edges glowing",
+  "warm overhead light pooling on the surface, the background dim"
 ];
 
 const NEGATIF = [
@@ -222,8 +233,8 @@ const PRESENTATION = [
   [/bars?|barres?/i,        "two cut bars, one stacked on the other"],
   [/loaf|loaves|pains?/i,   "a loaf on a board, two slices cut and leaning"],
   [/frittatas?/i,           "three mini frittatas"],
-  [/glass|verres?/i,        "a tall glass on a table"],
-  [/\bml\b|cups?/i,        "a small serving bowl with a spoon"]
+  [/glass|verres?/i,        "one tall glass, filled"],
+  [/\bml\b|cups?/i,        "one shallow bowl, filled to the rim"]
 ];
 
 function presentationPour(recette) {
@@ -231,7 +242,13 @@ function presentationPour(recette) {
   for (let i = 0; i < PRESENTATION.length; i++) {
     if (PRESENTATION[i][0].test(p)) return PRESENTATION[i][1];
   }
-  return "a shallow bowl on a table";
+  /* THE FALLBACK NEEDS A COUNT TOO.
+   *
+   * Fourteen recipes reach this line, and "a shallow bowl on a table" names
+   * neither how many nor how close — the two things that stop the model from
+   * drawing a whole batch across a room. It also named a table, which is the
+   * word that pulled the camera back in the first place. */
+  return "one shallow bowl, filled to the rim";
 }
 
 const EXCLUSIONS = {

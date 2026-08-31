@@ -18,7 +18,7 @@ const root = path.join(__dirname, "..");
 
 const REQUIRED = [
   "engine/engine.js", "engine/native-bridge.js",
-  "data/ingredients.json", "data/substitutions.json", "data/base.json", "data/label-lexicon.json", "tools/preflight.js", "PHOTOS.command",
+  "data/ingredients.json", "data/substitutions.json", "data/base.json", "data/label-lexicon.json", "tools/preflight.js", "PHOTOS.command", "tools/check-prompts.js", "docs/PROMPT-CONVENTION.md",
   "data/recipes.json", "data/publishing.json",
   "data/imported/imported-recipes.json", "data/generated/generated-recipes.json",
   "tools/gaps.js", "tools/publish.js", "tools/weeks.js", "tools/cycle.js",
