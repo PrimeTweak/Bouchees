@@ -83,28 +83,6 @@ struct LaunchView: View {
     @State private var named = false
     @State private var slow = false
 
-    /* THE FLASH: A PROBE, NOT A GUESS.
-     *
-     * François sees a black "Bouchées" before this view. Two candidates, and
-     * the code cannot tell them apart:
-     *
-     *   A. this view rendering its title before the animation starts. Ruled
-     *      out on paper — `named` starts false, so opacity is 0 on the first
-     *      frame — but paper is not a device.
-     *
-     *   B. iOS drawing CFBundleDisplayName during the zoom from the home
-     *      screen, which is outside the app entirely.
-     *
-     * Set BOUCHEES_SPLASH_PROBE=1 and the title is removed altogether. If the
-     * flash remains, it is B and no code here can touch it. If it goes, it is
-     * A and I fix it properly.
-     *
-     * One probe that answers the whole question, rather than three builds
-     * changing one thing each. */
-    private var sonde: Bool {
-        ProcessInfo.processInfo.environment["BOUCHEES_SPLASH_PROBE"] == "1"
-    }
-
     var body: some View {
         ZStack {
             Tone.canvas.ignoresSafeArea()
@@ -124,7 +102,7 @@ struct LaunchView: View {
                     .opacity(settled ? 1 : 0)
 
                 /* The product name, the one French word the app keeps. */
-                Text(verbatim: sonde ? "" : "Bouchées")
+                Text(verbatim: "Bouchées")
                     .font(.system(size: 29, weight: .bold))
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)

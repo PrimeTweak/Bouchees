@@ -553,6 +553,32 @@ struct SearchSheet: View {
 /// landed and lets the parent move one, which is the only decision worth
 /// offering.
 ///
+/// The bar every main screen wears: the child on the right, on a fade.
+///
+/// One place, so Recipes and Shopping cannot drift. The pill sits on the
+/// TRAILING edge — it is a control, and a control belongs where the thumb is,
+/// not where the eye starts reading.
+///
+/// It is an overlay, not a safeAreaInset, which is what makes the title
+/// underneath land at the same height as Settings: the bar floats, the content
+/// scrolls beneath it, and nothing is pushed down.
+struct ChildTopBar: View {
+    @Environment(AppState.self) private var etat
+
+    var body: some View {
+        HStack {
+            if let message = etat.syncMessage {
+                MessageBanner(texte: message)
+                Spacer(minLength: 0)
+            } else {
+                Spacer(minLength: 0)
+                CookingContextHeader(compact: true)
+            }
+        }
+        .padding(.horizontal, Layout.gutter)
+    }
+}
+
 /// Seven days, for Shopping.
 ///
 /// Recipes moved to a week rail, because a day pill answered a question the
