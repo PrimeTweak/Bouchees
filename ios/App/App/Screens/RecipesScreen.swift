@@ -66,17 +66,7 @@ struct RecipesScreen: View {
          * two surfaces touching instead of one becoming the other. Now the
          * bar falls off downward and the photo lightens upward over the same
          * distance; where they overlap there is no edge. */
-        .softTopBar {
-            HStack {
-                if let message = etat.syncMessage {
-                    MessageBanner(texte: message)
-                } else {
-                    CookingContextHeader()
-                    Spacer(minLength: 0)
-                }
-            }
-            .padding(.horizontal, Layout.gutter)
-        }
+        .softTopBar { ChildTopBar() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
         .refreshable { await etat.sync() }
     }

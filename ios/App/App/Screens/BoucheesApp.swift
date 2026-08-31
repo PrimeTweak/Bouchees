@@ -27,6 +27,28 @@ struct BoucheesApp: App {
     }
 }
 
+/// Clears the cached launch snapshot.
+///
+/// MEASURED, after three wrong explanations from me. An earlier build shipped
+/// a `UIImageName` launch image carrying the wordmark — the plist still
+/// documents it, and the banner overflowed the screen. That image is gone from
+/// the bundle, but iOS keeps a SNAPSHOT of it under
+/// Library/SplashBoard/Snapshots and draws it on every launch.
+///
+/// Apple's own forums call this "first used launch screen file is forever
+/// cached": force-quitting does not clear it, and neither does deleting the
+/// app on its own. Removing the directory does.
+///
+/// Runs once. If the directory is absent — a fresh install — there is nothing
+/// to do and the failure is expected, not an error.
+enum LaunchCache {
+    static func clear() {
+        let chemin = NSHomeDirectory() + "/Library/SplashBoard"
+        guard FileManager.default.fileExists(atPath: chemin) else { return }
+        try? FileManager.default.removeItem(atPath: chemin)
+    }
+}
+
 struct RootView: View {
     @Environment(AppState.self) private var etat
     @State private var tab = 0
@@ -71,6 +93,10 @@ struct RootView: View {
             /* Long enough for the mark to rise and the bite to settle, short
              * enough that nobody waits on it. Measured against the animation
              * in Mark.swift, not guessed. */
+            /* Before the sleep, not after: the parent should not wait on a
+             * file operation, and the cache only matters at the NEXT launch
+             * anyway. */
+            LaunchCache.clear()
             try? await Task.sleep(for: .milliseconds(1100))
             launchPlayed = true
         }
