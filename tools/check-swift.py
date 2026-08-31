@@ -955,6 +955,56 @@ def check():
                                 f"it in the layout")
                         break
 
+    # 7ac. a call to a private helper that no longer exists.
+    #      Deleting `chips(...)` left one call behind in a branch nothing had
+    #      exercised, and the checker reported clean — it verified struct
+    #      members and initialisers, never free calls inside a file.
+    #
+    #      Scoped to PRIVATE helpers declared in the same file, which is the
+    #      only case that can be decided without resolving the whole module.
+    #      Closures, protocol members and anything from a framework are out of
+    #      reach here, and guessing at them would be noise.
+    for path_, (_, code) in sources.items():
+        filename = os.path.basename(path_)
+        prives = set(re.findall(r"\n\s*private func (\w+)\s*\(", code))
+        # every name that was private in this file at some point in the chain
+        for m in re.finditer(r"(?<![.\w])(\w+)\s*\(", code):
+            nom = m.group(1)
+            if nom[0].isupper() or len(nom) < 4:
+                continue
+            # Swift keywords that take a parenthesis and are not helpers.
+            if nom in ("init", "self", "super", "some", "type", "deinit",
+                       "subscript", "throws", "rethrows", "await", "async",
+                       "repeat", "defer", "catch", "where", "case"):
+                continue
+            # Free functions the frameworks provide. A name declared nowhere
+            # in the file is normal for these; the rule is about OUR helpers.
+            if nom in ("withAnimation", "modifier", "sqrt", "round", "floor",
+                       "ceil", "sin", "cos", "atan2", "pow", "zip", "stride",
+                       "dump", "assert", "precondition", "fatalError",
+                       "withCheckedContinuation", "withTaskGroup",
+                       "unsafeBitCast", "type", "String", "localized",
+                       # compiler directives, not calls
+                       "canImport", "available", "compiler", "targetEnvironment",
+                       "swift", "os", "arch"):
+                continue
+            # declared anywhere in this file, private or not?
+            if re.search(r"\bfunc " + re.escape(nom) + r"\s*[(<]", code):
+                continue
+            # a local closure or a parameter with this name?
+            if re.search(r"\b(?:let|var)\s+" + re.escape(nom) + r"\b", code):
+                continue
+            if re.search(r"\b" + re.escape(nom) + r"\s*:\s*\(", code):
+                continue
+            # only flag names that LOOK like this file's own helpers: they
+            # appear exactly once, as a call, and nowhere else
+            if len(re.findall(r"\b" + re.escape(nom) + r"\b", code)) != 1:
+                continue
+            ligne = code[:m.start()].count("\n") + 1
+            problems.append(f"{filename}:{ligne}: {nom}(…) is called but declared "
+                            f"nowhere in this file — a helper that was deleted "
+                            f"while a call survived")
+
     # 8. properties that shadow a UIKit member. A `var layer` on a UIView
     #    subclass makes the getter call itself and fails the build — exactly
     #    the mistake a blind rename introduces.

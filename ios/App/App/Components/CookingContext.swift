@@ -735,9 +735,12 @@ struct SearchSheet: View {
             .buttonStyle(.plain)
         }
 
-        Text("Try instead").eyebrow()
-            .padding(.horizontal, Layout.gutter).padding(.top, 20)
-        chips([("Snacks", false), ("Meals", false), ("Breakfast", false)])
+        /* No "Try instead" chips.
+         *
+         * They pointed at Snacks, Meals and Breakfast — three places already
+         * reachable, offered here only to fill the space under a miss. The
+         * closest recipes above are the real answer, and they are cookable
+         * tonight. */
     }
 
     /// The week's recipes, so a miss still ends on something cookable.
