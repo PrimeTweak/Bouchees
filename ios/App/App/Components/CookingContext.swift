@@ -4,6 +4,8 @@
 //  three pieces that appear on more than one screen.
 
 import SwiftUI
+/* UIApplication, for dropping the keyboard. */
+import UIKit
 
 // MARK: - Tab bar
 
@@ -812,7 +814,27 @@ struct SearchScreen: View {
         .background(Tone.canvas.ignoresSafeArea())
         /* The system field, not one of ours. `Tab(role: .search)` places it
          * and animates it; declaring our own would fight that. */
+        /* A WAY OUT.
+         *
+         * `Tab(role: .search)` places the field and animates it, but it does
+         * not give the parent a way back — the only exit was another tab, and
+         * that is not an exit, it is a detour.
+         *
+         * The button clears the query and drops the keyboard, which returns
+         * the tab to its browsing state. */
         .searchable(text: $query, prompt: Text("Recipes and ingredients"))
+        .toolbar {
+            if !query.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Clear") {
+                        query = ""
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil, from: nil, for: nil)
+                    }
+                }
+            }
+        }
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
     }
