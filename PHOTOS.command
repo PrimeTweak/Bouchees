@@ -61,6 +61,54 @@ fi
 # model produces an embossed anaglyph. Only the model is pinned.
 export DRAWTHINGS_MODELE="Krea 2 Turbo"
 
+# THE PORT IS THE APP'S TO CHOOSE, NOT MINE.
+#
+# 7860 is the common default and I hard-coded it. Draw Things picked 7859 on
+# at least one machine — probably because something else already held 7860.
+# Asked once, kept in .env like the key.
+if [ -z "$DRAWTHINGS_URL" ]; then
+  trouve=""
+  for essai in 7860 7859 7861 7862 7863; do
+    if curl -s -m 3 -o /dev/null "http://127.0.0.1:$essai/"; then
+      trouve="$essai"
+      break
+    fi
+  done
+  if [ -n "$trouve" ]; then
+    export DRAWTHINGS_URL="http://127.0.0.1:$trouve"
+    echo "DRAWTHINGS_URL=http://127.0.0.1:$trouve" >> .env
+    echo "  Draw Things repond sur le port $trouve."
+    echo ""
+  else
+    echo "  AUCUN PORT NE REPOND"
+    echo ""
+    echo "  J'ai essaye 7860, 7859, 7861, 7862, 7863."
+    echo ""
+    echo "  Dans Draw Things, engrenage a GAUCHE, onglet Advanced,"
+    echo "  section API Server : quel numero est ecrit dans Port ?"
+    echo ""
+    read -r -p "  Tape-le ici : " manuel
+    if [ -z "$manuel" ]; then
+      read -n 1 -p "  Rien de tape. Appuie sur une touche pour fermer."
+      exit 1
+    fi
+    export DRAWTHINGS_URL="http://127.0.0.1:$manuel"
+    echo "DRAWTHINGS_URL=http://127.0.0.1:$manuel" >> .env
+    echo ""
+  fi
+fi
+
+# FORCE THE ENGINE. NEVER FALL BACK SILENTLY.
+#
+# choisir() returns the "simule" engine when DRAWTHINGS_URL is unset, and
+# simule writes coloured rectangles. That is what happened: 37 placeholder
+# files were generated, the vision correctly rejected every one, and the only
+# clue was one line saying "image engine: simule".
+#
+# Naming the engine means a broken connection stops the run instead of
+# producing 37 files nobody wants.
+export MOTEUR_IMAGE="drawthings"
+
 node tools/preflight.js || {
   echo ""
   read -n 1 -p "  Appuie sur une touche pour fermer."

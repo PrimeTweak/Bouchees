@@ -56,7 +56,8 @@ async function demander(chemin) {
     console.error("  Quatre reglages, et le deuxieme est celui qu'on rate :");
     console.error("    Server Online   On  (le point doit etre vert)");
     console.error("    Protocol        HTTP     <-- PAS gRPC");
-    console.error("    Port            7860");
+    console.error("    Port            celui que l'app propose");
+    console.error("                    (souvent 7860, parfois 7859)");
     console.error("    TLS             Off");
     console.error("");
     console.error("  Laisse Draw Things ouvert, puis relance.");

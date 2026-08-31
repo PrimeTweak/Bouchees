@@ -162,6 +162,30 @@ async function cycleImages(donnees, options) {
   const mImage = options.moteurImage || MoteursImage.choisir();
   const mVision = options.moteurVision || Vision.choisir();
   console.log("  image engine: " + mImage.name + (mImage.name === "simule" ? "  (no engine — placeholder files)" : ""));
+
+  /* A SIMULATED RUN IS NOT A RUN. STOP.
+   *
+   * The fallback exists so the cycle can be tested offline, and it wrote 37
+   * files of coloured rectangles on a real run. The vision rejected every
+   * one, correctly — but the only warning was the word "simule" on one line
+   * above forty lines of red.
+   *
+   * A fallback that quietly does the wrong thing for half an hour is worse
+   * than no fallback. It has to be asked for now. */
+  if (mImage.name === "simule" && !process.env.SIMULE_ASSUME) {
+    console.log("");
+    console.log("  ARRET — AUCUN MOTEUR D'IMAGE");
+    console.log("");
+    console.log("  Le mode simule ecrit des rectangles de couleur, pas des");
+    console.log("  photos. Il sert aux tests hors ligne.");
+    console.log("");
+    console.log("  Draw Things n'a pas ete trouve. Verifie que l'app est");
+    console.log("  ouverte et que API Server est allume, puis relance.");
+    console.log("");
+    console.log("  (SIMULE_ASSUME=1 pour forcer le mode simule volontairement)");
+    console.log("");
+    process.exit(1);
+  }
   console.log("  vision check: " + mVision.name + (mVision.name === "absent" ? "  (no vision — everything will be rejected)" : ""));
 
   const limite = Number(val("--max", plan.length));

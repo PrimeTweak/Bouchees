@@ -1,8 +1,9 @@
 {
-  "build": 89,
+  "build": 91,
   "date": "2026-08-29",
   "carries": [
-    "PHOTOS.command asks for the vision key once and keeps it in .env",
-    ".env added to .gitignore \u2014 the key was one push away from GitHub"
+    "the run fell back to the simulated engine and wrote 37 colour blocks",
+    "cycle.js now refuses to run simulated unless asked",
+    "the launcher forces MOTEUR_IMAGE and asks for the port when no probe answers"
   ]
 }
