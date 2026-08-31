@@ -1,12 +1,8 @@
 {
-  "build": 104,
+  "build": 105,
   "date": "2026-08-29",
   "carries": [
-    "seven day pills become a three-week rail on Recipes",
-    "the list shows all seven days of the chosen week instead of one",
-    "a locked week keeps names, times and verdicts; the picture and content go",
-    "Shopping keeps its day pills \u2014 the aisle question needs one tap",
-    "onboarding tiles: brand gradient, tick, press-and-settle, haptic",
-    "the count gains a green/amber bar that redistributes on each tick"
+    "String(localized:) was given a LocalizedStringKey \u2014 Text takes the key, String(localized:) wants a LocalizationValue",
+    "checker rule for it, scoped to qualified names after two false positives on shared field names"
   ]
 }
