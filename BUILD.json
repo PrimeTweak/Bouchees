@@ -1,8 +1,12 @@
 {
-  "build": 102,
+  "build": 104,
   "date": "2026-08-29",
   "carries": [
-    "@Binding var path: [Route] against @State var path = NavigationPath()",
-    "checker rule: a Binding whose type contradicts the State of the same name"
+    "seven day pills become a three-week rail on Recipes",
+    "the list shows all seven days of the chosen week instead of one",
+    "a locked week keeps names, times and verdicts; the picture and content go",
+    "Shopping keeps its day pills \u2014 the aisle question needs one tap",
+    "onboarding tiles: brand gradient, tick, press-and-settle, haptic",
+    "the count gains a green/amber bar that redistributes on each tick"
   ]
 }
