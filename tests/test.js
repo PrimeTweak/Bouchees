@@ -1835,16 +1835,34 @@ test("server: a QR with no GTIN answers 400 with a clear reason, never a lookup"
 test("server: a full miss spends one unit per request made, and nothing before the first", async () => {
   const t = await serveurDeTest();
   t.S._OffBudget._reset(); t.S._ProductCache._reset();
-  /* Offline, every step of the plan is attempted and fails: food twice,
-   * three siblings once — five requests. Build 119 also took a unit BEFORE
-   * the plan, so the same call cost six. Count what is left of twelve. */
-  const code = "036000291452";                         // a UPC-A: two forms
-  const requetes = Barcode2.formes(code).length + 3;    // food per form, one per sibling
-  await t.call("GET", "/api/product?code=" + code);
-  let restants = 0;
-  while (t.S._OffBudget.take()) restants++;
-  assert.equal(restants, 12 - requetes,
-    requetes + " requests must cost " + requetes + " units, not " + (requetes + 1));
+  /* NO NETWORK IN THIS TEST, WHATEVER THE MACHINE HAS.
+   *
+   * The first version measured the loop by letting every fetch fail, which
+   * only holds where there is no connection. On GitHub Actions the first
+   * call reaches Open Food Facts, may find the product, and the plan stops
+   * early having spent one unit — the assertion then blamed the budget.
+   * The database is stubbed to answer "not found" every time, so every
+   * step runs and the count means one thing on every machine. */
+  const vraiFetch = global.fetch;
+  let appels = 0;
+  global.fetch = async function () {
+    appels++;
+    return { status: 200,
+             headers: { get: function () { return "application/json"; } },
+             json: async function () { return { status: 0 }; } };
+  };
+  try {
+    const code = "036000291452";                         // a UPC-A: two forms
+    const requetes = Barcode2.formes(code).length + 3;    // food per form, one per sibling
+    await t.call("GET", "/api/product?code=" + code);
+    assert.equal(appels, requetes, "every step of the plan is tried on a miss");
+    let restants = 0;
+    while (t.S._OffBudget.take()) restants++;
+    assert.equal(restants, 12 - requetes,
+      requetes + " requests must cost " + requetes + " units, not " + (requetes + 1));
+  } finally {
+    global.fetch = vraiFetch;
+  }
   t.close();
 });
 

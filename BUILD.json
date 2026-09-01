@@ -1,13 +1,8 @@
 {
-  "build": 121,
+  "build": 122,
   "date": "2026-09-01",
   "carries": [
-    "the lookup budget was charged before the plan and again per step, so a first-try hit cost two and the real budget was six a minute, not twelve; the first check only looks",
-    "a QR with a GS1 Digital Link and a Data Matrix with a GS1 element string were accepted by the camera and rejected by the server as seventeen-digit nonsense; the GTIN inside is found first",
-    "GS1 DataBar, in all three forms, joins the symbologies: produce, meat, bakery and coupons carry it",
-    "when a frame holds several codes, retail forms win over the carton and the QR beside them",
-    "focus is restricted to near range and continuous, so a small code on a jar gets a sharp frame instead of a hunt between it and the shelf",
-    "a code with no product number answers 400 and the app says so, instead of blaming the connection",
-    "nine new tests: every GS1 payload shape, every UPC-E rule, the carton form, and the budget cost measured in units against a live instance"
+    "the budget test stubs the product database instead of relying on every fetch failing: it was written offline and broke on a runner with a network, where the first call could succeed and end the plan early",
+    "the stub also asserts that every step of the plan is tried on a miss, which the offline version could not"
   ]
 }
