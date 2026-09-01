@@ -1,19 +1,8 @@
-/* Legal pages — served by the server
- *
- * Apple exige des URL publiques et fonctionnelles pour les conditions et la
- * privacy policy. A dead link gets the submission rejected.
- *
- * These texts describe what the code ACTUALLY does. If the behaviour changes,
- * these pages change the same day — a policy that lies is
- * pire que pas de politique.
- *
- * Not written by a lawyer. These texts are an honest, complete starting point
- * and must be reviewed before a real launch — especially the part touching
- * children's data (Quebec's Law 25, GDPR beyond the border).
- */
+/* If the behaviour changes, these pages change the same day — a policy that
+ * lies is pire que pas de politique. Legal pages — served by the server */
 "use strict";
 
-const GABARIT = (titre, corps) => `<!DOCTYPE html>
+const GABARIT = (titre, body) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -41,7 +30,7 @@ const GABARIT = (titre, corps) => `<!DOCTYPE html>
 </style>
 </head>
 <body>
-${corps}
+${body}
 <footer>
   Bouchées · <a href="/terms">Terms of Use</a> ·
   <a href="/privacy">Privacy Policy</a>

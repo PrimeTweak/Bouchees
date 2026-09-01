@@ -1,25 +1,14 @@
-/* Apple — StoreKit 2, server side
- *
- * The iOS client sends a signed transaction (JWS). It is NOT trusted: the
- * signature is verified, the certificate chain is walked up to the pinned
- * Apple root, and only then is the entitlement granted. Same rule as Stripe —
- * the server decides, never the
- * client.
- *
- * Plain Node, no dependencies.
- *
- * Apple root: download "Apple Root CA - G3" from
- * https://www.apple.com/certificateauthority/ et place le fichier .cer dans
- * server/AppleRootCA-G3.cer. Without it everything is refused — the safe fallback.
- */
+/* It is NOT trusted: the signature is verified, the certificate chain is
+ * walked up to the pinned Apple root, and only then is the entitlement
+ * granted. Same rule as Stripe — the server decides, never the client. */
 "use strict";
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
-/* Empreinte SHA-256 de la racine attendue. Si le fichier fourni ne correspond
- * does not match, everything is refused: that blocks a substituted root.
- * Leaving it empty disables fingerprint pinning (the chain is still checked). */
+/* SHA-256 fingerprint of the expected Apple root. A mismatch refuses
+ * everything, which blocks a substituted root. Empty disables pinning;
+ * the chain is still checked. */
 const EMPREINTE_RACINE = process.env.APPLE_ROOT_SHA256 || "";
 
 function base64urlVersBuffer(s) {
@@ -29,7 +18,7 @@ function lireJSONb64(s) {
   return JSON.parse(base64urlVersBuffer(s).toString("utf8"));
 }
 
-/* La signature ES256 d'un JWS est en format brut (r||s, 64 octets).
+/* La signature ES256 d'un JWS est en format raw (r||s, 64 octets).
  * Node attend du DER : on convertit. */
 function bruteVersDER(sig) {
   if (sig.length !== 64) return null;
@@ -42,8 +31,8 @@ function bruteVersDER(sig) {
   };
   const r = entier(sig.slice(0, 32));
   const s = entier(sig.slice(32));
-  const corps = Buffer.concat([r, s]);
-  return Buffer.concat([Buffer.from([0x30, corps.length]), corps]);
+  const body = Buffer.concat([r, s]);
+  return Buffer.concat([Buffer.from([0x30, body.length]), body]);
 }
 
 function certDepuisB64(b64) {
@@ -60,9 +49,9 @@ function empreinteCert(cert) {
 function chargerRacine(cheminRacine) {
   const p = cheminRacine || process.env.APPLE_ROOT_CER || path.join(__dirname, "AppleRootCA-G3.cer");
   if (!fs.existsSync(p)) return null;
-  const brut = fs.readFileSync(p);
-  const txt = brut.toString("utf8");
-  return new crypto.X509Certificate(txt.indexOf("-----BEGIN") !== -1 ? txt : brut);
+  const raw = fs.readFileSync(p);
+  const txt = raw.toString("utf8");
+  return new crypto.X509Certificate(txt.indexOf("-----BEGIN") !== -1 ? txt : raw);
 }
 
 /* Verifies the x5c chain: leaf -> intermediate(s) -> expected root. Each
@@ -105,14 +94,14 @@ function verifierJWS(jws, options) {
   if (entete.alg !== "ES256") return { ok: false, reason: "algorithme refusé : " + entete.alg };
 
   const racine = options.racine !== undefined ? options.racine : chargerRacine(options.cheminRacine);
-  const chaine = verifierChaine(entete.x5c, racine, options.maintenant);
-  if (!chaine.ok) return { ok: false, reason: chaine.reason };
+  const chain = verifierChaine(entete.x5c, racine, options.maintenant);
+  if (!chain.ok) return { ok: false, reason: chain.reason };
 
   const der = bruteVersDER(base64urlVersBuffer(parties[2]));
   if (!der) return { ok: false, reason: "signature de taille inattendue" };
   const valide = crypto.createVerify("SHA256")
     .update(parties[0] + "." + parties[1])
-    .verify(chaine.feuille.publicKey, der);
+    .verify(chain.feuille.publicKey, der);
   if (!valide) return { ok: false, reason: "signature invalide" };
 
   let charge;
@@ -125,26 +114,26 @@ function verifierJWS(jws, options) {
  * statuses as Stripe: the rest of the server sees no difference. */
 function etatDepuisTransaction(charge, options) {
   options = options || {};
-  const attendu = options.bundleId || process.env.APPLE_BUNDLE_ID;
-  if (attendu && charge.bundleId && charge.bundleId !== attendu)
+  const expected = options.bundleId || process.env.APPLE_BUNDLE_ID;
+  if (expected && charge.bundleId && charge.bundleId !== expected)
     return { ok: false, reason: "bundleId inattendu : " + charge.bundleId };
   const produits = options.produits || (process.env.APPLE_PRODUITS || "").split(",").filter(Boolean);
   if (produits.length && charge.productId && produits.indexOf(charge.productId) === -1)
     return { ok: false, reason: "produit inconnu : " + charge.productId };
 
   const now = options.maintenant ? options.maintenant.getTime() : Date.now();
-  const fin = charge.expiresDate || null;
+  const finish = charge.expiresDate || null;
   const revoque = !!charge.revocationDate;
   let status;
   if (revoque) status = "annule";
-  else if (!fin) status = "actif";                       /* achat non renouvelable */
-  else if (fin > now) status = "actif";
+  else if (!finish) status = "actif";                       /* achat non renouvelable */
+  else if (finish > now) status = "actif";
   else status = "annule";
 
   return {
     ok: true,
     status: status,
-    periodEnd: fin ? new Date(fin).toISOString() : null,
+    periodEnd: finish ? new Date(finish).toISOString() : null,
     produit: charge.productId || null,
     transaction: charge.originalTransactionId || charge.transactionId || null,
     environnement: charge.environment || null

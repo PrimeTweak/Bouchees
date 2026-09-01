@@ -1,30 +1,12 @@
-/* Manual import of generated recipes
- *   node tools/manual-import.js <fichier.json> [--lot=2026-09] [--sec]
- *
- * POURQUOI CET OUTIL EXISTE
- *
- * There are two entry gates, and they are not alike:
- *
- *   ingest/importer.js  — recipes FROM OUTSIDE, in free text
- *                            (« 2 cups all-purpose flour »). Il faut les
- *                            normalised against the catalogue, hence the lexicon.
- *
- *   this one               — recipes GENERATED from the month's prompt. They
- *                            already use catalogue identifiers: nothing to
- *                            normalise, everything to validate.
- *
- * Passer les secondes par le premier ne donne rien de dangereux — elles
- * partent en quarantine — mais rien d'utile non plus.
- *
- * The safety gates stay the same: validation against the catalogue, culinary
- * coherence, and publishing into a batch.
- */
+/* There are two entry gates, and they are not alike: Manual import of
+ * generated recipes node tools/manual-import.js <fichier.json>
+ * [--lot=2026-09] [--sec] */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
-const ecrire = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const write = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
 
 const Valideur = require("../generation/recipe-validator.js");
 const Coherence = require("../generation/coherence.js");
@@ -40,10 +22,10 @@ const Semaines = require("./weeks.js");
 function currentWeek() { return Semaines.identifiantSemaine(new Date()); }
 
 function corpusExistant() {
-  let c = lire("data/recipes.json");
+  let c = read("data/recipes.json");
   for (const p of ["data/imported/imported-recipes.json",
                    "data/generated/generated-recipes.json"]) {
-    try { c = c.concat(lire(p)); } catch (e) {}
+    try { c = c.concat(read(p)); } catch (e) {}
   }
   return c;
 }
@@ -55,14 +37,14 @@ function principal() {
     process.exit(1);
   }
 
-  const chemin = path.isAbsolute(fichier) ? fichier : path.join(racine, fichier);
-  if (!fs.existsSync(chemin)) {
-    console.error("Fichier introuvable : " + chemin);
+  const filePath = path.isAbsolute(fichier) ? fichier : path.join(racine, fichier);
+  if (!fs.existsSync(filePath)) {
+    console.error("Fichier introuvable : " + filePath);
     process.exit(1);
   }
 
-  let brut;
-  try { brut = JSON.parse(fs.readFileSync(chemin, "utf8")); }
+  let raw;
+  try { raw = JSON.parse(fs.readFileSync(filePath, "utf8")); }
   catch (e) {
     console.error("Ce fichier n'est pas du JSON valide : " + e.message);
     console.error("Common trap: TextEdit saves rich text by default.");
@@ -70,21 +52,21 @@ function principal() {
     process.exit(1);
   }
 
-  const recettes = Array.isArray(brut) ? brut : (brut.recettes || []);
+  const recettes = Array.isArray(raw) ? raw : (raw.recettes || []);
   if (!recettes.length) {
     console.error("Aucune recette dans ce fichier.");
     process.exit(1);
   }
 
-  const donnees = {
-    catalogue: lire("data/ingredients.json"),
-    substitutions: lire("data/substitutions.json"),
-    base: lire("data/base.json")
+  const data = {
+    catalogue: read("data/ingredients.json"),
+    substitutions: read("data/substitutions.json"),
+    base: read("data/base.json")
   };
   const existantes = corpusExistant();
   const ids = existantes.map((r) => r.id);
 
-  console.log("\n" + recettes.length + " recipe(s) read from " + path.basename(chemin) + "\n");
+  console.log("\n" + recettes.length + " recipe(s) read from " + path.basename(filePath) + "\n");
 
   /* --- 1. Validation contre le catalogue --- */
   console.log("Validation — catalogue, allergens, ages");
@@ -94,9 +76,9 @@ function principal() {
   const aRevoir = [];
 
   recettes.forEach(function (r) {
-    /* The commission is not known here: validation runs with no avoidance
-     * et on laisse le moteur juger le reste. */
-    const v = Valideur.valider(r, null, donnees, ids.concat(survivantes.map((s) => s.id)));
+    /* The brief is not known here: validation runs with no avoided allergen
+     * and the engine judges the rest. */
+    const v = Valideur.valider(r, null, data, ids.concat(survivantes.map((s) => s.id)));
     if (!v.ok) {
       rejetees.push({ id: r.id || "(no id)", erreurs: v.erreurs });
       console.log("  x  " + (r.id || "(no id)") + " — " + v.erreurs[0]);
@@ -112,7 +94,7 @@ function principal() {
   console.log("─".repeat(42));
   const gardees = [];
   survivantes.forEach(function (r) {
-    const c = Coherence.verifier(r, donnees);
+    const c = Coherence.verifier(r, data);
     if (!c.ok) {
       rejetees.push({ id: r.id, erreurs: c.erreurs });
       console.log("  x  " + r.id + " — " + c.erreurs[0]);
@@ -148,7 +130,7 @@ function principal() {
   }
 
   let generees = [];
-  try { generees = lire("data/generated/generated-recipes.json"); } catch (e) {}
+  try { generees = read("data/generated/generated-recipes.json"); } catch (e) {}
   const dejaLa = new Set(generees.map((r) => r.id));
   gardees.forEach(function (r) {
     if (dejaLa.has(r.id)) return;
@@ -163,9 +145,9 @@ function principal() {
     console.log("  + " + r.name);
   });
   fs.mkdirSync(path.join(racine, "data", "generated"), { recursive: true });
-  ecrire("data/generated/generated-recipes.json", generees);
+  write("data/generated/generated-recipes.json", generees);
 
-  const pub = lire("data/publishing.json");
+  const pub = read("data/publishing.json");
   if (!pub.batches.some((l) => l.id === lot)) {
     pub.batches.push({ id: lot, title: "Semaine du " + lot, access: "subscriber",
                     weekly: true,
@@ -173,11 +155,11 @@ function principal() {
     console.log("  batch " + lot + " created");
   }
   gardees.forEach(function (r) { pub.assignment[r.id] = lot; });
-  ecrire("data/publishing.json", pub);
+  write("data/publishing.json", pub);
 
   const r = Publier.publier();
   fs.mkdirSync(path.join(racine, "dist", "batches"), { recursive: true });
-  fs.writeFileSync(path.join(racine, "dist", "manifest.json"), JSON.stringify(r.manifeste, null, 2) + "\n");
+  fs.writeFileSync(path.join(racine, "dist", "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
   fs.writeFileSync(path.join(racine, "dist", "safety.json"), JSON.stringify(r.securite) + "\n");
   Object.keys(r.content).forEach(function (l) {
     fs.writeFileSync(path.join(racine, "dist", "batches", l + ".json"), JSON.stringify(r.content[l]) + "\n");
@@ -186,7 +168,7 @@ function principal() {
   console.log("\nBilan");
   console.log("─".repeat(42));
   console.log("  published: " + gardees.length + " · rejected: " + rejetees.length);
-  r.manifeste.batches.forEach(function (l) {
+  r.manifest.batches.forEach(function (l) {
     console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
       String(l.count).padStart(2) + " recipes");
   });

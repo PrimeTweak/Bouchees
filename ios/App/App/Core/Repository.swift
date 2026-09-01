@@ -1,17 +1,6 @@
-//  Repository.swift
-//
-//  Everything that touches disk or network.
-//
-//  Two principles govern this file:
-//
-//  1. OFFLINE FIRST. The real use case is a grocery aisle in a basement with
-//     no signal. Bundled content is enough to make the app work on first
-//     launch, before any connection.
-//
-//  2. PROFILES NEVER LEAVE THE DEVICE. A child's first name, age and avoided
-//     allergens stay in the app container. No server route receives them.
-//     That is what the App Store privacy labels declare, and it has to stay
-//     true in the code.
+// The real use case is a grocery aisle in a basement with no signal. That is
+// what the App Store privacy labels declare, and it has to stay true in the
+// code.
 
 import Foundation
 
@@ -105,12 +94,12 @@ final class LocalStore {
 
     func loadWeekPlan(batch: String) -> WeekPlan? {
         guard let d = try? Data(contentsOf: folder.appendingPathComponent("plan-\(batch).json")),
-              let brut = try? JSONSerialization.jsonObject(with: d) as? [[String: Any]]
+              let rawText = try? JSONSerialization.jsonObject(with: d) as? [[String: Any]]
         else { return nil }
         var days: [Int: [String]] = [:]
-        for p in brut {
-            if let jour = p["day"] as? Int, let ids = p["ids"] as? [String] {
-                days[jour] = ids
+        for p in rawText {
+            if let day = p["day"] as? Int, let ids = p["ids"] as? [String] {
+                days[day] = ids
             }
         }
         return days.isEmpty ? nil : WeekPlan(days: days)
@@ -132,6 +121,19 @@ final class LocalStore {
         ids.insert(id)
         UserDefaults.standard.set(Array(ids), forKey: "cooked.\(week)")
     }
+
+    /// One note per recipe, on the device. Synced to the ranking later.
+    func writeLocalRating(_ id: String, note: Int?) {
+        var all = readLocalRatings()
+        if let n = note { all[id] = n } else { all.removeValue(forKey: id) }
+        UserDefaults.standard.set(all, forKey: "localRatings")
+    }
+    func readLocalRatings() -> [String: Int] {
+        UserDefaults.standard.dictionary(forKey: "localRatings") as? [String: Int] ?? [:]
+    }
+
+    func writeFamilyMode(_ on: Bool) { UserDefaults.standard.set(on, forKey: "familyMode") }
+    func readFamilyMode() -> Bool { UserDefaults.standard.bool(forKey: "familyMode") }
 
     func loadCooked(week: String) -> Set<String> {
         Set(UserDefaults.standard.stringArray(forKey: "cooked.\(week)") ?? [])
@@ -243,8 +245,8 @@ actor RemoteStore {
         try await execute(ManifestResponse.self, request("api/manifest", token: token))
     }
 
-    /// Le serveur ne renvoie que les batches auxquels le compte a droit. Le
-    /// client ne filtre rien : a wall on the client is not a wall.
+    /// The server returns only the batches the account is entitled to. The
+    /// client filters nothing: a wall on the client is not a wall.
     func recipes(token: String?) async throws -> RecipesResponse {
         try await execute(RecipesResponse.self, request("api/recipes", token: token))
     }

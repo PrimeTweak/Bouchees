@@ -78,7 +78,7 @@ targets:
         PRODUCT_NAME: Bouchees
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        TARGETED_DEVICE_FAMILY: 1,2
+        TARGETED_DEVICE_FAMILY: 1
     entitlements:
       path: App/App/App.entitlements
       properties:

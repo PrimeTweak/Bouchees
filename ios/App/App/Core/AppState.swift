@@ -1,7 +1,4 @@
-//  AppState.swift
-//
-//  The central state. One source of truth for profiles, recipes and adapted
-//  results — the views compute nothing, they display.
+// AppState.swift The central state.
 
 import Foundation
 import Observation
@@ -14,7 +11,10 @@ final class AppState {
 
     var profiles: [ChildProfile] = []
     var activeProfileID: String?
-    var familyMode = false
+    /// Persisted: "Everyone" chosen in a store must still hold at home.
+    var familyMode = false {
+        didSet { local.writeFamilyMode(familyMode) }
+    }
 
     /// Light, dark, or whatever the phone is set to. System is the default.
     var theme: AppTheme = .system {
@@ -37,28 +37,14 @@ final class AppState {
     /// Adapt one recipe for a profile that is not the active one — what the
     /// onboarding demo runs on. The engine is local and takes under a
     /// millisecond, so this is cheap enough to recompute on every tap.
-    /// Every replacement the table holds for an ingredient, in the order the
-    /// engine ranks them, with the one actually used marked.
-    ///
-    /// This is the payoff of a deterministic engine: the reasoning can be
-    /// shown because it exists. A generated recommendation has nothing to
-    /// open.
     struct SubstitutionOption: Sendable {
         let name: String
         let detail: String
         let chosen: Bool
     }
 
-    /// The recipes of the current batch — the week the subscription promises.
     /// The batches were always weekly; nothing in the UI ever showed it.
-    ///
     /// `currentWeek` already holds the batch id, straight from the manifest.
-    /// Deriving it from `batches.last` would be a second, weaker answer to a
-    /// question the server already answered.
-    /// Which recipe sits on which day of this week.
-    ///
-    /// Loaded once per batch and written the moment the parent moves
-    /// something. Regenerated deterministically when a new batch arrives.
     var plan: WeekPlan = .empty
 
     /// The day the strip is showing. Starts on today.
@@ -69,12 +55,9 @@ final class AppState {
     /// Which week the rail is showing: -1 past, 0 current, +1 next.
     var selectedWeek: Int = 0
 
-    /// The three weeks the rail offers.
-    ///
-    /// Built from the manifest rather than guessed: the batch ids carry the
-    /// ISO week, and `unlocked` is what the server already decided. A week
-    /// with no batch still appears — it holds zero recipes and says so, which
-    /// is honest and keeps the rail three wide.
+    /// The three weeks the rail offers: built from the manifest rather than
+    /// guessed: the batch ids carry the ISO week, and `unlocked` is what the
+    /// server already decided.
     var weekSlots: [WeekSlot] {
         let ouvertes = batches.filter { $0.unlocked }.map(\.id)
         let courante = currentBatchID
@@ -104,30 +87,25 @@ final class AppState {
             ?? WeekSlot(offset: 0, batchID: currentBatchID, count: 0, unlocked: true)
     }
 
-    /// The recipes of the week the rail is showing.
-    ///
-    /// A locked week still returns its recipes: the list shows names, times
-    /// and verdicts, and hides the rest. Hiding the row entirely would leave
-    /// nothing to subscribe FOR.
+    /// The recipes of the week the rail is showing: a locked week still
+    /// returns its recipes: the list shows names, times and verdicts, and
+    /// hides the rest.
     var selectedWeekRecipes: [Recipe] {
         guard selectedWeek != 0 else { return weekRecipes }
         guard let id = currentSlot.batchID else { return [] }
         return recipes.filter { $0.batch == id }
     }
 
-    /// Which recipes fall on a day of the SELECTED week.
-    ///
-    /// The plan is stored for the current week only — a parent does not
-    /// rearrange a week they cannot open. Other weeks are laid out
-    /// deterministically from the recipe order, so the same week always
-    /// looks the same.
+    /// Which recipes fall on a day of the SELECTED week: the plan is stored
+    /// for the current week only — a parent does not rearrange a week they
+    /// cannot open.
     func recipesOfSelectedWeek(on day: Int) -> [Recipe] {
         if selectedWeek == 0 { return recipes(on: day) }
-        let plats = selectedWeekRecipes
-        guard !plats.isEmpty else { return [] }
+        let dishes = selectedWeekRecipes
+        guard !dishes.isEmpty else { return [] }
         /* Weeknights first, the same shape the plan uses: five days carry a
          * recipe, two are left open on purpose. */
-        return plats.enumerated().compactMap { i, r in
+        return dishes.enumerated().compactMap { i, r in
             WeekPlan.defaultDay(forIndex: i) == day ? r : nil
         }
     }
@@ -154,33 +132,30 @@ final class AppState {
     /// already chose for a recipe that is still in the week.
     func refreshPlan() {
         guard let id = currentBatchID else { plan = .empty; return }
-        let semaine = weekRecipes
-        let connus = Set(semaine.map(\.id))
+        let weekPairs = weekRecipes
+        let connus = Set(weekPairs.map(\.id))
 
-        var courant = local.loadWeekPlan(batch: id) ?? WeekPlan.initial(for: semaine)
+        var courant = local.loadWeekPlan(batch: id) ?? WeekPlan.initial(for: weekPairs)
         /* Drop anything no longer in the week, then place anything new. */
-        for jour in courant.days.keys {
-            courant.days[jour]?.removeAll { !connus.contains($0) }
-            if courant.days[jour]?.isEmpty == true { courant.days[jour] = nil }
+        for day in courant.days.keys {
+            courant.days[day]?.removeAll { !connus.contains($0) }
+            if courant.days[day]?.isEmpty == true { courant.days[day] = nil }
         }
         let places = Set(courant.days.values.flatMap { $0 })
-        let neuves = semaine.filter { !places.contains($0.id) }
+        let neuves = weekPairs.filter { !places.contains($0.id) }
         if !neuves.isEmpty {
             let depart = WeekPlan.initial(for: neuves)
-            for (jour, ids) in depart.days {
-                courant.days[jour, default: []].append(contentsOf: ids)
+            for (day, ids) in depart.days {
+                courant.days[day, default: []].append(contentsOf: ids)
             }
         }
         plan = courant
         local.saveWeekPlan(plan, batch: id)
     }
 
-    /// The batch the reader is actually on.
-    ///
     /// The manifest's `currentWeek` names the week being PUBLISHED, which can
     /// be ahead of anything this reader can open — it says 2026-S35 while the
-    /// newest unlocked batch is S34. The week plan is keyed on this, so both
-    /// have to agree.
+    /// newest unlocked batch is S34.
     var currentBatchID: String? {
         let mine = batches.filter { $0.unlocked }
         return mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
@@ -195,27 +170,20 @@ final class AppState {
         return week.isEmpty ? recipes : week
     }
 
-    /// The week's shopping list, already adapted for the active profile.
-    /// The list for one day only.
-    ///
-    /// Standing in an aisle, "what do I need for Wednesday" is a real
-    /// question, and the whole-week list could not answer it.
+    /// The list for one day only. The week's shopping list, already adapted
+    /// for the active profile.
     func shoppingList(on day: Int) -> [ShoppingItem] {
-        let plats = recipes(on: day)
-        guard !plats.isEmpty, let m = moteur else { return [] }
-        return (try? m.shoppingList(plats, pour: activeProfile)) ?? []
+        let dishes = recipes(on: day)
+        guard !dishes.isEmpty, let m = engine else { return [] }
+        return (try? m.shoppingList(dishes, for: activeProfile)) ?? []
     }
 
     /// Queries the parent has run more than once.
-    ///
-    /// A threshold rather than a log: every reference on zero-state search
-    /// says a term should be searched several times before it is offered
-    /// back, or the list fills with typos and one-offs.
     private(set) var recentSearches: [String] = []
     @ObservationIgnored private var searchCounts: [String: Int] = [:]
 
-    func rememberSearch(_ brut: String) {
-        let q = brut.trimmingCharacters(in: .whitespaces).lowercased()
+    func rememberSearch(_ raw: String) {
+        let q = raw.trimmingCharacters(in: .whitespaces).lowercased()
         guard q.count > 1 else { return }
         searchCounts[q, default: 0] += 1
         guard searchCounts[q]! >= 2 else { return }
@@ -225,8 +193,8 @@ final class AppState {
     }
 
     var shoppingList: [ShoppingItem] {
-        guard let moteur, moteur.pret else { return [] }
-        return (try? moteur.shoppingList(weekRecipes, pour: activeProfile)) ?? []
+        guard let engine, engine.pret else { return [] }
+        return (try? engine.shoppingList(weekRecipes, for: activeProfile)) ?? []
     }
 
     var checkedItems: Set<String> {
@@ -246,12 +214,8 @@ final class AppState {
         local.markCooked(id, week: currentWeek ?? "")
     }
 
-    /// Every option the table holds for an ingredient.
-    ///
-    /// `chosenName` is the substitute the engine actually took. It used to be
-    /// absent and every option came back with `chosen` false, so the sheet's
-    /// highlight never fired: the substitute appeared in the heading and then
-    /// again, unmarked, in a list of alternatives, with nothing tying the two.
+    /// Every option the table holds for an ingredient: `chosenName` is the
+    /// substitute the engine actually took.
     func substitutionOptions(for ingredientName: String,
                              chosen chosenName: String? = nil) -> [SubstitutionOption] {
         /* Read from the table the app already carries rather than crossing the
@@ -286,14 +250,14 @@ final class AppState {
     }
 
     func adaptPreview(_ recipe: Recipe, for profile: ChildProfile) -> AdaptedRecipe? {
-        guard let moteur, moteur.pret else { return nil }
-        return try? moteur.adapter([recipe], pour: profile).first
+        guard let engine, engine.pret else { return nil }
+        return try? engine.adapt([recipe], for: profile).first
     }
 
     func tally(for profile: ChildProfile) -> ProfileTally {
         var t = ProfileTally()
-        guard let moteur, moteur.pret, !recipes.isEmpty,
-              let results = try? moteur.adapter(recipes, pour: profile) else { return t }
+        guard let engine, engine.pret, !recipes.isEmpty,
+              let results = try? engine.adapt(recipes, for: profile) else { return t }
         for r in results {
             switch r.status {
             case .asIs: t.asIs += 1
@@ -316,7 +280,7 @@ final class AppState {
 
     // MARK: - Dependencies
 
-    private var moteur: RecipeEngine?
+    private var engine: RecipeEngine?
     private let local = LocalStore()
 
     /// The substitution table, decoded once for display. The engine uses its
@@ -335,13 +299,13 @@ final class AppState {
     // MARK: - ChildProfile courant
 
     var activeProfile: ChildProfile {
-        if familyMode && profiles.count > 1 { return ChildProfile.famille(profiles) }
+        if familyMode && profiles.count > 1 { return ChildProfile.family(profiles) }
         return profiles.first { $0.id == activeProfileID } ?? profiles.first ?? .defaut
     }
 
     /// The profile family mode resolves to, exposed so the picker can show its
     /// numbers alongside each child's.
-    var familyProfile: ChildProfile { ChildProfile.famille(profiles) }
+    var familyProfile: ChildProfile { ChildProfile.family(profiles) }
 
     /// When the corpus last came down, in words. A date is precise and
     /// unreadable; "Today" is what a parent wants to know.
@@ -365,6 +329,8 @@ final class AppState {
         theme = local.readTheme()
         profiles = local.readProfiles()
         activeProfileID = profiles.first?.id
+        familyMode = local.readFamilyMode() && profiles.count > 1
+        restoreLocalRatings()
 
         do {
             let m = try RecipeEngine()
@@ -375,7 +341,7 @@ final class AppState {
                 /* Optional: an older bundle without it still runs, with the
                  * narrower recognition it always had. */
                 lexicon: try? Resources.data("label-lexicon", "json"))
-            moteur = m
+            engine = m
             /* The same bytes the engine just loaded, decoded a second time for
              * display. Cheap, and it keeps the rule sheet honest: what it
              * shows is what the engine used. */
@@ -446,15 +412,15 @@ final class AppState {
     // MARK: - Adaptation
 
     func recompute() {
-        guard let moteur, moteur.pret, !recipes.isEmpty else {
+        guard let engine, engine.pret, !recipes.isEmpty else {
             adapted = []
             return
         }
         do {
-            adapted = try moteur.adapter(recipes, pour: activeProfile)
+            adapted = try engine.adapt(recipes, for: activeProfile)
         } catch {
             adapted = []
-            syncMessage = "Le moteur n’a pas pu adapter les recipes : \(error.localizedDescription)"
+            syncMessage = String(localized: "The engine could not adapt the recipes: \(error.localizedDescription)")
         }
     }
 
@@ -467,15 +433,15 @@ final class AppState {
         }
     }
 
-    func result(pour id: String) -> AdaptedRecipe? {
+    func result(for id: String) -> AdaptedRecipe? {
         adapted.first { $0.id == id }
     }
 
-    func recipe(pour id: String) -> Recipe? {
+    func recipe(for id: String) -> Recipe? {
         recipes.first { $0.id == id }
     }
 
-    // MARK: - Profils
+    // MARK: - Profiles
 
     func save(_ profile: ChildProfile) {
         if let i = profiles.firstIndex(where: { $0.id == profile.id }) {
@@ -523,19 +489,30 @@ final class AppState {
         }
     }
 
-    /// Rating requires an account: without one, nothing stops a single person
-    /// voting a hundred times. The display updates at once, then the
-    /// serveur confirme — c'est lui qui fait foi.
+    /// Without one, the note is the parent's own record and nothing asks them
+    /// to sign in. Rating requires an account: without one, nothing stops a
+    /// single person voting a hundred times.
     func rate(_ recetteId: String, note: Int?) async {
-        guard let token = subscription.serverToken else {
-            syncMessage = String(localized: "Sign in from Family to rate a recipe.")
-            return
-        }
+        local.writeLocalRating(recetteId, note: note)
+        let mine = note
+        let shared = ratings[recetteId]
+        ratings[recetteId] = RatingSummary(votes: shared?.votes ?? 0,
+                                           average: shared?.average, myRating: mine)
+        guard let token = subscription.serverToken else { return }
         do {
             let a = try await serveur.rate(recetteId, note: note, token: token)
             ratings[recetteId] = a
         } catch {
             syncMessage = "The rating couldn’t be saved. Try again later."
+        }
+    }
+
+    /// Local notes, restored under the shared summary when there is one.
+    func restoreLocalRatings() {
+        for (id, note) in local.readLocalRatings() where ratings[id]?.myRating == nil {
+            let shared = ratings[id]
+            ratings[id] = RatingSummary(votes: shared?.votes ?? 0,
+                                        average: shared?.average, myRating: note)
         }
     }
 
@@ -546,14 +523,14 @@ final class AppState {
         }
     }
 
-    /// Adapte une recipe qui n'est pas dans le recipes courant — une favorite
-    /// outside the window, or an entry in the ranking.
+    /// Adapts a recipe outside the current batch — a saved one past the
+    /// window, or an entry of the ranking.
     func resultFor(_ recipe: Recipe) -> AdaptedRecipe? {
-        if let deja = adapted.first(where: { $0.id == recipe.id }) { return deja }
-        return try? moteur?.adapter(recipe, pour: activeProfile)
+        if let existing = adapted.first(where: { $0.id == recipe.id }) { return existing }
+        return try? engine?.adapt(recipe, for: activeProfile)
     }
 
-    func pairFor(pour id: String) -> (recipe: Recipe, result: AdaptedRecipe)? {
+    func pairFor(for id: String) -> (recipe: Recipe, result: AdaptedRecipe)? {
         let source = recipes.first { $0.id == id }
             ?? topRated.first { $0.id == id }
             ?? saved.recipes.first { $0.id == id }
@@ -573,21 +550,21 @@ final class AppState {
 
     // MARK: - Lookups
 
-    var knownAllergens: [Allergen] { moteur?.base?.allergens ?? [] }
+    var knownAllergens: [Allergen] { engine?.base?.allergens ?? [] }
 
-    func allergenName(_ id: String) -> String { moteur?.allergenName(id) ?? id }
+    func allergenName(_ id: String) -> String { engine?.allergenName(id) ?? id }
 
-    func allergenNames(_ ids: [String]) -> [String] { moteur?.allergenNames(ids) ?? ids }
+    func allergenNames(_ ids: [String]) -> [String] { engine?.allergenNames(ids) ?? ids }
 
-    func definition(_ id: String) -> IngredientDefinition? { moteur?.catalogue[id] }
+    func definition(_ id: String) -> IngredientDefinition? { engine?.catalogue[id] }
 
-    func stage(pour ageMonths: Int) -> TextureStage? { try? moteur?.stage(pour: ageMonths) }
+    func stage(for ageMonths: Int) -> TextureStage? { try? engine?.stage(for: ageMonths) }
 
     // MARK: - Scanner
 
     func evaluateLabel(_ texte: String) throws -> ProductVerdict {
-        guard let moteur else { throw EngineError.exception("moteur indisponible") }
-        return try moteur.evaluateLabel(texte, evites: activeProfile.allergens)
+        guard let engine else { throw EngineError.exception("engine indisponible") }
+        return try engine.evaluateLabel(texte, evites: activeProfile.allergens)
     }
 
     func lookUpProduct(code: String) async throws -> GroceryProduct {
@@ -595,14 +572,6 @@ final class AppState {
     }
 
     // MARK: - Compte
-
-    func signIn(email: String) async throws {
-        let r = try await serveur.login(email: email)
-        subscription.setToken(r.token, email: r.email)
-        subscribed = r.subscribed ?? false
-        await subscription.refreshEntitlements()
-        await sync()
-    }
 
     func linkPurchase(_ jws: String) async {
         guard let token = subscription.serverToken else { return }
@@ -612,33 +581,22 @@ final class AppState {
         }
     }
 
-    func signOut() async {
-        subscription.clearToken()
-        subscribed = false
-        await sync()
-    }
-
     // MARK: - Lots
 
     var lockedBatches: [Batch] { batches.filter { !$0.unlocked } }
 
-    var mostRecentUnlockedBatch: Batch? {
-        batches.filter(\.unlocked).sorted { $0.id < $1.id }.last
-    }
 }
 
 // MARK: - Shared formatting
 
 enum Format {
-    /// "milk, eggs and peanuts" rather than "milk, eggs, peanuts".
-    /// The joining word is localised: French needs "et", English "and".
-    /// A quantity without a trailing ".0". "375", not "375.0" — a shopping
-    /// list is read at a glance.
+    /// "milk, eggs and peanuts" rather than "milk, eggs, peanuts": the joining
+    /// word is localised: French needs "et", English "and".
     static func number(_ v: Double) -> String {
         v == v.rounded() ? String(Int(v)) : String(format: "%.1f", v)
     }
 
-    static func liste(_ items: [String]) -> String {
+    static func list(_ items: [String]) -> String {
         guard items.count > 1 else { return items.first ?? "" }
         let et = String(localized: "and", comment: "joins the last two items of a list")
         return items.dropLast().joined(separator: ", ") + " " + et + " " + (items.last ?? "")

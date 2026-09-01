@@ -1,30 +1,28 @@
-//  ProfilsEtReglages.swift
-//
-//  Les profiles vivent sur l'appareil et n'en sortent jamais : aucune route
-//  server receives them. That is what the App Store privacy labels declare,
-//  and it has to stay true in the code.
+// ProfilesAndSettings.swift
+// Children's profiles stay on the device, which is what the App Store
+// privacy labels declare; nothing here sends them anywhere.
 
 import SwiftUI
 import StoreKit
 
-// MARK: - Profils
+// MARK: - Profiles
 
 struct ProfilesScreen: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @State private var editing: ChildProfile?
     @State private var pendingDeletion: ChildProfile?
 
     var body: some View {
         List {
             Section {
-                ForEach(etat.profiles) { p in
+                ForEach(app.profiles) { p in
                     Button {
-                        etat.select(p.id)
+                        app.select(p.id)
                     } label: {
                         ProfileRow(profile: p,
-                                    isOn: !etat.familyMode && p.id == etat.activeProfileID,
-                                    noms: etat.allergenNames(p.allergens),
-                                    tally: etat.tally(for: p))
+                                    isOn: !app.familyMode && p.id == app.activeProfileID,
+                                    names: app.allergenNames(p.allergens),
+                                    tally: app.tally(for: p))
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
@@ -43,11 +41,11 @@ struct ProfilesScreen: View {
                 Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
             }
 
-            if etat.profiles.count > 1 {
+            if app.profiles.count > 1 {
                 Section {
                     Toggle(isOn: Binding(
-                        get: { etat.familyMode },
-                        set: { _ in etat.toggleFamilyMode() })) {
+                        get: { app.familyMode },
+                        set: { _ in app.toggleFamilyMode() })) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Everyone at the table").font(.body)
                                 Text("Youngest child’s age, and everything each one avoids")
@@ -74,7 +72,7 @@ struct ProfilesScreen: View {
                isPresented: Binding(get: { pendingDeletion != nil },
                                     set: { if !$0 { pendingDeletion = nil } }),
                presenting: pendingDeletion) { p in
-            Button("Remove", role: .destructive) { etat.remove(p) }
+            Button("Remove", role: .destructive) { app.remove(p) }
             Button("Cancel", role: .cancel) { }
         } message: { p in
             Text("\(p.name)'s profile and their allergens will be erased from this device.")
@@ -85,7 +83,7 @@ struct ProfilesScreen: View {
 struct ProfileRow: View {
     let profile: ChildProfile
     let isOn: Bool
-    let noms: [String]
+    let names: [String]
     var tally: AppState.ProfileTally? = nil
 
     private var avatarColor: Color {
@@ -105,9 +103,9 @@ struct ProfileRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.name).font(.headline).foregroundStyle(.primary)
-                Text(noms.isEmpty
+                Text(names.isEmpty
                      ? "\(Format.age(profile.ageMonths)) — no allergen avoided"
-                     : "\(Format.age(profile.ageMonths)) — no \(Format.liste(noms))")
+                     : "\(Format.age(profile.ageMonths)) — no \(Format.list(names))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -123,9 +121,7 @@ struct ProfileRow: View {
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isOn ? [.isSelected] : [])
 
-        /* What a parent actually wants to know, on the screen that used to be
-         * empty below the first row: how much of the corpus this child can
-         * eat, and how much of it needs work. */
+        /* What a parent wants to know first: the children, then the rest. */
         if let t = tally, t.total > 0 {
             HStack(spacing: 16) {
                 TallyItem(count: t.asIs, label: "as is", color: Tone.yes)
@@ -162,7 +158,7 @@ private struct TallyItem: View {
 }
 
 struct ProfileEditor: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var fermer
     @State var profile: ChildProfile
     @State private var showAllAllergens = false
@@ -191,7 +187,7 @@ struct ProfileEditor: View {
                         FieldLabel("Allergens avoided")
                         AllergenGrid(selection: $profile.allergens,
                                          showAllAllergens: $showAllAllergens,
-                                         allergens: etat.knownAllergens)
+                                         allergens: app.knownAllergens)
                     }
                 }
                 .padding(20)
@@ -205,7 +201,7 @@ struct ProfileEditor: View {
                         if profile.name.trimmingCharacters(in: .whitespaces).isEmpty {
                             profile.name = String(localized: "My child")
                         }
-                        etat.save(profile)
+                        app.save(profile)
                         fermer()
                     }
                 }
@@ -233,30 +229,21 @@ struct FieldLabel: View {
 // MARK: - Settings
 
 struct SettingsScreen: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @State private var showPaywall = false
+    @State private var reminderOn = WeeklyReminder.enabled
     @State private var email = ""
     @State private var accountMessage: String?
 
-    /* Dark cards on the canvas rather than a grouped List: a system List
-     * brings its own background and its own insets, and neither matches the
-     * rest of the app.
-     *
-     * Split into one property per section. A single body holding all five
-     * defeats the type checker — "unable to type-check in reasonable time" is
-     * what a 200-line ViewBuilder earns. */
+        /* A single body holding all five defeats the type checker — "unable to
+     * type-check in reasonable time" is what a 200-line ViewBuilder earns. */
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                /* FAMILY, NOT SETTINGS.
-                 *
-                 * The children lived under a gear, after the dark-mode toggle.
-                 * The core object of the app — who the cooking is for — was
-                 * filed as a technical preference. The order now follows what
-                 * a parent comes here for: the children, then what they pay,
-                 * then how it looks. */
+                                /* Family, not settings: the core object of the app — who the
+                 * cooking is for — was filed as a technical preference. */
                 Text("Family")
-                    .font(Type.display)
+                    .scaledFont(Type.display)
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
@@ -271,14 +258,9 @@ struct SettingsScreen: View {
         }
         .background(Tone.canvas.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-        /* THE SAME FIELD AS THE OTHER TABS, WITHOUT A BAR IN IT.
-         *
-         * Content used to pass under the status bar on a hard edge. The field
-         * is the same modifier Recipes and Shopping use; it carries no pill
-         * here because this screen names the children in a section of its own.
-         *
-         * Canvas over canvas, so it is invisible until something scrolls into
-         * it — which is the whole point. */
+                /* The field is the same modifier Recipes and Shopping use; it carries
+         * no pill here because this screen names the children in a section of
+         * its own. */
         .softTopBar { EmptyView() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
     }
@@ -288,18 +270,18 @@ struct SettingsScreen: View {
             Text("Appearance").eyebrow().padding(.top, 26).padding(.bottom, 9)
             HStack {
                 Text("Theme")
-                    .font(.system(size: 14.5))
+                    .scaledFont(14.5)
                     .foregroundStyle(Tone.text)
                 Spacer(minLength: 10)
-                ThemeSegments(theme: Binding(get: { etat.theme },
-                                             set: { etat.theme = $0 }))
+                ThemeSegments(theme: Binding(get: { app.theme },
+                                             set: { app.theme = $0 }))
             }
             .padding(.horizontal, 15)
             .padding(.vertical, 14)
             .card()
 
             Text("Auto follows your iPhone, including the switch at sunset.")
-                .font(.system(size: 11.5))
+                .scaledFont(11.5)
                 .foregroundStyle(Tone.text3)
                 .padding(.horizontal, 5)
                 .padding(.top, 9)
@@ -310,7 +292,7 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Children").eyebrow().padding(.top, 26).padding(.bottom, 9)
             VStack(spacing: 0) {
-                ForEach(etat.profiles) { p in
+                ForEach(app.profiles) { p in
                     NavigationLink { ProfilesScreen() } label: {
                         SettingRow(title: p.firstName, value: childSummary(p))
                     }
@@ -332,16 +314,16 @@ struct SettingsScreen: View {
             Button { showPaywall = true } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(etat.subscribed ? "Active" : "Weeks ahead")
-                            .font(.system(size: 15))
+                        Text(app.subscribed ? "Active" : "Weeks ahead")
+                            .scaledFont(15)
                             .foregroundStyle(Tone.text)
                         Text("7 new recipes every week")
-                            .font(Type.small)
+                            .scaledFont(Type.small)
                             .foregroundStyle(Tone.text2)
                     }
                     Spacer(minLength: 10)
-                    Text(etat.subscribed ? "Manage" : "Subscribe")
-                        .font(.system(size: 14.5, weight: .semibold))
+                    Text(app.subscribed ? "Manage" : "Subscribe")
+                        .scaledFont(14.5, weight: .semibold)
                         .foregroundStyle(Tone.brand)
                 }
                 .padding(15)
@@ -355,12 +337,29 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Content").eyebrow().padding(.top, 26).padding(.bottom, 9)
             VStack(spacing: 0) {
-                SettingRow(title: "Recipes available", value: "\(etat.recipes.count)")
+                SettingRow(title: "Recipes available", value: "\(app.recipes.count)")
                 Divider().overlay(Tone.hairline).padding(.leading, 15)
-                Button { Task { await etat.sync() } } label: {
-                    SettingRow(title: "Refresh", value: etat.lastSyncLabel, accent: true)
+                Button { Task { await app.sync() } } label: {
+                    SettingRow(title: "Refresh", value: app.lastSyncLabel, accent: true)
                 }
                 .buttonStyle(.plain)
+                Divider().overlay(Tone.hairline).padding(.leading, 15)
+                /* One local notification, Monday morning. Off until asked. */
+                Toggle(isOn: Binding(
+                    get: { reminderOn },
+                    set: { on in
+                        Task {
+                            if on {
+                                reminderOn = await WeeklyReminder.enable(firstName: app.activeProfile.firstName)
+                            } else {
+                                WeeklyReminder.disable(); reminderOn = false
+                            }
+                        }
+                    })) {
+                    SettingRow(title: "Monday reminder", value: "")
+                }
+                .tint(Tone.brand)
+                .padding(.trailing, 15)
             }
             .card()
         }
@@ -371,7 +370,7 @@ struct SettingsScreen: View {
             Text("Your children's profiles stay on this device and are never sent anywhere.")
             Text(Settings.medicalDisclaimer)
         }
-        .font(.system(size: 11.5))
+        .scaledFont(11.5)
         .foregroundStyle(Tone.text3)
         .lineSpacing(2)
         .padding(.horizontal, 5)
@@ -389,7 +388,7 @@ struct SettingsScreen: View {
 // MARK: - Paywall
 
 struct PaywallScreen: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var fermer
 
     var body: some View {
@@ -397,19 +396,19 @@ struct PaywallScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(etat.subscribed ? "Your subscription is active" : "New recipes every month")
-                            .font(.system(size: 28, weight: .heavy, design: .rounded))
-                        Text(etat.subscribed
-                             ? "Every batch is unlocked. The next one arrives at the start of next month."
-                             : "Every month, a batch of recipes chosen where your profile runs short — not at random.")
+                        Text(app.subscribed ? "Your subscription is active" : "Weeks ahead")
+                            .scaledFont(28, weight: .heavy, design: .rounded)
+                        Text(app.subscribed
+                             ? "Every week is open. The next one arrives Monday."
+                             : "Seven new recipes every Monday, adapted to your children.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
 
                     comparison
 
-                    if !etat.subscribed {
-                        if etat.subscription.products.isEmpty {
+                    if !app.subscribed {
+                        if app.subscription.products.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Subscriptions aren’t available here.")
                                     .font(.subheadline.weight(.semibold))
@@ -422,10 +421,10 @@ struct PaywallScreen: View {
                             .background(Tone.swap.opacity(0.12),
                                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         } else {
-                            ForEach(etat.subscription.products, id: \.id) { product in
+                            ForEach(app.subscription.products, id: \.id) { product in
                                 ProductButton(product: product) {
-                                    if let jws = await etat.subscription.purchase(product) {
-                                        await etat.linkPurchase(jws)
+                                    if let jws = await app.subscription.purchase(product) {
+                                        await app.linkPurchase(jws)
                                     }
                                 }
                             }
@@ -433,12 +432,12 @@ struct PaywallScreen: View {
                     }
 
                     Button("Restore purchases") {
-                        Task { await etat.subscription.restore() }
+                        Task { await app.subscription.restore() }
                     }
                     .font(.footnote)
                     .tint(Tone.brand)
 
-                    if let m = etat.subscription.message {
+                    if let m = app.subscription.message {
                         Text(m).font(.footnote).foregroundStyle(Tone.swap)
                     }
 
@@ -466,22 +465,28 @@ struct PaywallScreen: View {
                 }
             }
         }
-        .task { await etat.subscription.load() }
+        .task { await app.subscription.load() }
     }
 
+    /// Two columns: what is free, what the subscription adds. Weekly, since
+    /// the rolling window; the old copy still said monthly.
     private var comparison: some View {
-        VStack(spacing: 12) {
-            ComparisonBlock(title: "Always free", accent: Tone.yes, lines: [
-                "Ingredient swaps for every allergen",
+        HStack(alignment: .top, spacing: 10) {
+            ComparisonBlock(title: "Free", figure: "15", figureLabel: "recipes, forever",
+                            accent: Tone.yes, lines: [
+                "Swaps for every allergen",
                 "Age and texture guidance",
                 "The product scanner",
-                "Your children’s profiles",
-                "The starter recipes"
+                "Shopping list",
+                "Last week's recipes"
             ])
-            ComparisonBlock(title: "With the subscription", accent: Tone.brand, lines: [
-                "A new batch of recipes every month",
-                "Targeted at the profiles you created",
-                "Every previous batch"
+            ComparisonBlock(title: "Weeks ahead", figure: "+7", figureLabel: "every Monday",
+                            accent: Tone.brand, lines: [
+                "Everything free has",
+                "New recipes every week",
+                "Adapted to your children",
+                "Three weeks open at once",
+                "Next week, before it starts"
             ])
         }
     }
@@ -489,26 +494,44 @@ struct PaywallScreen: View {
 
 struct ComparisonBlock: View {
     let title: String
+    let figure: String
+    let figureLabel: String
     let accent: Color
     let lines: [String]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title).font(.headline).foregroundStyle(accent)
-            ForEach(lines, id: \.self) { l in
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(accent)
-                        .padding(.top, 2)
-                    Text(l).font(.footnote)
-                    Spacer(minLength: 0)
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).eyebrow(accent)
+            Text(figure)
+                .scaledFont(22, weight: .bold)
+                .foregroundStyle(Tone.text)
+                .padding(.top, 2)
+            Text(figureLabel)
+                .scaledFont(11)
+                .foregroundStyle(Tone.text2)
+            VStack(alignment: .leading, spacing: 5) {
+                ForEach(lines, id: \.self) { l in
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "checkmark")
+                            .scaledFont(9, weight: .bold)
+                            .foregroundStyle(accent)
+                            .padding(.top, 3)
+                        Text(l)
+                            .scaledFont(11.5)
+                            .foregroundStyle(Tone.text)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
+            .padding(.top, 8)
         }
-        .padding(15)
+        .padding(13)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(accent.opacity(0.25), lineWidth: 1)
+        }
     }
 }
 
@@ -557,7 +580,7 @@ struct ThemeSegments: View {
         HStack(spacing: 5) {
             ForEach(AppTheme.allCases, id: \.self) { t in
                 Segment(theme: t, selected: theme == t) {
-                    withAnimation(.smooth(duration: 0.22)) { theme = t }
+                    withAnimation(.soft(0.22)) { theme = t }
                 }
             }
         }
@@ -575,7 +598,7 @@ private struct Segment: View {
     var body: some View {
         Button(action: tap) {
             Text(theme.label)
-                .font(.system(size: 12.5, weight: .semibold))
+                .scaledFont(12.5, weight: .semibold)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text2)
                 .padding(.horizontal, 13)
                 .padding(.vertical, 7)
@@ -600,11 +623,11 @@ struct SettingRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.system(size: 15))
+                .scaledFont(15)
                 .foregroundStyle(accent ? Tone.brand : Tone.text)
             Spacer(minLength: 10)
             Text(value)
-                .font(.system(size: 14))
+                .scaledFont(14)
                 .foregroundStyle(Tone.text2)
         }
         .padding(15)

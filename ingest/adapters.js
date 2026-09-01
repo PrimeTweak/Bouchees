@@ -1,19 +1,11 @@
-/* Adaptateurs de sources — lot 3, v0.2
- * Each adapter turns a source schema into the raw format
- * commun : { source, externalId, originalName, portions?, tempsMin?,
- *            lines: [texte], steps: [texte], url?, license }
- * The pipeline is source-agnostic: wiring a real API means writing (or
- * reusing) an adapter and honouring its licence. See LICENSES.md.
- */
+/* Adaptateurs de sources — lot 3, v0.2 Each adapter turns a source schema
+ * into the raw format commun : { source, externalId, originalName, portions?,
+ * tempsMin?, lines: [texte], steps: [texte], url?, license } The. */
 "use strict";
 
-/* The "generic" schema — our own exchange format (partners, exports).
- *
- * Accepts TWO shapes, because the monthly prompt asks the model for a
- * tableau nu et qu'il serait absurde d'exiger un emballage manuel ensuite :
- *   [ {...}, {...} ]                      (tableau direct)
- *   { source, license, recipes: [...] }  (with metadata)
- */
+/* Accepts TWO shapes, because the monthly prompt asks the model for a tableau
+ * nu et qu'il serait absurde d'exiger un emballage manuel ensuite : [ {...},
+ * {...} ] (tableau direct) { source, license, recipes: [...] } (with. */
 function generic(doc) {
   var wrapper = Array.isArray(doc)
     ? { source: "in-house", license: "original content, written for Bouchées", recipes: doc }

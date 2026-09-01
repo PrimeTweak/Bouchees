@@ -1,17 +1,6 @@
-//  CookingMode.swift
-//
-//  ONE STEP PER SCREEN, HANDS IN THE BATTER.
-//
-//  The number-one complaint about every recipe app, in the words of the case
-//  studies: "people have to touch their screen with greasy hands just for the
-//  next step". Tasty keeps the screen awake. Yummly has a guided mode, behind
-//  a paywall. Bouchées had nothing — the recipe was a page you scrolled.
-//
-//  And for this app it hides something worse. The step text used to name the
-//  ingredient that was REMOVED: "Mix the banana, egg, milk and oil" for a
-//  child who has neither. The engine now rewrites the steps, and this screen
-//  is where that fix pays off — because here the step is the only thing on the
-//  screen.
+// The engine now rewrites the steps, and this screen is where that fix pays
+// off — because here the step is the only thing on the screen.
+// CookingMode.swift
 
 import SwiftUI
 
@@ -21,7 +10,7 @@ struct CookingMode: View {
     let firstName: String
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @State private var step = 0
     @State private var secondsLeft: Int?
     @State private var running = false
@@ -54,7 +43,7 @@ struct CookingMode: View {
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .onReceive(tick) { _ in advanceTimer() }
         .sheet(isPresented: $askingForRating, onDismiss: { dismiss() }) {
-            HowWasIt(recipe: recipe, firstName: etat.activeProfile.firstName)
+            HowWasIt(recipe: recipe, firstName: app.activeProfile.firstName)
                 .presentationDetents([.height(340)])
                 .presentationDragIndicator(.visible)
         }
@@ -70,7 +59,7 @@ struct CookingMode: View {
                     .frame(height: 4)
             }
         }
-        .animation(.smooth(duration: 0.25), value: step)
+        .animation(.soft(0.25), value: step)
     }
 
     private var stepLabel: some View {
@@ -82,7 +71,7 @@ struct CookingMode: View {
 
     private var stepText: some View {
         Text(steps.indices.contains(step) ? steps[step] : "")
-            .font(.system(size: 30, weight: .semibold))
+            .scaledFont(30, weight: .semibold)
             .lineSpacing(5)
             .foregroundStyle(Tone.text)
             .fixedSize(horizontal: false, vertical: true)
@@ -112,18 +101,18 @@ struct CookingMode: View {
         if !relevant.isEmpty {
             HStack(alignment: .top, spacing: 12) {
                 Text("→")
-                    .font(.system(size: 15, weight: .bold))
+                    .scaledFont(15, weight: .bold)
                     .foregroundStyle(Tone.swap)
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(relevant, id: \.listID) { i in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(String(format: String(localized: "%@ replaces %@."),
                                         i.toName ?? "", i.name))
-                                .font(.system(size: 13.5, weight: .semibold))
+                                .scaledFont(13.5, weight: .semibold)
                                 .foregroundStyle(Tone.swap)
                             if let ratio = i.ratio {
                                 Text(ratio)
-                                    .font(.system(size: 13))
+                                    .scaledFont(13)
                                     .foregroundStyle(Tone.text2)
                             }
                         }
@@ -150,15 +139,15 @@ struct CookingMode: View {
         if let minutes = minutesInStep(step) {
             HStack(spacing: 15) {
                 Text(clock)
-                    .font(.system(size: 32, weight: .bold, design: .monospaced))
+                    .scaledFont(32, weight: .bold, design: .monospaced)
                     .foregroundStyle(Tone.text)
                     .monospacedDigit()
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Timer")
-                        .font(.system(size: 14, weight: .semibold))
+                        .scaledFont(14, weight: .semibold)
                         .foregroundStyle(Tone.text)
                     Text(running ? "Running" : String(format: String(localized: "%lld minutes"), minutes))
-                        .font(Type.small)
+                        .scaledFont(Type.small)
                         .foregroundStyle(Tone.text2)
                 }
                 Spacer(minLength: 8)
@@ -167,7 +156,7 @@ struct CookingMode: View {
                     else { secondsLeft = secondsLeft ?? minutes * 60; running = true }
                 } label: {
                     Image(systemName: running ? "pause.fill" : "play.fill")
-                        .font(.system(size: 15, weight: .bold))
+                        .scaledFont(15, weight: .bold)
                         .foregroundStyle(Tone.canvas)
                         .frame(width: 42, height: 42)
                         .background(Tone.text, in: Circle())
@@ -183,10 +172,10 @@ struct CookingMode: View {
     private var controls: some View {
         HStack(spacing: 11) {
             Button {
-                withAnimation(.smooth(duration: 0.25)) { back() }
+                withAnimation(.soft(0.25)) { back() }
             } label: {
                 Image(systemName: step == 0 ? "xmark" : "chevron.left")
-                    .font(.system(size: 17, weight: .semibold))
+                    .scaledFont(17, weight: .semibold)
                     .foregroundStyle(Tone.text2)
                     .frame(width: 74, height: 58)
                     .background(Tone.text.opacity(0.055),
@@ -195,10 +184,10 @@ struct CookingMode: View {
             .buttonStyle(.plain)
 
             Button {
-                withAnimation(.smooth(duration: 0.25)) { forward() }
+                withAnimation(.soft(0.25)) { forward() }
             } label: {
                 Text(step == steps.count - 1 ? "Done" : "Next step")
-                    .font(.system(size: 16.5, weight: .semibold))
+                    .scaledFont(16.5, weight: .semibold)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 58)
@@ -223,7 +212,7 @@ struct CookingMode: View {
             Image(systemName: "moon.zzz")
             Text("Screen stays awake")
         }
-        .font(.system(size: 10))
+        .scaledFont(10)
         .foregroundStyle(Tone.text3)
         .padding(.trailing, 24)
         .padding(.top, 4)
@@ -269,14 +258,9 @@ struct CookingMode: View {
             secondsLeft = nil
             running = false
         } else {
-            /* THE MOMENT TO ASK.
-             *
-             * "Done" used to dismiss straight back to the recipe page, where
-             * the rating lives and where nobody returns. This is the one
-             * moment a parent knows whether it was good; a one-second screen
-             * catches it. The "cooked" mark is set here whatever they answer,
-             * so the week keeps a trace without asking for one. */
-            etat.markCooked(recipe.id)
+                        /* The moment to ask: the "cooked" mark is set here whatever they
+             * answer, so the week keeps a trace without asking for one. */
+            app.markCooked(recipe.id)
             askingForRating = true
         }
     }
@@ -292,10 +276,8 @@ struct CookingMode: View {
     }
 }
 
-/// One second, three stars, a skip.
-///
-/// Nothing else: the parent has just finished cooking and is about to eat.
-/// Whatever they choose, the sheet closes and cooking mode closes with it.
+/// One second, three stars, a skip: nothing else: the parent has just finished
+/// cooking and is about to eat.
 private struct HowWasIt: View {
     let recipe: Recipe
     let firstName: String
@@ -304,12 +286,12 @@ private struct HowWasIt: View {
     var body: some View {
         VStack(spacing: 0) {
             Text("How was it?")
-                .font(.system(size: 22, weight: .bold))
+                .scaledFont(22, weight: .bold)
                 .foregroundStyle(Tone.text)
                 .padding(.top, 30)
             Text(firstName.isEmpty ? recipe.name
                  : String(format: String(localized: "%@, for %@"), recipe.name, firstName))
-                .font(.system(size: 12.5))
+                .scaledFont(12.5)
                 .foregroundStyle(Tone.text2)
                 .padding(.top, 5)
 
@@ -319,9 +301,9 @@ private struct HowWasIt: View {
 
             HStack(spacing: 6) {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 9, weight: .bold))
+                    .scaledFont(9, weight: .bold)
                 Text("Cooked")
-                    .font(.system(size: 11, weight: .semibold))
+                    .scaledFont(11, weight: .semibold)
             }
             .foregroundStyle(Tone.yes)
             .padding(.horizontal, 12)
@@ -331,7 +313,7 @@ private struct HowWasIt: View {
 
             Button { dismiss() } label: {
                 Text("Skip")
-                    .font(.system(size: 13))
+                    .scaledFont(13)
                     .foregroundStyle(Tone.text3)
                     .frame(height: Layout.tapTarget)
                     .frame(maxWidth: .infinity)

@@ -1,17 +1,7 @@
 #!/usr/bin/env node
-/* Image size report.
- *   node tools/image-sizes.js
- *
- * Reads the real dimensions out of every file in images/ and compares them
- * against what the manifest claims and what the display needs.
- *
- * WHY: the adapter used to record the size it ASKED FOR, not the size it got.
- * Draw Things silently clamps to whatever the selected model and the machine
+/* Draw Things silently clamps to whatever the selected model and the machine
  * allow, so the manifest could claim 1664 px while the file was half that —
- * and the size gate, reading the manifest, waved it through.
- *
- * Measure the artifact, never the intention.
- */
+ * and the size gate, reading the manifest, waved it through. */
 "use strict";
 const fs = require("fs");
 const path = require("path");

@@ -1,17 +1,5 @@
-/* Bouchees server
- * node server/server.js        (port 8787 by default)
- *
- * Plain Node, zero dependencies: nothing to install.
- *
- * LE POINT CENTRAL : le serveur n'envoie jamais un lot auquel le account n'a
- * pas droit. Pas « envoyer puis cacher » — ne pas envoyer. Un mur payant
- * on the client is one Ctrl+U away.
- *
- * AND THE OTHER SIDE OF IT: the safety tables (engine, substitutions, age
- * rules) and the free batches go out to EVERYONE, signed in or not. What is
- * sold is the stream of new recipes, never the answer to "can my child eat
- * this".
- */
+/* Un mur payant on the client is one Ctrl+U away. What is sold is the stream
+ * of new recipes, never the answer to "can my child eat this". */
 "use strict";
 
 const Barcode = require("../engine/barcode.js");
@@ -34,12 +22,9 @@ const GRACE_DAYS = 3;   /* access is not cut the second a payment fails */
 /* ---------- petite base sur fichier ---------- */
 function readAccounts() {
   try { return JSON.parse(fs.readFileSync(FICHIER_COMPTES, "utf8")); }
-  catch (e) { return { accounts: {}, jetons: {} }; }
+  catch (e) { return { accounts: {}, tokens: {} }; }
 }
-/* Written to a sibling file and renamed over the original. A rename is
- * atomic on the file system, so a crash or a second request mid-write leaves
- * either the old file or the new one, never a truncated one. The old code
- * wrote in place. */
+/* Written to a sibling file and renamed over the original. */
 function writeAccounts(db) {
   const tmp = FICHIER_COMPTES + "." + process.pid + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
@@ -77,9 +62,9 @@ const ProductCache = (function () {
       if (Date.now() - e.at > (e.hit ? HIT_TTL : MISS_TTL)) { delete table[code]; return null; }
       return e;
     },
-    set: function (code, entree) {
-      entree.at = Date.now();
-      table[code] = entree;
+    set: function (code, entry) {
+      entry.at = Date.now();
+      table[code] = entry;
       if (Object.keys(table).length > MAX) table = {};
       if (++sales % 20 === 0) persist();
     },
@@ -93,38 +78,38 @@ const ProductCache = (function () {
 /* A sliding minute, kept below Open Food Facts' fifteen per address. */
 const OffBudget = (function () {
   const PAR_MINUTE = Number(process.env.OFF_BUDGET_PER_MINUTE) || 12;
-  let marques = [];
-  function nettoyer() {
+  let marks = [];
+  function prune() {
     const seuil = Date.now() - 60000;
-    marques = marques.filter(function (t) { return t > seuil; });
+    marks = marks.filter(function (t) { return t > seuil; });
   }
   return {
     available: function () {
-      nettoyer();
-      return marques.length < PAR_MINUTE;
+      prune();
+      return marks.length < PAR_MINUTE;
     },
     take: function () {
-      nettoyer();
-      if (marques.length >= PAR_MINUTE) return false;
-      marques.push(Date.now());
+      prune();
+      if (marks.length >= PAR_MINUTE) return false;
+      marks.push(Date.now());
       return true;
     },
     secondsUntilFree: function () {
-      nettoyer();
-      if (marques.length < PAR_MINUTE) return 0;
-      return Math.max(1, Math.ceil((marques[0] + 60000 - Date.now()) / 1000));
+      prune();
+      if (marks.length < PAR_MINUTE) return 0;
+      return Math.max(1, Math.ceil((marks[0] + 60000 - Date.now()) / 1000));
     },
-    _reset: function () { marques = []; }
+    _reset: function () { marks = []; }
   };
 })();
 
-function absent(brut, formes, via) {
+function absent(raw, forms, via) {
   return {
     error: "product not found",
-    scanned: brut,
-    tried: formes,
+    scanned: raw,
+    tried: forms,
     via: via,
-    contribute: "https://world.openfoodfacts.org/cgi/product.pl?code=" + formes[0]
+    contribute: "https://world.openfoodfacts.org/cgi/product.pl?code=" + forms[0]
   };
 }
 
@@ -136,17 +121,30 @@ function activeFrom(a) {
     return Date.now() < new Date(a.periodEnd).getTime() + GRACE_DAYS * 864e5;
   return false;
 }
-/* Deux sources d'subscription — Stripe pour le web, Apple pour iOS. Un account
- * can hold both (subscribed on the web, then installed the app): either one
- * is enough, and nobody is ever charged twice for it. */
+/* Two subscription sources, Stripe on the web and Apple on iOS. An
+ * account may hold both; either one is enough, and nobody is charged twice. */
 function subscriptionActive(account) {
   if (!account) return false;
   return activeFrom(account.subscription) || activeFrom(account.abonnementApple);
 }
+/* The week before the current one is open to everyone. It has no market
+ * value left and gives a free account a real week of content one week late,
+ * which is the free tier. */
+function previousWeekBatch(manifeste) {
+  const weekly = (manifeste.window || []).slice().sort(function (a, b) {
+    return /^(\d{4})-S(\d+)$/.test(a) && /^(\d{4})-S(\d+)$/.test(b)
+      ? (Number(b.slice(0, 4)) * 100 + Number(b.split("-S")[1])) -
+        (Number(a.slice(0, 4)) * 100 + Number(a.split("-S")[1]))
+      : 0;
+  });
+  return weekly.length > 1 ? weekly[1] : null;
+}
+
 function allowedBatches(manifeste, account) {
-  const actif = subscriptionActive(account);
+  const active = subscriptionActive(account);
+  const ouverte = previousWeekBatch(manifeste);
   return manifeste.batches
-    .filter(function (l) { return l.access === "free" || actif; })
+    .filter(function (l) { return l.access === "free" || active || l.id === ouverte; })
     .map(function (l) { return l.id; });
 }
 
@@ -197,17 +195,17 @@ function rawBody(req) {
  * now on first sight so nothing already installed is logged out) or an object
  * with the email and the issue time. */
 function jetonValide(db, token) {
-  const entree = db.jetons[token];
-  if (!entree) return null;
-  if (typeof entree === "string") {
-    db.jetons[token] = { email: entree, cree: Date.now() };
-    return entree;
+  const entry = db.tokens[token];
+  if (!entry) return null;
+  if (typeof entry === "string") {
+    db.tokens[token] = { email: entry, cree: Date.now() };
+    return entry;
   }
-  if (Date.now() - (entree.cree || 0) > TOKEN_TTL_MS) {
-    delete db.jetons[token];
+  if (Date.now() - (entry.cree || 0) > TOKEN_TTL_MS) {
+    delete db.tokens[token];
     return null;
   }
-  return entree.email;
+  return entry.email;
 }
 
 function compteDeLaRequete(req, db) {
@@ -219,8 +217,8 @@ function compteDeLaRequete(req, db) {
 }
 
 const routes = {
-  /* Ce que tout le monde peut savoir : quels batches existent, lesquels sont
-   * locked. The content itself does not go out. */
+  /* Public knowledge: which batches exist and which are locked. The
+   * content itself never goes out here. */
   "GET /api/manifest": function (req, res, ctx) {
     const m = loadManifest();
     const allowed = allowedBatches(m, ctx.account);
@@ -262,11 +260,8 @@ const routes = {
     res.end(s);
   },
 
-  /* The content, filtered by entitlement AND by the rolling window.
-   *
-   * A subscriber gets the free batches plus the last three weeks. Anything
-   * semaines plus anciennes ne descendent pas : elles reviennent par l'onglet
-   * older comes back through Top rated or through saved recipes. */
+    /* The content, filtered by entitlement AND by the rolling window. A
+   * subscriber gets the free batches plus the last three weeks. */
   "GET /api/recipes": function (req, res, ctx) {
     const m = loadManifest();
     const allowed = allowedBatches(m, ctx.account);
@@ -275,7 +270,7 @@ const routes = {
                                       .map(function (l) { return l.id; }));
     const targets = requested ? [requested] : allowed.filter(function (id) { return inWindow.has(id); });
     const refuses = targets.filter(function (id) { return allowed.indexOf(id) === -1; });
-    if (refuses.length) return json(res, 402, { error: "subscription requis", batches: refuses });
+    if (refuses.length) return json(res, 402, { error: "subscription required", batches: refuses });
     let out = [];
     targets.forEach(function (id) {
       try { out = out.concat(loadBatch(id)); } catch (e) {}
@@ -283,23 +278,18 @@ const routes = {
     json(res, 200, { subscribed: subscriptionActive(ctx.account), batches: targets, recipes: out });
   },
 
-  /* A rating, 1 to 5. One per account per recipe: the newer one
-   * remplace l'ancienne, parce qu'un parent qui refait la recipe peut
-   * replaces the older. An account is required — otherwise nothing stops one
+    /* A rating, 1 to 5: an account is required — otherwise nothing stops one
    * personne de voter cent fois. */
   "POST /api/rating": async function (req, res, ctx) {
-    if (!ctx.account) return json(res, 401, { error: "connexion requise pour noter" });
-    /* One rating per second per account.
-     *
-     * Authentication stops a stranger writing, not a signed-in client looping.
-     * A rating is a human gesture; anything faster than once a second is a bug
-     * or a script, and neither should reach the store. */
+    if (!ctx.account) return json(res, 401, { error: "sign-in required to rate" });
+        /* One rating per second per account: authentication stops a stranger
+     * writing, not a signed-in client looping. */
     if (!limiteDebit(ctx.account.email)) {
-      return json(res, 429, { error: "trop de requetes" });
+      return json(res, 429, { error: "too many requests" });
     }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
 
     const r = corps.rating === null
       ? Ratings.removeRating(corps.recipe, ctx.account.email)
@@ -308,8 +298,8 @@ const routes = {
     json(res, 200, { ok: true, aggregate: r.aggregate });
   },
 
-  /* Aggregates for a list of recipes, with the account's own rating if it
-   * une. On n'expose jamais les notes des autres, seulement le total. */
+  /* Aggregates for a list of recipes, plus the account's own rating.
+   * Other people's ratings are never exposed, only the totals. */
   "GET /api/ratings": function (req, res, ctx) {
     const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
     if (!ids.length) return json(res, 200, {});
@@ -364,14 +354,14 @@ const routes = {
    * full before anything is granted — the client is never
    * cru sur parole, pas plus qu'un navigateur. */
   "POST /api/apple/transaction": async function (req, res, ctx) {
-    if (!ctx.account) return json(res, 401, { error: "connexion requise" });
+    if (!ctx.account) return json(res, 401, { error: "sign-in required" });
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
     const v = Apple.verifierJWS(corps.signedTransaction);
-    if (!v.ok) return json(res, 400, { error: "transaction refusée", detail: v.reason });
+    if (!v.ok) return json(res, 400, { error: "transaction refused", detail: v.reason });
     const etat = Apple.etatDepuisTransaction(v.charge);
-    if (!etat.ok) return json(res, 400, { error: "transaction refusée", detail: etat.reason });
+    if (!etat.ok) return json(res, 400, { error: "transaction refused", detail: etat.reason });
 
     const db = ctx.db;
     /* One Apple transaction cannot serve two accounts. */
@@ -379,7 +369,7 @@ const routes = {
       const a = db.accounts[c].abonnementApple;
       return a && a.transaction === etat.transaction && c !== ctx.account.email;
     });
-    if (proprietaire) return json(res, 409, { error: "cette transaction est déjà liée à un autre account" });
+    if (proprietaire) return json(res, 409, { error: "this transaction is already linked to another account" });
 
     db.accounts[ctx.account.email].abonnementApple = {
       status: etat.status, periodEnd: etat.periodEnd, product: etat.product,
@@ -395,9 +385,9 @@ const routes = {
   "POST /api/webhook/apple": async function (req, res, ctx) {
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
     const n = Apple.lireNotification(corps.signedPayload);
-    if (!n.ok) return json(res, 400, { error: "notification refusée", detail: n.reason });
+    if (!n.ok) return json(res, 400, { error: "notification refused", detail: n.reason });
     if (n.ignored) return json(res, 200, { ignored: n.ignored });
 
     const db = ctx.db;
@@ -422,72 +412,43 @@ const routes = {
     json(res, 200, { ok: true, email: email, status: n.status });
   },
 
-  /* Consultation d'un product par code-barres. Le serveur relaie Open Food
-   * Facts, derives allergens WITH OUR catalogue, and keeps nothing.
-   * The ODbL requires share-alike if that data is MERGED into
-   * une base : on ne fusionne pas, on consulte. */
-  /* Product lookup by barcode.
-   *
-   * A CASCADE, not a single call. Two things were missing and each one hid
-   * products that are in the database:
-   *
-   *   1. The camera returns whatever form is printed — UPC-E, UPC-A, EAN-13,
-   *      ITF-14. Open Food Facts indexes mostly EAN-13. A North American
-   *      UPC-A is the same product with a leading zero: two keys, one
-   *      barcode, and only one was ever tried.
-   *
-   *   2. world.openfoodfacts.org covers food only. Three sibling databases
-   *      share the API and the licence — beauty, pet food, everything else.
-   *      A toddler puts toothpaste and kibble in their mouth too.
-   *
-   * We relay, derive allergens with OUR catalogue, and keep nothing. The ODbL
-   * requires share-alike when data is MERGED into a base; consulting is not
-   * merging.
-   */
+    /* Consultation d'un product par code-barres: le serveur relaie Open Food
+   * Facts, derives allergens WITH OUR catalogue, and keeps nothing. */
+    /* Product lookup by barcode: two things were missing and each one hid
+   * products that are in the database: */
   "GET /api/product": async function (req, res, ctx) {
-    /* GS1-aware: a QR or a Data Matrix hands over a URL or an element
-     * string, and keeping only their digits gave a seventeen-digit key that
-     * nothing indexes. `digits` finds the GTIN inside, or says there is
-     * none. */
-    const brut = Barcode.digits(ctx.url.searchParams.get("code"));
-    if (!brut) {
+        /* GS1-aware: a QR or a Data Matrix hands over a URL or an element string,
+     * and keeping only their digits gave a seventeen-digit key that nothing
+     * indexes. `digits` finds the GTIN inside, or says there is none. */
+    const raw = Barcode.digits(ctx.url.searchParams.get("code"));
+    if (!raw) {
       return json(res, 400, { error: "no barcode in this code",
                               scanned: String(ctx.url.searchParams.get("code") || "").slice(0, 80) });
     }
 
-    const formes = Barcode.formes(brut);
-    if (!formes.length) return json(res, 400, { error: "invalid barcode" });
+    const forms = Barcode.forms(raw);
+    if (!forms.length) return json(res, 400, { error: "invalid barcode" });
 
-    /* THE CACHE ANSWERS FIRST, FOR EVERYONE.
-     *
-     * Open Food Facts allows fifteen product reads a minute PER ADDRESS, and
-     * this server is one address for every parent using the app. A product
-     * already looked up costs nothing here; only a barcode nobody has scanned
-     * before goes out. Misses are remembered too, briefly: a product added to
-     * the database tomorrow must not stay invisible for a month. */
-    /* Keyed on the canonical form — the longest, which is the thirteen-digit
-     * one — so a UPC-A and its EAN-13 twin share one entry. `formes[0]` is
-     * whatever was scanned, and the same product would have been cached
-     * twice under two names. */
-    const cle = formes.reduce(function (a, b) { return b.length > a.length ? b : a; }, formes[0]);
-    const connu = ProductCache.get(cle);
+        /* The cache answers first, for everyone: open Food Facts allows fifteen
+     * product reads a minute PER ADDRESS, and this server is one address for
+     * every parent using the app. */
+        /* Keyed on the canonical form — the longest, which is the thirteen-digit
+     * one — so a UPC-A and its EAN-13 twin share one entry. */
+    const key = forms.reduce(function (a, b) { return b.length > a.length ? b : a; }, forms[0]);
+    const connu = ProductCache.get(key);
     if (connu) {
       if (connu.hit) return json(res, 200, connu.payload);
-      return json(res, 404, absent(brut, formes, "cache"));
+      return json(res, 404, absent(raw, forms, "cache"));
     }
 
-    /* THE BUDGET STOPS US BEFORE THE BAN DOES. Twelve a minute, under their
+        /* The budget stops us before the ban does: twelve a minute, under their
      * fifteen: when it is spent, the answer is "try again shortly", not eight
-     * requests that will all be refused.
-     *
-     * A LOOK, NOT A TAKE. Build 119 took one unit here and one more per
-     * step below, so a first-try hit cost two and a full miss cost six: the
-     * real budget was half the declared one. */
+     * requests that will all be refused. */
     if (!OffBudget.available()) {
       return json(res, 503, {
         error: "product database unavailable",
         retryAfterSeconds: OffBudget.secondsUntilFree(),
-        scanned: brut
+        scanned: raw
       });
     }
 
@@ -499,46 +460,41 @@ const routes = {
       "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
     };
 
-    /* FOOD WITH BOTH FORMS, THEN ONE FORM PER SIBLING.
-     *
-     * The old cascade tried four databases times two forms, eight requests
-     * on every miss — two misses in a minute crossed the limit on their own.
-     * Food is where a grocery product lives; the siblings only need a look. */
+        /* Food with both forms, then one form per sibling: food is where a
+     * grocery product lives; the siblings only need a look. */
     const plan = [];
-    for (const forme of formes) plan.push({ hote: "world.openfoodfacts.org", genre: "food", forme: forme });
+    for (const forme of forms) plan.push({ hote: "world.openfoodfacts.org", genre: "food", forme: forme });
     for (const b of [["world.openbeautyfacts.org", "beauty"],
                      ["world.openpetfoodfacts.org", "petfood"],
                      ["world.openproductsfacts.org", "product"]]) {
-      plan.push({ hote: b[0], genre: b[1], forme: formes[0] });
+      plan.push({ hote: b[0], genre: b[1], forme: forms[0] });
     }
 
-    let indisponible = false;
-    for (const etape of plan) {
-      if (!OffBudget.take()) { indisponible = true; break; }
+    let unavailable = false;
+    for (const step of plan) {
+      if (!OffBudget.take()) { unavailable = true; break; }
       let r;
       try {
-        r = await fetch("https://" + etape.hote + "/api/v2/product/" + etape.forme +
+        r = await fetch("https://" + step.hote + "/api/v2/product/" + step.forme +
                         "?fields=" + champs, { headers: entetes });
-      } catch (e) { indisponible = true; continue; }
+      } catch (e) { unavailable = true; continue; }
 
-      /* "LIMITED" IS NOT "NOT FOUND". A refused request comes back as a
-       * 429, a 503, or an HTML page. Parsing that as JSON used to throw into
-       * the catch below and end as "product not found" — a ban and a
-       * missing product were the same message. */
+            /* "limited" is not "not found": a refused request comes back as a 429,
+       * a 503, or an HTML page. */
       const type = (r.headers.get("content-type") || "").toLowerCase();
       if (r.status === 429 || r.status >= 500 || type.indexOf("json") < 0) {
-        indisponible = true;
+        unavailable = true;
         continue;
       }
       let d;
-      try { d = await r.json(); } catch (e) { indisponible = true; continue; }
+      try { d = await r.json(); } catch (e) { unavailable = true; continue; }
       if (!d || d.status !== 1 || !d.product) continue;
 
       const p = d.product;
       const payload = {
-        code: etape.forme,
-        scanned: brut,
-        source: etape.genre,
+        code: step.forme,
+        scanned: raw,
+        source: step.genre,
         name: p.product_name_fr || p.product_name || null,
         brand: p.brands || null,
         ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
@@ -550,50 +506,43 @@ const routes = {
         notice: "The database's own allergen tags are indicative — Bouchees " +
                 "re-derives everything from the ingredient list."
       };
-      ProductCache.set(cle, { hit: true, payload: payload });
+      ProductCache.set(key, { hit: true, payload: payload });
       return json(res, 200, payload);
     }
 
     /* A miss is only a miss when every database actually answered. If one
      * was refusing, say so rather than remember a "not found" that is not
      * known to be true. */
-    if (indisponible) {
+    if (unavailable) {
       return json(res, 503, {
         error: "product database unavailable",
         retryAfterSeconds: OffBudget.secondsUntilFree(),
-        scanned: brut
+        scanned: raw
       });
     }
-    ProductCache.set(cle, { hit: false });
-    json(res, 404, absent(brut, formes, "live"));
+    ProductCache.set(key, { hit: false });
+    json(res, 404, absent(raw, forms, "live"));
   },
 
   /* Connexion volontairement minimale : un email, un token. Pas de mot de
    * password to manage, so no password to leak. In production this token is
    * emailed instead of being returned here. */
   "POST /api/login": async function (req, res, ctx) {
-    /* CLOSED UNTIL SIGN-IN IS REAL.
-     *
-     * This route hands a session token to any well-formed address, with no
-     * proof that the caller owns it. The note below says the token is
-     * emailed in production; the deployment on Render IS production, and the
-     * token came back in the response. Anyone typing a subscriber's email
-     * got their subscription.
-     *
-     * Until a magic link exists, the route answers 503. The environment
-     * variable reopens it for local testing only, knowingly. */
+        /* Closed until sign-in is real: the note below says the token is emailed
+     * in production; the deployment on Render IS production, and the token
+     * came back in the response. */
     if (!ctx.insecureLogin) {
       return json(res, 503, { error: "sign-in is not available yet" });
     }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
     const email = normaliserCourriel(corps.email);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: "email invalide" });
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
     const token = jetonNeuf();
-    db.jetons[token] = { email: email, cree: Date.now() };
+    db.tokens[token] = { email: email, cree: Date.now() };
     writeAccounts(db);
     json(res, 200, { token: token, email: email, subscribed: subscriptionActive(db.accounts[email]),
                      note: "En production, ce token s'envoie par email — il ne revient pas dans la réponse." });
@@ -601,14 +550,14 @@ const routes = {
 
   "POST /api/logout": async function (req, res, ctx) {
     const auth = (req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
-    if (auth && ctx.db.jetons[auth]) { delete ctx.db.jetons[auth]; writeAccounts(ctx.db); }
+    if (auth && ctx.db.tokens[auth]) { delete ctx.db.tokens[auth]; writeAccounts(ctx.db); }
     json(res, 200, { ok: true });
   },
 
-  /* Opens a checkout session. The secret key stays on the server;
-   * le navigateur ne voit qu'une URL Stripe. */
+  /* Opens a checkout session. The secret key stays on the server; the
+   * browser only sees a Stripe URL. */
   "POST /api/checkout": async function (req, res, ctx) {
-    if (!ctx.account) return json(res, 401, { error: "connexion requise" });
+    if (!ctx.account) return json(res, 401, { error: "sign-in required" });
     if (!process.env.STRIPE_CLE_SECRETE || !process.env.STRIPE_PRIX)
       return json(res, 501, { error: "paiement non configuré", manque: ["STRIPE_CLE_SECRETE", "STRIPE_PRIX"] });
     const origine = process.env.BOUCHEES_ORIGINE || ("http://localhost:" + PORT);
@@ -626,14 +575,14 @@ const routes = {
   /* Stripe webhook: the only source of truth on subscription state. Never the
    * client. The signature is verified before anything is touched. */
   "POST /api/webhook/stripe": async function (req, res, ctx) {
-    const brut = await rawBody(req);
+    const raw = await rawBody(req);
     const sig = req.headers["stripe-signature"] || "";
     if (!SECRET_WEBHOOK) return json(res, 500, { error: "STRIPE_WEBHOOK_SECRET non configuré" });
-    if (!verifierSignature(brut, sig, SECRET_WEBHOOK)) return json(res, 400, { error: "signature invalide" });
+    if (!verifierSignature(raw, sig, SECRET_WEBHOOK)) return json(res, 400, { error: "signature invalide" });
 
     let evt;
-    try { evt = JSON.parse(brut.toString("utf8")); }
-    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
+    try { evt = JSON.parse(raw.toString("utf8")); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
 
     const maj = evenementPertinent(evt);
     if (!maj) return json(res, 200, { ignored: evt.type });
@@ -650,28 +599,23 @@ const routes = {
   }
 };
 
-/* Les photos vivent sur le serveur, pas dans l'app : les semaines tournent,
- * et embarquer les images ferait grossir l'IPA sans fin. Le client les met en
- * caches on the device and prunes when a batch leaves the window. */
+/* Photos live on the server, not in the app: batches rotate, and the
+ * client caches them on the device, pruning when a batch leaves the window. */
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                 ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8",
                 ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 
-/* A minute of recent calls per key, nothing persisted.
- *
- * Deliberately in memory: a restart forgetting who wrote a second ago is the
- * correct behaviour, and a rate limiter that needs a database is a second
- * thing that can fail. */
+/* A minute of recent calls per key, nothing persisted. */
 const _debits = new Map();
-function limiteDebit(cle, parMinute) {
+function limiteDebit(key, parMinute) {
   const max = parMinute || 60;
-  const maintenant = Date.now();
-  const vus = (_debits.get(cle) || []).filter(function (t) {
-    return maintenant - t < 60000;
+  const now = Date.now();
+  const seen = (_debits.get(key) || []).filter(function (t) {
+    return now - t < 60000;
   });
-  if (vus.length >= max) { _debits.set(cle, vus); return false; }
-  vus.push(maintenant);
-  _debits.set(cle, vus);
+  if (seen.length >= max) { _debits.set(key, seen); return false; }
+  seen.push(now);
+  _debits.set(key, seen);
   /* Bounded: without this the map grows one entry per account, forever. */
   if (_debits.size > 5000) {
     for (const k of _debits.keys()) { _debits.delete(k); if (_debits.size <= 4000) break; }
@@ -685,10 +629,8 @@ function serveStatic(req, res, url) {
   let rel = decodeURIComponent(url.pathname);
   if (rel === "/" || rel === "") rel = "/index.html";
 
-  /* Photos des recipes. Le name de fichier contient l'empreinte des
-   * ingredients: an image never changes under the same name, so the cache
-   * immuable. Extensions en liste blanche — rien d'autre qu'une image ne
-   * sort de ce dossier. */
+    /* Recipe photos: the file name carries the ingredient fingerprint, so an
+   * image never changes under the same name and the cache is immutable. */
   if (rel.indexOf("/images/") === 0) {
     const ext = path.extname(rel).toLowerCase();
     if (ALLOWED_IMAGE_EXT.indexOf(ext) === -1) { res.writeHead(404); return res.end(); }
@@ -722,10 +664,10 @@ function createServer(options) {
   return http.createServer(async function (req, res) {
     req.on("error", function () { /* aborted by rawBody; the 413 below answers */ });
     const url = new URL(req.url, "http://x");
-    const cle = req.method + " " + url.pathname;
+    const key = req.method + " " + url.pathname;
     res.setHeader("X-Content-Type-Options", "nosniff");
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
-    const route = routes[cle];
+    const route = routes[key];
     if (!route) return serveStatic(req, res, url);
     const db = readAccounts();
     const ctx = { db: db, url: url, account: compteDeLaRequete(req, db),
@@ -750,6 +692,7 @@ if (require.main === module) {
 }
 
 module.exports = { createServer: createServer, allowedBatches: allowedBatches,
+                   previousWeekBatch: previousWeekBatch,
                    subscriptionActive: subscriptionActive, routes: routes,
                    /* Exposed for the tests only. */
                    _ProductCache: ProductCache, _OffBudget: OffBudget,

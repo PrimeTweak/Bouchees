@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
-"""Static checker for the Swift sources.
-
-This is NOT a compiler. It catches the class of mistakes that costs a full
-build each time: a symbol referenced but never defined, a type declared twice,
-a missing colour asset, unbalanced delimiters, StoreKit identifiers that do
-not line up.
-
-What it cannot catch: overload ambiguity, actor isolation, changed API
-signatures, type inference. Those come out of the build, and that is fine.
-"""
+"""Static checker for the Swift sources: this is NOT a compiler."""
 import json
 import os
 import re
@@ -18,28 +9,9 @@ ROOT = os.path.join(os.path.dirname(__file__), "..", "ios", "App", "App")
 ROOT = os.path.abspath(ROOT)
 
 # Symbols provided by the frameworks — never reported as missing.
-CONNUS = set("""
-View Text Image Button Color Path Canvas GraphicsContext Circle Rectangle Capsule
-RoundedRectangle LinearGradient ScrollView VStack HStack ZStack LazyVGrid LazyVStack
-GridItem Spacer Divider List Section NavigationStack TabView Toggle TextField Link
-Label ProgressView Alert Group Binding State StateObject ObservedObject Environment
-EnvironmentObject FocusState App Scene WindowGroup ToolbarItem Namespace ViewBuilder
-UIView UIColor UIScreen UIApplication UIViewRepresentable UINotificationFeedbackGenerator
-AVCaptureSession AVCaptureDevice AVCaptureDeviceInput AVCaptureMetadataOutput
-AVCaptureMetadataOutputObjectsDelegate AVMetadataObject AVMetadataMachineReadableCodeObject
-AVCaptureVideoPreviewLayer AVCaptureConnection AVCaptureOutput
-Product AppStore VerificationResult StoreKit
-JSContext JSValue
-URL URLRequest URLSession URLComponents URLQueryItem HTTPURLResponse URLResourceValues
-Data Date UUID Bundle FileManager JSONDecoder JSONEncoder UserDefaults ProcessInfo
-Decoder Encoder Encodable Decodable Codable Hashable Identifiable Sendable Equatable
-LocalizedError Error Task Dictionary Set Array String Int Double Bool CGFloat CGPoint
-CGRect CGSize CGAffineTransform NSObject AnyClass StrokeStyle Angle EdgeInsets
-Observation Observable ObservationIgnored MainActor discardableResult unknown
-CustomStringConvertible Comparable Collection Sequence Optional Result
-ForEach Void Self Any AnyView UTF8 Context Never Character Float Range ClosedRange
-Calendar Locale Notification NotificationCenter Timer DispatchQueue Bundle
-""".split())
+CONNUS = set("""View Text Image Button Color Path Canvas GraphicsContext Circle Rectangle
+Capsule RoundedRectangle LinearGradient ScrollView VStack HStack ZStack
+LazyVGrid LazyVStack GridItem Spacer Divider List Section.""".split())
 
 def swift_files():
     out = []
@@ -64,10 +36,8 @@ def check():
     if not files:
         return ["no Swift file found under " + ROOT], []
 
-    # A dropped folder is the classic Finder accident: dragging one folder onto
-    # another replaces it whole instead of merging. The project has a known
-    # floor of source files — fewer than that means something was wiped, and
-    # the build would fail thirty minutes later with a confusing error.
+    # A dropped folder is the classic Finder accident: dragging one folder
+    # onto another replaces it whole instead of merging.
     MINIMUM_SOURCES = 12
     if len(files) < MINIMUM_SOURCES:
         return ([f"only {len(files)} Swift file(s) found, expected at least "
@@ -150,17 +120,15 @@ def check():
             problems.append(f"{filename}:{line}: bare “{m.group(1)}(” — ambiguous between "
                           f"CoreGraphics and the standard library; use a typed wrapper")
 
-    # 7b. an optional property called without unwrapping it.
-    #     Not a general type check — the checker has no compiler — but this
-    #     exact shape cost a build. Scanned line by line: a call on an optional
-    #     with no guard, if let, ?. or !. in the twelve lines above it.
+    # 7b. an optional property called without unwrapping it: not a general
+    # type check — the checker has no compiler — but this exact shape cost a
+    # build.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
-        # Only optionals declared at the top of a type, and only names that are
-        # never re-declared as a non-optional elsewhere in the file — a `let x:
-        # T` parameter in another struct shadows the property and is not the
-        # same variable. Scope is what a real compiler tracks and this cannot.
+        # Only optionals declared at the top of a type, and only names that
+        # are never re-declared as a non-optional elsewhere in the file — a
+        # `let x: T` parameter in another struct shadows the property and.
         optionnels = set(re.findall(r"(?:private\s+)?var\s+(\w+)\s*:\s*\w+\?", code))
         redeclares = set(re.findall(r"\blet\s+(\w+)\s*:\s*\w+(?!\?)", code))
         optionnels -= redeclares
@@ -181,11 +149,9 @@ def check():
                 problems.append(f"{filename}:{i + 1}: '{nom}' is optional and is called "
                                 f"as '{nom}.…' with no guard let, if let, ?. or !")
 
-    # 7c. a style ternary whose two branches are different types.
-    #     `on ? Color(.systemBackground) : .secondary` asks the compiler to
-    #     unify a Color with a HierarchicalShapeStyle. It refuses, and the
-    #     error it emits points at the whole expression rather than the line —
-    #     which is why a build can fail with nothing useful in the log.
+    # 7c. a style ternary whose two branches are different types: it refuses,
+    # and the error it emits points at the whole expression rather than the
+    # line — which is why a build can fail with nothing useful in the log.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         for i, l in enumerate(code.split("\n"), 1):
@@ -194,18 +160,8 @@ def check():
                 problems.append(f"{filename}:{i}: style ternary mixes '{m.group(3).strip()}' "
                                 f"with '{m.group(4)}' — give both branches the same type")
 
-    # 7d. a `-> some View` whose body is an `if` with no `else` and no `return`.
-    #     That only compiles under @ViewBuilder, and the error Swift emits —
-    #     "no return statements in its body" — points at the declaration
-    #     without saying the attribute is what is missing.
-    #
-    #     It cost a build: an insertion landed between an @ViewBuilder line and
-    #     the func below it, silently moving the attribute onto the wrong
-    #     function. Nothing in the diff looked wrong.
-    #
-    #     Signatures wrap, so the `func` line and the `-> some View` line are
-    #     often different lines: the search starts from `func`, not from the
-    #     return type.
+    # 7d. a `-> some View` whose body is an `if` with no `else` and no
+    # `return`.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -238,15 +194,9 @@ def check():
                 problems.append(f"{filename}:{i + 1}: '-> some View' with an if/switch body and "
                                 f"no return — it needs @ViewBuilder directly above the func")
 
-    # 7e. a View initialised with an argument label its struct does not declare.
-    #     SwiftUI memberwise inits take the stored property names exactly, so
-    #     `AllergenGlyph(id:)` against `let identifier: String` fails — and the
-    #     error names the parameter it wanted, not the file that called it
-    #     wrongly.
-    #
-    #     Only structs whose stored properties are ALL simple `let name: Type`
-    #     are checked, and only calls that use labels for every argument, so a
-    #     custom init or a positional call is left alone.
+    # SwiftUI memberwise inits take the stored property names exactly, so
+    # `AllergenGlyph(id:)` against `let identifier: String` fails — and the
+    # error names the parameter it wanted, not the file that called it.
     struct_fields = {}
     struct_defaults = {}
     for path_, (_, code) in sources.items():
@@ -254,12 +204,9 @@ def check():
             nom, corps = m.group(1), m.group(2)
             if re.search(r"\binit\s*\(", corps):
                 continue          # a custom init changes the labels
-            # Property wrappers count as init parameters too — @Binding, @State
-            # with no default, @Environment — and `var body: some View` is not
-            # a field at all. Missing either produces false positives, and a
-            # checker that cries wolf gets ignored.
-            # `var compact = false` has no type annotation and is still an init
-            # parameter, so the colon cannot be required.
+            # Property wrappers count as init parameters too — @Binding,
+            # @State with no default, @Environment — and `var body: some View`
+            # is not a field at all.
             champs = set(re.findall(
                 r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:private\s+)?(?:let|var)\s+(\w+)\s*[:=]",
                 corps, re.M))
@@ -274,10 +221,9 @@ def check():
                 r"^\s*@(?:State|Environment|FocusState|AppStorage)\b[^\n]*\b(?:var)\s+(\w+)",
                 corps, re.M))
             champs -= enveloppes
-            # A computed property is not an init parameter. It is followed by
+            # A computed property is not an init parameter: it is followed by
             # `{` on its own line or the next — the same distinction the
-            # ViewBuilder rule already makes. Without it, `private var
-            # shortVerdict: String { … }` looks like a missing argument.
+            # ViewBuilder rule already makes.
             lignes_corps = corps.split("\n")
             calculees = set()
             for idx, lc in enumerate(lignes_corps):
@@ -310,23 +256,9 @@ def check():
                                     f"declares no '{inconnus[0]}'  (it has: {attendus})")
 
 
-                # The "missing argument" half of this rule was tried and
-                # removed: telling a stored property from a computed one
-                # without a parser produced four false positives across three
-                # attempts. A checker that cries wolf gets ignored, and the
-                # compiler names this case clearly anyway.
-                #
                 # What stays is the half that works: a label the struct does
-                # not declare, which the compiler reports without saying
-                # where the wrong call lives.
-    # 7f. a call whose argument labels do not match the function it calls.
-    #     `pairFor(id)` against `func pairFor(pour id: String)` fails, and the
-    #     error names the label it wanted without saying where the wrong call
-    #     lives. Two builds went on that this evening.
-    #
-    #     Only same-file and cross-file functions with simple signatures are
-    #     compared, and only calls with the same number of arguments — enough
-    #     to catch a rename, cheap enough to stay quiet otherwise.
+                # not declare, which the compiler reports without saying where
+                # the wrong call lives. 7f. a call whose argument.
     signatures = {}
     for path_, (_, code) in sources.items():
         for m in re.finditer(r"func (\w+)\(([^)]*)\)", code):
@@ -347,10 +279,9 @@ def check():
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         for i, l in enumerate(code.split("\n"), 1):
-            # Only calls on `etat` — the app's own state object. Without that
-            # anchor the rule matches JSONEncoder().encode(x) against a
-            # same-named project function and cries wolf. The receiver has to
-            # be one we can actually resolve.
+            # Only calls on `etat` — the app's own state object: without that
+            # anchor the rule matches JSONEncoder().encode(x) against a same-
+            # named project function and cries wolf.
             for m in re.finditer(r"\betat\.(\w+)\(([^()]*)\)", l):
                 nom, args = m.group(1), m.group(2)
                 if nom not in signatures or not args.strip():
@@ -367,15 +298,8 @@ def check():
                                     f"'{at}:'  (full labels: {', '.join(attendues)})")
                     break
 
-    # 7g. a Sendable struct holding a non-Sendable SwiftUI type.
-    #     LocalizedStringKey, Image, Font, AnyView and friends are not
-    #     Sendable. Declaring the struct Sendable is a warning under Swift 5
-    #     and an ERROR under Swift 6 — worth fixing before the language mode
-    #     moves rather than after.
-    # Only types the compiler actually refuses. Color and Font ARE Sendable
-    # since iOS 17 — listing them produced a false positive on DishArtwork,
-    # which has compiled cleanly all along. The list is what the build log
-    # named, not what I assumed.
+    # 7g. a Sendable struct holding a non-Sendable SwiftUI type:
+    # localizedStringKey, Image, Font, AnyView and friends are not Sendable.
     NON_SENDABLE = ["LocalizedStringKey", "AnyView", "UIImage", "UIColor"]
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
@@ -390,14 +314,9 @@ def check():
                                     f"an error in Swift 6")
                     break
 
-    # 7h. a member called on a project enum that the enum does not declare.
-    #     Rewriting Tone.swift renamed six tokens and left twenty call sites
-    #     pointing at names that no longer existed — twenty-one compile errors
-    #     from one edit. This finds them in a second.
-    #
-    #     Only enums used as namespaces (Tone, Layout, Type) are checked, and
-    #     only static members, so an instance property on a struct is left
-    #     alone.
+    # Only enums used as namespaces (Tone, Layout, Type) are checked, and only
+    # static members, so an instance property on a struct is left alone. 7h. a
+    # member called on a project enum that the enum does not declare.
     namespaces = {}
     for path_, (_, code) in sources.items():
         for m in re.finditer(r"enum (\w+) \{((?:.|\n)*?)\n\}", code):
@@ -425,10 +344,9 @@ def check():
                                 f"'{membre}'  (it has: {', '.join(proches)}…)")
                 break
 
-    # 7i. strokeBorder on a type-erased shape.
-    #     `strokeBorder` lives on InsettableShape. AnyShape erases that
-    #     conformance, so the call fails to compile — and the error names the
-    #     member, not the erasure that caused it. `stroke` is the fix.
+    # 7i. strokeBorder on a type-erased shape: anyShape erases that
+    # conformance, so the call fails to compile — and the error names the
+    # member, not the erasure that caused it.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -441,14 +359,9 @@ def check():
                 problems.append(f"{filename}:{i}: {m.group(1)}.strokeBorder — that value is "
                                 f"AnyShape, which erases InsettableShape; use stroke instead")
 
-    # 7j. a `some View` property passed where a ShapeStyle is required.
-    #     A gradient IS a ShapeStyle, but `some View` erases that: the opaque
-    #     type only promises View. AnyShapeStyle(x), .fill(x) and .background(x,
-    #     in:) all reject it, and the error talks about conformance rather than
-    #     about the declaration that caused it.
-    #
-    #     Third build lost to opaque types this evening, after AnyShape and
-    #     strokeBorder. Worth a rule.
+    # 7j. a `some View` property passed where a ShapeStyle is required. A
+    # gradient IS a ShapeStyle, but `some View` erases that: the opaque type
+    # only promises View.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         opaques = set(re.findall(r"(?:var|let)\s+(\w+)\s*:\s*some View", code))
@@ -465,11 +378,9 @@ def check():
                                     f"which erases ShapeStyle — give it its concrete type "
                                     f"(LinearGradient, Color…)")
 
-    # 7k. two declarations of the same property in one type.
-    #     I added `var currentWeek: [Recipe]` to a class that already had
-    #     `private(set) var currentWeek: String?`. Swift reports it as an
-    #     invalid redeclaration plus three follow-on errors from the
-    #     Observation macro, none of which name the collision plainly.
+    # 7k. two declarations of the same property in one type: swift reports it
+    # as an invalid redeclaration plus three follow-on errors from the
+    # Observation macro, none of which name the collision plainly.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         # split into top-level type bodies
@@ -496,15 +407,8 @@ def check():
                 else:
                     vus[nom] = ligne
 
-    # 7l. a hardcoded colour on a view that also carries glass.
-    #     Apple: "SwiftUI automatically uses a vibrant text color that adapts
-    #     to maintain legibility against colorful backgrounds." Naming a
-    #     colour switches that off — which is exactly what I did, then blamed
-    #     the material for not adapting.
-    #
-    #     Semantic styles (.primary, .secondary, .tertiary) are the point and
-    #     are allowed. A verdict colour on a SHAPE is fine too; this only
-    #     looks at text and symbols.
+    # 7l. a hardcoded colour on a view that also carries glass: semantic
+    # styles (.primary, .secondary, .tertiary) are the point and are allowed.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -521,23 +425,15 @@ def check():
                         f"vibrant tone")
                     break
 
-    # 7m. French anywhere in the code.
-    #     Everything that goes INTO the code is written in English. This rule
-    #     is what keeps it that way, because French creeps back one comment
-    #     at a time.
-    #
-    #     It reads raw, not code: the parser strips comments and strings
-    #     before the other rules run, and comments are exactly where French
-    #     survives.
+    # 7m: everything that goes INTO the code is written in English.
     ACCENTS = "àâäçèéêëîïôùûœ"
     # The product name, words English borrowed, and French quoted AS DATA —
     # a label example is the thing being described, not prose.
     PERMIS = ("Bouchées", "Bouchée", "bouchée", "purée", "sauté", "café", "crêpe",
               "Arôme", "François")
-    #     French quoted AS DATA is the exception, and it is marked rather than
-    #     guessed: a line ending in `// label text` holds words printed on a
-    #     Quebec package, which cannot be translated without breaking the
-    #     match.
+    # French quoted AS DATA is the exception, and it is marked rather than
+    # guessed: a line ending in `// label text` holds words printed on a
+    # Quebec package, which cannot be translated without breaking the match.
     for path_, (raw, _) in sources.items():
         filename = os.path.basename(path_)
         for i, l in enumerate(raw.split("\n"), 1):
@@ -553,15 +449,9 @@ def check():
                                 f"everything inside the code is in English")
 
 
-    # 7n. a safeAreaInset placed inside a NavigationStack.
-    #     An inset attached to a view INSIDE the stack survives every screen
-    #     pushed on top of it. The overlay stops being visible but keeps its
-    #     hit region, so buttons on the pushed screen are drawn correctly and
-    #     receive nothing.
-    #
-    #     That cost four attempts on the wrong file. The rule looks for an
-    #     inset that appears after a NavigationStack opens and before it
-    #     closes.
+    # 7n. a safeAreaInset placed inside a NavigationStack: the overlay stops
+    # being visible but keeps its hit region, so buttons on the pushed screen
+    # are drawn correctly and receive nothing.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -580,14 +470,9 @@ def check():
                                 f"NavigationStack — it keeps its hit region over every "
                                 f"pushed screen; move it outside the stack")
 
-    # 7o. a GeometryReader whose own frame is fed by what it measures.
-    #     The scanner froze on this: an outer GeometryReader carrying
-    #     `.frame(height: height)` while an inner one wrote to `height`. The
-    #     layout never converged, the main thread spun, and from the outside
-    #     it looked like the camera had stopped reading barcodes.
-    #
-    #     The signal is a file that both writes a @State length from a
-    #     GeometryReader and applies that same property as a frame.
+    # 7o. a GeometryReader whose own frame is fed by what it measures. The
+    # layout never converged, the main thread spun, and from the outside it
+    # looked like the camera had stopped reading barcodes.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         if "GeometryReader" not in code:
@@ -603,9 +488,7 @@ def check():
                                 f"layout feedback loop; use a Layout instead")
 
     # 7p. a large bottom padding on content that already carries a
-    #     safeAreaInset(.bottom). The inset reserves its own height; a second
-    #     reservation for the same bar is what left text clipped behind it on
-    #     one screen and floating on another.
+    # safeAreaInset(.bottom).
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         if ".safeAreaInset(edge: .bottom)" not in code:
@@ -617,14 +500,8 @@ def check():
                                 f"content that already has a safeAreaInset(.bottom) — "
                                 f"two reservations for one bar")
 
-    # 7q. a project type that shadows a SwiftUI name, used unqualified.
-    #     The project owns `enum Layout` for its spacing constants. Writing
-    #     `struct WrappingRow: Layout` therefore meant "inherit from that
-    #     enum", and the compiler answered with four cascading errors — none
-    #     of which named the collision.
-    #
-    #     Shadowing is fine. Using the shadowed name as a conformance without
-    #     qualifying it is not.
+    # Shadowing is fine. Using the shadowed name as a conformance without
+    # qualifying it is not.
     SWIFTUI_NAMES = {"Layout", "View", "Shape", "Animation", "Alignment", "Color",
                      "Font", "Image", "Text", "Group", "Section", "List", "Label",
                      "Gesture", "Edge", "Axis", "Material", "Visibility"}
@@ -648,14 +525,9 @@ def check():
                                         f"project also defines — write SwiftUI.{conf} or the "
                                         f"compiler picks the local one")
 
-    # 7r. ignoresSafeArea(.top) on a screen with no full-bleed image.
-    #     iOS applies the scroll edge effect automatically to any scroll view
-    #     UNDER a bar. Extending past the bar switches it off — which is what
-    #     left the clock unreadable over a scrolling list.
-    #
-    #     Apple's own guidance: the status bar belongs on every page unless
-    #     the page shows a full-screen image or video. So the modifier is
-    #     allowed on a file that draws a hero photo, and nowhere else.
+    # Extending past the bar switches it off — which is what left the clock
+    # unreadable over a scrolling list. So the modifier is allowed on a file
+    # that draws a hero photo, and nowhere else.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         if "ignoresSafeArea(.container, edges: .top)" not in code:
@@ -668,14 +540,9 @@ def check():
                             f"full-bleed image — it switches off the scroll edge "
                             f"effect and the status bar stops being legible")
 
-    # 7s. a @ViewBuilder stored property constructed with a value.
-    #     `@ViewBuilder var bar: Bar` makes the memberwise initialiser take
-    #     `() -> Bar`, not `Bar`. Calling `TopBar(bar: bar())` therefore hands
-    #     a value where a closure is expected — and the error talks about the
-    #     generic parameter, not about the attribute that caused it.
-    #
-    #     Constructing the same type with a trailing closure is correct and is
-    #     not flagged.
+    # Calling `TopBar(bar: bar())` therefore hands a value where a closure is
+    # expected — and the error talks about the generic parameter, not about
+    # the attribute that caused it.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         # types that declare a @ViewBuilder stored property, and its name
@@ -698,24 +565,7 @@ def check():
                                 f"'{prop}' is @ViewBuilder — the initialiser expects a "
                                 f"closure; drop the attribute or pass a closure")
 
-    # 7t. more than one NavigationStack in the app.
-    #     A safeAreaInset reduces the safe area of its DIRECT child, and a
-    #     NavigationStack resets it for its content. Four screens each opening
-    #     their own meant the tab bar's inset reached none of them — which
-    #     produced the dead back button, the pill surviving every pushed
-    #     screen, content under the bar, and thirty-six compensating paddings.
-    #
-    #     One stack, at the root. Screens are content.
-    #     A view PRESENTED as a sheet is its own hierarchy and may own a
-    #     stack; that is the one exception, and it is named rather than
-    #     guessed.
-    #     SUPERSEDED BY THE NATIVE TabView. Each Tab owns its own
-    #     NavigationStack — that is the structure Apple documents, and it is
-    #     what makes the Liquid Glass bar behave. The rule was written for a
-    #     hand-rolled bar where one stack at the root was correct; with
-    #     TabView it would forbid the right answer.
-    #
-    #     Kept, narrowed: a file holding a TabView is exempt.
+    # 7t. more than one NavigationStack in the app: screens are content.
     PRESENTEES = ("ProfileEditor", "PaywallScreen", "SubstitutionRuleSheet",
                   "ChildPickerSheet", "SearchSheet", "TagFlow")
     stacks = []
@@ -735,10 +585,9 @@ def check():
                         " — a stack resets the safe area, so the tab bar inset "
                         "stops reaching the content; keep one at the root")
 
-    # 7u. a type used across files but declared inside another type.
-    #     `enum Route` was inserted inside RootView, making it RootView.Route.
-    #     Every other file then failed with "cannot find type Route in scope"
-    #     — and the real cause, one level of nesting, was never named.
+    # Every other file then failed with "cannot find type Route in scope" —
+    # and the real cause, one level of nesting, was never named. 7u. a type
+    # used across files but declared inside another type.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -759,14 +608,9 @@ def check():
                                     f"Outer.{nom}, which nothing else can see")
             prof += l.count("{") - l.count("}")
 
-    # 7v. a unicode escape without braces.
-    #     Swift writes `\\u{00e9}`. `\\u00e9` is not an escape at all, and the
-    #     compiler says "expected hexadecimal code in braces" three times for
-    #     one line without naming the missing braces.
-    #
-    #     This came from a script writing Swift: Python and JavaScript accept
-    #     the brace-less form, Swift does not. Writing the character itself is
-    #     usually better than either.
+    # 7v. a unicode escape without braces: `\\u00e9` is not an escape at all,
+    # and the compiler says "expected hexadecimal code in braces" three times
+    # for one line without naming the missing braces.
     for path_, (raw, _) in sources.items():
         filename = os.path.basename(path_)
         for i, l in enumerate(raw.split("\n"), 1):
@@ -775,11 +619,9 @@ def check():
                                 f"Swift needs \\u{{{m.group(1)}}}, or write the "
                                 f"character itself")
 
-    # 7w. a guessed top inset.
-    #     `padding(.top, 46)` inside a view that ignores the safe area
-    #     measures from the physical edge. A Dynamic Island occupies 59, a
-    #     notch a different number, an iPad another — so any large constant
-    #     there is a height someone guessed.
+    # 7w. a guessed top inset: a Dynamic Island occupies 59, a notch a
+    # different number, an iPad another — so any large constant there is a
+    # height someone guessed.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         if "ignoresSafeArea" not in code:
@@ -800,10 +642,9 @@ def check():
                             f"that ignores the safe area — that is a guessed status bar "
                             f"height; let the safe area supply it")
 
-    # 7x. a fading gradient with horizontal margins.
-    #     A gradient that dims content has to span the screen. The moment it
-    #     has side padding its edges become a visible box — which is what put
-    #     an outline under "Start cooking" and above the tab bar.
+    # 7x. a fading gradient with horizontal margins: the moment it has side
+    # padding its edges become a visible box — which is what put an outline
+    # under "Start cooking" and above the tab bar.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -817,14 +658,9 @@ def check():
                 problems.append(f"{filename}:{i}: a canvas fade with horizontal padding — "
                                 f"its edges draw a box; a fade must span the screen")
 
-    # 7y. a .sheet attached to the Button that triggers it.
-    #     The child pill and the search island both did this. They live in a
-    #     top bar that SwiftUI rebuilds whenever the layout shifts — and it
-    #     shifts as soon as content scrolls under it. So the first tap set the
-    #     flag, the view was recreated, the fresh @State came back false, and
-    #     the sheet never opened. The second tap landed before the rebuild.
-    #
-    #     A sheet belongs on an ancestor that does not get rebuilt.
+    # 7y. a .sheet attached to the Button that triggers it: so the first tap
+    # set the flag, the view was recreated, the fresh @State came back false,
+    # and the sheet never opened.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         lignes = code.split("\n")
@@ -839,10 +675,8 @@ def check():
             if j < 0:
                 continue
 
-            # The chain belongs to a Button when a `Button {` opened at the
-            # same indentation as the brace that closes it. More closing
-            # braces than that means a List or a Section ended, and the sheet
-            # correctly belongs to the screen.
+            # More closing braces than that means a List or a Section ended,
+            # and the sheet correctly belongs to the screen.
             creux = len(lignes[j]) - len(lignes[j].lstrip())
             if not lignes[j].strip().startswith("}"):
                 continue
@@ -861,13 +695,9 @@ def check():
                             f"if that button gets rebuilt the flag is lost and the "
                             f"first tap does nothing; move it to a stable ancestor")
 
-    # 7z. a property read off a model that does not declare it.
-    #     The checker already catches `Foo(bar:)` when Foo has no `bar`. It
-    #     did NOT catch `product.image` and `product.traceTags` — reads, not
-    #     calls — so four invented members reached the compiler.
-    #
-    #     Only for models whose stored properties are all visible in one
-    #     struct: guessing at a class with computed members would be noise.
+    # 7z. a property read off a model that does not declare it: it did NOT
+    # catch `product.image` and `product.traceTags` — reads, not calls — so
+    # four invented members reached the compiler.
     modeles = {}
     for path_, (_, code) in sources.items():
         for m in re.finditer(r"\nstruct (\w+): [^\n]*(?:Codable|Sendable)[^\n]*\{"
@@ -904,17 +734,9 @@ def check():
                                     f"declares no '{membre}'  (it has: "
                                     f"{', '.join(sorted(champs))})")
 
-    # 7aa. glass INSIDE a Button's label.
-    #      A glass container swallows the first touch: hitTest: on it returns
-    #      itself (FB18201935). Inside a label it sits between the finger and
-    #      the button, so the control needs two taps — measured four times on
-    #      the detail screen, then again on the pill and on search.
-    #
-    #      Glass belongs on the Button, not in what the Button draws.
-    #      `Button { action } label: { … }` puts the drawing in the SECOND
-    #      block, which is where the glass ends up. Scanning the first block
-    #      found nothing — the rule matched zero occurrences of the bug it was
-    #      written for.
+    # 7aa. glass INSIDE a Button's label: inside a label it sits between the
+    # finger and the button, so the control needs two taps — measured four
+    # times on the detail screen, then again on the pill and on search.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         for m in re.finditer(r"\blabel:\s*\{", code):
@@ -934,13 +756,9 @@ def check():
                                 f"touch; put it on the Button instead")
                         break
 
-    # 7ab. an overlay that expands with state.
-    #      `.overlay { if expanded { … } }` draws ON TOP without reserving
-    #      height, so the revealed content lands across whatever is below it.
-    #      That is the ingredient list overlapping the cards under it.
-    #
-    #      Anything that grows belongs in the layout — a VStack — not an
-    #      overlay.
+    # 7ab. an overlay that expands with state: `.overlay { if expanded { … }
+    # }` draws ON TOP without reserving height, so the revealed content lands
+    # across whatever is below it.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         for m in re.finditer(r"\.overlay\s*(?:\([^)]*\)\s*)?\{", code):
@@ -953,21 +771,9 @@ def check():
                     prof -= 1
                     if prof == 0:
                         corps = code[i:j]
-                        # a state-driven reveal, not a static decoration
-                        # A badge inside a FIXED-HEIGHT container reserves
-                        # nothing because nothing needs reserving — the frame
-                        # is already set. The rule is about an overlay on
-                        # content whose height is its own.
-                        # WHAT THE RULE IS ABOUT: an overlay that UNFOLDS.
-                        #
-                        # `if showDetails` reveals a list that lands across the
-                        # content below, because an overlay reserves no height.
-                        # `if isOn` on a badge does not: a checkmark on a tile
-                        # covers the tile, which is the point.
-                        #
-                        # The distinction is the verb, not the size. A reveal
-                        # is named show/expand/open; a selection is isOn,
-                        # isSelected, selected.
+                        # a state-driven reveal, not a static decoration A
+                        # badge inside a FIXED-HEIGHT container reserves
+                        # nothing because nothing needs reserving — the frame.
                         revele = re.search(r"\bif\s+(?:show|expand|open|reveal)\w*\b",
                                            corps, re.I)
                         if revele and len(corps) > 120:
@@ -979,15 +785,9 @@ def check():
                                 f"it in the layout")
                         break
 
-    # 7ac. a call to a private helper that no longer exists.
-    #      Deleting `chips(...)` left one call behind in a branch nothing had
-    #      exercised, and the checker reported clean — it verified struct
-    #      members and initialisers, never free calls inside a file.
-    #
-    #      Scoped to PRIVATE helpers declared in the same file, which is the
-    #      only case that can be decided without resolving the whole module.
-    #      Closures, protocol members and anything from a framework are out of
-    #      reach here, and guessing at them would be noise.
+    # Deleting `chips(...)` left one call behind in a branch nothing had
+    # exercised, and the checker reported clean — it verified struct members
+    # and initialisers, never free calls inside a file.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         prives = set(re.findall(r"\n\s*private func (\w+)\s*\(", code))
@@ -1034,13 +834,8 @@ def check():
                             f"nowhere in this file — a helper that was deleted "
                             f"while a call survived")
 
-    # 7ad. a permission switch whose branches do not all fill the screen.
-    #      Only the authorised branch held a camera preview, which is greedy
-    #      by nature; the other two sized themselves to their text. The tab
-    #      bar is a safeAreaInset of the content, so it rose to meet them and
-    #      sat in the middle of the screen until permission was granted.
-    #
-    #      The frame belongs on the switch, so a fourth state cannot forget it.
+    # Only the authorised branch held a camera preview, which is greedy by
+    # nature; the other two sized themselves to their text.
     for path_, (_, code) in sources.items():
         filename = os.path.basename(path_)
         for m in re.finditer(r"switch\s+(\w*[Aa]uthoriz\w*|\w*[Pp]ermission\w*)\s*\{",
@@ -1068,14 +863,9 @@ def check():
                                 f"that sizes to its text lets the tab bar rise "
                                 f"into the middle of the screen")
 
-    # 7ae. an API newer than the deployment target, with no availability gate.
-    #      `Tab`, `TabView(selection:content:)` and `tabBarMinimizeBehavior`
-    #      were written against a project whose deploymentTarget is iOS 17.
-    #      Fourteen compiler errors, and `grep deploymentTarget ios/project.yml`
-    #      would have shown it in one second.
-    #
-    #      The table is what this project actually uses. It grows when a new
-    #      API is adopted, not speculatively.
+    # `Tab`, `TabView(selection:content:)` and `tabBarMinimizeBehavior` were
+    # written against a project whose deploymentTarget is iOS 17. The table is
+    # what this project actually uses.
     APIS_RECENTES = {
         # symbol            first available
         "Tab(":                     18,
@@ -1135,13 +925,9 @@ def check():
                                     f"— wrap it in `if #available(iOS {requis}, *)` "
                                     f"or mark the property @available")
 
-    # 7af. a @Binding whose type contradicts the @State it is bound to.
-    #      The root holds `@State private var path = NavigationPath()` and a
-    #      modifier declared `@Binding var path: [Route]`. Two build failures
-    #      on the same pair, because nothing compared them.
-    #
-    #      Matched by NAME within a file: a @State of a known type, and a
-    #      @Binding of the same name declared as something else.
+    # 7af. a @Binding whose type contradicts the @State it is bound to. The
+    # root holds `@State private var path = NavigationPath()` and a modifier
+    # declared `@Binding var path: [Route]`.
     TYPES_CONNUS = {
         "NavigationPath()": "NavigationPath",
         "[]": None,          # ambiguous, skip
@@ -1161,23 +947,8 @@ def check():
                                 f"— but @State var {nom} in this file is "
                                 f"{attendu}. The binding cannot convert")
 
-    # 7ag. String(localized:) fed something declared LocalizedStringKey.
-    #      Text() takes a LocalizedStringKey; String(localized:) takes a
-    #      String.LocalizationValue. They look interchangeable, they are not,
-    #      and the compiler message names the conversion rather than the array
-    #      that caused it.
-    #
-    #      Matched by name: any array or property declared
-    #      `[LocalizedStringKey]` in the project, then any use of it inside a
-    #      String(localized:) anywhere.
-    #      QUALIFIED NAMES ONLY.
-    #
-    #      A first pass matched bare field names and fired on two structs that
-    #      happen to share `title` and `detail` — one declares them
-    #      LocalizedStringKey, the other String.LocalizationValue, and neither
-    #      was misused. Comparing bare names across a project is guessing.
-    #
-    #      So: only `Type.member` uses, where the type is unambiguous.
+    # 7ag: text() takes a LocalizedStringKey; String(localized:) takes a
+    # String.LocalizationValue.
     cles = set()
     for path_, (_, code) in sources.items():
         for m in re.finditer(r"(?:^|\n)\s*(?:public\s+)?(?:static\s+)"
@@ -1237,24 +1008,54 @@ def check():
                 level.append(f"{filename}: uses {module} without importing it")
 
     problems += switches_non_exhaustifs()
+    problems += commentaires_hors_regle()
+    problems += tailles_fixes()
     return problems, warnings
 
 
+def tailles_fixes():
+    """A font size that does not scale with Dynamic Type."""
+    out = []
+    for path in swift_files():
+        for i, ligne in enumerate(open(path, encoding="utf-8").read().split("\n"), 1):
+            code = re.sub(r"//.*", "", ligne)
+            if "scaledValue(for:" in code or "struct ScaledFont" in code:
+                continue
+            if re.search(r"\.font\(\.system\(size:", code) or re.search(r"Font\.system\(size:", code):
+                out.append(f"{os.path.basename(path)}:{i}: a fixed font size — use scaledFont so the text follows Dynamic Type")
+    return out
+
+
+def commentaires_hors_regle():
+    """A comment longer than three lines, or written in French: the rule of
+    this codebase: a comment says what the code does, in English, in three
+    lines at most."""
+    FR = re.compile(r"\b(le|la|les|des|une|pour|est|sont|avec|dans|sur|qui|"
+                    r"que|ne|pas|au|du|ce|cette|ces|et|ou|mais|donc|tout|"
+                    r"aussi|jamais|sans|comme|quand|puis|alors|leur|c'est)\b")
+    out = []
+    for path in swift_files():
+        src = open(path, encoding="utf-8").read()
+        blocs = []
+        for m in re.finditer(r"/\*(?:.|\n)*?\*/", src):
+            blocs.append((src[:m.start()].count("\n") + 1, m.group(0).count("\n") + 1, m.group(0)))
+        for m in re.finditer(r"(?:^[ \t]*///?[^\n]*\n)+", src, re.M):
+            blocs.append((src[:m.start()].count("\n") + 1, m.group(0).count("\n"), m.group(0)))
+        for ligne, n, texte in blocs:
+            nom = os.path.basename(path)
+            if n > 3:
+                out.append(f"{nom}:{ligne}: a comment of {n} lines — three at most, "
+                           f"and it says what the code does, not how it got there")
+            if len(FR.findall(texte)) >= 3:
+                out.append(f"{nom}:{ligne}: a comment in French — everything in the "
+                           f"code is in English")
+    return out
+
+
 def switches_non_exhaustifs():
-    """A switch that misses a case of the enum it walks.
-
-    Build 116 added `caution` to ProductVerdict.Statut and patched five of the
-    eight switches that walk it. The three missed ones were below the point
-    where a truncated search stopped, and the compiler found them instead of
-    this file. That is the whole reason this rule exists: adding a case to an
-    enum breaks every switch on it, silently, until a build says so.
-
-    Text only, so it is deliberately narrow. A switch is flagged only when
-    every case it names belongs to ONE enum declared in the project, it has no
-    `default:`, and that enum has a case the switch never mentions. Anything
-    less certain is left alone: a false alarm here would train someone to
-    ignore the output, which costs more than the bug.
-    """
+    """A switch that misses a case of the enum it walks: that is the whole
+    reason this rule exists: adding a case to an enum breaks every switch
+    on it, silently, until a build says so."""
     out = []
 
     # enum Name: ... { case a, b   /   case c

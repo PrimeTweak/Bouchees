@@ -1,18 +1,5 @@
-//  RecipeVisual.swift
-//
-//  THE RULE, AND IT IS NOT NEGOTIABLE
-//
-//  A photo shows the ORIGINAL dish. If the recipe was adapted — the cheese
-//  swapped, the egg removed — the photo shows something other than what we are
-//  asking the parent to cook. In an allergy app, that is the worst possible
-//  place for a mismatch.
-//
-//  So: a photo only when the recipe is served AS IS. The moment a swap
-//  happens, the drawing takes over — it is derived from the real ingredients
-//  after adaptation, so it cannot lie.
-//
-//  The mix becomes a grammar rather than an inconsistency: photo means nothing
-//  was changed, drawing means we adapted.
+// In an allergy app, that is the worst possible place for a mismatch. So: a
+// photo only when the recipe is served AS IS.
 
 import SwiftUI
 import UIKit
@@ -23,29 +10,20 @@ struct RecipeVisual: View {
     /// Off in the hero, where the drawing sits on its own field.
     var drawingBackground = true
 
-    /// Whether the origin warning is spelled out.
-    ///
-    /// True only on the recipe page, where the photo runs 430pt and the parent
-    /// is about to cook from it. Everywhere else the same view renders at 60,
-    /// where fourteen characters at 9pt break mid-word.
+    /// Whether the origin warning is spelled out: true only on the recipe
+    /// page, where the photo runs 430pt and the parent is about to cook from
+    /// it.
     var showsOriginLabel = false
+
+    /// True in a list row, where the 480px twin is enough.
+    var compact = false
 
     @State private var photo: UIImage?
     @State private var echec = false
 
-    /* THE PHOTO SHOWS WHENEVER THERE IS ONE.
-     *
-     * It used to require `status == .asIs`, so a photo only appeared on a
-     * recipe that needed no swap. MEASURED for a child avoiding milk, egg and
-     * peanut: three recipes of thirty-eight qualify. Thirty-five photos were
-     * invisible by construction, whatever the pipeline produced.
-     *
-     * The rule existed for a real reason — the photo is of the ORIGINAL dish,
+        /* The rule existed for a real reason — the photo is of the ORIGINAL dish,
      * and showing a milk-and-egg muffin on a page whose whole point is that
-     * both were replaced would be a lie in the place it matters most.
-     *
-     * So the photo shows, and it SAYS SO. A caption on an adapted recipe
-     * names what is different. That keeps the promise and shows the food. */
+     * both were replaced would be a lie in the place it matters most. */
     private var photoPertinente: Bool {
         recipe.image != nil && !echec
     }
@@ -71,35 +49,21 @@ struct RecipeVisual: View {
             }
         }
         .task(id: recipe.id) { await load() }
-        .animation(.easeInOut(duration: 0.2), value: photo != nil)
+        .animation(.soft(0.2), value: photo != nil)
     }
 
-    /// The warning that the picture is of the dish BEFORE the swaps.
-    ///
-    /// Without it the photo would quietly claim to be the adapted dish. A
-    /// parent cooking a milk-free version has to know the picture shows the
-    /// version with milk.
-    ///
-    /// Two forms of one warning. The words on the recipe page, where the photo
-    /// runs 430pt and the parent meets the sentence once. The mark everywhere
-    /// else, in the amber the swap count already uses one column over, so the
-    /// two read as a single fact rather than as two.
-    ///
-    /// Both are fixed-size corner pieces. Neither unfolds, so neither needs to
-    /// reserve height in the layout.
+    /// The warning that the picture is of the dish BEFORE the swaps. The words
+    /// on the recipe page, where the photo runs 430pt and the parent meets the
+    /// sentence once.
     @ViewBuilder
     private var originWarning: some View {
         if photoDuPlatOriginal {
             if showsOriginLabel {
-                /* TOP TRAILING, ON A FIRM FIELD.
-                 *
-                 * It sat bottom-trailing at 42 per cent black, which on the
-                 * detail hero puts it inside the stretch where the photo has
-                 * already faded to canvas: pale grey on pale cream. Moved to
-                 * the corner the fade never reaches, and the field raised to
-                 * the 62 per cent the thumbnail mark already uses. */
+                                /* Top trailing, on a firm field: moved to the corner the fade
+                 * never reaches, and the field raised to the 62 per cent the
+                 * thumbnail mark already uses. */
                 Text("Original recipe")
-                    .font(.system(size: 9, weight: .semibold))
+                    .scaledFont(9, weight: .semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
@@ -107,7 +71,7 @@ struct RecipeVisual: View {
                     .padding(11)
             } else {
                 Image(systemName: "arrow.uturn.backward")
-                    .font(.system(size: 8.5, weight: .bold))
+                    .scaledFont(8.5, weight: .bold)
                     .foregroundStyle(Tone.swap)
                     .frame(width: 17, height: 17)
                     .background(.black.opacity(0.62), in: Circle())
@@ -118,31 +82,27 @@ struct RecipeVisual: View {
     }
 
     private func load() async {
-        guard photoPertinente, photo == nil, let file = recipe.image else { return }
+        guard photoPertinente, photo == nil, let full = recipe.image else { return }
+        /* Under 160pt the list only needs the 480px twin; 3 MB for a 60pt
+         * thumbnail is what made the first sync cost 45 MB on cellular. */
+        let file = (compact && recipe.thumb != nil) ? recipe.thumb! : full
         if let img = await PhotoCache.partage.image(file) {
             photo = img
         } else {
-            // Pas de photo disponible : l'illustration others, et c'est correct.
+            // No photo available: the drawing stands in, and that is correct.
             echec = true
         }
     }
 }
 
-/// Cache disque des photos. Elles arrivent du serveur, pas du bundle : les
-/// batches tournent chaque semaine, embarquer les images ferait grossir l'app
-/// sans fin et pour rien.
+/// Disk cache for photos. They come from the server, never the bundle:
+/// batches rotate weekly and embedding images would grow the app for nothing.
 actor PhotoCache {
     static let partage = PhotoCache()
 
     private let fm = FileManager.default
-    /* NSCache, NOT A DICTIONARY.
-     *
-     * A dictionary grows until the app dies. Each photo is 1408x1408 — about
-     * 8 MB decoded — so twenty opened recipes is 160 MB of RAM that is never
-     * given back, on a device that will terminate the app before it complains.
-     *
-     * NSCache hands memory back under pressure, which is the whole reason it
-     * exists. The limit is a ceiling, not a target. */
+        /* Nscache, not a dictionary: nSCache hands memory back under pressure,
+     * which is the whole reason it exists. */
     private let enMemoire: NSCache<NSString, UIImage> = {
         let c = NSCache<NSString, UIImage>()
         c.countLimit = 24
@@ -167,7 +127,7 @@ actor PhotoCache {
     }
 
     func image(_ file: String) async -> UIImage? {
-        if let deja = enMemoire.object(forKey: file as NSString) { return deja }
+        if let existing = enMemoire.object(forKey: file as NSString) { return existing }
 
         let local = cheminLocal(file)
         if let d = try? Data(contentsOf: local), let img = UIImage(data: d) {
@@ -196,10 +156,8 @@ actor PhotoCache {
         for f in items where !gardes.contains(f.lastPathComponent) {
             try? fm.removeItem(at: f)
         }
-        /* NSCache has no enumeration — by design, since entries can vanish
-         * under memory pressure at any moment. Emptying it is correct here:
-         * this runs when batches rotate, and whatever is still needed is
-         * one disk read away. */
+                /* Emptying it is correct here: this runs when batches rotate, and
+         * whatever is still needed is one disk read away. */
         enMemoire.removeAllObjects()
     }
 }
@@ -220,7 +178,7 @@ struct StarRating: View {
                     onChange(note == i ? nil : i)
                 } label: {
                     Image(systemName: (note ?? 0) >= i ? "star.fill" : "star")
-                        .font(.system(size: size))
+                        .scaledFont(size)
                         .foregroundStyle((note ?? 0) >= i ? Tone.swap : Color.secondary.opacity(0.4))
                         .contentTransition(.symbolEffect(.replace))
                 }
@@ -243,7 +201,7 @@ struct RatingBadge: View {
     var body: some View {
         if votes > 0, let m = average {
             HStack(spacing: 3) {
-                Image(systemName: "star.fill").font(.system(size: compact ? 9 : 11))
+                Image(systemName: "star.fill").scaledFont(compact ? 9 : 11)
                 Text(String(format: "%.1f", m).replacingOccurrences(of: ".", with: ","))
                     .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
                 if !compact {

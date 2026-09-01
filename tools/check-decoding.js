@@ -1,21 +1,4 @@
-/* Decoding check — Swift Codable structs against the real JSON.
- *   node tools/check-decoding.js
- *
- * WHY THIS EXISTS
- *
- * A Swift struct declares a non-optional field. The JSON does not carry it, or
- * carries it under another name. Everything compiles, the IPA installs, and
- * the app dies on first launch with "The data couldn't be read because it is
- * missing" — a message that names nothing.
- *
- * That has now happened twice: once on the bridge function names, once on
- * `stades` versus `stages`. Nothing in the build could catch it, because
- * neither side is wrong on its own; they simply disagree.
- *
- * This reads every Codable struct in Models.swift, matches it against a real
- * sample of the JSON that will be served, and fails when a required field has
- * nowhere to come from.
- */
+/* The JSON does not carry it, or carries it under another name. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -84,10 +67,9 @@ CASES.forEach(function (c) {
   });
 });
 
-/* Enum raw values. This is the case a field-by-field check cannot see: the
- * property is present, the type is right, and an unrecognised value falls back
- * to `unknown`. Every recipe then lands outside every section and the list goes
- * silently empty. Measured once, in production. */
+/* Enum raw values: this is the case a field-by-field check cannot see: the
+ * property is present, the type is right, and an unrecognised value falls
+ * back to `unknown`. */
 function enumValues(enumName) {
   const m = swift.match(new RegExp("enum\\s+" + enumName + "[^{]*\\{((?:.|\\n)*?)\\n\\}"));
   if (!m) return null;
@@ -145,9 +127,7 @@ called.forEach(function (nameCalled) {
 /* ---------- the scanner verdict, nested inside a struct ------------------- */
 /* The enum walk above only finds TOP-LEVEL enums, so ProductVerdict.Statut
  * escaped it — and it had drifted exactly like the others: the bridge emits
- * safe/avoid/uncertain while Swift declared sur/a_eviter/incertain. Every
- * scanned product fell through to the fallback and came back "uncertain".
- * Nothing crashed, because the fallback is deliberate. */
+ * safe/avoid/uncertain while Swift declared sur/a_eviter/incertain. */
 const bridgeSrc = fs.readFileSync(path.join(root, "engine/native-bridge.js"), "utf8");
 const statutsEmis = Array.from(new Set(
   (bridgeSrc.match(/status\s*=\s*"(\w+)"/g) || []).map(function (m) { return m.match(/"(\w+)"/)[1]; })
@@ -169,14 +149,8 @@ if (!blocStatut) {
   });
 }
 
-/* A SWIFT FIELD THAT MATCHES NOTHING IN THE DATA.
- *
- * `Recipe.lot` decoded to nil on every recipe because the published field is
- * called `batch`. Optionals fail silently, so nothing ever said so — the app
- * simply behaved as if no recipe belonged to any week.
- *
- * Any optional Swift field absent from EVERY data file is almost always a
- * typo. Fields the app fills in itself are listed rather than guessed. */
+/* A swift field that matches nothing in the data: `Recipe.lot` decoded to nil
+ * on every recipe because the published field is called `batch`. */
 (function champsOrphelins() {
   var swiftPath = path.join(__dirname, "..", "ios/App/App/Models/Models.swift");
   if (!fs.existsSync(swiftPath)) return;
@@ -194,9 +168,10 @@ if (!blocStatut) {
     if (m[2].slice(-1) === "?") champs.push(m[1]);
   }
 
-  /* Filled by the app or the ratings endpoint, never by the corpus. */
+  /* Filled by the app, the ratings endpoint or an optional pipeline step —
+   * `thumb` appears once PHOTOS-REDUIRE.command has run — never by the corpus. */
   var locaux = ["source", "image", "imageReviewed", "stepsOriginal",
-                "votes", "average", "myRating"];
+                "votes", "average", "myRating", "thumb"];
   var vus = {};
 
   function scan(f) {

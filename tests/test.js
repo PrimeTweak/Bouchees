@@ -17,15 +17,15 @@ process.env.BOUCHEES_NOTES = "/tmp/bouchees-notes-tests.json";
 try { fs.unlinkSync(process.env.BOUCHEES_NOTES); } catch (e) {}
 
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
-const lire = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", f), "utf8"));
+const read = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", f), "utf8"));
 const lire2 = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, "..", f), "utf8"));
 
-const donnees = {
-  catalogue: lire("ingredients.json"),
-  substitutions: lire("substitutions.json"),
-  base: lire("base.json")
+const data = {
+  catalogue: read("ingredients.json"),
+  substitutions: read("substitutions.json"),
+  base: read("base.json")
 };
-const recettes = lire("recipes.json");
+const recettes = read("recipes.json");
 const parId = Object.fromEntries(recettes.map((r) => [r.id, r]));
 
 let n = 0;
@@ -42,32 +42,32 @@ function test(name, fn) {
   catch (e) { console.error("FAILED " + name + "\n      " + e.message); process.exitCode = 1; }
 }
 const adapter = (id, allergens, ageMois) =>
-  Engine.adapterRecette(parId[id], { allergens, ageMois }, donnees);
+  Engine.adapterRecette(parId[id], { allergens, ageMois }, data);
 const ing = (res, id) => res.ingredients.find((i) => i.id === id);
 
 /* ---------- data integrity ---------- */
 
 test("data: every recipe references ingredients from the catalogue", () => {
   for (const r of recettes) for (const u of r.ingredients)
-    assert(donnees.catalogue[u.id], r.id + " → ingredient unknown : " + u.id);
+    assert(data.catalogue[u.id], r.id + " → ingredient unknown : " + u.id);
 });
 
 test("data: every substitution option exists and every allergen is known", () => {
-  const familles = new Set(donnees.base.allergens.map((a) => a.id));
-  for (const regle of donnees.substitutions) {
-    assert(donnees.catalogue[regle.target], "target inconnue : " + regle.target);
+  const familles = new Set(data.base.allergens.map((a) => a.id));
+  for (const regle of data.substitutions) {
+    assert(data.catalogue[regle.target], "target inconnue : " + regle.target);
     for (const o of regle.options)
-      assert(o.id === "_omit" || donnees.catalogue[o.id], regle.target + " → option inconnue : " + o.id);
+      assert(o.id === "_omit" || data.catalogue[o.id], regle.target + " → option inconnue : " + o.id);
   }
-  for (const [id, def] of Object.entries(donnees.catalogue))
+  for (const [id, def] of Object.entries(data.catalogue))
     for (const a of def.allergens) assert(familles.has(a), id + " → famille inconnue : " + a);
-  for (const r of donnees.base.ageRules)
-    if (r.action.type === "swap") assert(donnees.catalogue[r.action.to], "swap to unknown : " + r.action.to);
+  for (const r of data.base.ageRules)
+    if (r.action.type === "swap") assert(data.catalogue[r.action.to], "swap to unknown : " + r.action.to);
 });
 
 test("data: age rules for one target run youngest band to oldest", () => {
   const parCible = {};
-  for (const r of donnees.base.ageRules) {
+  for (const r of data.base.ageRules) {
     if (parCible[r.target] !== undefined)
       assert(r.beforeMonths > parCible[r.target], "ageRules out of order for " + r.target);
     parCible[r.target] = r.beforeMonths;
@@ -148,16 +148,16 @@ test("meatballs without mustard: the mustard is dropped, the recipe still works"
 
 test("steps: the replacement name appears in the step text", () => {
   const res = Engine.adapterRecette(parId["banana-oat-muffins"],
-    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
-  const etape = res.steps[1].toLowerCase();
-  assert.ok(etape.includes("applesauce"), "the replacement is named");
-  assert.ok(etape.includes("soy beverage"), "the second one too");
-  assert.ok(!/\begg\b/.test(etape), "the removed ingredient is gone");
+    { allergens: ["milk", "egg"], ageMois: 24 }, data);
+  const step = res.steps[1].toLowerCase();
+  assert.ok(step.includes("applesauce"), "the replacement is named");
+  assert.ok(step.includes("soy beverage"), "the second one too");
+  assert.ok(!/\begg\b/.test(step), "the removed ingredient is gone");
 });
 
 test("steps: the original text stays available", () => {
   const res = Engine.adapterRecette(parId["banana-oat-muffins"],
-    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+    { allergens: ["milk", "egg"], ageMois: 24 }, data);
   assert.ok(/\begg\b/i.test(res.stepsOriginal[1]), "stepsOriginal untouched");
 });
 
@@ -166,7 +166,7 @@ test("steps: a leading allergen word is consumed with the noun", () => {
    * seed butter" — the allergen still in the sentence. */
   let touche = null;
   recettes.forEach((r) => {
-    const res = Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 36 }, donnees);
+    const res = Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 36 }, data);
     (res.steps || []).forEach((st) => {
       const t = (typeof st === "string" ? st : st.text || "").toLowerCase();
       if (/\bpeanut\b/.test(t)) touche = r.id + ": " + t;
@@ -178,7 +178,7 @@ test("steps: a leading allergen word is consumed with the noun", () => {
 test("steps: plurals are matched", () => {
   let trouve = null;
   recettes.forEach((r) => {
-    const res = Engine.adapterRecette(r, { allergens: ["egg"], ageMois: 36 }, donnees);
+    const res = Engine.adapterRecette(r, { allergens: ["egg"], ageMois: 36 }, data);
     (res.steps || []).forEach((st) => {
       const t = (typeof st === "string" ? st : st.text || "").toLowerCase();
       if (/\beggs?\b/.test(t)) trouve = r.id + ": " + t;
@@ -189,7 +189,7 @@ test("steps: plurals are matched", () => {
 
 test("steps: a recipe with no swap keeps its steps identical", () => {
   const r = parId["banana-oat-muffins"];
-  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data);
   assert.deepStrictEqual(res.steps, r.steps, "untouched when nothing is swapped");
 });
 
@@ -225,7 +225,7 @@ test("units: the unit is a measure, not a preparation", () => {
 
 test("shopping: the list carries the replacement, never the allergen", () => {
   const liste = Engine.listeEpicerie(recettes.slice(0, 7),
-    { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+    { allergens: ["milk", "egg"], ageMois: 24 }, data);
   liste.forEach((l) => {
     assert.ok(!/^(cow's milk|egg)$/i.test(l.name),
       "an avoided ingredient never appears: " + l.name);
@@ -234,7 +234,7 @@ test("shopping: the list carries the replacement, never the allergen", () => {
 
 test("shopping: a swap says what it replaces", () => {
   const liste = Engine.listeEpicerie(recettes.slice(0, 7),
-    { allergens: ["egg"], ageMois: 24 }, donnees);
+    { allergens: ["egg"], ageMois: 24 }, data);
   const swaps = liste.filter((l) => l.replaces);
   if (swaps.length) {
     assert.ok(swaps.every((l) => typeof l.replaces === "string" && l.replaces.length),
@@ -243,7 +243,7 @@ test("shopping: a swap says what it replaces", () => {
 });
 
 test("shopping: quantities add only within the same unit", () => {
-  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, data);
   liste.forEach((l) => {
     const unites = l.quantities.map((q) => q.unit);
     assert.strictEqual(new Set(unites).size, unites.length,
@@ -253,14 +253,14 @@ test("shopping: quantities add only within the same unit", () => {
 
 test("shopping: every line lands in a known aisle", () => {
   const connus = ["produce", "protein", "refrigerated", "pantry", "frozen", "other"];
-  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, data);
   liste.forEach((l) => {
     assert.ok(connus.includes(l.aisle), l.name + " has aisle " + l.aisle);
   });
 });
 
 test("shopping: an ingredient shared by several recipes appears once", () => {
-  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, donnees);
+  const liste = Engine.listeEpicerie(recettes, { allergens: [], ageMois: 36 }, data);
   const noms = liste.map((l) => l.name.toLowerCase());
   assert.strictEqual(new Set(noms).size, noms.length, "no duplicate line");
 });
@@ -309,7 +309,7 @@ test("shopping: a free batch never produces an empty list", () => {
     if (!fs.existsSync(f)) return;
     const lot = JSON.parse(fs.readFileSync(f, "utf8"));
     const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
-    const liste = Engine.listeEpicerie(arr, { allergens: ["milk", "egg"], ageMois: 24 }, donnees);
+    const liste = Engine.listeEpicerie(arr, { allergens: ["milk", "egg"], ageMois: 24 }, data);
     assert.ok(liste.length > 0, id + " produced an empty shopping list");
   });
 });
@@ -318,7 +318,7 @@ test("shopping: a free batch never produces an empty list", () => {
 
 /* The decoding checker compares Swift structs to JSON shapes. It cannot see
  * that a bridge function throws at runtime — and `shoppingList` did, on every
- * call, because I used the test harness's names (`Moteur`, `donnees`) inside
+ * call, because I used the test harness's names (`Moteur`, `data`) inside
  * a file where they are `Engine` and `required()`. The Swift side falls back
  * to an empty array on any bridge error, so the failure looked like "no
  * items" rather than a crash.
@@ -337,9 +337,9 @@ test("bridge: every exported function runs in a bare context", () => {
     path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
 
   ctx.d = JSON.stringify({
-    ingredients: lire("ingredients.json"),
-    substitutions: lire("substitutions.json"),
-    base: lire("base.json")
+    ingredients: read("ingredients.json"),
+    substitutions: read("substitutions.json"),
+    base: read("base.json")
   });
   vm.runInContext("PONT.load(d);", ctx);
 
@@ -367,9 +367,9 @@ test("bridge: shoppingList carries quantities and replacements", () => {
   vm.runInContext(fs.readFileSync(
     path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
   ctx.d = JSON.stringify({
-    ingredients: lire("ingredients.json"),
-    substitutions: lire("substitutions.json"),
-    base: lire("base.json")
+    ingredients: read("ingredients.json"),
+    substitutions: read("substitutions.json"),
+    base: read("base.json")
   });
   vm.runInContext("PONT.load(d);", ctx);
   ctx.r = JSON.stringify(recettes);
@@ -441,24 +441,24 @@ test("barcode: UPC-E expands to the UPC-A it was compressed from", () => {
 });
 
 test("barcode: a UPC-A is also tried as EAN-13, with the leading zero", () => {
-  const f = Barcode.formes("876976001538");
+  const f = Barcode.forms("876976001538");
   assert.ok(f.includes("876976001538"), "the code as read");
   assert.ok(f.includes("0876976001538"), "and its EAN-13 key");
 });
 
 test("barcode: an EAN-13 starting with zero is also tried as UPC-A", () => {
-  const f = Barcode.formes("0042100005264");
+  const f = Barcode.forms("0042100005264");
   assert.ok(f.includes("042100005264"), "the twelve-digit form");
 });
 
 test("barcode: an ITF-14 carton yields the EAN-13 inside it", () => {
-  const f = Barcode.formes("10012345678902");
+  const f = Barcode.forms("10012345678902");
   assert.ok(f.some((x) => x.length === 13), "a thirteen-digit form is offered");
 });
 
 test("barcode: an EAN-13 is left alone", () => {
   /* The olive oil that already worked must keep working. */
-  const f = Barcode.formes("6191509905058");
+  const f = Barcode.forms("6191509905058");
   assert.equal(f[0], "6191509905058");
 });
 
@@ -469,7 +469,7 @@ test("barcode: the check digit is the standard modulo ten", () => {
 
 test("barcode: forms are unique and never empty", () => {
   ["6191509905058", "876976001538", "04252614", "10012345678902"].forEach((c) => {
-    const f = Barcode.formes(c);
+    const f = Barcode.forms(c);
     assert.ok(f.length > 0, c + " produced no form");
     assert.equal(f.length, new Set(f).size, c + " produced a duplicate");
     f.forEach((x) => assert.ok(/^\d+$/.test(x), "every form is digits only"));
@@ -477,9 +477,9 @@ test("barcode: forms are unique and never empty", () => {
 });
 
 test("barcode: junk in, nothing out", () => {
-  assert.deepEqual(Barcode.formes(""), []);
-  assert.deepEqual(Barcode.formes("abc"), []);
-  assert.deepEqual(Barcode.formes(null), []);
+  assert.deepEqual(Barcode.forms(""), []);
+  assert.deepEqual(Barcode.forms("abc"), []);
+  assert.deepEqual(Barcode.forms(null), []);
 });
 
 /* ---------- the label lexicon ---------- */
@@ -502,10 +502,10 @@ function evaluerEtiquette(texte, evites) {
   vm.runInContext(fs.readFileSync(
     path.join(__dirname, "..", "engine", "native-bridge.js"), "utf8"), ctx);
   ctx.d = JSON.stringify({
-    ingredients: lire("ingredients.json"),
-    substitutions: lire("substitutions.json"),
-    base: lire("base.json"),
-    lexicon: lire("label-lexicon.json")
+    ingredients: read("ingredients.json"),
+    substitutions: read("substitutions.json"),
+    base: read("base.json"),
+    lexicon: read("label-lexicon.json")
   });
   vm.runInContext("PONT.load(d);", ctx);
   ctx.t = texte;
@@ -578,9 +578,9 @@ test("label: an allergen both present and warned about is named once", () => {
 test("label: French warnings are read too", () => {
   ["Peut contenir des traces d'arachides.",
    "Fabrique dans une usine qui utilise des arachides.",
-   "Traces possibles d'arachides."].forEach((phrase) => {
-    const v = evaluerEtiquette("farine de riz, sucre. " + phrase, ["peanut"]);
-    assert.equal(v.status, "caution", phrase + " should read as a warning");
+   "Traces possibles d'arachides."].forEach((sentence) => {
+    const v = evaluerEtiquette("farine de riz, sucre. " + sentence, ["peanut"]);
+    assert.equal(v.status, "caution", sentence + " should read as a warning");
   });
 });
 
@@ -588,9 +588,9 @@ test("label: English warning wordings are read too", () => {
   ["May contain traces of peanuts.",
    "Manufactured in a facility that also processes peanuts.",
    "Made on shared equipment with peanuts.",
-   "Produced in a plant that handles peanuts."].forEach((phrase) => {
-    const v = evaluerEtiquette("rice flour, sugar. " + phrase, ["peanut"]);
-    assert.equal(v.status, "caution", phrase + " should read as a warning");
+   "Produced in a plant that handles peanuts."].forEach((sentence) => {
+    const v = evaluerEtiquette("rice flour, sugar. " + sentence, ["peanut"]);
+    assert.equal(v.status, "caution", sentence + " should read as a warning");
   });
 });
 
@@ -643,7 +643,7 @@ test("label: an unknown word still blocks a safe verdict", () => {
 });
 
 test("label: the lexicon covers the eleven allergen families", () => {
-  const lex = lire("label-lexicon.json");
+  const lex = read("label-lexicon.json");
   const familles = new Set(Object.values(lex.allergens));
   ["wheat", "milk", "egg", "peanut", "tree_nut", "soy", "sesame",
    "fish", "shellfish", "mustard", "sulphites"].forEach((f) => {
@@ -805,8 +805,8 @@ test("an age swap still respects allergens", () => {
 
 test("aucun substitut valide → status non_adaptable avec alerte bloquante (gating par ageMin)", () => {
   const donneesTest = {
-    catalogue: donnees.catalogue,
-    base: donnees.base,
+    catalogue: data.catalogue,
+    base: data.base,
     substitutions: [{ target: "egg", role: "binder", options: [{ id: "aquafaba", ratio: "45 ml", minAgeMonths: 12 }] }]
   };
   const r = Engine.adapterRecette(parId["fluffy-pancakes"], { allergens: ["egg"], ageMois: 8 }, donneesTest);
@@ -816,7 +816,7 @@ test("aucun substitut valide → status non_adaptable avec alerte bloquante (gat
 });
 
 test("an avoided ingredient with no rule at all blocks the recipe", () => {
-  const donneesTest = { catalogue: donnees.catalogue, base: donnees.base, substitutions: [] };
+  const donneesTest = { catalogue: data.catalogue, base: data.base, substitutions: [] };
   const r = Engine.adapterRecette(parId["silky-hummus"], { allergens: ["sesame"], ageMois: 12 }, donneesTest);
   assert.equal(r.status, "not_adaptable");
 });
@@ -833,7 +833,7 @@ test("same input, same output: identical serialisation across three calls", () =
 /* ---------- property test: the safety invariant ---------- */
 
 test("INVARIANT: no adapted recipe holds an avoided allergen, none under its minimum age", () => {
-  const familles = donnees.base.allergens.map((a) => a.id);
+  const familles = data.base.allergens.map((a) => a.id);
   const combos = familles.map((f) => [f]).concat([
     ["milk", "soy"], ["egg", "wheat"], ["milk", "egg"], ["peanut", "sesame"],
     ["peanut", "tree_nut", "sesame", "soy"], ["milk", "egg", "wheat", "soy"],
@@ -845,13 +845,13 @@ test("INVARIANT: no adapted recipe holds an avoided allergen, none under its min
   for (const recette of recettes)
     for (const combo of combos)
       for (const ageMois of ages) {
-        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
+        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, data);
         if (r.status === "not_adaptable") { verifies++; continue; }
         const croise = r.remainingAllergens.filter((a) => combo.includes(a));
         assert.equal(croise.length, 0,
           recette.id + " [" + combo + "] at " + ageMois + " months leaks: " + croise);
         for (const i of r.ingredients) if (i.status === "swapped") {
-          const regle = donnees.substitutions.find((s) => s.target === i.id && s.role === i.role);
+          const regle = data.substitutions.find((s) => s.target === i.id && s.role === i.role);
           const opt = regle && regle.options.find((o) => o.id === i.to);
           if (opt) assert(opt.minAgeMonths <= ageMois, i.id + "→" + i.to + " under its minimum age at " + ageMois + " months");
         }
@@ -864,7 +864,7 @@ test("INVARIANT: no adapted recipe holds an avoided allergen, none under its min
 
 const { normalizeLine } = require(path.join(__dirname, "..", "ingest", "normalizer.js"));
 const lexique = lire2("ingest/lexicon.json");
-const norm = (l) => normalizeLine(l, lexique, donnees.catalogue);
+const norm = (l) => normalizeLine(l, lexique, data.catalogue);
 
 test("normaliser: 2 cups all-purpose flour becomes wheat flour, 500 ml", () => {
   const r = norm("2 cups all-purpose flour");
@@ -889,7 +889,7 @@ test("normaliser: one pound of chicken breast becomes 454 g", () => {
 test("normaliser: soy sauce carries both soy AND wheat, from the catalogue", () => {
   const r = norm("2 tablespoons soy sauce");
   assert.equal(r.id, "soy_sauce"); assert.equal(r.qty, 30);
-  assert.deepEqual(donnees.catalogue[r.id].allergens.slice().sort(), ["soy", "wheat"]);
+  assert.deepEqual(data.catalogue[r.id].allergens.slice().sort(), ["soy", "wheat"]);
 });
 
 test("normaliser: an unknown ingredient stays unknown, never guessed", () => {
@@ -931,26 +931,26 @@ test("importer: a curated role overrides the default one", () => {
 
 test("end to end: fried rice without soy takes coconut aminos", () => {
   const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
-  const res = Engine.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, data);
   assert.equal(res.ingredients.find((i) => i.id === "soy_sauce").to, "coconut_aminos");
 });
 
 test("end to end: risotto without shellfish swaps shrimp for chicken", () => {
   const r = importation.imported.find((x) => x.id === "creamy-shrimp-and-pea-risotto");
-  const res = Engine.adapterRecette(r, { allergens: ["shellfish"], ageMois: 12 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["shellfish"], ageMois: 12 }, data);
   assert.equal(res.ingredients.find((i) => i.id === "shrimp").to, "chicken");
 });
 
 test("end to end: granola without sulphites replaces the dried apricots", () => {
   const r = importation.imported.find((x) => x.id === "soft-apricot-granola");
-  const res = Engine.adapterRecette(r, { allergens: ["sulphites"], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: ["sulphites"], ageMois: 24 }, data);
   assert.equal(res.ingredients.find((i) => i.id === "dried_apricots").to, "raisins");
 });
 
 /* ---------- wider invariant: seed plus imported ---------- */
 
 test("INVARIANT across the whole corpus: no leak, nothing under age", () => {
-  const familles = donnees.base.allergens.map((a) => a.id);
+  const familles = data.base.allergens.map((a) => a.id);
   const combos = familles.map((f) => [f]).concat([
     ["milk", "soy"], ["egg", "wheat"], ["soy", "wheat"], ["shellfish", "fish"],
     ["sulphites", "tree_nut"], ["milk", "egg", "wheat", "soy"]
@@ -961,7 +961,7 @@ test("INVARIANT across the whole corpus: no leak, nothing under age", () => {
   for (const recette of corpus)
     for (const combo of combos)
       for (const ageMois of ages) {
-        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, donnees);
+        const r = Engine.adapterRecette(recette, { allergens: combo, ageMois }, data);
         if (r.status === "not_adaptable") { verifies++; continue; }
         const croise = r.remainingAllergens.filter((a) => combo.includes(a));
         assert.equal(croise.length, 0, recette.id + " [" + combo + "] laisse passer : " + croise);
@@ -977,8 +977,8 @@ const corpusVisuel = recettes.concat(importation.imported);
 
 test("illustration: all thirty recipes produce well-formed SVG", () => {
   for (const r of corpusVisuel) {
-    const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
-    const svg = Illustration.plat(res, donnees.catalogue, r.category);
+    const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data);
+    const svg = Illustration.plat(res, data.catalogue, r.category);
     assert(svg.startsWith("<svg") && svg.endsWith("</svg>"), r.id);
     assert(!/undefined|NaN|null/.test(svg), r.id + " contient une valeur invalide");
     assert(!/<\/script/i.test(svg), r.id);
@@ -987,33 +987,33 @@ test("illustration: all thirty recipes produce well-formed SVG", () => {
 
 test("illustration: the same recipe and profile give the same SVG", () => {
   const r = parId["mac-and-cheese-with-hidden-squash"];
-  const f = () => Illustration.plat(Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 12 }, donnees), donnees.catalogue, r.category);
+  const f = () => Illustration.plat(Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 12 }, data), data.catalogue, r.category);
   assert.equal(f(), f());
 });
 
 test("illustration: the image CHANGES when the recipe adapts", () => {
   const r = parId["date-energy-bites"];
-  const avant = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
-  const apres = Illustration.plat(Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
-  assert.notEqual(avant, apres, "a stock photo could not do this");
+  const before = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data), data.catalogue, r.category);
+  const after = Illustration.plat(Engine.adapterRecette(r, { allergens: ["peanut"], ageMois: 24 }, data), data.catalogue, r.category);
+  assert.notEqual(before, after, "a stock photo could not do this");
 });
 
 test("illustration: a dropped ingredient leaves the image", () => {
   const r = parId["turkey-and-apple-meatballs"];
-  const avec = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees), donnees.catalogue, r.category);
-  const sans = Illustration.plat(Engine.adapterRecette(r, { allergens: ["mustard"], ageMois: 24 }, donnees), donnees.catalogue, r.category);
+  const avec = Illustration.plat(Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data), data.catalogue, r.category);
+  const sans = Illustration.plat(Engine.adapterRecette(r, { allergens: ["mustard"], ageMois: 24 }, data), data.catalogue, r.category);
   assert.notEqual(avec, sans);
 });
 
 test("illustration: every catalogue ingredient has a colour and a shape", () => {
-  for (const [id, def] of Object.entries(donnees.catalogue)) {
-    const v = Illustration.visuelDe(id, def.roles[0], donnees.catalogue);
+  for (const [id, def] of Object.entries(data.catalogue)) {
+    const v = Illustration.visuelDe(id, def.roles[0], data.catalogue);
     assert(Array.isArray(v) && /^#[0-9A-Fa-f]{6}$/.test(v[0]), id + " → couleur invalide");
   }
 });
 
 test("illustration: every allergen family has its glyph", () => {
-  for (const a of donnees.base.allergens) {
+  for (const a of data.base.allergens) {
     const g = Illustration.glyphe(a.id);
     assert(/<(path|circle|ellipse)/.test(g), a.id + " → glyphe manquant");
   }
@@ -1070,9 +1070,9 @@ test("publishing: every recipe lands in a batch, none orphaned", () => {
 
 test("publishing: the manifest holds NO ingredient, only counts", () => {
   const r = Publier.publier();
-  const txt = JSON.stringify(r.manifeste);
+  const txt = JSON.stringify(r.manifest);
   assert(!/ingredients|steps/.test(txt), "le manifeste laisse fuir du content");
-  assert(r.manifeste.batches.every((l) => typeof l.count === "number"));
+  assert(r.manifest.batches.every((l) => typeof l.count === "number"));
 });
 
 test("publishing: the safety tables sit outside the batches", () => {
@@ -1086,9 +1086,9 @@ test("publishing: the safety tables sit outside the batches", () => {
 /* --- C : prompt et validateur --- */
 
 test("prompt: offers only ingredients compatible with the brief", () => {
-  const autorises = PromptRecette.ingredientsAutorises(donnees.catalogue, ["milk", "egg"]);
+  const autorises = PromptRecette.ingredientsAutorises(data.catalogue, ["milk", "egg"]);
   autorises.forEach((id) => {
-    const a = donnees.catalogue[id].allergens;
+    const a = data.catalogue[id].allergens;
     assert(!a.includes("milk") && !a.includes("egg"), id + " should not be offered");
   });
   assert(autorises.includes("applesauce") && !autorises.includes("butter"));
@@ -1098,7 +1098,7 @@ test("validator: rejects an ingredient the model invented", () => {
   const faux = { id: "test-invente", name: "Test", category: "Collation", minAgeMonths: 12, timeMinutes: 10,
     ingredients: [{ id: "graines_de_tournesol_grillees", qty: 100, unit: "ml" }, { id: "banana", qty: 1, unit: "unit" }],
     steps: ["Mélanger les ingredients.", "Servir tiède."] };
-  const v = Valideur.valider(faux, { evite: [], ageMois: 12, categories: ["Collation"] }, donnees);
+  const v = Valideur.valider(faux, { evite: [], ageMois: 12, categories: ["Collation"] }, data);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /hors catalogue/.test(x)));
 });
@@ -1107,7 +1107,7 @@ test("validator: rejects a recipe holding the excluded allergen", () => {
   const faux = { id: "test-fuite", name: "Test", category: "Collation", minAgeMonths: 12, timeMinutes: 10,
     ingredients: [{ id: "cow_milk", qty: 250, unit: "ml", role: "liquid" }, { id: "banana", qty: 1, unit: "unit" }],
     steps: ["Mélanger les ingredients.", "Servir frais."] };
-  const v = Valideur.valider(faux, { evite: ["milk"], ageMois: 12, categories: ["Collation"] }, donnees);
+  const v = Valideur.valider(faux, { evite: ["milk"], ageMois: 12, categories: ["Collation"] }, data);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /allergène que la commande exclut/.test(x)));
 });
@@ -1118,7 +1118,7 @@ test("validator: accepts a compliant recipe and flags the ambiguous role", () =>
     ingredients: [{ id: "applesauce", qty: 250, unit: "ml", role: "binder" },
                   { id: "banana", qty: 1, unit: "unit" }, { id: "cinnamon", qty: 1, unit: "ml" }],
     steps: ["Crush la banane at la fourchette.", "Mélanger à la compote et à la cannelle."] };
-  const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Dessert"] }, donnees);
+  const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Dessert"] }, data);
   assert.equal(v.ok, true, v.erreurs.join(" / "));
 });
 
@@ -1126,7 +1126,7 @@ test("validator: refuses a taken id and marketing superlatives", () => {
   const d = { id: "banana-oat-muffins", name: "Les meilleurs muffins", category: "Collation",
     minAgeMonths: 12, timeMinutes: 20, ingredients: [{ id: "banana", qty: 1, unit: "unit" }, { id: "rolled_oats", qty: 250, unit: "ml" }],
     steps: ["Mélanger les ingredients.", "Cuire vingt minutes."] };
-  const v = Valideur.valider(d, { evite: [], ageMois: 12, categories: ["Collation"] }, donnees, corpusComplet.map((r) => r.id));
+  const v = Valideur.valider(d, { evite: [], ageMois: 12, categories: ["Collation"] }, data, corpusComplet.map((r) => r.id));
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /déjà utilisé/.test(x)));
 });
@@ -1138,18 +1138,18 @@ test("images: the prompt NAMES the dish, not only its ingredients", () => {
    * listait les ingredients bruts. FLUX obéissait : un bol de gruau avec un
    * œuf cru, pour une recipe de muffins. Il faut nommer le plat. */
   const m = parId["banana-oat-muffins"];
-  const pm = Images.promptPour(m, donnees);
+  const pm = Images.promptPour(m, data);
   assert(pm.positif.toLowerCase().startsWith("homemade banana oat muffins"),
     "le titre doit mener : " + pm.positif.slice(0, 60));
   assert(/muffins in paper liners/.test(pm.positif),
     "the shape comes from servings");
   assert.equal(pm.plat, m.name, "the dish name is passed to the vision check");
 
-  const pain = Images.promptPour(parId["banana-bread"], donnees);
+  const pain = Images.promptPour(parId["banana-bread"], data);
   assert(/a loaf on a board/.test(pain.positif), "1 loaf gives a loaf, not a bowl");
 
   const r = parId["squash-and-coconut-soup"];
-  const p = Images.promptPour(r, donnees);
+  const p = Images.promptPour(r, data);
   /* Image models are trained on English captions: the prompt has to come out
    * in English, with the ingredient names translated. */
   assert(/butternut squash/i.test(p.positif), "l'ingredient dominant must be nommé en anglais");
@@ -1162,13 +1162,13 @@ test("images: the prompt NAMES the dish, not only its ingredients", () => {
 });
 
 test("images: the framing varies but stays stable for one recipe", () => {
-  const a = Images.promptPour(parId["squash-and-coconut-soup"], donnees).positif;
-  const b = Images.promptPour(parId["squash-and-coconut-soup"], donnees).positif;
+  const a = Images.promptPour(parId["squash-and-coconut-soup"], data).positif;
+  const b = Images.promptPour(parId["squash-and-coconut-soup"], data).positif;
   assert.equal(a, b, "same recipe, same cadrage — sinon l'image change at chaque passage");
 
   const cadrages = new Set();
   corpusComplet.forEach((r) => {
-    const p = Images.promptPour(r, donnees).positif;
+    const p = Images.promptPour(r, data).positif;
     const trouve = Images.CADRAGES.find((c) => p.includes(c));
     if (trouve) cadrages.add(trouve);
   });
@@ -1178,7 +1178,7 @@ test("images: the framing varies but stays stable for one recipe", () => {
 test("images: an unreviewed photo is never published", () => {
   const r = parId["fluffy-pancakes"];
   const emp = Images.empreinte(r);
-  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data);
   const sansRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp } };
   assert.equal(Images.visuelPour(r, res, sansRevision, false).type, "illustration");
   const avecRevision = { [r.id]: { fichier: "images/x.webp", empreinte: emp, revisePar: "François", largeur: 1664 } };
@@ -1187,9 +1187,9 @@ test("images: an unreviewed photo is never published", () => {
 
 test("images: once a swap happens the photo gives way to the drawing", () => {
   const r = parId["fluffy-pancakes"];
-  const manifeste = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1664 } };
-  const adaptee = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, donnees);
-  const v = Images.visuelPour(r, adaptee, manifeste, false);
+  const manifest = { [r.id]: { fichier: "images/x.webp", empreinte: Images.empreinte(r), revisePar: "François", largeur: 1664 } };
+  const adaptee = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, data);
+  const v = Images.visuelPour(r, adaptee, manifest, false);
   assert.equal(v.type, "illustration");
   assert(/montrerait autre chose/.test(v.reason));
 });
@@ -1202,7 +1202,7 @@ test("images: a stale fingerprint invalidates the photo", () => {
 });
 
 test("images: a photo below the display width is refused", () => {
-  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre avant
+  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre before
    * de remplir. Une image plus petite est agrandie à l'écran — c'est comme ça
    * qu'un batch de photos molles s'est regapvé livré. */
   const r = parId["fluffy-pancakes"];
@@ -1218,26 +1218,42 @@ test("images: a photo below the display width is refused", () => {
 
 test("images: a manifest outliving its file publishes nothing", () => {
   const r = parId["fluffy-pancakes"];
-  const entree = { fichier: "images/nexiste-pas.png", empreinte: Images.empreinte(r),
+  const entry = { fichier: "images/nexiste-pas.png", empreinte: Images.empreinte(r),
                    revisePar: "vérification automatique (test)", largeur: 1664,
                    verification: { moteur: "test", reconnus: 3, attendus: 5 } };
-  const v = Images.validerEntree(entree, r);
+  const v = Images.validerEntree(entry, r);
   assert.equal(v.ok, false, "le disque doit faire foi, pas le manifeste");
   assert(v.erreurs.some((x) => /introuvable/.test(x)));
 
-  const plan = Images.aGenerer([r], donnees, { [r.id]: entree });
+  const plan = Images.aGenerer([r], data, { [r.id]: entry });
   assert.equal(plan.length, 1, "la recipe must repasser au plan de génération");
-  assert.equal(plan[0].etat, "file missing");
+  assert.equal(plan[0].state, "file missing");
 });
 
 /* --- F : droits et Stripe --- */
 
-test("entitlement: without a subscription only the free batches open", () => {
-  const m = Publier.publier().manifeste;
+test("entitlement: without a subscription, the free batches and last week open", () => {
+  const m = Publier.publier().manifest;
   const free = Server.allowedBatches(m, null);
-  assert.deepEqual(free, m.free);
+  const derniere = Server.previousWeekBatch(m);
+  /* The free tier runs one week behind: the batch before the current one is
+   * open to everyone. Everything newer stays behind the subscription. */
+  assert.deepEqual(free.filter((id) => m.free.indexOf(id) !== -1), m.free, "every free batch opens");
+  if (derniere) {
+    assert(free.indexOf(derniere) !== -1, "last week opens to everyone");
+    assert.equal(free.length, m.free.length + 1, "and nothing else does");
+  } else {
+    assert.deepEqual(free, m.free);
+  }
   const tous = Server.allowedBatches(m, { subscription: { status: "actif" } });
   assert.equal(tous.length, m.batches.length);
+});
+
+test("entitlement: last week is the second newest of the window, never the newest", () => {
+  const m = { window: ["2026-S32", "2026-S34", "2026-S33"], batches: [] };
+  assert.equal(Server.previousWeekBatch(m), "2026-S33");
+  assert.equal(Server.previousWeekBatch({ window: ["2026-S34"], batches: [] }), null, "one week alone has no previous");
+  assert.equal(Server.previousWeekBatch({ window: [], batches: [] }), null);
 });
 
 test("entitlement: a late payment keeps access briefly, then loses it", () => {
@@ -1249,13 +1265,13 @@ test("entitlement: a late payment keeps access briefly, then loses it", () => {
 });
 
 test("stripe: a valid signature passes, a tampered or stale one does not", () => {
-  const corps = Buffer.from('{"type":"checkout.session.completed"}');
+  const body = Buffer.from('{"type":"checkout.session.completed"}');
   const t = Math.floor(Date.now() / 1000);
-  const sig = crypto2.createHmac("sha256", "whsec_x").update(t + "." + corps.toString()).digest("hex");
-  assert.equal(Stripe.verifierSignature(corps, "t=" + t + ",v1=" + sig, "whsec_x"), true);
+  const sig = crypto2.createHmac("sha256", "whsec_x").update(t + "." + body.toString()).digest("hex");
+  assert.equal(Stripe.verifierSignature(body, "t=" + t + ",v1=" + sig, "whsec_x"), true);
   assert.equal(Stripe.verifierSignature(Buffer.from('{"type":"autre"}'), "t=" + t + ",v1=" + sig, "whsec_x"), false);
-  assert.equal(Stripe.verifierSignature(corps, "t=" + (t - 9999) + ",v1=" + sig, "whsec_x"), false);
-  assert.equal(Stripe.verifierSignature(corps, "t=" + t + ",v1=" + sig, "mauvais_secret"), false);
+  assert.equal(Stripe.verifierSignature(body, "t=" + (t - 9999) + ",v1=" + sig, "whsec_x"), false);
+  assert.equal(Stripe.verifierSignature(body, "t=" + t + ",v1=" + sig, "mauvais_secret"), false);
 });
 
 test("stripe: subscription statuses translate correctly", () => {
@@ -1294,7 +1310,7 @@ test("vision: plant false friends do not trigger their family", () => {
 
 test("vision: an intruder found in the image rejects it", async () => {
   const r = parId["squash-and-coconut-soup"];
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees,
+  const v = await Vision.verifier(Buffer.from("x"), r, data,
     { moteur: visionQuiVoit(["courge", "lait de coco", "noix de Grenoble"]) });
   assert.equal(v.ok, false);
   assert(/noix/i.test(v.erreurs.join(" ")));
@@ -1302,8 +1318,8 @@ test("vision: an intruder found in the image rejects it", async () => {
 
 test("vision: a faithful image is accepted", async () => {
   const r = parId["squash-and-coconut-soup"];
-  const noms = r.ingredients.map((u) => donnees.catalogue[u.id].name);
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: visionQuiVoit(noms) });
+  const noms = r.ingredients.map((u) => data.catalogue[u.id].name);
+  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: visionQuiVoit(noms) });
   assert.equal(v.ok, true, v.erreurs.join(" / "));
   assert(v.reconnus >= 2);
 });
@@ -1312,14 +1328,14 @@ test("vision: a failure or a missing engine rejects, never accepts by default", 
   const r = parId["squash-and-coconut-soup"];
   const panne = { name: "x", decrire: async () => { throw new Error("réseau"); } };
   const illisible = { name: "x", decrire: async () => "je ne sais pas" };
-  assert.equal((await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: panne })).ok, false);
-  assert.equal((await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: illisible })).ok, false);
-  assert.equal((await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: Vision.MOTEURS.absent })).ok, false);
+  assert.equal((await Vision.verifier(Buffer.from("x"), r, data, { moteur: panne })).ok, false);
+  assert.equal((await Vision.verifier(Buffer.from("x"), r, data, { moteur: illisible })).ok, false);
+  assert.equal((await Vision.verifier(Buffer.from("x"), r, data, { moteur: Vision.MOTEURS.absent })).ok, false);
 });
 
 test("vision: a choking risk rejects the image, allergen or not", async () => {
   const r = parId["fluffy-pancakes"];
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees,
+  const v = await Vision.verifier(Buffer.from("x"), r, data,
     { moteur: visionQuiVoit(["milk", "egg", "farine de blé", "raisins entiers"]) });
   assert.equal(v.ok, false);
   assert(/étouffement/.test(v.erreurs.join(" ")));
@@ -1327,7 +1343,7 @@ test("vision: a choking risk rejects the image, allergen or not", async () => {
 
 test("vision: an image of a different dish is rejected", async () => {
   const r = parId["squash-and-coconut-soup"];
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees,
+  const v = await Vision.verifier(Buffer.from("x"), r, data,
     { moteur: visionQuiVoit(["spaghetti", "meatballs"]) });
   assert.equal(v.ok, false);
   assert(/recognisable/.test(v.erreurs.join(" ")));
@@ -1336,7 +1352,7 @@ test("vision: an image of a different dish is rejected", async () => {
 test("manifest: an automatic review with no vision verdict publishes nothing", () => {
   const r = parId["squash-and-coconut-soup"];
   const emp = Images.empreinte(r);
-  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, donnees);
+  const res = Engine.adapterRecette(r, { allergens: [], ageMois: 24 }, data);
   const complet = { [r.id]: { fichier: "i.png", empreinte: emp, largeur: 1664,
     revisePar: "vérification automatique (test)", verification: { moteur: "test", reconnus: 3, attendus: 5 } } };
   assert.equal(Images.visuelPour(r, res, complet, false).type, "photo");
@@ -1362,25 +1378,25 @@ test("agreement: catches the misses a test bake would have revealed", () => {
   const liquide = Coherence.verifier(Object.assign({}, base, {
     ingredients: [{ id: "wheat_flour", qty: 100, unit: "ml", role: "flour" },
                   { id: "cow_milk", qty: 600, unit: "ml", role: "liquid" }],
-    steps: ["Mix the flour and the milk.", "Bake at 180 °C for 20 minutes."] }), donnees);
+    steps: ["Mix the flour and the milk.", "Bake at 180 °C for 20 minutes."] }), data);
   assert.equal(liquide.ok, false);
 
   const sansTemp = Coherence.verifier(Object.assign({}, base, {
     ingredients: [{ id: "wheat_flour", qty: 250, unit: "ml", role: "flour" },
                   { id: "cow_milk", qty: 250, unit: "ml", role: "liquid" }],
-    steps: ["Mix the flour and the milk.", "Bake for 20 minutes."] }), donnees);
+    steps: ["Mix the flour and the milk.", "Bake for 20 minutes."] }), data);
   assert(sansTemp.erreurs.some((e) => /température/.test(e)));
 
   const cru = Coherence.verifier(Object.assign({}, base, {
     ingredients: [{ id: "chicken", qty: 300, unit: "g", role: "protein" }, { id: "rice", qty: 250, unit: "ml" }],
-    steps: ["Mix the chicken and rice in a bowl.", "Serve immediately."] }), donnees);
+    steps: ["Mix the chicken and rice in a bowl.", "Serve immediately."] }), data);
   assert(cru.erreurs.some((e) => /raw protein/.test(e)));
 });
 
 test("agreement: the whole existing corpus passes, no false positive", () => {
-  const mauvaises = corpusComplet.filter((r) => !Coherence.verifier(r, donnees).ok);
+  const mauvaises = corpusComplet.filter((r) => !Coherence.verifier(r, data).ok);
   assert.equal(mauvaises.length, 0,
-    mauvaises.map((r) => r.id + " : " + Coherence.verifier(r, donnees).erreurs.join(" ; ")).join(" | "));
+    mauvaises.map((r) => r.id + " : " + Coherence.verifier(r, data).erreurs.join(" ; ")).join(" | "));
 });
 
 test("engines: an adapter is always available, and the fallback is simulation", async () => {
@@ -1442,13 +1458,13 @@ test("apple: the DER and raw signature forms round-trip", () => {
 function chargerPont() {
   const src = fs.readFileSync(path.join(__dirname, "..", "web", "template.html"), "utf8");
   const debut = src.indexOf("window.evaluerProduitScanne = function");
-  const fin = src.indexOf("/* The native side owns");
-  assert(debut !== -1 && fin > debut, "le pont natif est introuvable dans le gabarit");
+  const finish = src.indexOf("/* The native side owns");
+  assert(debut !== -1 && finish > debut, "le pont natif est introuvable dans le gabarit");
   const sansAcc = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const nomAll = (id) => { const a = donnees.base.allergens.find((x) => x.id === id); return a ? a.name.toLowerCase() : id; };
+  const nomAll = (id) => { const a = data.base.allergens.find((x) => x.id === id); return a ? a.name.toLowerCase() : id; };
   const listeFr = (t) => t.length < 2 ? t.join("") : t.slice(0, -1).join(", ") + " et " + t[t.length - 1];
   return new Function("donnees", "sansAcc", "nomAll", "listeFr",
-    "var window={};" + src.slice(debut, fin) + "return window.evaluerProduitScanne;")(donnees, sansAcc, nomAll, listeFr);
+    "var window={};" + src.slice(debut, finish) + "return window.evaluerProduitScanne;")(data, sansAcc, nomAll, listeFr);
 }
 
 test("scanner: a label holding the avoided allergen returns avoid", () => {
@@ -1537,13 +1553,13 @@ test("window: fewer batches than the window breaks nothing", () => {
 
 test("publishing: the manifest marks what is inside the window", () => {
   const r = Publier.publier();
-  const hebdo = r.manifeste.batches.filter((l) => l.weekly);
+  const hebdo = r.manifest.batches.filter((l) => l.weekly);
   assert(hebdo.length > 0, "il doit exister des batches hebdomadaires");
-  assert(r.manifeste.batches.filter((l) => l.inWindow).length > 0);
-  assert(Array.isArray(r.manifeste.window));
-  assert(r.manifeste.window.length <= Semaines.FENETRE);
+  assert(r.manifest.batches.filter((l) => l.inWindow).length > 0);
+  assert(Array.isArray(r.manifest.window));
+  assert(r.manifest.window.length <= Semaines.FENETRE);
   // Les batches free restent always visible
-  r.manifeste.batches.filter((l) => l.access === "free")
+  r.manifest.batches.filter((l) => l.access === "free")
     .forEach((l) => assert(l.inWindow, l.id + " libre doit rester visible"));
 });
 
@@ -1585,21 +1601,21 @@ test("ranking: sorted, and another person rating is never exposed", () => {
 
 test("vision: a cooked dish need not show its raw ingredients", async () => {
   /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
-   * Exiger un ingredient brut rejetait TOUT plat transformé, c'est-à-dire
+   * Exiger un ingredient raw rejetait TOUT plat transformé, c'est-à-dire
    * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
    * forte que l'ingredient repéré. */
   const crepes = parId["fluffy-pancakes"];
   const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
 
-  const cuit = await Vision.verifier(Buffer.from("x"), crepes, donnees,
+  const cuit = await Vision.verifier(Buffer.from("x"), crepes, data,
     { moteur: voit(["pancakes", "plate", "butter"], "a stack of pancakes") });
   assert.equal(cuit.ok, true, cuit.erreurs.join(" / "));
   assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
     "l'absence d'ingredient brut must be notée, pas fatale");
 
   /* Mais sans ingredient ET sans le bon plat, on rejette always. */
-  const rien = await Vision.verifier(Buffer.from("x"), crepes, donnees,
+  const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
     { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
   assert.equal(rien.ok, false);
 });
@@ -1607,7 +1623,7 @@ test("vision: a cooked dish need not show its raw ingredients", async () => {
 test("images: the prompt stays short and names the cooked state", () => {
   /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
    * pesaient autant que les deux mots qui disent quel est le plat. */
-  const p = Images.promptPour(parId["fluffy-pancakes"], donnees).positif;
+  const p = Images.promptPour(parId["fluffy-pancakes"], data).positif;
   assert(p.length < 500, "prompt trop long : " + p.length + " characters");
   assert(/cooked and ready to eat/.test(p),
     "l'état cuit must be dit, sinon FLUX étale les ingredients crus");
@@ -1623,12 +1639,12 @@ test("vision: the DISH must match, not only the ingredients", async () => {
     decrire: async () => JSON.stringify({
       aliments: ["banana", "oats", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
 
-  const gruau = await Vision.verifier(Buffer.from("x"), muffins, donnees,
+  const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a bowl of oats with a raw egg") });
   assert.equal(gruau.ok, false, "un bol de gruau n'est pas des muffins");
   assert(/does not match/.test(gruau.erreurs.join(" ")));
 
-  const vrais = await Vision.verifier(Buffer.from("x"), muffins, donnees,
+  const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a tray of muffins") });
   assert.equal(vrais.ok, true, vrais.erreurs.join(" / "));
 });
@@ -1639,11 +1655,11 @@ test("vision: the shape comes from the servings field too", async () => {
     decrire: async () => JSON.stringify({
       aliments: ["banana", "wheat flour", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
 
-  const bol = await Vision.verifier(Buffer.from("x"), pain, donnees,
+  const bol = await Vision.verifier(Buffer.from("x"), pain, data,
     { moteur: voit("a bowl of porridge") });
   assert.equal(bol.ok, false, "1 loaf ne se sert pas dans un bol");
 
-  const miche = await Vision.verifier(Buffer.from("x"), pain, donnees,
+  const miche = await Vision.verifier(Buffer.from("x"), pain, data,
     { moteur: voit("a sliced loaf on a board") });
   assert.equal(miche.ok, true, miche.erreurs.join(" / "));
 });
@@ -1656,7 +1672,7 @@ test("vision: an image resembling nothing AND causing hesitation is rejected", a
   const hesitant = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
     aliments: ["banana"], lisible: true,
     incertitudes: ["pourrait be du couscous, de la polenta ou du curcuma"] }) };
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: hesitant });
+  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: hesitant });
   assert.equal(v.ok, false, "hésitation + un seul ingredient must rejeter");
   assert(v.erreurs.some((e) => /does not look enough like/.test(e)));
 });
@@ -1667,7 +1683,7 @@ test("vision: a single recognised ingredient with no hesitation is accepted", as
    * l'avoine. Il ne faut pas la rejeter pour autant. */
   const net = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
     aliments: ["banana"], lisible: true, incertitudes: [] }) };
-  const v = await Vision.verifier(Buffer.from("x"), r, donnees, { moteur: net });
+  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: net });
   assert.equal(v.ok, true, v.erreurs.join(" / "));
   assert(v.avertissements.some((a) => /weak resemblance/.test(a)));
 });
@@ -1706,14 +1722,14 @@ test("barcode: a payload with no product number is null, not a garbage lookup", 
 
 test("barcode: every UPC-E expansion rule reaches a UPC-A with a fresh check digit", () => {
   /* X6 = 0..2, 3, 4, 5..9 are the four patterns of the UPC-E table. */
-  for (const [e, attendu] of [["01010000", "010000001006"], ["01234535", "012300000451"],
+  for (const [e, expected] of [["01010000", "010000001006"], ["01234535", "012300000451"],
                               ["01234545", "012340000053"], ["01234599", "012345000096"]]) {
-    assert(Barcode2.formes(e).indexOf(attendu) !== -1, e + " should expand to " + attendu);
+    assert(Barcode2.forms(e).indexOf(expected) !== -1, e + " should expand to " + expected);
   }
 });
 
 test("barcode: a GTIN-14 carton code reaches the retail EAN-13 with its own check digit", () => {
-  assert(Barcode2.formes("10012345678902").indexOf("0012345678905") !== -1);
+  assert(Barcode2.forms("10012345678902").indexOf("0012345678905") !== -1);
 });
 
 /* ---------- serveur : les correctifs du rapport QA (build 119) ---------- */
@@ -1728,11 +1744,11 @@ async function serveurDeTest(db, options) {
    * meant one test's empty accounts overwrote another's fixture between
    * its write and its first request. */
   const seq = process.pid + "-" + (++serveursDeTest);
-  const comptes = path.join(require("os").tmpdir(), "bouchees-test-accounts-" + seq + ".json");
+  const accounts = path.join(require("os").tmpdir(), "bouchees-test-accounts-" + seq + ".json");
   const cache = path.join(require("os").tmpdir(), "bouchees-test-cache-" + seq + ".json");
-  process.env.BOUCHEES_COMPTES = comptes;
+  process.env.BOUCHEES_COMPTES = accounts;
   process.env.BOUCHEES_PRODUCT_CACHE = cache;
-  fs.writeFileSync(comptes, JSON.stringify(db || { accounts: {}, jetons: {} }));
+  fs.writeFileSync(accounts, JSON.stringify(db || { accounts: {}, tokens: {} }));
   try { fs.unlinkSync(cache); } catch (e) {}
   delete require.cache[require.resolve("../server/server.js")];
   const S = require("../server/server.js");
@@ -1775,7 +1791,7 @@ test("server: a token older than the TTL no longer authenticates, a fresh one do
   const S0 = require("../server/server.js");
   const t = await serveurDeTest({
     accounts: { "x@y.z": { email: "x@y.z", subscription: null } },
-    jetons: {
+    tokens: {
       vieux: { email: "x@y.z", cree: Date.now() - S0._TOKEN_TTL_MS - 1000 },
       neuf: { email: "x@y.z", cree: Date.now() },
       ancien: "x@y.z"
@@ -1853,7 +1869,7 @@ test("server: a full miss spends one unit per request made, and nothing before t
   };
   try {
     const code = "036000291452";                         // a UPC-A: two forms
-    const requetes = Barcode2.formes(code).length + 3;    // food per form, one per sibling
+    const requetes = Barcode2.forms(code).length + 3;    // food per form, one per sibling
     await t.call("GET", "/api/product?code=" + code);
     assert.equal(appels, requetes, "every step of the plan is tried on a miss");
     let restants = 0;

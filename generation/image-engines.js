@@ -1,13 +1,6 @@
-/* Moteurs d'image
- *
- *   drawthings — Draw Things' local HTTP API on your Mac (no cost, no data
- *                leaving the machine). AUTOMATIC1111-compatible endpoint.
- *   openai     — OPENAI_API_KEY, if you would rather pay per image
- *   simule     — offline: writes a tiny but valid PNG so the whole cycle can
- *                be tested with no network
- *
- * Chaque adaptateur retourne { octets, largeur, hauteur, moteur }.
- */
+/* AUTOMATIC1111-compatible endpoint. openai — OPENAI_API_KEY, if you would
+ * rather pay per image simule — offline: writes a tiny but valid PNG so the
+ * whole cycle can be tested with no network Moteurs d'image */
 "use strict";
 const http = require("http");
 const zlib = require("zlib");
@@ -55,34 +48,15 @@ const drawthings = {
   disponible: function () { return !!(process.env.DRAWTHINGS_URL || process.env.DRAWTHINGS_ACTIF); },
   generer: async function (spec) {
     const base = process.env.DRAWTHINGS_URL || "http://127.0.0.1:7860";
-    /* SEND THE PROMPT AND THE SIZE. NOTHING ELSE.
-     *
-     * Draw Things knows what its own model needs — "Try recommended settings"
-     * fills them in. For FLUX.1 schnell that is 4 steps, Euler A Trailing,
-     * guidance 4.5. I was overriding all three from here with SDXL values
-     * (30 steps, DPM++ 2M Karras, cfg 6), and a distilled 4-step model driven
-     * by an SDXL solver never finishes denoising. The result is the embossed
-     * anaglyph, every time.
-     *
-     * So: steps, sampler and guidance are no longer sent. Whatever is set in
-     * the app is what runs, which is the configuration that works. The three
-     * environment variables still exist for a deliberate override, but they
-     * are off by default now. */
-    const corps = Object.assign({
+        /* Send the prompt and the size: for FLUX.1 schnell that is 4 steps, Euler
+     * A Trailing, guidance 4.5. */
+    const body = Object.assign({
       prompt: spec.prompt,
       width: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1408),
       height: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
     },
-      /* NO negative_prompt on FLUX.
-       *
-       * Proven by isolation: same transport, same prompt, same size. With the
-       * negative prompt the response is an embossed relief; without it the
-       * photo is clean. FLUX schnell is distilled without negative guidance,
-       * and Draw Things ends up SUBTRACTING the negative instead of steering
-       * away from it.
-       *
-       * Set DRAWTHINGS_NEGATIF=1 to send it on a model that supports one
-       * (SDXL does). Off by default. */
+            /* NO negative_prompt on FLUX: with the negative prompt the response is
+       * an embossed relief; without it the photo is clean. */
       process.env.DRAWTHINGS_NEGATIF && spec.negatif ? { negative_prompt: spec.negatif } : {},
       process.env.DRAWTHINGS_ETAPES ? { steps: Number(process.env.DRAWTHINGS_ETAPES) } : {},
       process.env.DRAWTHINGS_CFG ? { cfg_scale: Number(process.env.DRAWTHINGS_CFG) } : {},
@@ -90,17 +64,11 @@ const drawthings = {
       spec.graine !== undefined ? { seed: spec.graine } : {}
     );
 
-    /* ONLY KEYS DRAW THINGS IS KNOWN TO ACCEPT.
-     *
-     * It validates its payload strictly and rejects the whole request on an
-     * unknown key — "Unrecognized keys: [...]", 38 recipes failed at once on
-     * an override_settings I had never confirmed was supported.
-     *
-     * This list is what has actually worked. Adding to it means testing one
-     * request first, not shipping a guess. */
+        /* Only keys Draw Things is known to accept: this list is what has
+     * actually worked. */
     const CONNUES = ["prompt", "negative_prompt", "width", "height",
                      "steps", "cfg_scale", "sampler_name", "seed"];
-    const inconnues = Object.keys(corps).filter(function (k) {
+    const inconnues = Object.keys(body).filter(function (k) {
       return CONNUES.indexOf(k) === -1;
     });
     if (inconnues.length) {
@@ -111,55 +79,23 @@ const drawthings = {
 
     if (process.env.DRAWTHINGS_TRACE) {
       console.log("\n--- request sent to " + base + "/sdapi/v1/txt2img ---");
-      console.log(JSON.stringify(corps, null, 2));
+      console.log(JSON.stringify(body, null, 2));
       console.log("--- end of request ---\n");
     }
 
     /* Noted before the request so only a file written afterwards counts. */
     const avant = Date.now();
 
-    /* THREE THINGS AT ONCE, BECAUSE EACH RETRY COSTS MINUTES.
-     *
-     * "fetch failed" is the connection dropping, not Draw Things refusing.
-     * Three causes fit and none can be told apart from the outside, so all
-     * three are handled rather than probed one at a time:
-     *
-     *   1. NO TIMEOUT. The call had none, so Node applied its own — and a
-     *      1408x1408 image on Turbo takes minutes. Fifteen now.
-     *
-     *   2. THE APP IS STILL BUSY. Draw Things is a desktop app with one
-     *      renderer. Firing the next request the instant the last byte
-     *      arrives gives it no time to settle.
-     *
-     * NOT the headers. I set Accept-Encoding and Connection here and BROKE a
-     * path that worked: the first image had succeeded before, and failed
-     * after. Both are FORBIDDEN header names in the fetch specification —
-     * Node strips or rejects them, and the behaviour varies by version.
-     *
-     * Three changes at once on a working path, which is the one thing I keep
-     * telling François not to do. The timeout stays because waiting longer
-     * cannot break anything; the headers are gone.
-     */
+        /* Three things at once, because each retry costs minutes: "fetch failed"
+     * is the connection dropping, not Draw Things refusing. */
     const minuteur = AbortSignal.timeout(
       Number(process.env.DRAWTHINGS_TIMEOUT_MS || 15 * 60 * 1000));
 
-    /* node:http, NOT fetch.
-     *
-     * MEASURED, after three builds of guessing: the error is
+        /* MEASURED, after three builds of guessing: the error is
      * UND_ERR_HEADERS_TIMEOUT. undici — the HTTP client behind fetch — gives
-     * a server five minutes to send its FIRST header, and that limit is
-     * internal. An AbortSignal does not touch it; mine was set to fifteen
-     * minutes and undici cut at five regardless.
-     *
-     * Draw Things sends nothing at all until the render is finished. A
-     * 1408x1408 image on Turbo runs past five minutes on this machine, so
-     * every request died at exactly the same place.
-     *
-     * node:http has no such limit and is built in. probe-drawthings.js in
-     * this repo already used it for the same reason.
-     */
+     * a server five minutes to send its FIRST header, and that limit is */
     const rep = await new Promise(function (resolve, reject) {
-      const corpsTexte = JSON.stringify(corps);
+      const corpsTexte = JSON.stringify(body);
       const cible = new URL(base + "/sdapi/v1/txt2img");
       const requete = http.request({
         hostname: cible.hostname,
@@ -219,20 +155,9 @@ const drawthings = {
         (process.env.DRAWTHINGS_CFG ? ", cfg " + process.env.DRAWTHINGS_CFG : "") +
         (process.env.DRAWTHINGS_SAMPLER ? ", sampler " + process.env.DRAWTHINGS_SAMPLER : "") + ")");
     }
-    /* THE IMAGE COMES FROM THE FOLDER, NOT FROM THE RESPONSE.
-     *
-     * Measured, watching the app while the cycle runs: Draw Things renders a
-     * clean photo on screen and returns an embossed relief over the API. Same
-     * generation, two different results. Nothing in the request changes it —
-     * prompt, negative prompt, steps, sampler and size were each isolated and
-     * ruled out.
-     *
-     * The app writes the real image itself, through its "Save Generated Media
-     * to" setting. Reading that file is not a workaround: it is the only way
-     * to obtain what was actually generated.
-     *
-     * DRAWTHINGS_DOSSIER points at that folder. Unset, the API response is
-     * used as before — so a build where the API behaves is unaffected. */
+        /* The image comes from the folder, not from the response: measured,
+     * watching the app while the cycle runs: Draw Things renders a clean
+     * photo on screen and returns an embossed relief over the API. */
     let octets = Buffer.from(d.images[0], "base64");
 
     const dossierApp = process.env.DRAWTHINGS_DOSSIER;
@@ -240,10 +165,8 @@ const drawthings = {
       const fsApp = require("fs");
       const pathApp = require("path");
 
-      /* The app writes its file AFTER answering, so we wait for one to appear
-       * that is newer than the moment the request went out. Matching on the
-       * name is brittle — the app names files after the prompt — but a
-       * timestamp is not. */
+            /* Matching on the name is brittle — the app names files after the
+       * prompt — but a timestamp is not. */
       function plusRecent() {
         let trouve = null;
         fsApp.readdirSync(dossierApp)
@@ -282,12 +205,8 @@ const drawthings = {
       if (process.env.DRAWTHINGS_TRACE) console.log("      taken from " + recent.f);
     }
 
-    /* Read the size FROM THE PNG, never from what we asked for.
-     *
-     * Draw Things silently clamps to whatever the selected model and the
-     * machine allow. Recording the requested size meant the manifest claimed
-     * 1664 px while the file on disk was far smaller — and the size gate,
-     * reading the manifest, waved it through. Measure the artifact. */
+        /* Read the size FROM THE PNG, never from what we asked for: draw Things
+     * silently clamps to whatever the selected model and the machine allow. */
     const reelle = tailleImage(octets);
     const demandee = { largeur: spec.largeur || Number(process.env.DRAWTHINGS_LARGEUR || 1408),
                        hauteur: spec.hauteur || Number(process.env.DRAWTHINGS_HAUTEUR || 1408) };
@@ -307,8 +226,8 @@ const openai = {
   name: "openai",
   disponible: function () { return !!process.env.OPENAI_API_KEY; },
   generer: async function (spec) {
-    /* Image models have no negative field: it is folded
-     * dans le prompt, en formulation positive quand c'est possible. */
+    /* Image models have no negative field: exclusions are folded into the
+     * prompt, phrased positively where possible. */
     const rep = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: { Authorization: "Bearer " + process.env.OPENAI_API_KEY, "Content-Type": "application/json" },
@@ -328,28 +247,28 @@ const openai = {
  * This is not a recipe photo — it is a real file so the rest of the cycle
  * (writing, fingerprint, manifest, publishing) is genuinely tested. */
 function pngSimple(largeur, hauteur, couleurs) {
-  const lignes = [];
+  const lines = [];
   for (let y = 0; y < hauteur; y++) {
     const c = couleurs[Math.floor(y / hauteur * couleurs.length)] || [200, 200, 200];
     const ligne = Buffer.alloc(1 + largeur * 3);
     for (let x = 0; x < largeur; x++) {
       ligne[1 + x * 3] = c[0]; ligne[2 + x * 3] = c[1]; ligne[3 + x * 3] = c[2];
     }
-    lignes.push(ligne);
+    lines.push(ligne);
   }
-  const brut = zlib.deflateSync(Buffer.concat(lignes));
+  const raw = zlib.deflateSync(Buffer.concat(lines));
   const morceau = function (type, data) {
     const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
-    const corps = Buffer.concat([Buffer.from(type, "ascii"), data]);
-    const crc = Buffer.alloc(4); crc.writeUInt32BE(crc32(corps) >>> 0);
-    return Buffer.concat([len, corps, crc]);
+    const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
+    const crc = Buffer.alloc(4); crc.writeUInt32BE(crc32(body) >>> 0);
+    return Buffer.concat([len, body, crc]);
   };
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(largeur, 0); ihdr.writeUInt32BE(hauteur, 4);
   ihdr[8] = 8; ihdr[9] = 2; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
   return Buffer.concat([
     Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    morceau("IHDR", ihdr), morceau("IDAT", brut), morceau("IEND", Buffer.alloc(0))
+    morceau("IHDR", ihdr), morceau("IDAT", raw), morceau("IEND", Buffer.alloc(0))
   ]);
 }
 let TABLE_CRC = null;

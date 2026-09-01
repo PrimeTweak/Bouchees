@@ -1,12 +1,5 @@
-//  Subscription.swift
-//
-//  Rule 3.1.1: on iOS, unlocking digital content goes through in-app purchase.
-//  Stripe stays in place for the web; the two meet on the
-//  serveur, qui others seul juge des droits.
-//
-//  Access is NEVER granted on the client's word. The signed transaction goes
-//  to the server, which verifies Apple's certificate chain before unlocking
-//  anything. A modified device can lie; the server cannot.
+// Stripe stays in place for the web; the two meet on the serveur, qui others
+// seul juge des droits. Access is NEVER granted on the client's word.
 
 import Foundation
 import StoreKit

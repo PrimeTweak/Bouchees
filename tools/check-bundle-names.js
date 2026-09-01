@@ -1,16 +1,5 @@
 /* Bundled resource names: does the Swift ask for what the workflow copies?
- *   node tools/check-bundle-names.js
- *
- * WHY THIS EXISTS
- *
- * The Swift loads bundled files by NAME, as string literals. Renaming
- * moteur.js to engine.js in the repository does not rename the literal
- * ["moteur", "pont-natif"] inside RecipeEngine.swift. Nothing catches that:
- * the project builds, the IPA installs, and the app fails on the first
- * launch with "Fichier moteur manquant".
- *
- * This compares the two sides and names the mismatch in one second.
- */
+ * node tools/check-bundle-names.js WHY THIS EXISTS */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -34,18 +23,14 @@ function walk(dir) {
       const src = fs.readFileSync(p, "utf8");
       for (const m of src.matchAll(/Resources\.(?:url|data)\("([^"]+)",\s*"([^"]+)"\)/g))
         asked.add(m[1] + "." + m[2]);
-      /* The engine scripts are loaded from a literal array.
-       *
-       * "Any for-in over string literals is a script list" was too broad: the
+            /* "Any for-in over string literals is a script list" was too broad: the
        * scanner iterates over label phrases — "nutrition facts", "valeur
-       * nutritive" — and each became a demand for a file named after it. A
-       * script name has no spaces and no colon, which separates the two
-       * without needing to know either. */
+       * nutritive" — and each became a demand for a file named after it. */
       for (const m of src.matchAll(/for\s+\w+\s+in\s+\[((?:"[^"]+",?\s*)+)\]/g))
         for (const n of m[1].match(/"([^"]+)"/g) || []) {
-          const nom = n.replace(/"/g, "");
-          if (!/^[A-Za-z0-9_-]+$/.test(nom)) continue;
-          asked.add(nom + ".js");
+          const name = n.replace(/"/g, "");
+          if (!/^[A-Za-z0-9_-]+$/.test(name)) continue;
+          asked.add(name + ".js");
         }
     }
   }

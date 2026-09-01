@@ -1,11 +1,5 @@
-/* Ingredient normaliser
- * Transforme une ligne brute (« 2 cups all-purpose flour », « 1/2 tasse de
- * unsweetened applesauce") into a canonical catalogue ingredient.
- * Deterministic: versioned lexicon, no model. Anything the lexicon does not
- * recognise comes out as status "unknown" -> quarantine, never guessed.
- * L'IA peut PROPOSER de nouveaux alias; un humain les valide dans le
- * lexicon. « L'IA propose, le lexicon dispose. »
- */
+/* Anything the lexicon does not recognise comes out as status "unknown" ->
+ * quarantine, never guessed. */
 "use strict";
 
 const FRACTIONS = { "\u00bd": 0.5, "\u2153": 1 / 3, "\u2154": 2 / 3, "\u00bc": 0.25, "\u00be": 0.75, "\u215b": 0.125 };
@@ -14,7 +8,7 @@ function sansAccents(t) {
   return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function nettoyer(t) {
+function prune(t) {
   return sansAccents(String(t).toLowerCase())
     .replace(/\(.*?\)/g, " ")
     .replace(/['\u2019\u2013\u2014-]/g, " ")
@@ -45,13 +39,13 @@ function extraireQuantite(texte) {
 function extraireUnite(texte, lexicon) {
   const u = lexicon.units;
   const candidats = [];
-  Object.keys(u.volume_ml).forEach(function (k) { candidats.push({ cle: k, type: "ml", facteur: u.volume_ml[k] }); });
-  Object.keys(u.poids_g).forEach(function (k) { candidats.push({ cle: k, type: "g", facteur: u.poids_g[k] }); });
-  u.natural_units.forEach(function (k) { candidats.push({ cle: k, type: "unit", facteur: 1 }); });
-  candidats.sort(function (a, b) { return b.cle.length - a.cle.length; });
+  Object.keys(u.volume_ml).forEach(function (k) { candidats.push({ key: k, type: "ml", facteur: u.volume_ml[k] }); });
+  Object.keys(u.poids_g).forEach(function (k) { candidats.push({ key: k, type: "g", facteur: u.poids_g[k] }); });
+  u.natural_units.forEach(function (k) { candidats.push({ key: k, type: "unit", facteur: 1 }); });
+  candidats.sort(function (a, b) { return b.key.length - a.key.length; });
   for (let i = 0; i < candidats.length; i++) {
     const c = candidats[i];
-    const cleNette = nettoyer(c.cle);
+    const cleNette = prune(c.key);
     const re = new RegExp("^" + cleNette.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(\\s+|$)");
     if (re.test(texte)) return { texteRestant: texte.replace(re, ""), unit: c.type, facteur: c.facteur, cleUnite: cleNette };
   }
@@ -68,7 +62,7 @@ function construireIndex(lexicon) {
   const index = {};
   Object.keys(lexicon.aliases).forEach(function (id) {
     lexicon.aliases[id].forEach(function (a) {
-      index[retirerDescripteurs(nettoyer(a), lexicon)] = id;
+      index[retirerDescripteurs(prune(a), lexicon)] = id;
     });
   });
   return index;
@@ -79,9 +73,9 @@ function chercherCanonique(texte, index) {
   if (texte.endsWith("s") && index[texte.slice(0, -1)]) return { id: index[texte.slice(0, -1)], confidence: "exacte" };
   /* match on the longest key contained in the text */
   let meilleure = null;
-  Object.keys(index).forEach(function (cle) {
-    const re = new RegExp("(^|\\s)" + cle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|\\s)");
-    if (re.test(texte) && (!meilleure || cle.length > meilleure.length)) meilleure = cle;
+  Object.keys(index).forEach(function (key) {
+    const re = new RegExp("(^|\\s)" + key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "($|\\s)");
+    if (re.test(texte) && (!meilleure || key.length > meilleure.length)) meilleure = key;
   });
   if (meilleure) return { id: index[meilleure], confidence: "partielle" };
   return null;
@@ -92,7 +86,7 @@ function chercherCanonique(texte, index) {
 function normalizeLine(ligne, lexicon, catalogue, index) {
   index = index || construireIndex(lexicon);
   const original = String(ligne);
-  let t = nettoyer(original);
+  let t = prune(original);
   const q = extraireQuantite(t);
   const u = extraireUnite(q.reste.trim(), lexicon);
   const name = retirerDescripteurs(u.texteRestant.trim(), lexicon);
@@ -114,4 +108,4 @@ function normalizeLine(ligne, lexicon, catalogue, index) {
   };
 }
 
-module.exports = { normalizeLine: normalizeLine, construireIndex: construireIndex, nettoyer: nettoyer };
+module.exports = { normalizeLine: normalizeLine, construireIndex: construireIndex, prune: prune };

@@ -1,19 +1,10 @@
-/* Recipe generation — constrained prompt
- * node generation/recipe-prompt.js  ->  writes generation/monthly-prompt.txt
- *
- * The model does NOT write freely: it receives the closed list of catalogue
- * ingredient identifiers and may name nothing else. Everything else
- * (allergens, ages, substitutions) is already deterministic — the model
- * decides no safety question.
- *
- * La commande vient de tools/gaps.js : on ne demande pas « 8 recettes »,
- * what is actually missing gets commissioned.
- */
+/* Everything else (allergens, ages, substitutions) is already deterministic —
+ * the model decides no safety question. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
 function ingredientsAutorises(catalogue, evite) {
   return Object.keys(catalogue).filter(function (id) {
@@ -28,9 +19,9 @@ function tableIngredients(catalogue, ids) {
   }).join("\n");
 }
 
-function construire(ligne, donnees) {
-  const catalogue = donnees.catalogue;
-  const base = donnees.base;
+function construire(ligne, data) {
+  const catalogue = data.catalogue;
+  const base = data.base;
   const autorises = ingredientsAutorises(catalogue, ligne.evite);
   const interditsAge = base.ageRules
     .filter(function (r) { return ligne.ageMois < r.beforeMonths; })
@@ -99,19 +90,19 @@ interditsAge.length ? interditsAge.join("\n") : "  aucun",
   ].join("\n");
 }
 
-function construireTout(commande, donnees) {
-  return commande.map(function (l) { return construire(l, donnees); });
+function construireTout(commande, data) {
+  return commande.map(function (l) { return construire(l, data); });
 }
 
 if (require.main === module) {
-  const donnees = {
-    catalogue: lire("data/ingredients.json"),
-    substitutions: lire("data/substitutions.json"),
-    base: lire("data/base.json")
+  const data = {
+    catalogue: read("data/ingredients.json"),
+    substitutions: read("data/substitutions.json"),
+    base: read("data/base.json")
   };
   let commande;
   try {
-    commande = lire("tools/gap-report.json").commande;
+    commande = read("tools/gap-report.json").commande;
   } catch (e) {
     console.error("Lance d'abord : node tools/gaps.js");
     process.exit(1);
@@ -120,11 +111,11 @@ if (require.main === module) {
     console.log("Aucun trou sous les seuils — pas de commande à générer ce mois-ci.");
     process.exit(0);
   }
-  const prompts = construireTout(commande, donnees);
-  const sortie = prompts.map(function (p, i) {
+  const prompts = construireTout(commande, data);
+  const output = prompts.map(function (p, i) {
     return "═".repeat(72) + "\nPROMPT " + (i + 1) + " / " + prompts.length + "\n" + "═".repeat(72) + "\n\n" + p;
   }).join("\n\n\n");
-  fs.writeFileSync(path.join(racine, "generation", "prompt-du-mois.txt"), sortie + "\n");
+  fs.writeFileSync(path.join(racine, "generation", "prompt-du-mois.txt"), output + "\n");
   console.log("Écrit : generation/monthly-prompt.txt (" + prompts.length + " prompt(s), " +
     commande.reduce((s, c) => s + c.n, 0) + " recettes commandées)");
 }

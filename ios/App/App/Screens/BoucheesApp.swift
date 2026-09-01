@@ -1,94 +1,68 @@
-//  BoucheesApp.swift
-//
-//  Entry point and navigation. Native tabs, and a guided onboarding
-//  au premier lancement — pas un profile bidon qu'il faudrait corriger.
+// BoucheesApp.swift Entry point and navigation.
 
 import SwiftUI
 
 @main
 @MainActor
 struct BoucheesApp: App {
-    @State private var etat = AppState()
+    @State private var app = AppState()
 
     var body: some Scene {
         WindowGroup {
             RootView()
-                .environment(etat)
-                /* nil hands the decision back to iOS, which is the default:
+                .environment(app)
+                                /* nil hands the decision back to iOS, which is the default:
                  * the parent already chose light or dark once, at the system
-                 * level, and an app that ignores that is an app that fights
-                 * its user. */
+                 * level, and an app that ignores that is an app that. */
                 /* Not preferredColorScheme: it cannot return to Auto once
                  * set, and sheets do not inherit it. See ThemeWindow.swift. */
-                .appTheme(etat.theme)
+                .appTheme(app.theme)
                 .tint(Tone.brand)
-                .task { await etat.start() }
+                .task { await app.start() }
         }
     }
 }
 
-/// Clears the cached launch snapshot.
-///
-/// MEASURED, after three wrong explanations from me. An earlier build shipped
-/// a `UIImageName` launch image carrying the wordmark — the plist still
-/// documents it, and the banner overflowed the screen. That image is gone from
-/// the bundle, but iOS keeps a SNAPSHOT of it under
-/// Library/SplashBoard/Snapshots and draws it on every launch.
-///
-/// Apple's own forums call this "first used launch screen file is forever
-/// cached": force-quitting does not clear it, and neither does deleting the
-/// app on its own. Removing the directory does.
-///
-/// Runs once. If the directory is absent — a fresh install — there is nothing
-/// to do and the failure is expected, not an error.
+/// Clears the cached launch snapshot: that image is gone from the bundle, but
+/// iOS keeps a SNAPSHOT of it under Library/SplashBoard/Snapshots and draws it
+/// on every launch.
 enum LaunchCache {
     static func clear() {
-        let chemin = NSHomeDirectory() + "/Library/SplashBoard"
-        guard FileManager.default.fileExists(atPath: chemin) else { return }
-        try? FileManager.default.removeItem(atPath: chemin)
+        let folder = NSHomeDirectory() + "/Library/SplashBoard"
+        guard FileManager.default.fileExists(atPath: folder) else { return }
+        try? FileManager.default.removeItem(atPath: folder)
     }
 }
 
 struct RootView: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @State private var tab = 0
-    /* No path and no sheet here. Each tab owns both — see OngletPile.
-     *
-     * A path at the root sent a search result into the Recipes stack: nothing
-     * appeared, and the recipe was waiting in another tab when the parent
-     * switched. A sheet at the root never appeared at all — a TabView on
-     * iOS 26 owns the system bar, and a sheet it presents competes with it. */
+        /* No path and no sheet here: a sheet at the root never appeared at all —
+     * a TabView on iOS 26 owns the system bar, and a sheet it presents
+     * competes with it. */
 
     /// True until the launch animation has had time to play.
     @State private var launchPlayed = false
 
-    private var showLaunch: Bool { !launchPlayed || etat.isLoading }
+    private var showLaunch: Bool { !launchPlayed || app.isLoading }
 
     var body: some View {
         Group {
-            if let error = etat.fatalError {
+            if let error = app.fatalError {
                 FatalErrorScreen(message: error)
             } else if showLaunch {
-                /* THE CONDITION USED TO BE UNREACHABLE.
-                 *
-                 * It was `isLoading && recipes.isEmpty`. The recipes are
-                 * BUNDLED, decoded synchronously from local files, so they are
-                 * never empty — and the whole of start() takes a few
-                 * milliseconds. The view was built and never visibly rendered.
-                 *
-                 * A splash is not a progress indicator: it exists so the app
-                 * does not appear mid-thought. It is shown for its own
-                 * duration, and dismissed when the animation has played AND
-                 * loading is done, whichever is later. */
+                                /* The recipes are BUNDLED, decoded synchronously from local
+                 * files, so they are never empty — and the whole of start()
+                 * takes a few milliseconds. */
                 LaunchView()
-            } else if etat.needsOnboarding {
+            } else if app.needsOnboarding {
                 OnboardingFlow()
             } else {
                 onglets
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: etat.needsOnboarding)
-        .animation(.easeInOut(duration: 0.32), value: showLaunch)
+        .animation(.soft(0.25), value: app.needsOnboarding)
+        .animation(.soft(0.32), value: showLaunch)
         .task {
             /* Long enough for the mark to rise and the bite to settle, short
              * enough that nobody waits on it. Measured against the animation
@@ -102,79 +76,9 @@ struct RootView: View {
         }
     }
 
-    /// THREE TABS, NOT FIVE.
-    ///
-    /// "Best" was a permanent tab showing "come back later" until five people
-    /// had rated something — expensive in trust for a screen that is empty at
-    /// launch. It is now a filter of the one list.
-    ///
-    /// "Children" was a tab you had to visit to learn who the app was filtering
-    /// for. It is now the context header, in view on every screen, because
-    /// knowing who you are cooking for is a state, not a destination.
-    /// THREE TABS, IN A FLOATING GLASS CAPSULE.
-    ///
-    /// iOS 26 detaches the tab bar from the screen edges — a pill, inset 21pt,
-    /// with content scrolling beneath it and fading out at the bottom. That is
-    /// the native geometry, not an interpretation of it.
-    ///
-    /// Glass belongs here and to almost nowhere else: it is the navigation
-    /// layer, floating above content. Applied to list rows it becomes mush.
-    /// THREE TABS, IN A FLOATING GLASS CAPSULE.
-    ///
-    /// Not a TabView: the system bar is opaque, full width, and sits on top of
-    /// a safe-area inset. iOS 26 wants the bar detached — a pill inset 21pt
-    /// with content scrolling beneath it — so the screens run full height and
-    /// the bar floats over them.
-    /// THE BAR AS A SAFE-AREA INSET, NOT AN OVERLAY.
-    ///
-    /// A ZStack put the capsule on top of the content: it reserved no space,
-    /// so the last rows scrolled under it, and taps landed on the scroll view
-    /// behind rather than on the buttons.
-    ///
-    /// `safeAreaInset` is the pattern for this. The bar becomes a sibling that
-    /// owns its strip of the screen — the content ends above it on its own,
-    /// and hit testing goes where it looks like it should.
-    /// ONE NavigationStack, HERE, around everything.
-    ///
-    /// Each screen used to open its own. A `safeAreaInset` reduces the safe
-    /// area of its DIRECT child, and a NavigationStack resets it for its
-    /// content — so the bar below reached none of the four screens. That one
-    /// mistake produced the dead back button, the pill that survived every
-    /// pushed screen, the tab bar covering text, and thirty-six compensating
-    /// paddings across nine files.
-    ///
-    /// With a single stack the inset reaches the content, pushed screens hide
-    /// the bar the way iOS intends, and no screen has to guess.
-    /// THE NATIVE TabView. Ten attempts at a hand-rolled bar end here.
-    ///
-    /// Apple, on iOS 26: Liquid Glass on a TabView is AUTOMATIC — "the effect
-    /// applies to system components, no configuration is needed" — and it
-    /// "cannot be disabled or replaced with a custom material".
-    ///
-    /// Which means the hold-and-slide lens, with its refraction and chromatic
-    /// aberration, belongs to the system tab bar and to nothing else. A ZStack
-    /// of buttons will never have it, however carefully the gestures are
-    /// written. I reimplemented the geometry three times and broke tap doing
-    /// it; the honest fix is to stop reimplementing.
-    ///
-    /// What comes free, correct, and maintained by Apple:
-    ///   · the glass, and the lens on a long press
-    ///   · `Tab(role: .search)` — the floating island, visually separated,
-    ///     which turns into a search field when selected
-    ///   · `.tabBarMinimizeBehavior(.onScrollDown)`
-    ///   · safe-area handling, which cost six builds to get wrong by hand
-    /// THE NATIVE TabView, BEHIND AN AVAILABILITY GATE.
-    ///
-    /// The deployment target is iOS 17. `Tab` is iOS 18, and
-    /// `tabBarMinimizeBehavior` is iOS 26 — I wrote both without checking, and
-    /// the build failed on fourteen errors that `grep deploymentTarget` would
-    /// have shown me first.
-    ///
-    /// The gate is the pattern this project already uses for `glassEffect` in
-    /// Tone.swift. On iOS 26 the system bar brings Liquid Glass, the
-    /// hold-and-slide lens, the search island and minimize-on-scroll, none of
-    /// which a hand-rolled bar can have. Below that, the plain TabView: the
-    /// same four destinations, no glass.
+    /// Three tabs, not five: "Best" was a permanent tab showing "come back
+    /// later" until five people had rated something — expensive in trust for a
+    /// screen that is empty at launch.
     @ViewBuilder
     private var onglets: some View {
         if #available(iOS 26, *) {
@@ -202,15 +106,9 @@ struct RootView: View {
             /* The search role gives the separated island for free, and iOS
              * owns its transition into a field. */
             Tab(value: 4, role: .search) {
-                /* ITS OWN PATH.
-                 *
-                 * `navigate` is injected on the TabView, above every stack, so
-                 * a route appended from the search tab landed in the Recipes
-                 * stack — which is not on screen. Tapping a result did
-                 * nothing visible.
-                 *
-                 * Each tab that can push owns its path and overrides
-                 * `navigate` inside itself. */
+                                /* Its own path: `navigate` is injected on the TabView, above
+                 * every stack, so a route appended from the search tab landed
+                 * in the Recipes stack — which is not on screen. */
                 OngletPile { SearchScreen() }
             }
         }
@@ -239,30 +137,19 @@ struct RootView: View {
     }
 }
 
-/// A tab that can push, with the stack it pushes into.
-///
-/// `navigate` used to be injected once on the TabView, above every stack — so
-/// a route appended from Scan or Search landed in the Recipes stack, which is
-/// not on screen. Tapping a result did nothing visible.
-///
-/// Each tab owns its path and overrides `navigate` inside itself, so a push
-/// goes where the finger is.
+/// A tab that can push, with the stack it pushes into: each tab owns its path
+/// and overrides `navigate` inside itself, so a push goes where the finger is.
 private struct OngletPile<Contenu: View>: View {
     @ViewBuilder var contenu: () -> Contenu
 
-    /// This tab's own stack.
-    ///
-    /// A single path at the root sent a search result into the Recipes stack:
-    /// nothing appeared, and the recipe was waiting in another tab when the
-    /// parent switched. One path per tab, and nothing above declares navigate.
+    /// This tab's own stack: a single path at the root sent a search result
+    /// into the Recipes stack: nothing appeared, and the recipe was waiting in
+    /// another tab when the parent switched.
     @State private var path = NavigationPath()
 
-    /// This tab's own sheet.
-    ///
-    /// It was attached to the TabView, and tapping the child strip did
-    /// nothing at all. A sheet on a TabView is presented BY the TabView,
+    /// This tab's own sheet: a sheet on a TabView is presented BY the TabView,
     /// which on iOS 26 also owns the system bar — the two compete and neither
-    /// wins. Each tab presents its own.
+    /// wins.
     @State private var sheet: AppSheet?
 
     var body: some View {
@@ -291,14 +178,14 @@ extension View {
 
 private struct RouteDestination: View {
     let route: Route
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
 
     var body: some View {
         switch route {
         case .recipe(let id):
-            if let pair = etat.pairFor(pour: id) {
+            if let pair = app.pairFor(for: id) {
                 RecipeDetailScreen(recipe: pair.recipe, result: pair.result,
-                                   firstName: etat.activeProfile.firstName)
+                                   firstName: app.activeProfile.firstName)
             }
         case .saved: SavedScreen()
         case .topRated: TopRatedScreen()
@@ -308,11 +195,8 @@ private struct RouteDestination: View {
 }
 
 
-/// Everything the stack can push. One enum, so the destinations live in one
+/// Everything the stack can push: one enum, so the destinations live in one
 /// place rather than being re-declared on each screen.
-///
-/// FILE SCOPE, not nested: every screen refers to it, so nesting it inside
-/// RootView made it RootView.Route and nothing else could see it.
 enum Route: Hashable {
     case recipe(String)
     case saved
@@ -328,7 +212,7 @@ struct FatalErrorScreen: View {
     var body: some View {
         VStack(spacing: 14) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 44))
+                .scaledFont(44)
                 .foregroundStyle(Tone.no)
             Text("Bouchées can’t start")
                 .font(.title2.weight(.bold))
@@ -408,7 +292,7 @@ struct AgePicker: View {
 
                 VStack(spacing: 0) {
                     Text("\(ageMonths)")
-                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .scaledFont(26, weight: .bold, design: .rounded)
                         .monospacedDigit()
                     Text("months exactly").font(.caption2).foregroundStyle(.secondary)
                 }
@@ -472,10 +356,8 @@ struct AllergenGrid: View {
 
 // MARK: - Navigation
 
-/// Pushes a route onto the one stack.
-///
-/// A screen used to own a `navigationDestination` and a piece of @State per
-/// destination. With a single stack it only has to say where it wants to go.
+/// Pushes a route onto the one stack: with a single stack it only has to say
+/// where it wants to go.
 struct NavigateAction {
     let push: (Route) -> Void
     func callAsFunction(_ route: Route) { push(route) }
@@ -494,12 +376,8 @@ extension EnvironmentValues {
 
 // MARK: - Sheets
 
-/// Everything the root can present.
-///
-/// A `.sheet` attached to the button that triggers it dies with that button.
-/// The child pill and the search island both live inside a top bar that
-/// SwiftUI rebuilds on every layout shift, so their state was gone before the
-/// sheet could open — which is why both needed two taps.
+/// Everything the root can present: a `.sheet` attached to the button that
+/// triggers it dies with that button.
 enum AppSheet: String, Identifiable {
     case childPicker
     case search

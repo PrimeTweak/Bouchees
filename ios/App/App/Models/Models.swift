@@ -1,11 +1,6 @@
-//  Models.swift
-//
-//  An exact mirror of the JSON the engine and the server produce. No field is
-//  invented here: every property matches a key that is really emitted.
-//
-//  Enums fall back to an "unknown" case rather than failing to decode. An
-//  allergy app that crashes because a new status appeared is worse than one
-//  that cautiously says it cannot tell.
+// No field is invented here: every property matches a key that is really
+// emitted. An allergy app that crashes because a new status appeared is worse
+// than one that cautiously says it cannot tell.
 
 import Foundation
 /* LocalizedStringKey lives in SwiftUI. The models are otherwise
@@ -14,8 +9,8 @@ import SwiftUI
 
 // MARK: - Tolerant quantity
 
-/// Quantities arrive as numbers, sometimes as an empty string when ingestion
-/// n'a rien pu extraire. On accepte les deux sans faire tomber la recipe.
+/// A quantity arrives as a number, or as an empty string when ingestion
+/// could not extract one. Both decode; neither fails the recipe.
 struct Quantity: Codable, Hashable, Sendable {
     let value: Double?
 
@@ -49,10 +44,9 @@ struct Quantity: Codable, Hashable, Sendable {
 
 // MARK: - Statuts
 
-/* The raw values MUST match what the engine emits. They are the one place
- * where a rename on one side alone shows no error: an unknown case falls back
- * to `unknown`, every recipe lands outside every section, and the list goes
- * silently empty. That is exactly what happened. */
+/* They are the one place where a rename on one side alone shows no error: an
+ * unknown case falls back to `unknown`, every recipe lands outside every
+ * section, and the list goes silently empty. That is exactly what happened. */
 
 enum RecipeStatus: String, Codable, Sendable {
     case asIs = "as_is"
@@ -162,6 +156,8 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     /// Filename of a reviewed photo, set by publishing. Absent until a photo
     /// has passed the vision check.
     let image: String?
+    /// A 480px version for thumbnails, when the pipeline made one.
+    let thumb: String?
 
     /// Rating summary, present only in the Top rated response.
     let votes: Int?
@@ -246,22 +242,18 @@ struct AdaptedRecipe: Codable, Sendable {
 // MARK: - Verdict on a scanned product
 
 struct ProductVerdict: Codable, Sendable {
-    /* The bridge emits safe / avoid / uncertain. This declared sur / a_eviter /
-     * incertain, so EVERY scanned product fell through to the fallback and came
-     * back "uncertain" — the scanner has been silently broken since the
-     * conversion, and nothing could see it: the fallback is deliberate, so
-     * nothing crashed and nothing complained. */
+        /* This declared sur / a_eviter / incertain, so EVERY scanned product fell
+     * through to the fallback and came back "uncertain" — the scanner has
+     * been silently broken since the conversion, and nothing could see. */
     enum Statut: String, Codable, Sendable {
-        /* `caution` is a declared factory warning: the ingredient list itself
+                /* `caution` is a declared factory warning: the ingredient list itself
          * came back clean, and the label says the product may have met the
-         * allergen elsewhere. It sits below `uncertain` on purpose — an
-         * unread word is a risk nobody has measured, and that must never be
-         * softened by a risk that has been. */
+         * allergen elsewhere. */
         case safe, avoid, uncertain, caution
         init(from decoder: Decoder) throws {
-            let brut = try decoder.singleValueContainer().decode(String.self)
+            let rawText = try decoder.singleValueContainer().decode(String.self)
             /* An unknown state falls to `uncertain`, never to `safe`. */
-            self = Statut(rawValue: brut) ?? .uncertain
+            self = Statut(rawValue: rawText) ?? .uncertain
         }
     }
     let status: Statut
@@ -301,14 +293,14 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
     /// Profile resolved when several children eat the same dish: the youngest
     /// age and the union of the allergens. This is the hard case in a family,
     /// and it has to be strict by construction.
-    static func famille(_ profiles: [ChildProfile]) -> ChildProfile {
+    static func family(_ profiles: [ChildProfile]) -> ChildProfile {
         guard !profiles.isEmpty else { return .defaut }
         let age = profiles.map(\.ageMonths).min() ?? 9
         var union: [String] = []
         for p in profiles where !p.allergens.isEmpty {
             for a in p.allergens where !union.contains(a) { union.append(a) }
         }
-        return ChildProfile(id: "famille", name: "tout le monde", ageMonths: age, allergens: union.sorted())
+        return ChildProfile(id: "family", name: String(localized: "Everyone"), ageMonths: age, allergens: union.sorted())
     }
 }
 
@@ -359,9 +351,7 @@ struct RecipesResponse: Codable, Sendable {
 
 /// The shape of substitutions.json, decoded so the app can SHOW the rule that
 /// produced a swap — every option, in order, with its ratio and minimum age.
-///
-/// The engine reads its own copy through the bridge. This one exists purely so
-/// a parent can open a swap and see the reasoning behind it.
+/// The engine reads its own copy through the bridge.
 struct SubstitutionEntry: Codable, Sendable {
     let role: String
     let target: String
@@ -377,11 +367,9 @@ struct SubstitutionOptionRaw: Codable, Sendable {
 
 // MARK: - Shopping
 
+/// `quantities` is a LIST, not a number: the corpus mixes "125 ml" with "1
+/// unit", and a single total across those would be wrong on a shopping list.
 /// One line of the week's shopping list, as the engine produces it.
-///
-/// `quantities` is a LIST, not a number: the corpus mixes "125 ml" with
-/// "1 unit", and a single total across those would be wrong on a shopping
-/// list. Mismatched units sit side by side instead.
 struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
     let name: String
     let aisle: String
@@ -409,15 +397,9 @@ struct ShoppingQuantity: Codable, Hashable, Sendable {
 
 // MARK: - The week
 
-/// Which recipe sits on which day.
-///
-/// Seven recipes arrive each week; the parent decides when to cook them. The
-/// plan is a map from a day index to recipe ids — not a list, because a day
-/// can hold two things and another none.
-///
-/// Not every day is filled, and that is deliberate. Seven recipes do not make
-/// seven suppers, and an app that spread them to look complete would be
-/// lying about what it provides.
+/// Which recipe sits on which day: the plan is a map from a day index to
+/// recipe ids — not a list, because a day can hold two things and another
+/// none.
 struct WeekPlan: Codable, Equatable {
     /// Monday is 0. Matches the ISO week the batch is named after.
     var days: [Int: [String]]
@@ -464,20 +446,13 @@ struct WeekPlan: Codable, Equatable {
         return plan
     }
 
-    /// Which day a recipe lands on, by position.
-    ///
-    /// Exposed rather than inlined: a week the parent cannot rearrange — a
-    /// locked one — is laid out with this same rule, and two copies of it
-    /// would drift.
+    /// Which day a recipe lands on, by position: exposed rather than inlined:
+    /// a week the parent cannot rearrange — a locked one — is laid out with
+    /// this same rule, and two copies of it would drift.
     static func defaultDay(forIndex i: Int) -> Int { i % 7 }
 }
 
-/// Day names, short, for the strip.
-/// One entry in the week rail: the week before, this week, the week after.
-///
-/// The rail replaced seven day pills. A day pill answered "what is on
-/// Thursday", which the list now answers by simply showing Thursday; the rail
-/// answers "what is coming", which nothing answered before.
+/// Day names, short, for the strip: the rail replaced seven day pills.
 struct WeekSlot: Identifiable, Hashable {
     /// -1 past, 0 current, +1 next. The id, since only three exist.
     let offset: Int
@@ -529,15 +504,9 @@ struct WeekSlot: Identifiable, Hashable {
 
 enum WeekDay {
     static let short: [LocalizedStringKey] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    /// The same names as `full`, resolvable to a String.
-    ///
-    /// `LocalizedStringKey` is what a `Text` accepts; it is NOT what
-    /// `String(localized:)` accepts, which wants a `String.LocalizationValue`.
-    /// Passing one for the other is a compile error, and it is the third time
-    /// a build has died on a type I assumed rather than checked.
-    ///
-    /// Two arrays rather than one conversion: the conversion does not exist,
-    /// and a computed bridge would just hide the same mistake.
+    /// The same names as `full`, resolvable to a String: `LocalizedStringKey`
+    /// is what a `Text` accepts; it is NOT what `String(localized:)` accepts,
+    /// which wants a `String.LocalizationValue`.
     static let fullValues: [String.LocalizationValue] =
         ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -550,12 +519,9 @@ enum WeekDay {
         return (c + 5) % 7
     }
 
-    /// The calendar date for a slot in the plan.
-    ///
-    /// The strip used to print `day + 1` — a plan INDEX, one through seven,
-    /// under a real weekday name. On Monday 31 August it read "Mon 1", which
-    /// looks like a date and is not one, and the mismatch is worse than no
-    /// number at all.
+    /// The calendar date for a slot in the plan: on Monday 31 August it read
+    /// "Mon 1", which looks like a date and is not one, and the mismatch is
+    /// worse than no number at all.
     static func dateFor(day: Int, calendar: Calendar = .current) -> Date? {
         let maintenant = Date()
         let monday_ = calendar.date(byAdding: .day, value: -today, to: maintenant)

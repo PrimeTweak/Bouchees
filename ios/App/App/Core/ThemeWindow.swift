@@ -1,21 +1,6 @@
-//  ThemeWindow.swift
-//
-//  WHY THIS IS NOT `preferredColorScheme`.
-//
-//  SwiftUI's modifier has two documented problems, and both hit exactly the
-//  behaviour this app needs:
-//
-//  1. Once set to .light or .dark, passing nil does NOT return to the system
-//     setting (Apple FB8383053, still reproducible on iOS 18). "Auto" simply
-//     stops working after the first manual choice.
-//
-//  2. The preference is intercepted at each PRESENTATION. A sheet does not
-//     inherit it, so the child picker and the paywall would keep the system
-//     appearance while the rest of the app changed.
-//
-//  Setting `overrideUserInterfaceStyle` on the UIWindow has neither problem:
-//  `.unspecified` genuinely hands control back to iOS, and everything
-//  presented in that window — sheets, popovers, alerts — inherits it.
+// The preference is intercepted at each PRESENTATION. A sheet does not
+// inherit it, so the child picker and the paywall would keep the system
+// appearance while the rest of the app changed.
 
 import SwiftUI
 import UIKit

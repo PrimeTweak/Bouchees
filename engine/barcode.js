@@ -1,12 +1,5 @@
-/* Barcode normalisation.
- *
- * Pure arithmetic — no network, no state, fully testable offline. That
- * matters, because this is where a scan silently failed: the camera reads a
- * compressed UPC-E and we sent it to a database that stores the long form.
- *
- * François's beer, 7697600153, is in Open Food Facts. We asked for a key that
- * does not exist.
- */
+/* Barcode normalisation: pure arithmetic — no network, no state, fully
+ * testable offline. */
 "use strict";
 
 /* UPC-E packs a 12-digit UPC-A into 6 by dropping runs of zeros. The last
@@ -18,21 +11,21 @@ function expandUPCE(code) {
   /* Accept 6, 7 or 8 digits: bare payload, with number system, or with both
    * number system and check digit. */
   var systeme = "0";
-  var corps;
+  var body;
   if (c.length === 6) {
-    corps = c;
+    body = c;
   } else if (c.length === 7) {
     systeme = c[0];
-    corps = c.slice(1);
+    body = c.slice(1);
   } else if (c.length === 8) {
     systeme = c[0];
-    corps = c.slice(1, 7);
+    body = c.slice(1, 7);
   } else {
     return null;
   }
   if (systeme !== "0" && systeme !== "1") return null;
 
-  var d = corps.split("");
+  var d = body.split("");
   var dernier = d[5];
   var milieu;
 
@@ -61,13 +54,10 @@ function checkDigit(partiel) {
   return String((10 - (somme % 10)) % 10);
 }
 
-/* Every form of a code worth trying, most likely first, no duplicates.
- *
- * Open Food Facts indexes mostly in EAN-13. A North American UPC-A is the
- * same product with a leading zero — two different keys for one barcode, and
- * we only ever tried one of them. */
-function formes(brut) {
-  var c = String(brut || "").replace(/\D/g, "");
+/* Every form of a code worth trying, most likely first, no duplicates. Open
+ * Food Facts indexes mostly in EAN-13. */
+function forms(raw) {
+  var c = String(raw || "").replace(/\D/g, "");
   if (!c) return [];
 
   var out = [c];
@@ -97,17 +87,8 @@ function formes(brut) {
   return out.filter(function (v, i, a) { return v && a.indexOf(v) === i; });
 }
 
-/* WHAT THE CAMERA HANDS OVER IS NOT ALWAYS A NUMBER.
- *
- * A QR code on a package usually carries a GS1 Digital Link — a URL with the
- * GTIN after "/01/". A Data Matrix or an expanded DataBar carries a GS1
- * element string — "01" then fourteen digits, then other fields. Keeping
- * only the digits of either produces a seventeen- or thirty-digit string
- * that no database indexes, and the server used to answer "invalid barcode"
- * to a perfectly good package.
- *
- * Returns the digit string a lookup should start from, or null when the
- * payload carries no GTIN at all. A plain numeric barcode passes through. */
+/* What the camera hands over is not always a number: a QR code on a package
+ * usually carries a GS1 Digital Link — a URL with the GTIN after "/01/". */
 function digits(payload) {
   let p = String(payload || "").trim();
   if (!p) return null;
@@ -135,4 +116,4 @@ function digits(payload) {
   return null;
 }
 
-module.exports = { formes: formes, expandUPCE: expandUPCE, checkDigit: checkDigit, digits: digits };
+module.exports = { forms: forms, expandUPCE: expandUPCE, checkDigit: checkDigit, digits: digits };

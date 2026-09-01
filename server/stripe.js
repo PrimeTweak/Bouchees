@@ -1,18 +1,12 @@
-/* Stripe — bloc F
- * Signature verification and event reading. Plain Node.
- *
- * No key is written here. They are passed through environment variables,
- * never committed:
- *   STRIPE_WEBHOOK_SECRET   (whsec_...)  — to verify webhooks
- *   STRIPE_CLE_SECRETE      (sk_...)     — to create a checkout session
- */
+/* Stripe — bloc F Signature verification and event reading: no key is written
+ * here. */
 "use strict";
 const crypto = require("crypto");
 
 const TOLERANCE = 300; /* seconds: a signature older than 5 minutes is refused */
 
 /* Header format: t=1719000000,v1=abcdef...
- * On recalcule le HMAC de « t.corps » et on compare en temps constant. */
+ * On recalcule le HMAC de « t.body » et on compare en temps constant. */
 function verifierSignature(corpsBrut, entete, secret, maintenant) {
   if (!entete || !secret) return false;
   const parties = {};
@@ -30,10 +24,10 @@ function verifierSignature(corpsBrut, entete, secret, maintenant) {
   const now = maintenant || Math.floor(Date.now() / 1000);
   if (Math.abs(now - t) > TOLERANCE) return false;
 
-  const attendu = crypto.createHmac("sha256", secret)
+  const expected = crypto.createHmac("sha256", secret)
     .update(parties.t + "." + Buffer.from(corpsBrut).toString("utf8"))
     .digest("hex");
-  const ab = Buffer.from(attendu, "utf8");
+  const ab = Buffer.from(expected, "utf8");
   return parties.v1.some(function (v) {
     const vb = Buffer.from(v, "utf8");
     return vb.length === ab.length && crypto.timingSafeEqual(vb, ab);
@@ -48,12 +42,12 @@ function evenementPertinent(evt) {
 
   const email = o.customer_email || o.customer_details && o.customer_details.email ||
                    o.metadata && o.metadata.email || null;
-  const fin = o.current_period_end ? new Date(o.current_period_end * 1000).toISOString() : null;
+  const finish = o.current_period_end ? new Date(o.current_period_end * 1000).toISOString() : null;
 
   switch (evt.type) {
     case "checkout.session.completed":
       if (!email) return null;
-      return { email: email, status: "actif", periodEnd: fin, client: o.customer || null };
+      return { email: email, status: "actif", periodEnd: finish, client: o.customer || null };
 
     case "customer.subscription.created":
     case "customer.subscription.updated": {
@@ -61,16 +55,16 @@ function evenementPertinent(evt) {
       const carte = { active: "actif", trialing: "actif", past_due: "en_retard",
                       unpaid: "en_retard", canceled: "annule", incomplete_expired: "annule" };
       return { email: email, status: carte[o.status] || "annule",
-               periodEnd: fin, client: o.customer || null };
+               periodEnd: finish, client: o.customer || null };
     }
 
     case "customer.subscription.deleted":
       if (!email) return null;
-      return { email: email, status: "annule", periodEnd: fin, client: o.customer || null };
+      return { email: email, status: "annule", periodEnd: finish, client: o.customer || null };
 
     case "invoice.payment_failed":
       if (!email) return null;
-      return { email: email, status: "en_retard", periodEnd: fin, client: o.customer || null };
+      return { email: email, status: "en_retard", periodEnd: finish, client: o.customer || null };
 
     default:
       return null;
@@ -80,9 +74,9 @@ function evenementPertinent(evt) {
 /* Creates a checkout session. Needs the network and a secret key — runs on
  * your machine or your host, never in the browser. */
 async function creerSession(options) {
-  const cle = process.env.STRIPE_CLE_SECRETE;
-  if (!cle) throw new Error("STRIPE_CLE_SECRETE absente");
-  const corps = new URLSearchParams({
+  const key = process.env.STRIPE_CLE_SECRETE;
+  if (!key) throw new Error("STRIPE_CLE_SECRETE absente");
+  const body = new URLSearchParams({
     mode: "subscription",
     "line_items[0][price]": options.prix,
     "line_items[0][quantity]": "1",
@@ -94,8 +88,8 @@ async function creerSession(options) {
   });
   const rep = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
-    headers: { Authorization: "Bearer " + cle, "Content-Type": "application/x-www-form-urlencoded" },
-    body: corps
+    headers: { Authorization: "Bearer " + key, "Content-Type": "application/x-www-form-urlencoded" },
+    body: body
   });
   const data = await rep.json();
   if (!rep.ok) throw new Error(data.error && data.error.message || "Stripe a refusé la requête");

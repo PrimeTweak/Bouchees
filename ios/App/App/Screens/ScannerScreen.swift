@@ -1,14 +1,6 @@
-//  ScannerScreen.swift
-//
-//  Le scanner. Impossible dans un navigateur, et probablement la fonction la
-//  most useful thing the app does: check a product in the grocery aisle.
-//
-//  The verdict comes from the ENGINE, never from the product database's own
-//  allergen tags — those are indicative and incomplete on many items.
-//
-//  Product data: Open Food Facts, under the ODbL. Two consequences honoured to
-//  the letter: attribution shown on every sheet, and no
-//  fusion dans notre catalogue. On consulte, on affiche, on ne conserve rien.
+// The verdict comes from the ENGINE, never from the product database's own
+// allergen tags — those are indicative and incomplete on many items.
+// ScannerScreen.swift
 
 import SwiftUI
 import AVFoundation
@@ -50,27 +42,25 @@ final class BarcodeSession: NSObject, ObservableObject,
         session.beginConfiguration()
         defer { session.commitConfiguration() }
 
-        guard let appareil = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: appareil),
+        guard let camera = AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: camera),
               session.canAddInput(input) else {
             error = String(localized: "The camera is not available on this device.")
             return
         }
         session.addInput(input)
 
-        /* NEAR FOCUS. A barcode is read at arm's length or closer; with the
+                /* Near focus: a barcode is read at arm's length or closer; with the
          * default range the lens hunts between the jar and the shelf behind
-         * it, and a small code on a yogurt cup never gets a sharp frame. The
-         * restriction is a hint, not a lock: far focus still works, it is
-         * just not tried first. */
-        if (try? appareil.lockForConfiguration()) != nil {
-            if appareil.isAutoFocusRangeRestrictionSupported {
-                appareil.autoFocusRangeRestriction = .near
+         * it, and a small code on a yogurt cup never gets a sharp frame. */
+        if (try? camera.lockForConfiguration()) != nil {
+            if camera.isAutoFocusRangeRestrictionSupported {
+                camera.autoFocusRangeRestriction = .near
             }
-            if appareil.isFocusModeSupported(.continuousAutoFocus) {
-                appareil.focusMode = .continuousAutoFocus
+            if camera.isFocusModeSupported(.continuousAutoFocus) {
+                camera.focusMode = .continuousAutoFocus
             }
-            appareil.unlockForConfiguration()
+            camera.unlockForConfiguration()
         }
 
         let out = AVCaptureMetadataOutput()
@@ -80,31 +70,23 @@ final class BarcodeSession: NSObject, ObservableObject,
         }
         session.addOutput(out)
         out.setMetadataObjectsDelegate(self, queue: .main)
-        /* Everything a grocery item can carry.
-         *
-         * ITF-14 is on cartons and multipacks, Data Matrix and QR on newer
-         * packaging, Code 39 on some store labels. The server normalises
-         * whichever form comes back, so accepting more here costs nothing. */
-        /* No `.upca`: AVFoundation has no such type. iOS reads a UPC-A as an
+                /* Everything a grocery item can carry: iTF-14 is on cartons and
+         * multipacks, Data Matrix and QR on newer packaging, Code 39 on some
+         * store labels. */
+                /* No `.upca`: AVFoundation has no such type. iOS reads a UPC-A as an
          * EAN-13 with a leading zero, which is exactly the form Open Food
-         * Facts indexes — so the twelve-digit case is already covered by
-         * .ean13, and the server normalises the rest. */
-        /* GS1 DataBar was missing, and it is the code on produce, meat,
+         * Facts indexes — so the twelve-digit case is already covered by. */
+                /* GS1 DataBar was missing, and it is the code on produce, meat,
          * bakery and coupons — the aisle where a "did not read" complaint
-         * most often comes from. iOS reads it since 15.4; the target is 17.
-         * Its expanded form hands over a GS1 element string, which the
-         * server now unpacks like a Data Matrix. */
+         * most often comes from. iOS reads it since 15.4; the target is 17. */
         out.metadataObjectTypes = [.ean8, .ean13, .upce, .code128,
                                    .code39, .itf14, .dataMatrix, .qr,
                                    .gs1DataBar, .gs1DataBarExpanded, .gs1DataBarLimited]
         configured = true
     }
 
-    /* Which code to trust when a frame holds several. A carton shows its
-     * ITF-14 next to the retail EAN-13; a box carries a QR beside its UPC.
-     * `objets.first` took whichever the detector listed first, and that was
-     * not reliably the one the parent meant. Retail codes first, then the
-     * carton form, then everything else. */
+        /* Which code to trust when a frame holds several: a carton shows its
+     * ITF-14 next to the retail EAN-13; a box carries a QR beside its UPC. */
     private static let preference: [AVMetadataObject.ObjectType] = [
         .ean13, .upce, .ean8, .gs1DataBar, .gs1DataBarLimited,
         .gs1DataBarExpanded, .itf14, .dataMatrix, .qr, .code128, .code39
@@ -156,7 +138,7 @@ struct ScannerScreen: View {
     /// Bound to the tab bar so a refusal can hand the parent back to Cook with
     /// something they CAN make.
     var tab: Binding<Int>? = nil
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @StateObject private var scanner = BarcodeSession()
 
     @State private var authorization = AVCaptureDevice.authorizationStatus(for: .video)
@@ -177,15 +159,8 @@ struct ScannerScreen: View {
             default: prompt
             }
         }
-        /* ALL THREE STATES FILL THE SCREEN.
-         *
-         * Only `content` did — it holds a camera preview, which is greedy by
-         * nature. `prompt` and `denied` sized themselves to their text, so the
-         * tab bar, which is a safeAreaInset of the content, rose to meet them
-         * and sat in the middle of the screen until permission was granted.
-         *
-         * The frame belongs here, on the switch, so a fourth state cannot
-         * forget it. */
+                /* All three states fill the screen: only `content` did — it holds a
+         * camera preview, which is greedy by nature. */
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("Scan")
         .navigationBarTitleDisplayMode(.inline)
@@ -193,13 +168,9 @@ struct ScannerScreen: View {
     }
 
     private var content: some View {
-        /* NOT a bottom-aligned ZStack.
-         *
-         * A ZStack aligns to the bottom of its CONTAINER, not to the safe
-         * area, so the verdict sat under the tab bar however much padding it
-         * carried. The camera fills the frame; the verdict is a safeAreaInset
-         * like every other bar in this app, and the tab bar reserves its own
-         * space below it. */
+                /* NOT a bottom-aligned ZStack: a ZStack aligns to the bottom of its
+         * CONTAINER, not to the safe area, so the verdict sat under the tab
+         * bar however much padding it carried. */
         ZStack {
             CameraPreview(session: scanner.session)
                 .ignoresSafeArea()
@@ -207,16 +178,8 @@ struct ScannerScreen: View {
             ViewfinderFrame()
                 .allowsHitTesting(false)
         }
-        /* THE CHILD, ON THE ONE SCREEN WHERE THE WRONG ONE HURTS.
-         *
-         * The pill lived on Recipes and Shopping and not here. The verdict
-         * names the child, but a parent of two, standing in an aisle with the
-         * second one in mind, had to leave the scanner to switch. They would
-         * not; they would read "Good for Livia" thinking of the other child.
-         *
-         * With two profiles, "Everyone" sits beside the pill as one tap —
-         * "does this pass for the whole house" is the question asked in a
-         * store, and it was two levels deep in a sheet. */
+                /* The child, on the one screen where the wrong one hurts: the pill
+         * lived on Recipes and Shopping and not here. */
         .softTopBar { ScannerTopBar() }
         .sheet(isPresented: $showDetails) {
             if let p = product, let v = verdict {
@@ -229,14 +192,12 @@ struct ScannerScreen: View {
                              isWorking: isWorking, error: messageErreur,
                              onDismiss: { reset() },
                              onDetails: { showDetails = true },
-                             firstName: etat.activeProfile.firstName)
+                             firstName: app.activeProfile.firstName)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        /* The verdict is an inset, not a floating card. It was anchored a
-         * fixed distance from the bottom and the tab bar sat on top of its
-         * button; reserving the space is what stops that for good. */
-        .animation(.easeInOut(duration: 0.22), value: product?.code)
+        /* The verdict is a bottom inset: the tab bar cannot sit on its button. */
+        .animation(.soft(0.22), value: product?.code)
         .onAppear { scanner.start() }
         .onChange(of: scanner.code) { _, nouveau in
             guard let code = nouveau else { return }
@@ -282,13 +243,13 @@ struct ScannerScreen: View {
         defer { isWorking = false }
 
         do {
-            let p = try await etat.lookUpProduct(code: code)
+            let p = try await app.lookUpProduct(code: code)
             product = p
             guard let texte = p.ingredientsText, !texte.isEmpty else {
                 messageErreur = "The database doesn’t have this product’s ingredient list. We can’t make a call — read the label."
                 return
             }
-            verdict = try etat.evaluateLabel(texte)
+            verdict = try app.evaluateLabel(texte)
         } catch RepositoryError.network(404) {
             /* The cascade tried every form of the code against four
              * databases. If nothing came back the product really is absent —
@@ -303,11 +264,8 @@ struct ScannerScreen: View {
             messageErreur = String(localized:
                 "That code is not a product barcode. Look for the striped one on the package.")
         } catch RepositoryError.network(503) {
-            /* NOT THE SAME AS 404. The server is out of lookups for this
-             * minute, or the database is refusing it. The product may well
-             * exist; saying "unknown" here would teach a parent the app
-             * cannot read something it simply has not been allowed to read
-             * yet. */
+                        /* Not the same as 404: the server is out of lookups for this
+             * minute, or the database is refusing it. */
             messageErreur = String(localized:
                 "The product database is busy. Try again in a moment — and when in doubt, read the label.")
         } catch {
@@ -365,14 +323,9 @@ private struct Corner: Shape {
     }
 }
 
-/// FULL COLOUR, AT ARM'S LENGTH.
-///
-/// One hand on the stroller, one on the phone, grocery lighting. The rest of
-/// the app is calm because fear needs calm — this card is the one exception,
-/// and it is the one place glass gives way to solid colour.
-///
-/// The child's first name is in the verdict. "Not for Livia", not "Contains
-/// milk": the app does the translation, not the parent.
+/// Full colour, at arm's length: the rest of the app is calm because fear
+/// needs calm — this card is the one exception, and it is the one place glass
+/// gives way to solid colour.
 struct ProductSheet: View {
     let product: GroceryProduct?
     let verdict: ProductVerdict?
@@ -381,10 +334,6 @@ struct ProductSheet: View {
     let onDismiss: () -> Void
 
     /// Opens the reasoning behind the verdict.
-    ///
-    /// This replaced `onFindAlternatives`: the alternatives now live INSIDE
-    /// the detail sheet, where there is room to say why the product was
-    /// refused before offering something else.
     var onDetails: () -> Void = {}
     var firstName: String = ""
 
@@ -394,35 +343,33 @@ struct ProductSheet: View {
                 HStack(spacing: 11) {
                     ProgressView().tint(.white)
                     Text("Reading the label…")
-                        .font(Type.secondary.weight(.medium))
+                        .scaledFont(Type.secondary.weight(.medium))
                         .foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else if let error {
                 Text(error)
-                    .font(Type.secondary)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(.white)
             } else if let v = verdict, let p = product {
+                /* VoiceOver reads the verdict first, as one announcement:
+                 * the product, the answer, and the child it is for. */
                 Text(headline(v))
-                    .font(.system(size: 32, weight: .bold))
+                    .scaledFont(32, weight: .bold)
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
+                    .accessibilityLabel(Text("\(p.name ?? String(localized: "This product")). \(headline(v)). \(subline(v, p))"))
+                    .accessibilityAddTraits(.isHeader)
 
                 Text(subline(v, p))
-                    .font(Type.secondary)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(.white.opacity(0.88))
                     .padding(.top, 7)
 
-                /* WHAT THE VERDICT IS MADE OF, IN ONE LINE.
-                 *
-                 * "Good for Livia" is the voice of a parent, and it stays.
-                 * Under it, the app says what it actually did — read a
-                 * printed list — and what remains to do. It shows under all
-                 * four verdicts; it is under the green one that it matters,
-                 * because that is where overconfidence lives. */
+                /* What the verdict is made of, in one line. */
                 Text("From the printed ingredient list. Always check the package.")
-                    .font(.system(size: 11))
+                    .scaledFont(11)
                     .foregroundStyle(.white.opacity(0.62))
                     .padding(.top, 5)
 
@@ -437,22 +384,19 @@ struct ProductSheet: View {
 
                 if let attribution = p.attribution {
                     Text(attribution)
-                        .font(.system(size: 10))
+                        .scaledFont(10)
                         .foregroundStyle(.white.opacity(0.55))
                         .padding(.top, 12)
                 }
             }
 
-            /* TWO ACTIONS, SIDE BY SIDE.
-             *
-             * In an aisle with a stroller there are exactly two things to do:
-             * understand why, or move on. Stacking them made the card tall
-             * enough to reach the tab bar. */
+                        /* Two actions, side by side: in an aisle with a stroller there
+             * are exactly two things to do: understand why, or move on. */
             HStack(spacing: 8) {
                 if product != nil && verdict != nil {
                     Button { onDetails() } label: {
                         Text("See details")
-                            .font(Type.secondary.weight(.semibold))
+                            .scaledFont(Type.secondary.weight(.semibold))
                             .foregroundStyle(background)
                             .frame(maxWidth: .infinity)
                             .frame(height: Layout.tapTarget)
@@ -464,7 +408,7 @@ struct ProductSheet: View {
 
                 Button(action: onDismiss) {
                     Text("Scan another")
-                        .font(Type.secondary.weight(.medium))
+                        .scaledFont(Type.secondary.weight(.medium))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget)
@@ -491,9 +435,7 @@ struct ProductSheet: View {
         }
         .shadow(color: .black.opacity(0.6), radius: 30, y: 14)
         .padding(.horizontal, 14)
-        /* It was anchored 100pt from the bottom while the bar occupies 86 —
-         * so the tab labels bled through the action. An inset reserves its
-         * own strip, like everything else on this screen. */
+        /* A bottom inset, not a fixed offset: the tab bar's height varies. */
         .padding(.bottom, 10)
     }
 
@@ -536,47 +478,22 @@ struct ProductSheet: View {
         case .safe:
             return p.name ?? String(localized: "This product")
         case .avoid:
-            let noms = v.allergensFound.joined(separator: ", ")
+            let allergenNames = v.allergensFound.joined(separator: ", ")
             let label = p.name ?? String(localized: "This product")
-            return label + " — " + String(format: String(localized: "contains %@"), noms)
+            return label + " — " + String(format: String(localized: "contains %@"), allergenNames)
         case .uncertain:
             return String(localized: "Something on the label was not recognised. Check the package.")
         case .caution:
             /* The distinction this state exists for: the list is clean, the
              * factory is not. A parent decides this one, not the app. */
-            let noms = v.mayContain.joined(separator: ", ")
+            let allergenNames = v.mayContain.joined(separator: ", ")
             let label = p.name ?? String(localized: "This product")
-            return label + " — " + String(format: String(localized: "may contain %@"), noms)
+            return label + " — " + String(format: String(localized: "may contain %@"), allergenNames)
         }
     }
 }
 
-/// Tags that wrap. The culprit is opaque white; the rest recede.
-/// A wrapping row of ingredient names.
-///
-/// A LazyVGrid with fixed columns truncated every name to the width of the
-/// narrowest cell — "Carbonate…", "Arôme…" — which is useless when the point
-/// is to read what is in the product. This measures each tag and wraps.
-///
-/// The names come off the product label, so French entries on a Quebec
-/// product are correct and stay as they are.
-/// A wrapping row of ingredient names.
-///
-/// MEASURES NOTHING.
-///
-/// The version this replaces was a feedback loop: an outer GeometryReader
-/// whose `.frame(height:)` was fed by an inner GeometryReader measuring its
-/// own content, plus `alignmentGuide` closures mutating captured variables.
-/// SwiftUI calls those closures an unpredictable number of times, in an
-/// unpredictable order, so the layout never converged — the main thread spun
-/// and the whole screen stopped responding. From the outside that looked like
-/// "the scanner no longer reads barcodes".
-///
-/// `Layout` does the same job natively since iOS 16, in one pass, with no
-/// state and no measurement round-trip.
-///
-/// The names come off the product label, so French entries on a Quebec
-/// product are correct and stay as they are.
+/// Tags that wrap: the culprit is opaque white; the rest recede.
 private struct FlowTags: View {
     let names: [String]
     let highlighted: Set<String>
@@ -592,7 +509,7 @@ private struct FlowTags: View {
     private func tag(_ name: String) -> some View {
         let flagged = highlighted.contains { $0.caseInsensitiveCompare(name) == .orderedSame }
         return Text(name)
-            .font(.system(size: 11.5, weight: flagged ? .bold : .regular))
+            .scaledFont(11.5, weight: flagged ? .bold : .regular)
             .foregroundStyle(flagged ? Color.black.opacity(0.82) : Color.white)
             .lineLimit(1)
             .padding(.horizontal, 12)
@@ -603,14 +520,10 @@ private struct FlowTags: View {
     }
 }
 
-/// Lays subviews out left to right, wrapping when the line is full.
-///
-/// A `Layout` computes size and positions in ONE pass from sizes it asks for
-/// directly. No GeometryReader, no @State, no round-trip — which is what makes
-/// it impossible to loop.
-/* `SwiftUI.Layout`, qualified.
- *
- * The project has its own `enum Layout` holding the spacing constants, and it
+/// Lays subviews out left to right, wrapping when the line is full. No
+/// GeometryReader, no @State, no round-trip — which is what makes it
+/// impossible to loop.
+/* The project has its own `enum Layout` holding the spacing constants, and it
  * wins the name lookup — so `: Layout` meant "inherit from my enum", which
  * gave four cascading errors none of which named the collision. */
 struct WrappingRow: SwiftUI.Layout {
@@ -662,78 +575,23 @@ struct WrappingRow: SwiftUI.Layout {
     }
 }
 
-struct ProductVerdictBanner: View {
-    let verdict: ProductVerdict
-
-    private var color: Color {
-        switch verdict.status {
-        case .safe: return Tone.yes
-        case .avoid: return Tone.no
-        case .uncertain, .caution: return Tone.swap
-        }
-    }
-
-    private var symbol: String {
-        switch verdict.status {
-        case .safe: return "checkmark.circle.fill"
-        case .avoid: return "xmark.octagon.fill"
-        case .uncertain: return "questionmark.circle.fill"
-        case .caution: return "exclamationmark.triangle.fill"
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 11) {
-                Image(systemName: symbol).font(.title3).foregroundStyle(color)
-                Text(verdict.message).font(.callout.weight(.semibold))
-            }
-
-            /* Shown whatever the status is. A product that must be avoided
-             * for milk can still carry a peanut warning, and hiding it behind
-             * the stronger verdict loses a fact the parent needs. */
-            if !verdict.mayContain.isEmpty {
-                Text("May contain: \(verdict.mayContain.joined(separator: ", ")).")
-                    .font(.footnote)
-                    .foregroundStyle(Tone.swap)
-            }
-
-            if !verdict.unknownIngredients.isEmpty {
-                Text("Not recognised: \(verdict.unknownIngredients.joined(separator: ", ")).")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding(13)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .accessibilityElement(children: .combine)
-    }
-}
-
 
 
 // MARK: - Product details
 
-/// Why the verdict says what it says.
-///
-/// NO SCORE OUT OF 100. A single number folds nutrition, additives and
-/// allergens into one value — and for an allergic child only the last one
-/// matters. A score would read "64" on a product that could send Livia to
-/// hospital.
-///
-/// One card per allergen on the profile instead, in three states. "May
-/// contain" is not "contains", and a parent decides differently on each.
+/// Why the verdict says what it says: a single number folds nutrition,
+/// additives and allergens into one value — and for an allergic child only the
+/// last one matters.
 struct ProductDetailSheet: View {
     let product: GroceryProduct
     let verdict: ProductVerdict
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var dismiss
     @Environment(\.navigate) private var navigate
 
     @State private var showFullList = false
 
-    private var profile: ChildProfile { etat.activeProfile }
+    private var profile: ChildProfile { app.activeProfile }
 
     /// The allergens that are a problem, and the ones that are not.
     private var bloquants: [String] {
@@ -744,7 +602,7 @@ struct ProductDetailSheet: View {
     private var sains: [String] { profile.allergens.filter { !bloquants.contains($0) } }
 
     /// The measured height of the content, so the sheet stops where it ends.
-    @State private var hauteur: CGFloat = 0
+    @State private var measuredHeight: CGFloat = 0
 
     var body: some View {
         ScrollView {
@@ -762,23 +620,17 @@ struct ProductDetailSheet: View {
             .padding(.bottom, 30)
             .background {
                 GeometryReader { geo in
-                    Color.clear.onAppear { hauteur = geo.size.height }
-                        .onChange(of: geo.size.height) { _, h in hauteur = h }
+                    Color.clear.onAppear { measuredHeight = geo.size.height }
+                        .onChange(of: geo.size.height) { _, h in measuredHeight = h }
                 }
             }
         }
         .background(Tone.canvas.ignoresSafeArea())
-        /* THE SHEET STOPS WHERE THE CONTENT DOES.
-         *
-         * No detent was declared at all, so iOS opened it full height: a
+                /* No detent was declared at all, so iOS opened it full height: a
          * short ingredient list sat in the top third of the screen with two
-         * thirds of empty canvas under it.
-         *
-         * Floored so a one-line product still gets a sheet worth grabbing,
-         * and capped at three quarters of the screen so a long list does not
-         * quietly become full height again. */
-        .presentationDetents(hauteur > 0
-            ? [.height(min(max(hauteur, 260), UIScreen.main.bounds.height * 0.75)), .large]
+         * thirds of empty canvas under it. */
+        .presentationDetents(measuredHeight > 0
+            ? [.height(min(max(measuredHeight, 260), UIScreen.main.bounds.height * 0.75)), .large]
             /* Before the first measurement: medium, which is close to what a
              * typical product needs, instead of a 260pt stub that visibly
              * grows on the next frame. */
@@ -791,23 +643,23 @@ struct ProductDetailSheet: View {
             PackageThumb()
             VStack(alignment: .leading, spacing: 3) {
                 Text(product.name ?? String(localized: "Unnamed product"))
-                    .font(.system(size: 17, weight: .bold))
+                    .scaledFont(17, weight: .bold)
                     .kerning(-0.35)
                     .foregroundStyle(Tone.text)
                     .fixedSize(horizontal: false, vertical: true)
                 if let brand = product.marque {
                     Text(brand)
-                        .font(.system(size: 11.5))
+                        .scaledFont(11.5)
                         .foregroundStyle(Tone.text2)
                 }
                 Text(product.code)
-                    .font(.system(size: 10, design: .monospaced))
+                    .scaledFont(10, design: .monospaced)
                     .foregroundStyle(Tone.text3)
 
                 VerdictBadge(status: verdict.status, firstName: profile.firstName)
                     .padding(.top, 8)
                 Text("From the printed ingredient list. Always check the package.")
-                    .font(.system(size: 10.5))
+                    .scaledFont(10.5)
                     .foregroundStyle(Tone.text3)
                     .padding(.top, 6)
             }
@@ -816,32 +668,25 @@ struct ProductDetailSheet: View {
         /* The stack spaces the blocks now; a top padding here would add to it. */
     }
 
-    /// ONE CARD FOR THE REASON.
-    ///
-    /// The old sheet stacked one card per allergen, so three identical green
-    /// "Clear" boxes filled half the screen and said the same thing three
-    /// times — giving the things that are FINE the same weight as the one
-    /// thing that is not.
-    ///
-    /// Proportion carries the verdict now: what blocks takes space, what is
-    /// fine takes a line.
+    /// One card for the reason: proportion carries the verdict now: what
+    /// blocks takes space, what is fine takes a line.
     @ViewBuilder
     private var reason: some View {
         if !bloquants.isEmpty {
             VStack(alignment: .leading, spacing: 5) {
                 Text("The reason")
-                    .font(.system(size: 8.5, weight: .bold, design: .monospaced))
+                    .scaledFont(8.5, weight: .bold, design: .monospaced)
                     .kerning(1.6)
                     .foregroundStyle(Tone.no)
 
                 Text(String(format: String(localized: "Contains %@"),
-                            etat.allergenNames(bloquants).joined(separator: ", ")))
-                    .font(.system(size: 16, weight: .bold))
+                            app.allergenNames(bloquants).joined(separator: ", ")))
+                    .scaledFont(16, weight: .bold)
                     .kerning(-0.3)
                     .foregroundStyle(Tone.text)
 
                 Text("Read from the ingredient list, not from a database tag.")
-                    .font(.system(size: 11.5))
+                    .scaledFont(11.5)
                     .foregroundStyle(Tone.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -866,14 +711,14 @@ struct ProductDetailSheet: View {
         if !sains.isEmpty {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 10, weight: .bold))
+                    .scaledFont(10, weight: .bold)
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
                     .background(Tone.yes, in: Circle())
 
                 Text(String(format: String(localized: "%@ — none present, no trace warning."),
-                            etat.allergenNames(sains).joined(separator: ", ")))
-                    .font(.system(size: 11.5))
+                            app.allergenNames(sains).joined(separator: ", ")))
+                    .scaledFont(11.5)
                     .foregroundStyle(Tone.text)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
@@ -891,27 +736,23 @@ struct ProductDetailSheet: View {
         }
     }
 
-    /// The full list, with the offending word marked.
-    ///
-    /// THE EXPANSION PUSHES. It used to be an `.overlay`, which draws on top
-    /// without reserving height — so the text landed across the content below
-    /// it. A VStack was the whole fix.
+    /// The full list, with the offending word marked: tHE EXPANSION PUSHES.
     private var ingredientCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {
-                withAnimation(.smooth(duration: 0.22)) { showFullList.toggle() }
+                withAnimation(.soft(0.22)) { showFullList.toggle() }
             } label: {
                 HStack(spacing: 11) {
                     Text("Full ingredient list")
-                        .font(.system(size: 11.5, weight: .semibold))
+                        .scaledFont(11.5, weight: .semibold)
                         .foregroundStyle(Tone.text)
                     Spacer(minLength: 0)
                     Text(String(format: String(localized: "%lld read · %lld recognised"),
                                 readCount, max(0, readCount - verdict.unknownIngredients.count)))
-                        .font(.system(size: 9.5))
+                        .scaledFont(9.5)
                         .foregroundStyle(Tone.text3)
                     Image(systemName: showFullList ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
+                        .scaledFont(10, weight: .semibold)
                         .foregroundStyle(Tone.text3)
                 }
                 .padding(.horizontal, 14)
@@ -923,7 +764,7 @@ struct ProductDetailSheet: View {
 
             if showFullList, let texte = product.ingredientsText {
                 marked(texte)
-                    .font(.system(size: 10))
+                    .scaledFont(10)
                     .foregroundStyle(Tone.text2)
                     .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -945,20 +786,20 @@ struct ProductDetailSheet: View {
     ///
     /// A parent should be able to check the app rather than take its word.
     private func marked(_ texte: String) -> Text {
-        let cibles = etat.allergenNames(bloquants).map { $0.lowercased() }
+        let cibles = app.allergenNames(bloquants).map { $0.lowercased() }
         var out = Text("")
-        var reste = Substring(texte)
+        var rest = Substring(texte)
 
-        while let plage = reste.range(of: cibles.first(where: {
-            reste.lowercased().contains($0)
+        while let plage = rest.range(of: cibles.first(where: {
+            rest.lowercased().contains($0)
         }) ?? "\u{0}", options: .caseInsensitive) {
-            out = out + Text(reste[..<plage.lowerBound])
-            out = out + Text(reste[plage])
+            out = out + Text(rest[..<plage.lowerBound])
+            out = out + Text(rest[plage])
                 .foregroundColor(Tone.no)
                 .fontWeight(.semibold)
-            reste = reste[plage.upperBound...]
+            rest = rest[plage.upperBound...]
         }
-        return out + Text(reste)
+        return out + Text(rest)
     }
 
     private var readCount: Int {
@@ -972,8 +813,8 @@ struct ProductDetailSheet: View {
     @ViewBuilder
     private var alternatives: some View {
         if verdict.status == .avoid {
-            let pool = etat.weekRecipes.prefix(2).compactMap { r in
-                etat.resultFor(r).map { (recipe: r, result: $0) }
+            let pool = app.weekRecipes.prefix(2).compactMap { r in
+                app.resultFor(r).map { (recipe: r, result: $0) }
             }
             if !pool.isEmpty {
                 Text(String(format: String(localized: "%@ can have these tonight"),
@@ -996,17 +837,14 @@ struct ProductDetailSheet: View {
 
     private var attribution: some View {
         VStack(alignment: .leading, spacing: 8) {
-            /* THE DISCLAIMER WHERE THE RISK IS.
-             *
-             * It lived in Settings only. A parent reading "Good for Livia" in
-             * green, standing in an aisle, never sees Settings. It belongs on
-             * the verdict, under the data it qualifies. */
+                        /* The disclaimer where the risk is: a parent reading "Good for
+             * Livia" in green, standing in an aisle, never sees Settings. */
             Text(Settings.medicalDisclaimer)
-                .font(.system(size: 10))
+                .scaledFont(10)
                 .foregroundStyle(Tone.text3)
                 .fixedSize(horizontal: false, vertical: true)
             Text("From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.")
-                .font(.system(size: 10))
+                .scaledFont(10)
                 .foregroundStyle(Tone.text3)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -1016,12 +854,8 @@ struct ProductDetailSheet: View {
 }
 
 
-/// A package, drawn.
-///
-/// `GroceryProduct` carries a code, a name, a brand and the ingredient text —
-/// no image. The database HAS photos; the app does not relay them yet. A grey
-/// icon in a square says "something is missing"; a box with a barcode says
-/// "this is a package", which is true and enough.
+/// A package, drawn: `GroceryProduct` carries a code, a name, a brand and the
+/// ingredient text — no image.
 private struct PackageThumb: View {
     var body: some View {
         ZStack {
@@ -1056,22 +890,25 @@ private struct PackageThumb: View {
 
 /// The child pill and, with two profiles, the one-tap "Everyone" beside it.
 private struct ScannerTopBar: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
 
     var body: some View {
         HStack(spacing: 8) {
             Spacer(minLength: 0)
-            if etat.profiles.count > 1 {
+            if app.profiles.count > 1 {
                 Button {
-                    etat.familyMode.toggle()
+                    app.familyMode.toggle()
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
-                    Text(etat.familyMode ? "One child" : "Everyone")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(etat.familyMode ? Tone.canvas : Tone.text)
+                    Text(app.familyMode ? "One child" : "Everyone")
+                        .accessibilityLabel(app.familyMode
+                            ? Text("Checking for everyone. Tap to check for one child.")
+                            : Text("Checking for one child. Tap to check for everyone."))
+                        .scaledFont(12, weight: .semibold)
+                        .foregroundStyle(app.familyMode ? Tone.canvas : Tone.text)
                         .padding(.horizontal, 12)
                         .frame(height: 30)
-                        .background(etat.familyMode ? AnyShapeStyle(Tone.text)
+                        .background(app.familyMode ? AnyShapeStyle(Tone.text)
                                                     : AnyShapeStyle(Tone.canvas.opacity(0.85)),
                                     in: Capsule())
                         .overlay { Capsule().strokeBorder(Tone.hairline, lineWidth: 1) }
@@ -1093,9 +930,9 @@ private struct VerdictBadge: View {
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: symbol)
-                .font(.system(size: 10, weight: .bold))
+                .scaledFont(10, weight: .bold)
             Text(phrase)
-                .font(.system(size: 11.5, weight: .bold))
+                .scaledFont(11.5, weight: .bold)
         }
         .foregroundStyle(tint)
         .padding(.horizontal, 11)

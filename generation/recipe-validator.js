@@ -1,13 +1,5 @@
-/* Validator for generated recipes
- * valider(recette, commande, donnees) → { ok, erreurs[], avertissements[] }
- *
- * A model that invents "toasted sunflower seeds" instead of
- * beurre_tournesol produit une recette invisible pour le moteur : elle
- * would slip past the allergen filter without ever being analysed. This
- * validator is the gate that stops it.
- *
- * Error = rejection. Warning = quarantine for human review.
- */
+/* This validator is the gate that stops it. Validator for generated recipes
+ * valider(recette, commande, data) → { ok, erreurs[], avertissements[] } */
 "use strict";
 const path = require("path");
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
@@ -17,9 +9,9 @@ const ROLES = ["flour", "binder", "fat", "liquid", "dairy", "protein", "sweetene
 const UNITES = ["ml", "g", "unit", "unit", "clove", "clove", "tranche", "tranches",
                 "boîte", "boîtes", "filet", "filets", "au goût"];
 
-function valider(r, commande, donnees, idsExistants) {
+function valider(r, commande, data, idsExistants) {
   const e = [], a = [];
-  const catalogue = donnees.catalogue;
+  const catalogue = data.catalogue;
   idsExistants = idsExistants || [];
 
   /* --- structure --- */
@@ -63,16 +55,16 @@ function valider(r, commande, donnees, idsExistants) {
 
   /* --- age guidance: it has to be workable at the target age --- */
   r.ingredients.forEach(function (u) {
-    const interdit = Engine.interditPour(u.id, r.minAgeMonths, donnees.base);
+    const interdit = Engine.interditPour(u.id, r.minAgeMonths, data.base);
     if (interdit && interdit.action.type === "bloquer")
       e.push("« " + u.id + " » est interdit avant " + interdit.beforeMonths + " mois : " + interdit.reason);
     else if (interdit)
       a.push("« " + u.id + " » demande une préparation particulière à " + r.minAgeMonths + " mois : " + interdit.reason);
   });
 
-  /* --- le moteur doit savoir la traiter sans planter --- */
+  /* The engine must process the recipe without crashing. */
   try {
-    const res = Engine.adapterRecette(r, { allergens: evite, ageMois: r.minAgeMonths }, donnees);
+    const res = Engine.adapterRecette(r, { allergens: evite, ageMois: r.minAgeMonths }, data);
     if (res.status === "not_adaptable")
       e.push("le moteur la déclare non adaptable pour la commande elle-même");
     const restant = res.remainingAllergens.filter(function (x) { return evite.indexOf(x) !== -1; });
@@ -86,19 +78,19 @@ function valider(r, commande, donnees, idsExistants) {
     if (typeof s !== "string" || s.trim().length < 8) e.push("étape " + (i + 1) + " trop courte ou vide");
     else if (s.length > 320) a.push("étape " + (i + 1) + " très longue");
   });
-  if (/délicieux|incroyable|meilleur|parfait|savoureux|irrésistible/i.test(r.name || ""))
+  if (/délicieux|incroyable|best|parfait|savoureux|irrésistible/i.test(r.name || ""))
     a.push("name avec superlatif marketing — à réécrire");
 
   return { ok: e.length === 0, erreurs: e, avertissements: a };
 }
 
-function validerLot(recettes, commande, donnees, idsExistants) {
-  const vus = (idsExistants || []).slice();
+function validerLot(recettes, commande, data, idsExistants) {
+  const seen = (idsExistants || []).slice();
   const acceptees = [], rejetees = [], aRevoir = [];
   (recettes || []).forEach(function (r) {
-    const v = valider(r, commande, donnees, vus);
+    const v = valider(r, commande, data, seen);
     if (!v.ok) { rejetees.push({ recette: r, erreurs: v.erreurs }); return; }
-    vus.push(r.id);
+    seen.push(r.id);
     if (v.avertissements.length) aRevoir.push({ recette: r, avertissements: v.avertissements });
     else acceptees.push(r);
   });

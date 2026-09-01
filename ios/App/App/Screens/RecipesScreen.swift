@@ -1,20 +1,11 @@
-//  RecipesScreen.swift
-//
-//  THE ANSWER FIRST, THE LIST SECOND.
-//
-//  420pt of photograph fading into the canvas over 290, the context header and
-//  the verdict floating on glass above it, then three figures — one of them a
-//  zero — and a list read with one thumb.
-//
-//  Measured on the corpus: whatever the profile, the engine finds a way. A
-//  child avoiding milk, egg, peanut, wheat and soy keeps every recipe. "0
-//  blocked" is the strongest fact in the product and nothing used to show it.
+// A child avoiding milk, egg, peanut, wheat and soy keeps every recipe.
+// RecipesScreen.swift
 
 import SwiftUI
 
 struct RecipesScreen: View {
     var tab: Binding<Int>?
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
 
     @State private var meal: String?
     /* The stack lives at the root now; a screen pushes a Route rather than
@@ -22,8 +13,8 @@ struct RecipesScreen: View {
     @Environment(\.navigate) private var navigate
     @State private var showPaywall = false
 
-    private var profile: ChildProfile { etat.activeProfile }
-    private var tally: AppState.ProfileTally { etat.tally(for: profile) }
+    private var profile: ChildProfile { app.activeProfile }
+    private var tally: AppState.ProfileTally { app.tally(for: profile) }
 
     var body: some View {
         ScrollView {
@@ -32,103 +23,59 @@ struct RecipesScreen: View {
                  * floats over it. Everything after it is ordinary content
                  * and must clear the status bar on its own. */
                 hero
-                /* THE SHELVES SIT ABOVE THE WEEK.
-                 *
-                 * They used to fall between the subscription block and the
-                 * week rail, which put them under the "This week" heading —
-                 * inside a section they have nothing to do with. Saved and
-                 * top rated hold recipes from ANY week, so they belong before
-                 * the week starts, not in the middle of it. */
+                                /* The shelves sit above the week. */
                 shelves
                 weekHeader
                 weekStrip
                 list
-                /* AFTER THE VALUE, NOT BEFORE IT.
-                 *
-                 * The card sat between the week heading and the rail: a title,
-                 * then an offer, then only what the title announced. Under the
-                 * list, the parent has seen the week before being asked to pay
-                 * for the next one. A locked week carries its own offer in its
-                 * panel, so this one stays for unlocked weeks only. */
-                if etat.currentSlot.unlocked { upsell }
+                                /* After the value, not before it: the card sat between the
+                 * week heading and the rail: a title, then an offer, then
+                 * only what the title announced. */
+                if app.currentSlot.unlocked { upsell }
                 disclaimer
             }
             .padding(.bottom, 16)
         }
         .background(Tone.canvas.ignoresSafeArea())
-        /* NO `ignoresSafeArea` HERE ANY MORE.
-         *
-         * Apple: "All scroll views underneath navigation or toolbars
-         * automatically apply a visual treatment. This ensures legibility
-         * of overlapping content in the bars." That is the scroll edge
-         * effect, and it is free — but only for a scroll view that sits
-         * UNDER a bar. Extending past the bar switched it off, which is
-         * why the clock and the battery were unreadable over the list.
-         *
-         * The hero photo still reaches the top: it is inside the scroll
-         * view and simply drawn tall. */
+                /* No `ignoresSafeArea` here any more: this ensures legibility of
+         * overlapping content in the bars." That is the scroll edge effect,
+         * and it is free — but only for a scroll view that sits UNDER a bar. */
         .toolbar(.hidden, for: .navigationBar)
-        /* WHO YOU ARE COOKING FOR STAYS PUT.
-         *
-         * It rode on the photo and scrolled away with it. In a family with two
-         * children on different profiles, cooking for the wrong one is the
-         * worst failure this app has — so it is pinned, and the content passes
-         * under it. */
-        /* A FADE, NOT A BAND.
-         *
-         * The bar used to end on a line and the photo began underneath it —
-         * two surfaces touching instead of one becoming the other. Now the
-         * bar falls off downward and the photo lightens upward over the same
-         * distance; where they overlap there is no edge. */
+                /* In a family with two children on different profiles, cooking for
+         * the wrong one is the worst failure this app has — so it is pinned,
+         * and the content passes under it. */
+                /* A fade, not a band: now the bar falls off downward and the photo
+         * lightens upward over the same distance; where they overlap there is
+         * no edge. */
         .softTopBar { ChildTopBar() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
-        .refreshable { await etat.sync() }
+        .refreshable { await app.sync() }
     }
 
     // MARK: - Hero
 
-    /* THE PHOTO LEADS. It is the essence of a recipe app, and it is also the
-     * one thing here nobody else can produce: the image is generated from the
-     * ADAPTED ingredient list, so a milk-free recipe shows a milk-free dish.
-     *
-     * 430pt, fading into the canvas with no seam. The child picker and the
-     * verdict float on glass over it — the only two glass elements on this
-     * screen, both in the navigation layer where the material belongs. */
+        /* It is the essence of a recipe app, and it is also the one thing here
+     * nobody else can produce: the image is generated from the ADAPTED
+     * ingredient list, so a milk-free recipe shows a milk-free dish. */
     @ViewBuilder
     private var hero: some View {
         if let h = heroPair {
             Button { navigate(.recipe(h.recipe.id)) } label: {
                 ZStack(alignment: .bottomLeading) {
-                    /* WHEN THERE IS NO PHOTO, DO NOT PRETEND.
-                     *
-                     * Only one recipe in the corpus has a generated image; the
-                     * rest fall back to the drawing, which was made for a 60pt
-                     * thumbnail. Blown up to 430 it reads as a flat beige
-                     * polygon — worse than no picture at all.
-                     *
-                     * So the drawing gets a shorter frame, centred on a warm
-                     * field, at the size it was drawn for. The photo, when
-                     * there is one, fills the whole hero. */
-                    /* THE HERO IS DARK, WHATEVER THE THEME.
-                     *
-                     * White text over a photo needs a dark field under it. In
-                     * light mode my gradient faded to pale canvas and the
-                     * title landed white on beige — unreadable.
-                     *
-                     * Apple Music, Spotify, Airbnb all do this: the image area
-                     * never switches to light. What switches is everything
-                     * BELOW it. */
+                                        /* When there is no photo, do not pretend: blown up to 430
+                     * it reads as a flat beige polygon — worse than no
+                     * picture at all. */
+                                        /* The hero is dark, whatever the theme: apple Music,
+                     * Spotify, Airbnb all do this: the image area never
+                     * switches to light. */
                     ZStack {
                         Tone.heroField
-                        if etat.hasPhoto(h.recipe) {
+                        if app.hasPhoto(h.recipe) {
                             RecipeVisual(recipe: h.recipe, result: h.result)
                                 .frame(height: Layout.heroPhoto)
                                 .frame(maxWidth: .infinity)
                         } else {
-                            /* The drawing was made for a 66pt thumbnail. At
-                             * its own size on the dark field it reads as
-                             * deliberate; blown up to 430 it was a beige
-                             * polygon. */
+                                                        /* The drawing was made for a 66pt thumbnail. */
                             RecipeVisual(recipe: h.recipe, result: h.result,
                                          drawingBackground: false)
                                 .frame(width: 190, height: 190)
@@ -145,18 +92,11 @@ struct RecipesScreen: View {
                         /* Dark to the bottom of the photo. Fading to the
                          * canvas meant fading to pale in light mode, which put
                          * the title on beige. */
-                        /* NINE STOPS, NOT FIVE.
-                         *
-                         * Five left a visible edge where the dark ended and
-                         * the page began. Three of these sit in the last
-                         * quarter, which is where the eye catches banding,
-                         * and the final stop is the CANVAS — cream in light,
-                         * near-black in dark — so the photo dissolves into
-                         * the page instead of stopping against it. */
-                        /* The TOP now lightens to the canvas instead of
-                         * darkening. It used to go black under a cream bar,
-                         * which is exactly the hard line reported from the app — the
-                         * photo has to meet the bar, not fight it. */
+                                                /* Three of these sit in the last quarter, which is
+                         * where the eye catches banding, and the final stop
+                         * is the CANVAS — cream in light, near-black in. */
+                                                /* The TOP now lightens to the canvas instead of
+                         * darkening. */
                         stops: [.init(color: Tone.canvas, location: 0),
                                 .init(color: Tone.canvas.opacity(0.9), location: 0.06),
                                 .init(color: Tone.canvas.opacity(0.5), location: 0.14),
@@ -173,17 +113,17 @@ struct RecipesScreen: View {
                     VStack(alignment: .leading, spacing: 0) {
                         /* Dated, now that the list below starts tomorrow: the
                          * hero is the only place today's name appears. */
-                        Text(String(localized: "Tonight") + " \u{00B7} " + dayTitle(WeekDay.today, slot: etat.currentSlot))
+                        Text(String(localized: "Tonight") + " \u{00B7} " + dayTitle(WeekDay.today, slot: app.currentSlot))
                             .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.7), radius: 10)
                         Text(h.recipe.name)
-                            .font(.system(size: 34, weight: .bold))
+                            .scaledFont(34, weight: .bold)
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.leading)
                             .shadow(color: .black.opacity(0.62), radius: 22)
                             .padding(.top, 9)
                         Text(h.recipe.subtitle)
-                            .font(.system(size: 13))
+                            .scaledFont(13)
                             .foregroundStyle(.white.opacity(0.74))
                             .padding(.top, 9)
                         VerdictPill(result: h.result, firstName: profile.firstName)
@@ -199,64 +139,36 @@ struct RecipesScreen: View {
         }
     }
 
-    /* THE WEEK, NOT THE VERDICT.
-     *
-     * The old segments — All / Ready / Swaps — invented a hierarchy that does
-     * not exist. A recipe with two swaps is not lesser; it has two different
-     * lines on the shopping list. Sorting by it told the parent that twelve of
-     * their fifteen recipes were second choice.
-     *
-     * What a parent actually filters by is the meal. And the batches were
-     * always weekly — seven recipes each, which is exactly the subscription
-     * promise. Nothing in the UI ever showed it.
-     */
-    /// THE HEADING FOLLOWS THE RAIL.
-    ///
-    /// It was the literal "This week" with the count of the CURRENT week, so
-    /// selecting another one left a section title describing something else:
-    /// "This week · 7 recipes" sat over next week's days, and over a locked
-    /// week it announced seven recipes above seven empty cards.
-    ///
-    /// The rail underneath carries the dates, so the name only has to say
-    /// which of the three is open.
+        /* The week, not the verdict: a recipe with two swaps is not lesser; it
+     * has two different lines on the shopping list. */
+    /// The heading follows the rail: the rail underneath carries the dates, so
+    /// the name only has to say which of the three is open.
     private var weekHeader: some View {
-        let slot = etat.currentSlot
+        let slot = app.currentSlot
         return HStack(alignment: .firstTextBaseline) {
             Text(slot.offset == 0 ? "This week"
                  : slot.offset < 0 ? "Last week" : "Next week")
-                .font(.system(size: 19, weight: .bold))
+                .scaledFont(19, weight: .bold)
                 .foregroundStyle(Tone.text)
             Spacer(minLength: 8)
             Text(String(format: String(localized: "%lld recipes"), slot.count))
-                .font(.system(size: 12))
+                .scaledFont(12)
                 .foregroundStyle(Tone.text2)
         }
         .padding(.horizontal, Layout.gutter)
         .padding(.top, 20)
     }
 
-    /* THE BOOKMARK LED NOWHERE.
-     *
-     * SavedRecipes has persisted to disk since the first build and the
-     * bookmark on the detail page has always written to it. Nothing ever read
-     * it back — tapping it saved into a void. */
+        /* The bookmark led nowhere: savedRecipes has persisted to disk since the
+     * first build and the bookmark on the detail page has always written to
+     * it. */
     @ViewBuilder
-    /// THE TWO SIDE DOORS, ALWAYS OPEN.
-    ///
-    /// The saved row used to render only when something was saved, and it was
-    /// the single caller of `navigate(.saved)` in the app — so with an empty
-    /// shortlist the screen behind it could not be reached at all. Top rated
-    /// had no caller anywhere.
-    ///
-    /// Both are permanent now and say what they hold when they hold nothing,
-    /// which is also where a parent learns the bookmark exists.
-    ///
-    /// Side by side rather than stacked full width: these are doors, not
-    /// content, and a door should not take as much room as the week it sits
-    /// above. Two tiles cost one row of height instead of two.
+    /// The two side doors, always open: both are permanent now and say what
+    /// they hold when they hold nothing, which is also where a parent learns
+    /// the bookmark exists.
     private var shelves: some View {
-        let n = etat.saved.recipes.count
-        let votes = etat.topRated.count
+        let n = app.saved.recipes.count
+        let votes = app.topRated.count
         return HStack(spacing: 8) {
             shelf(icon: "bookmark.fill",
                   title: "Saved",
@@ -276,10 +188,9 @@ struct RecipesScreen: View {
         .padding(.top, 14)
     }
 
-    /// One tile.
-    ///
-    /// About 130pt of text width at half the screen, so both lines are held to
-    /// one line each and the subtitles are written at three words or fewer.
+    /// One tile: about 130pt of text width at half the screen, so both lines
+    /// are held to one line each and the subtitles are written at three words
+    /// or fewer.
     private func shelf(icon: String,
                        title: LocalizedStringKey,
                        detail: String,
@@ -287,18 +198,18 @@ struct RecipesScreen: View {
         Button { navigate(route) } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 11, weight: .medium))
+                    .scaledFont(11, weight: .medium)
                     .foregroundStyle(.white)
                     .frame(width: 26, height: 26)
                     .background(Tone.brandGradient,
                                 in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(12, weight: .semibold)
                         .foregroundStyle(Tone.text)
                         .lineLimit(1)
                     Text(detail)
-                        .font(.system(size: 9.5))
+                        .scaledFont(9.5)
                         .foregroundStyle(Tone.text2)
                         .lineLimit(1)
                 }
@@ -320,121 +231,75 @@ struct RecipesScreen: View {
 
 
 
-    private func chip(_ value: String?, _ label: LocalizedStringKey, _ n: Int) -> some View {
-        let on = meal == value
-        return Button {
-            withAnimation(.smooth(duration: 0.2)) { meal = value }
-        } label: {
-            HStack(spacing: 6) {
-                Text(label)
-                Text("\(n)").foregroundStyle(on ? Tone.canvas.opacity(0.6) : Tone.text3)
-            }
-            .font(.system(size: 12.5, weight: .semibold))
-            .foregroundStyle(on ? Tone.canvas : Tone.text2)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 7)
-            .background(on ? AnyShapeStyle(Tone.text) : AnyShapeStyle(Tone.text.opacity(0.05)),
-                        in: Capsule())
-            .overlay { Capsule().strokeBorder(on ? .clear : Tone.hairline, lineWidth: 1) }
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(on ? [.isSelected] : [])
-    }
-
-    private var mealTypes: [String] {
-        var seen: [String] = []
-        for r in week where !seen.contains(r.category) { seen.append(r.category) }
-        return seen
-    }
-
     // MARK: - List
 
-    /// Grouped by meal, in the order of a day. Mixing breakfast into the meals
-    /// made the list feel like a pile; grouping makes it a week.
-    /// Seven days, and what is planned on each.
-    ///
-    /// This replaces the meal chips. "All / Snack / Breakfast / Meal" answered
-    /// a question nobody asks standing in a kitchen at five o'clock; "what is
-    /// Wednesday" is the real one.
+    /// Grouped by meal, in the order of a day: seven days, and what is planned
+    /// on each.
     @ViewBuilder
     private var weekStrip: some View {
-        @Bindable var e = etat
-        WeekRail(selected: $e.selectedWeek, slots: etat.weekSlots)
+        @Bindable var e = app
+        WeekRail(selected: $e.selectedWeek, slots: app.weekSlots)
             .padding(.horizontal, Layout.gutter)
             .padding(.top, 16)
     }
 
-    /// The seven days of the selected week.
-    ///
-    /// It used to show ONE day, the one the strip had selected. Seven pills to
-    /// answer "what is on Thursday" — and to see Thursday you had to tap
-    /// Thursday. Now every day is there and the page scrolls, which is what
-    /// was missing: five of seven days hold a single recipe, so one day at a
-    /// time ended above the fold.
+    /// The seven days of the selected week: now every day is there and the
+    /// page scrolls, which is what was missing: five of seven days hold a
+    /// single recipe, so one day at a time ended above the fold.
+    private var weekDone: some View {
+        VStack(spacing: 6) {
+            Text("This week is done.")
+                .scaledFont(15, weight: .semibold)
+                .foregroundStyle(Tone.text)
+            Text("Next week opens Monday.")
+                .scaledFont(12.5)
+                .foregroundStyle(Tone.text2)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+        .padding(.horizontal, Layout.gutter)
+    }
+
     /// The day indices a week shows: tomorrow onward for the current week,
     /// all seven for any other. Sunday evening on the current week therefore
     /// shows nothing, which is honest — the week is over.
     private func days(for slot: WeekSlot) -> [Int] {
         guard slot.offset == 0 else { return Array(0..<7) }
-        let demain = WeekDay.today + 1
-        return demain < 7 ? Array(demain..<7) : []
+        let tomorrow = WeekDay.today + 1
+        return tomorrow < 7 ? Array(tomorrow..<7) : []
     }
 
     @ViewBuilder
     private var list: some View {
-        let slot = etat.currentSlot
+        let slot = app.currentSlot
         if slot.unlocked {
             LazyVStack(spacing: 0) {
-                /* THE LIST STARTS TOMORROW ON THE CURRENT WEEK.
-                 *
-                 * The hero above already says "Tonight — Silky hummus"; three
-                 * blocks down the list said "Monday · today — Silky hummus".
-                 * The same dish twice on the first screen a parent sees, and
-                 * the hero lost its reason to exist. Today is the hero's line;
-                 * the list carries the days that follow. Other weeks have no
-                 * tonight and show all seven. */
-                ForEach(days(for: slot), id: \.self) { jour in
-                    daySection(jour, slot: slot)
+                                /* The list starts tomorrow on the current week: today is the
+                 * hero's line; the list carries the days that follow. */
+                ForEach(days(for: slot), id: \.self) { dayIndex in
+                    daySection(dayIndex, slot: slot)
+                }
+                if days(for: slot).isEmpty {
+                    weekDone
                 }
             }
         } else {
-            /* A LOCKED WEEK IS ONE PANEL, NOT SEVEN EMPTY CARDS.
-             *
-             * The server answers 402 for a week that has not been paid for
+                        /* The server answers 402 for a week that has not been paid for
              * and sends nothing at all, so every day fell through to the
-             * "Nothing planned" placeholder. Seven of those say the week is
-             * EMPTY, which is the opposite of what is true.
-             *
-             * The count, the span and the child's name come from the
-             * manifest rather than from the recipes, which is why this panel
-             * names no dish: there is nothing to name until the server
-             * learns to serve a reduced form. */
+             * "Nothing planned" placeholder. */
             lockedPanel(slot)
         }
     }
 
-    /// TODAY IS MARKED AS A BLOCK, NOT AS A WORD.
-    ///
-    /// The marker was the word "today" in brand ink, at the same size and
-    /// letterspacing as the six other headings above and below it. Colour
-    /// alone in a nine-point eyebrow does not survive a column of seven.
-    ///
-    /// A rule down the side and a wash behind the whole day answer the
-    /// question the parent is actually asking — where am I — and keep
-    /// answering it after the header has scrolled past the recipes.
-    ///
-    /// The wash is INK, not brand. A pale red field here would sit on the
-    /// same screen as the subscription card, which is already a pale warm
-    /// field, and the two would read as the same kind of thing. The rule
-    /// carries the colour; the wash only separates.
+    /// Today is marked as a block, not as a word: the wash is INK, not brand.
     @ViewBuilder
-    private func daySection(_ jour: Int, slot: WeekSlot) -> some View {
-        let plats = etat.recipesOfSelectedWeek(on: jour).compactMap { r in
-            etat.resultFor(r).map { (recipe: r, result: $0) }
+    private func daySection(_ dayIndex: Int, slot: WeekSlot) -> some View {
+        let dishes = app.recipesOfSelectedWeek(on: dayIndex).compactMap { r in
+            app.resultFor(r).map { (recipe: r, result: $0) }
         }
-        let cestAujourdhui = slot.offset == 0 && jour == WeekDay.today
+        let isToday = slot.offset == 0 && dayIndex == WeekDay.today
 
-        if cestAujourdhui {
+        if isToday {
             HStack(alignment: .top, spacing: 0) {
                 RoundedRectangle(cornerRadius: 2, style: .continuous)
                     .fill(Tone.brand)
@@ -442,8 +307,8 @@ struct RecipesScreen: View {
                     .padding(.vertical, 9)
                     .padding(.leading, 6)
                 VStack(alignment: .leading, spacing: 0) {
-                    dayHeader(jour, slot: slot, count: plats.count, today: true)
-                    dayBody(jour, plats: plats, slot: slot)
+                    dayHeader(dayIndex, slot: slot, count: dishes.count, today: true)
+                    dayBody(dayIndex, dishes: dishes, slot: slot)
                 }
             }
             .background(Tone.text.opacity(0.04),
@@ -454,26 +319,26 @@ struct RecipesScreen: View {
             .padding(.horizontal, 8)
             .padding(.top, 10)
         } else {
-            dayHeader(jour, slot: slot, count: plats.count, today: false)
-            dayBody(jour, plats: plats, slot: slot)
+            dayHeader(dayIndex, slot: slot, count: dishes.count, today: false)
+            dayBody(dayIndex, dishes: dishes, slot: slot)
         }
     }
 
     /// The date line. Inside the block it loses the outer gutter, since the
     /// block supplies its own.
-    private func dayHeader(_ jour: Int, slot: WeekSlot,
+    private func dayHeader(_ dayIndex: Int, slot: WeekSlot,
                            count: Int, today: Bool) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             /* One string rather than two Texts: the eyebrow kerns what it is
              * given, and a separator living outside the run it separates
              * spaced unevenly against it. */
             Text(today
-                 ? dayTitle(jour, slot: slot) + " \u{00B7} " + String(localized: "today")
-                 : dayTitle(jour, slot: slot))
+                 ? dayTitle(dayIndex, slot: slot) + " \u{00B7} " + String(localized: "today")
+                 : dayTitle(dayIndex, slot: slot))
                 .eyebrow(today ? Tone.text : Tone.text3)
             Spacer(minLength: 0)
             Text("\(count)")
-                .font(.system(size: 9, weight: .semibold))
+                .scaledFont(9, weight: .semibold)
                 .foregroundStyle(Tone.text3)
         }
         .padding(.horizontal, today ? 13 : Layout.gutter)
@@ -482,17 +347,17 @@ struct RecipesScreen: View {
     }
 
     @ViewBuilder
-    private func dayBody(_ jour: Int,
-                         plats: [(recipe: Recipe, result: AdaptedRecipe)],
+    private func dayBody(_ dayIndex: Int,
+                         dishes: [(recipe: Recipe, result: AdaptedRecipe)],
                          slot: WeekSlot) -> some View {
-        if plats.isEmpty {
-            EmptyDay(day: jour)
+        if dishes.isEmpty {
+            EmptyDay(day: dayIndex)
                 .padding(.horizontal, Layout.gutter)
                 .padding(.top, 6)
         } else {
-            ForEach(plats, id: \.recipe.id) { pair in
+            ForEach(dishes, id: \.recipe.id) { pair in
                 row(pair, slot: slot)
-                if pair.recipe.id != plats.last?.recipe.id {
+                if pair.recipe.id != dishes.last?.recipe.id {
                     Divider().overlay(Tone.hairline)
                         .padding(.leading, Layout.gutter + Layout.thumb + 15)
                 }
@@ -506,7 +371,7 @@ struct RecipesScreen: View {
         if slot.unlocked {
             Button { navigate(.recipe(pair.recipe.id)) } label: {
                 RecipeRow(recipe: pair.recipe, result: pair.result,
-                          cooked: etat.cooked.contains(pair.recipe.id))
+                          cooked: app.cooked.contains(pair.recipe.id))
             }
             .buttonStyle(.plain)
             /* Only the current week can be rearranged. A parent does not
@@ -522,9 +387,9 @@ struct RecipesScreen: View {
     }
 
     /// The date under a day header: "Monday 31", and the month when it turns.
-    private func dayTitle(_ jour: Int, slot: WeekSlot) -> String {
-        let nom = String(localized: WeekDay.fullValues[jour])
-        guard let d = slot.date(day: jour) else { return nom }
+    private func dayTitle(_ dayIndex: Int, slot: WeekSlot) -> String {
+        let nom = String(localized: WeekDay.fullValues[dayIndex])
+        guard let d = slot.date(day: dayIndex) else { return nom }
         let cal = Calendar.current
         let f = DateFormatter()
         f.locale = .current
@@ -532,32 +397,28 @@ struct RecipesScreen: View {
          * the week — enough to place the week without repeating it seven
          * times. */
         let premierDuMois = cal.component(.day, from: d) == 1
-        f.setLocalizedDateFormatFromTemplate(premierDuMois || jour == 0 ? "dMMM" : "d")
+        f.setLocalizedDateFormatFromTemplate(premierDuMois || dayIndex == 0 ? "dMMM" : "d")
         return nom + " " + f.string(from: d)
     }
 
-    /// What a locked week offers, in place of its list.
-    ///
-    /// The old copy promised the names and the verdict, which the parent
-    /// could not see: the server sends nothing for a week that is not paid
-    /// for. This says only what the manifest actually knows — how many, when,
-    /// and for whom.
+    /// What a locked week offers, in place of its list: this says only what
+    /// the manifest actually knows — how many, when, and for whom.
     private func lockedPanel(_ slot: WeekSlot) -> some View {
         VStack(spacing: 0) {
             Image(systemName: "lock.fill")
-                .font(.system(size: 15, weight: .medium))
+                .scaledFont(15, weight: .medium)
                 .foregroundStyle(Tone.brand)
                 .frame(width: 34, height: 34)
                 .background(Tone.brand.opacity(0.12), in: Circle())
 
             Text(String(format: String(localized: "%lld recipes waiting"), slot.count))
-                .font(.system(size: 19, weight: .semibold))
+                .scaledFont(19, weight: .semibold)
                 .foregroundStyle(Tone.upsellText)
                 .padding(.top, 12)
 
             Text(String(format: String(localized: "%@, already adapted to %@"),
-                        slot.span(), etat.activeProfile.name))
-                .font(.system(size: 12.5))
+                        slot.span(), app.activeProfile.name))
+                .scaledFont(12.5)
                 .foregroundStyle(Tone.upsellText2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -565,7 +426,7 @@ struct RecipesScreen: View {
 
             Button { showPaywall = true } label: {
                 Text("Try 7 days free")
-                    .font(.system(size: 14, weight: .semibold))
+                    .scaledFont(14, weight: .semibold)
                     .padding(.horizontal, 26)
                     .frame(height: Layout.tapTarget)
             }
@@ -575,7 +436,7 @@ struct RecipesScreen: View {
             /* The same literal the subscription card uses, so the two never
              * quote different prices on the same product. */
             Text("Then $4.99/month. Cancel any time.")
-                .font(.system(size: 11))
+                .scaledFont(11)
                 .foregroundStyle(Tone.upsellText2)
                 .padding(.top, 9)
         }
@@ -598,20 +459,18 @@ struct RecipesScreen: View {
     // (EmptyDay follows the screen, at file scope)
 }
 
-/// What an unplanned day says.
-///
-/// Seven recipes do not make seven suppers. Rather than spread them thin to
-/// look complete, the empty day says so and offers the only useful action.
+/// What an unplanned day says: rather than spread them thin to look complete,
+/// the empty day says so and offers the only useful action.
 private struct EmptyDay: View {
     let day: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Nothing planned")
-                .font(.system(size: 15, weight: .semibold))
+                .scaledFont(15, weight: .semibold)
                 .foregroundStyle(Tone.text)
             Text("Drag a recipe here from another day, or cook something you already know.")
-                .font(.system(size: 12.5))
+                .scaledFont(12.5)
                 .foregroundStyle(Tone.text2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -630,9 +489,9 @@ extension RecipesScreen {
 
     // MARK: - Data
 
-    private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] { etat.pairs }
+    private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] { app.pairs }
 
-    private var week: [Recipe] { etat.weekRecipes }
+    private var week: [Recipe] { app.weekRecipes }
 
     private var heroPair: (recipe: Recipe, result: AdaptedRecipe)? {
         let inWeek = pairs.filter { p in week.contains { $0.id == p.recipe.id } }
@@ -656,34 +515,30 @@ extension RecipesScreen {
 
     // MARK: - Tail
 
-    /* THE SUBSCRIPTION IS THE POINT OF THE APP.
-     *
-     * It used to sit after six recipes and the medical notice — you had to
-     * scroll to find the thing the product is for. It now comes right under
-     * the week, as the only DARK block on a light page, so the eye lands on
-     * it. Four lines: how many, how often, the price, the trial. */
+        /* The subscription is the point of the app: it now comes right under the
+     * week, as the only DARK block on a light page, so the eye lands on it. */
     @ViewBuilder
     private var upsell: some View {
-        let batches = etat.lockedBatches
-        if !batches.isEmpty && !etat.subscribed {
+        let batches = app.lockedBatches
+        if !batches.isEmpty && !app.subscribed {
             Button { showPaywall = true } label: {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Weeks ahead").eyebrow(Tone.brand)
 
                     Text(String(format: String(localized: "%lld more recipes"),
                                 batches.reduce(0) { $0 + $1.count }))
-                        .font(.system(size: 19, weight: .bold))
+                        .scaledFont(19, weight: .bold)
                         .foregroundStyle(Tone.upsellText)
                         .padding(.top, 7)
 
                     Text(String(format: String(localized: "7 new ones every week, adapted to %@"),
                                 profile.firstName))
-                        .font(.system(size: 12))
+                        .scaledFont(12)
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
                     Text("7 days free, then $4.99/month")
-                        .font(.system(size: 12))
+                        .scaledFont(12)
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 2)
 
@@ -691,7 +546,7 @@ extension RecipesScreen {
                      * button was right; on this one the reverse reads
                      * better. */
                     Text("Try 7 days free")
-                        .font(.system(size: 12.5, weight: .semibold))
+                        .scaledFont(12.5, weight: .semibold)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 8)
@@ -701,12 +556,9 @@ extension RecipesScreen {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(17)
-                /* WARM PEACH, NOT BLACK.
-                 *
-                 * A near-black card on a cream page reads as a hole rather
-                 * than an offer, and it crushed the meal chips right below
-                 * it. This stays distinct without shouting, and it belongs to
-                 * the same family as the action colour. */
+                                /* Warm peach, not black: a near-black card on a cream page
+                 * reads as a hole rather than an offer, and it crushed the
+                 * meal chips right below it. */
                 .background {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(Tone.upsellField)
@@ -724,7 +576,7 @@ extension RecipesScreen {
 
     private var disclaimer: some View {
         Text(Settings.medicalDisclaimer)
-            .font(.system(size: 11.5))
+            .scaledFont(11.5)
             .foregroundStyle(Tone.text3)
             .lineSpacing(2)
             .padding(.horizontal, Layout.gutter)
@@ -733,30 +585,6 @@ extension RecipesScreen {
 }
 
 // MARK: - Pieces
-
-/// One figure and its label, in a gradient card. The number carries the weight.
-struct Figure: View {
-    let value: Int
-    let label: LocalizedStringKey
-    let tone: Color
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("\(value)")
-                .font(Type.figure)
-                .foregroundStyle(tone)
-                .contentTransition(.numericText())
-            Text(label)
-                .font(.system(size: 11.5, weight: .medium))
-                .foregroundStyle(Tone.text2)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 15)
-        .padding(.vertical, 14)
-        .card(19)
-        .accessibilityElement(children: .combine)
-    }
-}
 
 /// The verdict over a photo. Glass, because it floats above content.
 struct VerdictPill: View {
@@ -767,7 +595,7 @@ struct VerdictPill: View {
         HStack(spacing: 8) {
             VerdictMark(status: result.status)
             Text(phrase)
-                .font(.system(size: 13.5, weight: .semibold))
+                .scaledFont(13.5, weight: .semibold)
                 /* The system picks the vibrant tone. The verdict DOT keeps
                  * its own colour just below — that one is semantic and must
                  * not adapt. */
@@ -793,12 +621,8 @@ struct VerdictPill: View {
     }
 }
 
-/// A row, not a card. 62pt thumbnail, name, meta, verdict.
-/// Draggable only on the week the parent can rearrange.
-///
-/// `.draggable` cannot be applied conditionally inside a ViewBuilder without
-/// changing the view's type, which breaks the list's identity and makes rows
-/// animate as if they were replaced. A modifier keeps one type.
+/// A row, not a card. 62pt thumbnail, name, meta, verdict: draggable only on
+/// the week the parent can rearrange.
 private struct DraggableIf: ViewModifier {
     let active: Bool
     let recipe: Recipe
@@ -823,11 +647,9 @@ struct RecipeRow: View {
     let recipe: Recipe
     let result: AdaptedRecipe
 
-    /// A week the parent has not paid for.
-    ///
-    /// The name, the time and the verdict stay — they are what the row is FOR,
-    /// and hiding them leaves nothing to subscribe for. The picture goes: a
-    /// photo of the dish is content.
+    /// A week the parent has not paid for: the name, the time and the verdict
+    /// stay — they are what the row is FOR, and hiding them leaves nothing to
+    /// subscribe for.
     var locked: Bool = false
     var cooked: Bool = false
 
@@ -839,11 +661,11 @@ struct RecipeRow: View {
                         .fill(Tone.text.opacity(0.05))
                         .overlay {
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 15, weight: .medium))
+                                .scaledFont(15, weight: .medium)
                                 .foregroundStyle(Tone.text3)
                         }
                 } else {
-                    RecipeVisual(recipe: recipe, result: result)
+                    RecipeVisual(recipe: recipe, result: result, compact: true)
                         .clipShape(RoundedRectangle(cornerRadius: Layout.thumbRadius,
                                                     style: .continuous))
                 }
@@ -854,12 +676,12 @@ struct RecipeRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(recipe.name)
-                    .font(Type.title)
+                    .scaledFont(Type.title)
                     .foregroundStyle(Tone.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 Text(recipe.subtitle)
-                    .font(Type.small)
+                    .scaledFont(Type.small)
                     .foregroundStyle(Tone.text2)
                     .lineLimit(1)
             }
@@ -871,13 +693,13 @@ struct RecipeRow: View {
                  * what was made without anyone keeping one. */
                 if cooked {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 12))
+                        .scaledFont(12)
                         .foregroundStyle(Tone.yes)
                         .accessibilityLabel(Text("Cooked"))
                 }
                 VerdictMark(status: result.status)
                 Text(short)
-                    .font(.system(size: 13, weight: .semibold))
+                    .scaledFont(13, weight: .semibold)
                     .foregroundStyle(result.status.tone)
             }
         }

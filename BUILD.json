@@ -1,8 +1,21 @@
 {
-  "build": 122,
+  "build": 123,
   "date": "2026-09-01",
   "carries": [
-    "the budget test stubs the product database instead of relying on every fetch failing: it was written offline and broke on a runner with a network, where the first call could succeed and end the plan early",
-    "the stub also asserts that every step of the plan is tried on a miss, which the offline version could not"
+    "last week opens to every account; the free tier runs one week behind",
+    "iPad is out of the device family until a real pass; a reviewer opens on iPad what an app declares",
+    "ratings are kept on the device and no longer invite a sign-in that answers 503; they join the shared ranking once Sign in with Apple exists",
+    "family mode persists and is restored at launch; Everyone chosen in a store still holds at home",
+    "Sunday evening, the current week says it is done instead of showing nothing",
+    "every comment is three lines at most, impersonal, in English; 360 blocks reduced, 27 translated, and the checker now refuses longer or French ones",
+    "30 dead declarations removed; Codable fields and swapDays deliberately kept",
+    "200 font sites follow Dynamic Type through scaledFont; the checker refuses a fixed size",
+    "etat is app; 30 French identifiers renamed in Swift and 29 JS files, tests aligned; JSON data keys stay as the data has them",
+    "14 server error messages in English",
+    "the paywall compares free and subscription side by side and says weekly, not monthly",
+    "a Monday-morning local notification, off until the parent turns it on in Family",
+    "VoiceOver reads the scan verdict as one announcement; 28 animations respect Reduce Motion",
+    "recipes carry a thumb field for a 480px twin; PHOTOS-REDUIRE.command makes them with sips",
+    "179 tests"
   ]
 }

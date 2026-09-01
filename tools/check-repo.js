@@ -1,16 +1,6 @@
-/* Repository integrity check.
- *   node tools/check-repo.js
- *
- * WHY THIS EXISTS
- *
- * Dragging one folder onto another in the Finder REPLACES it whole instead of
- * merging. A partial delivery therefore deletes every file it does not carry,
- * silently. That has now cost three builds: engine.js once, the Swift sources
- * once, and the tools folder once.
- *
- * This runs first, costs a second, and names the missing file instead of
- * letting a MODULE_NOT_FOUND surface thirty minutes into a build.
- */
+/* This runs first, costs a second, and names the missing file instead of
+ * letting a MODULE_NOT_FOUND surface thirty minutes into a build. Repository
+ * integrity check. node tools/check-repo.js */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -22,7 +12,7 @@ const REQUIRED = [
   "data/recipes.json", "data/publishing.json",
   "data/imported/imported-recipes.json", "data/generated/generated-recipes.json",
   "tools/gaps.js", "tools/publish.js", "tools/weeks.js", "tools/cycle.js",
-  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "BUILD.json", "tools/check-agreement.js", "tools/image-sizes.js", "tools/probe-drawthings.js", "tools/check-bundle-names.js", "tools/build-product-pack.js", "tools/check-pack.js", "PAQUET.command", "docs/DATA-SOURCES.md", "ios/App/App/PrivacyInfo.xcprivacy", "ios/App/App/Localization/en.lproj/InfoPlist.strings", "ios/App/App/Localization/fr.lproj/InfoPlist.strings",
+  "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "BUILD.json", "tools/check-agreement.js", "tools/image-sizes.js", "tools/probe-drawthings.js", "tools/check-bundle-names.js", "tools/build-product-pack.js", "tools/check-pack.js", "PAQUET.command", "docs/DATA-SOURCES.md", "ios/App/App/PrivacyInfo.xcprivacy", "ios/App/App/Services/WeeklyReminder.swift", "PHOTOS-REDUIRE.command", "ios/App/App/Localization/en.lproj/InfoPlist.strings", "ios/App/App/Localization/fr.lproj/InfoPlist.strings",
   "server/server.js", "server/ratings.js", "server/apple.js", "server/stripe.js",
   "server/legal-pages.js",
   "ingest/importer.js", "ingest/adapters.js", "ingest/normalizer.js",
@@ -38,12 +28,8 @@ const REQUIRED = [
 
 /* Folders with a known floor. Fewer files than this means one was replaced
  * rather than merged. */
-/* Names Apple reserves inside a bundle. A folder called "Resources" at the
- * root of an iOS .app makes a bundle reader fall back to the macOS layout and
- * look for Info.plist under Contents/ — which does not exist. The app then
- * reads as unreadable to an installer even though every file is correct.
- * Measured: renaming Ressources -> Resources during the English conversion is
- * what broke sideloading. */
+/* Names Apple reserves inside a bundle: the app then reads as unreadable to
+ * an installer even though every file is correct. */
 const RESERVED_BUNDLE_DIRS = ["Resources", "Contents", "Frameworks", "PlugIns",
                               "SharedFrameworks", "XPCServices", "_CodeSignature"];
 
@@ -86,21 +72,12 @@ if (reserved.length) {
 }
 
 if (!missing.length && !thin.length) {
-  /* Which delivery this working copy came from.
- *
- * Three builds in a row failed on errors that were already fixed, because the
- * zip had not been applied — emptying the folder in the Finder leaves .github
- * and other hidden files behind, and nothing said so. One line here saves a
- * fifteen-minute build. */
-/* FORBIDDEN FETCH HEADERS.
- *
- * The fetch specification refuses to let a caller set Connection,
- * Accept-Encoding, Host, and a dozen others — the runtime owns them. Node
- * strips or rejects them and the behaviour varies by version, so setting one
- * turns a working request into "fetch failed" with no explanation.
- *
- * Measured the hard way: three of them added at once broke a path that had
- * just succeeded. */
+    /* Three builds in a row failed on errors that were already fixed, because
+   * the zip had not been applied — emptying the folder in the Finder leaves
+   * .github and other hidden files behind, and nothing said so. */
+/* Forbidden fetch headers: node strips or rejects them and the behaviour
+ * varies by version, so setting one turns a working request into "fetch
+ * failed" with no explanation. */
 (function enTetesInterdits() {
 const INTERDITS = ["connection", "accept-encoding", "keep-alive", "host",
                    "content-length", "transfer-encoding", "upgrade",
@@ -120,12 +97,9 @@ fichiers.forEach(function (f) {
   const code = fs.readFileSync(f, "utf8");
   if (code.indexOf("fetch(") === -1) return;
 
-  /* A SERVER SETS THESE LEGITIMATELY.
-   *
-   * server.js writes content-length on its RESPONSES — that is its job,
-   * and the restriction applies to what a client SENDS. probe-drawthings
-   * exists precisely to test these headers with raw http, which is the
-   * supported way to set them. */
+    /* server.js writes content-length on its RESPONSES — that is its job, and
+   * the restriction applies to what a client SENDS. probe-drawthings exists
+   * precisely to test these headers with raw http, which is the. */
   if (/writeHead|createServer|setHeader/.test(code)) return;
   if (f.indexOf("probe-") !== -1) return;
 
@@ -152,18 +126,8 @@ fichiers.forEach(function (f) {
   }
 })();
 
-/* fetch() ON A LOCAL RENDERER.
- *
- * undici — the client behind fetch — gives a server five minutes to send
- * its FIRST header. The limit is internal: an AbortSignal does not reach
- * it, and mine was set to fifteen while undici cut at five.
- *
- * Draw Things sends nothing until the render is done, and a 1408x1408
- * image runs past five minutes. Every request died in the same place,
- * reported as UND_ERR_HEADERS_TIMEOUT, and three builds were spent
- * blaming headers, sleep and the model.
- *
- * node:http has no such limit and is built in. */
+/* Fetch() on a local renderer: the limit is internal: an AbortSignal does not
+ * reach it, and mine was set to fifteen while undici cut at five. */
 (function fetchSurRenduLocal() {
   const f = path.join(root, "generation", "image-engines.js");
   if (!fs.existsSync(f)) return;

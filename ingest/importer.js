@@ -1,15 +1,6 @@
-/* Importeur — lot 3, v0.2
- * node ingest/importer.js
- * Sources → adaptateur → normalisation → PORTES DE SÉCURITÉ → recettes canoniques.
- *
- * Two gates, non-negotiable:
- *   1. Full recognition: one unknown ingredient line and the WHOLE recipe goes
- *      to quarantine. An ingredient is never guessed
- *      dans une app d'allergies.
- *   2. Human curation: with no entry in curation.json (validated minimum age,
- *      confirmed roles, rewritten steps), no import — even if everything is
- *      recognized. Le pipeline propose, l'humain dispose.
- */
+/* An ingredient is never guessed dans une app d'allergies. 2. Human curation:
+ * with no entry in curation.json (validated minimum age, confirmed roles,
+ * rewritten steps), no import — even if everything is recognized. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -18,15 +9,15 @@ const { normalizeLine, construireIndex } = require("./normalizer.js");
 
 const racine = path.join(__dirname, "..");
 const UNITES_FR = { clove: "gousse", cloves: "gousses", fillet: "filet", fillets: "filets", can: "boîte", cans: "boîtes", slice: "tranche", slices: "tranches" };
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
 function importAll(options) {
   options = options || {};
-  const catalogue = options.catalogue || lire("data/ingredients.json");
-  const lexique = options.lexique || lire("ingest/lexicon.json");
-  const curation = options.curation || lire("ingest/curation.json");
+  const catalogue = options.catalogue || read("data/ingredients.json");
+  const lexique = options.lexique || read("ingest/lexicon.json");
+  const curation = options.curation || read("ingest/curation.json");
   const dossierSources = options.dossierSources || path.join(racine, "ingest", "sources");
-  const idsReserves = new Set((options.idsReserves || lire("data/recipes.json").map((r) => r.id)));
+  const idsReserves = new Set((options.idsReserves || read("data/recipes.json").map((r) => r.id)));
   const index = construireIndex(lexique);
 
   const imported = [];
@@ -36,27 +27,27 @@ function importAll(options) {
     const doc = JSON.parse(fs.readFileSync(path.join(dossierSources, fichier), "utf8"));
     const adaptateur = adaptateurs.detect(doc);
     adaptateur(doc).forEach(function (brute) {
-      const cle = brute.source + ":" + brute.externalId;
+      const key = brute.source + ":" + brute.externalId;
       const lines = brute.lines.map(function (l) { return normalizeLine(l, lexique, catalogue, index); });
       const inconnues = lines.filter(function (l) { return l.status === "unknown"; });
 
       if (inconnues.length > 0) {
         quarantine.push({
-          cle: cle, name: brute.originalName, reason: "lines non reconnues",
+          key: key, name: brute.originalName, reason: "lines non reconnues",
           detail: inconnues.map(function (l) { return l.originalText; })
         });
         return;
       }
-      const cur = curation[cle];
+      const cur = curation[key];
       if (!cur) {
         quarantine.push({
-          cle: cle, name: brute.originalName, reason: "curation manquante",
+          key: key, name: brute.originalName, reason: "curation manquante",
           detail: ["Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR)."]
         });
         return;
       }
       if (idsReserves.has(cur.id)) {
-        quarantine.push({ cle: cle, name: brute.originalName, reason: "conflit d'identifiant", detail: [cur.id] });
+        quarantine.push({ key: key, name: brute.originalName, reason: "conflit d'identifiant", detail: [cur.id] });
         return;
       }
       idsReserves.add(cur.id);
@@ -88,24 +79,24 @@ function importAll(options) {
   return { imported: imported, quarantine: quarantine };
 }
 
-function rapportMarkdown(resultat) {
+function rapportMarkdown(result) {
   const l = [];
   l.push("# Rapport d'import — " + new Date().toISOString().slice(0, 10));
   l.push("");
-  l.push("Importées : **" + resultat.imported.length + "** · En quarantine : **" + resultat.quarantine.length + "**");
+  l.push("Importées : **" + result.imported.length + "** · En quarantine : **" + result.quarantine.length + "**");
   l.push("");
   l.push("## Imported");
   l.push("");
   l.push("| Recette | Source | Âge min. | Confiance |");
   l.push("|---|---|---|---|");
-  resultat.imported.forEach(function (r) {
+  result.imported.forEach(function (r) {
     l.push("| " + r.name + " | " + r.source.source + " | " + r.minAgeMonths + " mois | " + r.source.confidence + " |");
   });
   l.push("");
   l.push("## Quarantine — for a human to handle");
   l.push("");
-  resultat.quarantine.forEach(function (q) {
-    l.push("- **" + q.name + "** (`" + q.cle + "`) — " + q.reason);
+  result.quarantine.forEach(function (q) {
+    l.push("- **" + q.name + "** (`" + q.key + "`) — " + q.reason);
     q.detail.forEach(function (d) { l.push("    - " + d); });
   });
   l.push("");
@@ -115,14 +106,14 @@ function rapportMarkdown(resultat) {
 }
 
 if (require.main === module) {
-  const resultat = importAll();
-  const dossier = path.join(racine, "data", "imported");
-  fs.mkdirSync(dossier, { recursive: true });
-  fs.writeFileSync(path.join(dossier, "imported-recipes.json"), JSON.stringify(resultat.imported, null, 2) + "\n");
-  fs.writeFileSync(path.join(dossier, "import-report.json"), JSON.stringify(resultat.quarantine, null, 2) + "\n");
-  fs.writeFileSync(path.join(racine, "ingest", "import-report.md"), rapportMarkdown(resultat) + "\n");
-  console.log("Imported: " + resultat.imported.length + " · Quarantined: " + resultat.quarantine.length);
-  resultat.quarantine.forEach(function (q) { console.log("  quarantine — " + q.name + " (" + q.reason + ")"); });
+  const result = importAll();
+  const folder = path.join(racine, "data", "imported");
+  fs.mkdirSync(folder, { recursive: true });
+  fs.writeFileSync(path.join(folder, "imported-recipes.json"), JSON.stringify(result.imported, null, 2) + "\n");
+  fs.writeFileSync(path.join(folder, "import-report.json"), JSON.stringify(result.quarantine, null, 2) + "\n");
+  fs.writeFileSync(path.join(racine, "ingest", "import-report.md"), rapportMarkdown(result) + "\n");
+  console.log("Imported: " + result.imported.length + " · Quarantined: " + result.quarantine.length);
+  result.quarantine.forEach(function (q) { console.log("  quarantine — " + q.name + " (" + q.reason + ")"); });
 }
 
 module.exports = { importAll: importAll, rapportMarkdown: rapportMarkdown };

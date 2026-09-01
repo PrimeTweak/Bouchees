@@ -1,8 +1,5 @@
-//  RecipeDetailScreen.swift
-//
-//  The detail view. The heart of the product is the ingredient log: what was
-//  change, par quoi, et pourquoi. Un parent qui ne comprend pas un
-//  remplacement ne le fera pas.
+// The heart of the product is the ingredient log: what was change, par quoi,
+// et pourquoi. RecipeDetailScreen.swift
 
 import SwiftUI
 
@@ -14,21 +11,16 @@ struct RecipeDetailScreen: View {
     let result: AdaptedRecipe
     let firstName: String
 
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
 
     private var verdict: Verdict { Verdict(result, firstName: firstName) }
 
     /// The photo runs to the top of the screen and the content scrolls
     /// beneath the floating controls. No opaque navigation bar: a gradient
     /// keeps the status bar legible, which is the platform's own pattern.
-    /* THE BUTTONS LIVE ABOVE THE SCROLL VIEW, NOT INSIDE IT.
-     *
-     * As a safeAreaInset on a ScrollView that also carries
+        /* As a safeAreaInset on a ScrollView that also carries
      * `.ignoresSafeArea(edges: .top)`, they were drawn in the right place but
-     * outside their parent's hit region — so neither back nor favourite
-     * responded. In a ZStack at screen level they sit above the scrolling
-     * content and receive taps normally.
-     */
+     * outside their parent's hit region — so neither back nor favourite */
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -49,16 +41,15 @@ struct RecipeDetailScreen: View {
                     .overlay { PhotoScrim() }
 
                     VStack(alignment: .leading, spacing: 0) {
-                        /* The recipe only. The child is already named in the
-                         * verdict pill below and in the ingredients header —
-                         * repeating the whole profile here pushed the line to
-                         * two rows and buried the title. */
+                                                /* The child is already named in the verdict pill
+                         * below and in the ingredients header — repeating the
+                         * whole profile here pushed the line to two rows. */
                         Text(recipe.subtitle)
                             .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.6), radius: 8)
 
                         Text(recipe.name)
-                            .font(Type.displayTight)
+                            .scaledFont(Type.displayTight)
                             .foregroundStyle(.white)
                             .shadow(color: .black.opacity(0.55), radius: 20)
                             .padding(.top, 8)
@@ -77,7 +68,7 @@ struct RecipeDetailScreen: View {
                     RatingBlock(recipe: recipe)
                     blocProvenance
                     Text(Settings.medicalDisclaimer)
-                        .font(.system(size: 11.5))
+                        .scaledFont(11.5)
                         .foregroundStyle(Tone.text3)
                         .lineSpacing(2)
                         .padding(.top, 28)
@@ -94,24 +85,14 @@ struct RecipeDetailScreen: View {
          * and it no longer collides with the tab bar — which is hidden here,
          * as it is in any app once you are inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
-        /* IN THE BAR, NOT OVER IT.
-         *
-         * Four attempts moved these buttons around the same screen. The cause
-         * was never layout: on iOS 26 a glass container inside the toolbar
-         * area intercepts touches, and `hitTest:` on it returns itself, so an
-         * overlay drawn there receives nothing. Apple has the bug filed
-         * (FB18201935) and the reproduction case is this exact shape — an
-         * overlay carrying a glassEffect button over a scroll view that
-         * ignores the safe area.
-         *
-         * `.toolbar` puts them INSIDE that container instead of behind it,
-         * and iOS 26 gives toolbar items the material automatically, grouped
-         * with their neighbours. */
+                /* The cause was never layout: on iOS 26 a glass container inside the
+         * toolbar area intercepts touches, and `hitTest:` on it returns
+         * itself, so an overlay drawn there receives nothing. */
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 17, weight: .semibold))
+                        .scaledFont(17, weight: .semibold)
                 }
                 .accessibilityLabel("Back")
             }
@@ -134,31 +115,20 @@ struct RecipeDetailScreen: View {
 
     /// Glass circles floating over the photo, with content scrolling beneath —
     /// the exact pattern the platform describes for fixed buttons.
-    /* ONE LIST, ALREADY ADJUSTED.
-     *
-     * Not two columns. The parent does not want to see the before — they want
-     * the recipe they are going to shop for and cook. The swap is an
-     * annotation on the line, not a structure: an amber tag says what it
-     * replaces, and the ratio sits underneath when one is needed.
-     *
-     * Tapping a swapped line opens the rule that produced it. Available, never
-     * in the way. */
+        /* One list, already adjusted: the swap is an annotation on the line, not
+     * a structure: an amber tag says what it replaces, and the ratio sits
+     * underneath when one is needed. */
     private var ingredientList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            /* NO RULES BETWEEN LINES.
-             *
-             * A full-width divider between two columns is an invoice.
-             * Spacing separates perfectly well, and removing them leaves the
-             * amber swap as the only marked thing in the list — which is what
-             * it should be: the swap is what this app does that nothing else
-             * does. */
+                        /* No rules between lines: a full-width divider between two
+             * columns is an invoice. */
             HStack(alignment: .firstTextBaseline) {
                 Text(String(format: String(localized: "For %@"), firstName))
                     .eyebrow()
                 Spacer(minLength: 0)
                 Text(String(format: String(localized: "%lld items"),
                             result.ingredients.count))
-                    .font(.system(size: 10))
+                    .scaledFont(10)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.top, 22)
@@ -177,7 +147,7 @@ struct RecipeDetailScreen: View {
     private var startButton: some View {
         Button { cooking = true } label: {
             Text("Start cooking")
-                .font(.system(size: 16.5, weight: .semibold))
+                .scaledFont(16.5, weight: .semibold)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
@@ -195,12 +165,9 @@ struct RecipeDetailScreen: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 26)
         .padding(.top, 40)
-        /* EDGE TO EDGE, NOT BEHIND THE BUTTON.
-         *
-         * A background wraps the shape it dresses, so this one stopped at the
-         * button's margins — and a gradient that stops draws a box. Applied
-         * to the whole inset it spans the screen, and 40pt of lead-in gives
-         * the fade room to happen. */
+                /* Edge to edge, not behind the button: a background wraps the shape
+         * it dresses, so this one stopped at the button's margins — and a
+         * gradient that stops draws a box. */
         .frame(maxWidth: .infinity)
         .background {
             LinearGradient(
@@ -214,68 +181,14 @@ struct RecipeDetailScreen: View {
         }
     }
 
-    /// Glass circles over the photo, content scrolling beneath — the pattern
-    /// the platform describes for fixed buttons.
-    private var backButton: some View {
-        /* Glass OUTSIDE the label — the save button beside it already does
-         * this, and back did not. A glass container swallows the first touch,
-         * which is the same fault that made the pill and search need two
-         * taps. Same screen, same bug, one of two buttons. */
-        Button { dismiss() } label: {
-            Image(systemName: "chevron.left")
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(.primary)
-                .frame(width: 42, height: 42)
-                .contentShape(Circle())
-        }
-        .buttonStyle(.plain)
-        .glass(Circle())
-        .accessibilityLabel("Back")
-    }
-
-    private var saveButton: some View {
-        SaveButton(recipe: recipe)
-            .frame(width: 42, height: 42)
-            .glass(Circle())
-            }
-
     // MARK: - Sections
-
-    private var blocTexture: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Texture — \(result.texture.name)").font(.headline)
-            Text(result.texture.texture).font(.subheadline)
-            if let note = result.texture.note, !note.isEmpty {
-                Text(note).font(.footnote).foregroundStyle(.secondary)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        /* A TINT AND AN EDGE, NOT A WHITE BLOCK.
-         *
-         * The card was pure white on a canvas of 0xFBF9F6 with no border: two
-         * per cent apart, so it had no boundary at all and the list read as
-         * floating on the page. The palette's own card colour is the same
-         * white, so swapping it changes nothing — the edge is what was
-         * missing. This is the treatment the rest of the app already uses. */
-        .background(Tone.text.opacity(0.04),
-                    in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(Tone.hairline, lineWidth: 1)
-        }
-        .overlay(alignment: .leading) {
-            Rectangle().frame(width: 4).foregroundStyle(Tone.brand)
-                .clipShape(RoundedRectangle(cornerRadius: 2))
-        }
-    }
 
     @ViewBuilder
     private var alerts: some View {
-        let liste = result.nonBlockingAlerts
-        if !liste.isEmpty {
+        let list = result.nonBlockingAlerts
+        if !list.isEmpty {
             VStack(spacing: 8) {
-                ForEach(liste) { a in
+                ForEach(list) { a in
                     HStack(alignment: .top, spacing: 11) {
                         Text(a.level.label)
                             .font(.caption2.weight(.bold))
@@ -294,55 +207,16 @@ struct RecipeDetailScreen: View {
         }
     }
 
-    private var blocIngredients: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(result.hasChanges ? "Ingredients — what we change, and why" : "Ingredients")
-                .font(.caption.weight(.semibold))
-                .textCase(.uppercase)
-                .kerning(1.2)
-                .foregroundStyle(.tertiary)
-                .padding(.bottom, 12)
-
-            ForEach(Array(result.ingredients.enumerated()), id: \.offset) { index, ing in
-                IngredientRow(ingredient: ing)
-                if index < result.ingredients.count - 1 {
-                    Divider().padding(.vertical, 2)
-                }
-            }
-        }
-        .padding(17)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        /* A TINT AND AN EDGE, NOT A WHITE BLOCK.
-         *
-         * The card was pure white on a canvas of 0xFBF9F6 with no border: two
-         * per cent apart, so it had no boundary at all and the list read as
-         * floating on the page. The palette's own card colour is the same
-         * white, so swapping it changes nothing — the edge is what was
-         * missing. This is the treatment the rest of the app already uses. */
-        .background(Tone.text.opacity(0.04),
-                    in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(Tone.hairline, lineWidth: 1)
-        }
-    }
-
-    /// The steps, on the page rather than in a card.
-    ///
-    /// A white card floating on cream is a 2019 pattern: the card adds an
-    /// outline and nothing else, and it fights the canvas the rest of the
-    /// screen sits on.
-    ///
-    /// The number does the structuring instead — large and pale, so it reads
-    /// as a landmark rather than a badge. Hairlines between steps, not around
-    /// them.
+    /// The steps, on the page rather than in a card: a white card floating on
+    /// cream is a 2019 pattern: the card adds an outline and nothing else, and
+    /// it fights the canvas the rest of the screen sits on.
     private var blocPreparation: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 Text("Preparation").eyebrow()
                 Spacer(minLength: 0)
                 Text(String(format: String(localized: "%lld steps"), result.steps.count))
-                    .font(.system(size: 10))
+                    .scaledFont(10)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.top, 26)
@@ -351,7 +225,7 @@ struct RecipeDetailScreen: View {
             ForEach(Array(result.steps.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: 13) {
                     Text("\(index + 1)")
-                        .font(.system(size: 21, weight: .bold, design: .default))
+                        .scaledFont(21, weight: .bold, design: .default)
                         .kerning(-0.6)
                         .monospacedDigit()
                         .foregroundStyle(Tone.text.opacity(0.14))
@@ -359,7 +233,7 @@ struct RecipeDetailScreen: View {
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text(step)
-                            .font(.system(size: 14))
+                            .scaledFont(14)
                             .foregroundStyle(Tone.text)
                             .fixedSize(horizontal: false, vertical: true)
 
@@ -367,7 +241,7 @@ struct RecipeDetailScreen: View {
                          * thing an eye hunts for with hands in the batter. */
                         if let minutes = Self.duree(dans: step) {
                             Label(minutes, systemImage: "timer")
-                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                                .scaledFont(10, weight: .semibold, design: .monospaced)
                                 .foregroundStyle(Tone.swap)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
@@ -388,18 +262,17 @@ struct RecipeDetailScreen: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// A duration written in a step, if there is one.
-    ///
-    /// Reads what the step already says rather than adding a field to the
-    /// data: "Bake at 200 °C for 18 to 20 minutes" already carries it.
+    /// A duration written in a step, if there is one: reads what the step
+    /// already says rather than adding a field to the data: "Bake at 200 °C
+    /// for 18 to 20 minutes" already carries it.
     static func duree(dans texte: String) -> String? {
         /* "to" and its French twin (U+00E0): a Quebec recipe writes the range
          * with the French word, and matching only the English half would
          * silently drop the pill on half the corpus. */
         let motif = #"(\d+)(?:\s*(?:to|\u{2013}|-|\u{00e0})\s*(\d+))?\s*(?:min|minute)"#
         guard let r = texte.range(of: motif, options: .regularExpression) else { return nil }
-        let brut = String(texte[r])
-        let nombres = brut.split(whereSeparator: { !$0.isNumber }).map(String.init)
+        let raw = String(texte[r])
+        let nombres = raw.split(whereSeparator: { !$0.isNumber }).map(String.init)
         guard let premier = nombres.first else { return nil }
         if nombres.count > 1 { return "\(premier)–\(nombres[1]) min" }
         return "\(premier) min"
@@ -546,31 +419,27 @@ struct IngredientLine: View {
     var body: some View {
         Button(action: tap) {
             HStack(alignment: .top, spacing: 13) {
-                /* Text2, not text3.
-                 *
-                 * The quantity was set in the palette's faintest ink, which
-                 * is meant for counts and captions, not for a number someone
-                 * measures with. Text2 clears 5.4:1 on the canvas. It stops
-                 * short of full ink on purpose: the quantity supports the
-                 * ingredient and must not compete with its name. */
+                                /* Text2, not text3: the quantity was set in the palette's
+                 * faintest ink, which is meant for counts and captions, not
+                 * for a number someone measures with. */
                 Text(quantity)
-                    .font(.system(size: 12.5, design: .monospaced))
+                    .scaledFont(12.5, design: .monospaced)
                     .foregroundStyle(Tone.text2)
                     .frame(width: 66, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.toName ?? item.name)
-                        .font(.system(size: 15.5))
+                        .scaledFont(15.5)
                         .foregroundStyle(swapped ? Tone.swap : Tone.text)
                         .multilineTextAlignment(.leading)
                     if let ratio = item.ratio, swapped {
                         Text(ratio)
-                            .font(.system(size: 11.5))
+                            .scaledFont(11.5)
                             .foregroundStyle(Tone.text3)
                     }
                     if let prep = item.prep {
                         Text(prep)
-                            .font(.system(size: 11.5))
+                            .scaledFont(11.5)
                             .foregroundStyle(Tone.swap.opacity(0.85))
                     }
                 }
@@ -580,7 +449,7 @@ struct IngredientLine: View {
                 if swapped {
                     Text(String(format: String(localized: "REPLACES %@"),
                                 item.name.uppercased()))
-                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .scaledFont(9, weight: .bold, design: .monospaced)
                         .kerning(0.6)
                         .foregroundStyle(Tone.swap)
                         .padding(.horizontal, 7)
@@ -590,14 +459,11 @@ struct IngredientLine: View {
                         }
                         .padding(.top, 2)
 
-                    /* SAY THAT THE ROW OPENS.
-                     *
-                     * The row has always been a button, disabled unless the
-                     * ingredient was swapped, and nothing on it said so. The
-                     * amber already means "this was replaced", so it cannot
-                     * also mean "there is more here". A chevron can. */
+                                        /* Say that the row opens: the row has always been a
+                     * button, disabled unless the ingredient was swapped, and
+                     * nothing on it said so. */
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .scaledFont(10, weight: .semibold)
                         .foregroundStyle(Tone.swap.opacity(0.6))
                         .padding(.top, 4)
                 }
@@ -622,28 +488,25 @@ struct IngredientLine: View {
 /// deterministic, versioned engine allows and a generated one cannot fake.
 struct SubstitutionRuleSheet: View {
     let item: AdaptedIngredient
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                /* THE SWAP AS A SWAP, NOT AS A SENTENCE WITH AN ARROW.
-                 *
-                 * "Butter → Dairy-free margarine" ran to two lines on any
-                 * ordinary pair of names and broke across the arrow, which is
-                 * the one character carrying the meaning. Stacked and labelled,
-                 * it holds at any length and says which way it goes. */
+                                /* The swap as a swap, not as a sentence with an arrow:
+                 * stacked and labelled, it holds at any length and says which
+                 * way it goes. */
                 Text("Taken out").eyebrow()
                 Text(item.name)
-                    .font(.system(size: 17))
+                    .scaledFont(17)
                     .foregroundStyle(Tone.text2)
                     .strikethrough(true, color: Tone.text3)
                     .padding(.top, 3)
 
                 Text("Put in").eyebrow().padding(.top, 13)
                 Text(item.toName ?? "")
-                    .font(.system(size: 21, weight: .semibold))
+                    .scaledFont(21, weight: .semibold)
                     .foregroundStyle(Tone.swap)
                     .padding(.top, 3)
 
@@ -651,7 +514,7 @@ struct SubstitutionRuleSheet: View {
                  * titled block and a rule of its own for three characters. */
                 if let ratio = item.ratio {
                     Text(ratio)
-                        .font(.system(size: 11.5, design: .monospaced))
+                        .scaledFont(11.5, design: .monospaced)
                         .foregroundStyle(Tone.text2)
                         .padding(.top, 4)
                 }
@@ -659,10 +522,10 @@ struct SubstitutionRuleSheet: View {
                 if let reason = item.reason {
                     rule
                     Text(String(format: String(localized: "Why it is out for %@"),
-                                etat.activeProfile.name))
+                                app.activeProfile.name))
                         .eyebrow()
                     Text(reason)
-                        .font(.system(size: 14.5))
+                        .scaledFont(14.5)
                         .foregroundStyle(Tone.text)
                         .padding(.top, 6)
                 }
@@ -673,20 +536,19 @@ struct SubstitutionRuleSheet: View {
                  * table is ours, not the parent's. */
                 Text("All the choices").eyebrow().padding(.bottom, 8)
 
-                ForEach(etat.substitutionOptions(for: item.name,
+                ForEach(app.substitutionOptions(for: item.name,
                                                  chosen: item.toName), id: \.name) { opt in
                     HStack(alignment: .firstTextBaseline, spacing: 9) {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 10, weight: .bold))
+                            .scaledFont(10, weight: .bold)
                             .foregroundStyle(opt.chosen ? Tone.swap : .clear)
                             .frame(width: 12, alignment: .leading)
                         Text(opt.name)
-                            .font(.system(size: 13.5,
-                                          weight: opt.chosen ? .semibold : .regular))
+                            .scaledFont(13.5, weight: opt.chosen ? .semibold : .regular)
                             .foregroundStyle(opt.chosen ? Tone.swap : Tone.text)
                         Spacer(minLength: 8)
                         Text(opt.detail)
-                            .font(.system(size: 11))
+                            .scaledFont(11)
                             .foregroundStyle(Tone.text2)
                             .multilineTextAlignment(.trailing)
                     }
@@ -695,7 +557,7 @@ struct SubstitutionRuleSheet: View {
                 }
 
                 Text("These tables ship with the app and work offline. They are free for everyone, subscribed or not.")
-                    .font(.system(size: 11.5))
+                    .scaledFont(11.5)
                     .foregroundStyle(Tone.text3)
                     .lineSpacing(2)
                     .padding(.top, 22)

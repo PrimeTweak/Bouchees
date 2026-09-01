@@ -1,30 +1,22 @@
-/* Rapport de trous — bloc B
- * node tools/gaps.js
- *
- * Runs the whole corpus through the engine for every realistic avoidance
- * profile x every age stage, and ranks the combinations by scarcity.
- *
- * This is what decides the month's content: instead of "8 random recipes", it
+/* This is what decides the month's content: instead of "8 random recipes", it
  * says "6 recipes for the most painful gap". No generic recipe app can do
- * this — it takes a deterministic engine to
- * savoir ce qui missing.
- */
+ * this — it takes a deterministic engine to savoir ce qui missing. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
-const donnees = {
-  catalogue: lire("data/ingredients.json"),
-  substitutions: lire("data/substitutions.json"),
-  base: lire("data/base.json")
+const data = {
+  catalogue: read("data/ingredients.json"),
+  substitutions: read("data/substitutions.json"),
+  base: read("data/base.json")
 };
 
 /* Avoidance profiles: each allergen on its own, plus the combinations that
  * actually turn up often in toddlers. */
-const PROFILS = donnees.base.allergens.map((a) => [a.id]).concat([
+const PROFILS = data.base.allergens.map((a) => [a.id]).concat([
   ["lait", "oeuf"], ["lait", "soya"], ["lait", "ble"], ["oeuf", "ble"],
   ["arachide", "noix"], ["arachide", "noix", "sesame"],
   ["lait", "oeuf", "ble"], ["lait", "oeuf", "arachide", "noix"],
@@ -41,12 +33,12 @@ const SEUIL_CATEGORIE = 6;
 function nomProfil(ids) {
   if (!ids.length) return "aucun évitement";
   return "no " + ids.map(function (id) {
-    const a = donnees.base.allergens.find((x) => x.id === id);
+    const a = data.base.allergens.find((x) => x.id === id);
     return a ? a.name.toLowerCase() : id;
   }).join(" + ");
 }
 function nomStade(mois) {
-  return Engine.stadePour(mois, donnees.base).name;
+  return Engine.stadePour(mois, data.base).name;
 }
 
 function analyser(corpus) {
@@ -60,7 +52,7 @@ function analyser(corpus) {
         /* A recipe written for 18 months is not "usable" at 6 months, even if
          * the engine can adapt it on the allergen side. */
         if (ageMois < r.minAgeMonths) { c.outOfAge++; return; }
-        const res = Engine.adapterRecette(r, { allergens: profile, ageMois: ageMois }, donnees);
+        const res = Engine.adapterRecette(r, { allergens: profile, ageMois: ageMois }, data);
         c[res.status]++;
         if (res.status !== "not_adaptable") {
           if (c.byCategory[r.category] !== undefined) c.byCategory[r.category]++;
@@ -104,7 +96,7 @@ function bloquantsGlobaux(cases) {
     Object.keys(c.blockers).forEach(function (id) { tot[id] = (tot[id] || 0) + c.blockers[id]; });
   });
   return Object.keys(tot).map(function (id) {
-    return { id: id, name: donnees.catalogue[id] ? donnees.catalogue[id].name : id, n: tot[id] };
+    return { id: id, name: data.catalogue[id] ? data.catalogue[id].name : id, n: tot[id] };
   }).sort((a, b) => b.n - a.n);
 }
 
@@ -119,11 +111,11 @@ function commande(classement, target) {
     const cats = Object.keys(c.missingCategories);
     const cles = cats.length ? cats : ["Repas"];
     cles.forEach(function (cat) {
-      const cle = c.ageMois + "|" + cat;
-      if (!groupes[cle]) groupes[cle] = { ageMois: c.ageMois, category: cat, evite: {}, missing: 0, horsAge: c.outOfAge, usable: c.usable };
-      c.profile.forEach(function (a) { groupes[cle].evite[a] = 1; });
-      groupes[cle].missing = Math.max(groupes[cle].missing, c.missingCategories[cat] || 1);
-      groupes[cle].usable = Math.min(groupes[cle].usable, c.usable);
+      const key = c.ageMois + "|" + cat;
+      if (!groupes[key]) groupes[key] = { ageMois: c.ageMois, category: cat, evite: {}, missing: 0, horsAge: c.outOfAge, usable: c.usable };
+      c.profile.forEach(function (a) { groupes[key].evite[a] = 1; });
+      groupes[key].missing = Math.max(groupes[key].missing, c.missingCategories[cat] || 1);
+      groupes[key].usable = Math.min(groupes[key].usable, c.usable);
     });
   }
   /* Second fold: the same gap appearing at 6, 9, 12 and 24 months is ONE gap,
@@ -132,19 +124,19 @@ function commande(classement, target) {
   const parTrou = {};
   Object.values(groupes).forEach(function (g) {
     const evite = Object.keys(g.evite).sort();
-    const cle = g.category + "|" + evite.join(",");
-    if (!parTrou[cle] || g.ageMois < parTrou[cle].ageMois) {
-      parTrou[cle] = { ageMois: g.ageMois, category: g.category, evite: evite,
+    const key = g.category + "|" + evite.join(",");
+    if (!parTrou[key] || g.ageMois < parTrou[key].ageMois) {
+      parTrou[key] = { ageMois: g.ageMois, category: g.category, evite: evite,
                        missing: g.missing, horsAge: g.horsAge, usable: g.usable };
     } else {
-      parTrou[cle].missing = Math.max(parTrou[cle].missing, g.missing);
+      parTrou[key].missing = Math.max(parTrou[key].missing, g.missing);
     }
   });
-  const lignes = Object.values(parTrou)
+  const lines = Object.values(parTrou)
     .sort((a, b) => (b.missing - a.missing) || (a.usable - b.usable));
   const out = [];
   let reste = target;
-  for (const g of lignes) {
+  for (const g of lines) {
     if (reste <= 0) break;
     const passePartout = g.evite.length > 5;
     const n = Math.min(reste, passePartout ? 2 : Math.max(2, g.missing));
@@ -206,7 +198,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   return l.join("\n");
 }
 
-function rapport(corpus) {
+function report(corpus) {
   const cases = analyser(corpus);
   const classement = classer(cases);
   const blockers = bloquantsGlobaux(cases);
@@ -215,10 +207,10 @@ function rapport(corpus) {
 }
 
 if (require.main === module) {
-  let corpus = lire("data/recipes.json");
-  try { corpus = corpus.concat(lire("data/imported/imported-recipes.json")); } catch (e) {}
-  try { corpus = corpus.concat(lire("data/generated/generated-recipes.json")); } catch (e) {}
-  const r = rapport(corpus);
+  let corpus = read("data/recipes.json");
+  try { corpus = corpus.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
+  try { corpus = corpus.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
+  const r = report(corpus);
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.md"),
     markdown(r.classement, r.blockers, r.commande, corpus.length) + "\n");
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.json"),
@@ -231,4 +223,4 @@ if (require.main === module) {
   console.log("Suggested commission: " + r.commande.reduce((s, c) => s + c.n, 0) + " recipes");
 }
 
-module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, rapport: rapport, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };
+module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };

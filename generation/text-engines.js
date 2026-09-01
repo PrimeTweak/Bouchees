@@ -1,22 +1,14 @@
-/* Text engines — writing the recipes
- *
- * Three adapters behind one interface. The rest of the pipeline does not know
- * which one is running: it receives JSON and hands it to the validator, which
- * rejects anything outside the catalogue. The model decides no safety question
- * — it writes, the tables decide.
- *
- *   anthropic  — ANTHROPIC_API_KEY
- *   openai     — OPENAI_API_KEY
- *   simule     — hors ligne, pour les tests
- */
+/* The rest of the pipeline does not know which one is running: it receives
+ * JSON and hands it to the validator, which rejects anything outside the
+ * catalogue. Text engines — writing the recipes */
 "use strict";
 
 /* A chatty model wraps its JSON in prose. The array is pulled back out. */
 function extraireJSON(texte) {
   const t = String(texte).replace(/```json|```/g, "").trim();
   const debut = t.indexOf("[");
-  const fin = t.lastIndexOf("]");
-  if (debut === -1 || fin === -1 || fin < debut) {
+  const finish = t.lastIndexOf("]");
+  if (debut === -1 || finish === -1 || finish < debut) {
     const o1 = t.indexOf("{"), o2 = t.lastIndexOf("}");
     if (o1 !== -1 && o2 > o1) {
       const un = JSON.parse(t.slice(o1, o2 + 1));
@@ -24,7 +16,7 @@ function extraireJSON(texte) {
     }
     throw new Error("aucun JSON trouvé dans la réponse du modèle");
   }
-  return JSON.parse(t.slice(debut, fin + 1));
+  return JSON.parse(t.slice(debut, finish + 1));
 }
 
 const anthropic = {

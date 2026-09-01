@@ -1,19 +1,5 @@
-//  Mark.swift
-//
-//  The Bouchées mark, drawn rather than shipped as an image.
-//
-//  A lowercase b whose bowl has a bite taken out of it. "Bouchée" means a
-//  mouthful — the name carries its own shape, which is why this beats the
-//  spoon-and-checkmark I proposed first: that one was clever, this one is
-//  simply true.
-//
-//  Drawn as a Shape so it takes the theme colour at any size with no asset,
-//  no @2x/@3x, and no drift between light and dark.
-//
-//  Geometry matches ios/icon-source exactly, in a 100x100 space:
-//      stem   (33,26) to (33,72), 8.5 wide, round caps
-//      bowl   centre (52,55), radius 17.5
-//      bite   centre (63,45), radius 7.5, punched out
+// Drawn as a Shape so it takes the theme colour at any size with no asset, no
+// @2x/@3x, and no drift between light and dark. Mark.swift
 
 import SwiftUI
 
@@ -64,19 +50,8 @@ struct BoucheesMark: View {
 }
 
 
-/// What shows while the engine loads its tables. It replaces a white flash
-/// with the app's own colour, and it follows the theme.
-/// THE LAUNCH SCREEN.
-///
-/// It follows the system's own launch image, which now carries the SAME
-/// colour — before, the system painted one cream and the app repainted
-/// another at the next frame, which read as a flicker.
-///
-/// The animation says the name: the mark settles, then the bite lands. One
-/// gesture, and it is the word "bouchée".
-///
-/// Nothing appears before 400 ms. On a warm launch the app is already ready,
-/// and a status line that flashes makes the start feel slower than it is.
+/// What shows while the engine loads its tables: one gesture, and it is the
+/// word "bouchée".
 struct LaunchView: View {
     @State private var settled = false
     @State private var bitten = false
@@ -88,22 +63,16 @@ struct LaunchView: View {
             Tone.canvas.ignoresSafeArea()
 
             VStack(spacing: 14) {
-                /* 116, NOT 64.
-                 *
-                 * The glyph occupies about 55% of its 100-unit box — the stem
-                 * runs x=28.75 to 37.25, the bowl to x=69.5 — so `size: 64`
-                 * drew a mark 35pt wide. On a 393pt screen that is a twelfth
-                 * of the width, where a launch mark wants a fifth.
-                 *
-                 * 116 gives roughly 64pt of visible glyph, which is the size
-                 * it looked like it already was. */
+                                /* 116, not 64: the glyph occupies about 55% of its 100-unit
+                 * box — the stem runs x=28.75 to 37.25, the bowl to x=69.5 —
+                 * so `size: 64` drew a mark 35pt wide. */
                 BoucheesMark(size: 116, bite: bitten ? 1 : 0)
                     .scaleEffect(settled ? 1 : 0.82)
                     .opacity(settled ? 1 : 0)
 
                 /* The product name, the one French word the app keeps. */
                 Text(verbatim: "Bouchées")
-                    .font(.system(size: 29, weight: .bold))
+                    .scaledFont(29, weight: .bold)
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
                     .offset(y: named ? 0 : 7)
@@ -114,7 +83,7 @@ struct LaunchView: View {
                 Spacer(minLength: 0)
                 VStack(spacing: 8) {
                     Text("Getting this week ready")
-                        .font(.system(size: 12))
+                        .scaledFont(12)
                         .foregroundStyle(Tone.text2)
                     ProgressDots()
                 }
@@ -141,17 +110,15 @@ struct LaunchView: View {
         }
 
         try? await Task.sleep(for: .milliseconds(80))
-        withAnimation(.smooth(duration: 0.3)) { named = true }
+        withAnimation(.soft(0.3)) { named = true }
 
         try? await Task.sleep(for: .milliseconds(140))
         withAnimation(.easeOut(duration: 0.35)) { slow = true }
     }
 }
 
-/// Three dots that step forward with the real stages, not a spinner.
-///
-/// A spinner claims motion it does not have. These advance when something
-/// actually finished: tables decoded, engine ready, recipes in.
+/// Three dots that step forward with the real stages, not a spinner. A spinner
+/// claims motion it does not have.
 private struct ProgressDots: View {
     @State private var lit = 0
     private let tick = Timer.publish(every: 0.42, on: .main, in: .common).autoconnect()
@@ -165,7 +132,7 @@ private struct ProgressDots: View {
             }
         }
         .onReceive(tick) { _ in
-            withAnimation(.smooth(duration: 0.2)) {
+            withAnimation(.soft(0.2)) {
                 lit = lit >= 3 ? 1 : lit + 1
             }
         }

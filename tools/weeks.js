@@ -1,25 +1,10 @@
-/* Rolling weekly window.
- *
- * THE MODEL
- *
- * Batches are weekly. A subscriber sees the current week plus the TWO before
- * it — three weeks in all. Beyond that, recipes leave the view.
- *
- * Three things bring them back:
- *   - the Top rated tab, for those that gathered enough ratings;
- *   - saved recipes, kept on the device, outside the window, for good;
- *   - nothing else. No artificial rotation: a recipe returns because parents
- *     liked it, not because a script fished it out.
- *
- * Free batches never rotate. That is the floor a parent keeps without paying,
- * and it must not slip away from them.
- */
+/* Rolling weekly window: batches are weekly. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
-const ecrire = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const write = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
 
 const FENETRE = 3;   /* semaines visible, la courante comprise */
 
@@ -29,19 +14,19 @@ function numeroSemaine(date) {
   const t = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
   const debutAnnee = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-  return { annee: t.getUTCFullYear(), semaine: Math.ceil(((t - debutAnnee) / 86400000 + 1) / 7) };
+  return { annee: t.getUTCFullYear(), week: Math.ceil(((t - debutAnnee) / 86400000 + 1) / 7) };
 }
 
 function identifiantSemaine(date) {
-  const { annee, semaine } = numeroSemaine(date || new Date());
-  return annee + "-S" + String(semaine).padStart(2, "0");
+  const { annee, week } = numeroSemaine(date || new Date());
+  return annee + "-S" + String(week).padStart(2, "0");
 }
 
 /* Previous weeks, walking back. Handles the year boundary. */
-function semainesPrecedentes(depuis, combien) {
+function semainesPrecedentes(since, count) {
   const out = [];
-  const d = new Date(depuis || Date.now());
-  for (let i = 0; i < combien; i++) {
+  const d = new Date(since || Date.now());
+  for (let i = 0; i < count; i++) {
     out.push(identifiantSemaine(d));
     d.setDate(d.getDate() - 7);
   }
@@ -56,11 +41,9 @@ function rang(id) {
 
 /* ---------- the window ---------- */
 
-/* Les batches visible aujourd'hui : tous les free, plus les FENETRE batches
- * most recent weekly batches that actually exist. Today's date alone is not
- * trusted — if nothing has been published for a month, the last batch stays
- * visible rather than leaving the app empty. */
-function fenetreCourante(batches, maintenant) {
+/* Today's date alone is not trusted — if nothing has been published for a
+ * month, the last batch stays visible rather than leaving the app empty. */
+function fenetreCourante(batches, now) {
   const free = batches.filter((l) => l.access === "free").map((l) => l.id);
   const hebdo = batches
     .filter((l) => l.access !== "free" && rang(l.id) > 0)
@@ -78,11 +61,11 @@ function fenetreCourante(batches, maintenant) {
 /* ---------- conversion ---------- */
 
 function convertir() {
-  const pub = lire("data/publishing.json");
-  let corpus = lire("data/recipes.json");
+  const pub = read("data/publishing.json");
+  let corpus = read("data/recipes.json");
   for (const p of ["data/imported/imported-recipes.json",
                    "data/generated/generated-recipes.json"]) {
-    try { corpus = corpus.concat(lire(p)); } catch (e) {}
+    try { corpus = corpus.concat(read(p)); } catch (e) {}
   }
 
   const idsLibres = new Set();
@@ -126,14 +109,14 @@ function convertir() {
     "Les recettes sorties de la fenêtre reviennent par l'onglet Meilleures " +
     "(5 votes ou plus) ou par les favoris gardés sur l'appareil.";
 
-  ecrire("data/publishing.json", pub);
+  write("data/publishing.json", pub);
   return pub;
 }
 
 /* ---------- affichage ---------- */
 
-function etat() {
-  const pub = lire("data/publishing.json");
+function state() {
+  const pub = read("data/publishing.json");
   const f = fenetreCourante(pub.batches, Date.now());
   const account = {};
   Object.values(pub.assignment).forEach(function (l) { account[l] = (account[l] || 0) + 1; });
@@ -161,9 +144,9 @@ if (require.main === module) {
       console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " + n + " recipes");
     });
     console.log("");
-    etat();
+    state();
   } else {
-    etat();
+    state();
   }
 }
 

@@ -1,15 +1,7 @@
 #!/usr/bin/env node
-/* Is Draw Things ready to run a batch?
- *
- * WHY THIS EXISTS. The cycle sends a prompt and lets Draw Things apply its own
- * settings, which is correct — a distilled model driven by an SDXL solver
- * never finishes denoising. But it means the app's CURRENT selection decides
- * everything, and nothing checked it.
- *
- * On Krea 2 Raw at 52 steps a single image took two hours. Ten of them is
- * twenty hours, discovered after the first one. This asks the questions before
- * anything runs.
- */
+/* The cycle sends a prompt and lets Draw Things apply its own settings, which
+ * is correct — a distilled model driven by an SDXL solver never finishes
+ * denoising. */
 "use strict";
 
 const BASE = process.env.DRAWTHINGS_URL || "http://127.0.0.1:7860";
@@ -35,12 +27,7 @@ async function demander(chemin) {
   const problemes = [];
   const notes = [];
 
-  /* 1. Is anything listening?
-   *
-   * GET / , not /sdapi/v1/options. Draw Things implements the endpoints that
-   * do work — txt2img, img2img — and returns 404 for the introspection ones
-   * that AUTOMATIC1111 exposes. Asking for options made this check report
-   * "not responding" even with the server running. */
+    /* 1: is anything listening? */
   const etat = await demander("/");
   if (!etat) {
     console.error("");
@@ -65,12 +52,7 @@ async function demander(chemin) {
     process.exit(1);
   }
 
-  /* 2. Which model is selected?
-   *
-   * The root response carries the app's current configuration. Field names
-   * vary between versions, so several are tried and a miss is a note rather
-   * than a failure — refusing to run because a field was renamed would be
-   * worse than running. */
+    /* 2: which model is selected? */
   const modele = String(etat.model || etat.sd_model_checkpoint ||
                         etat.sd_model || etat.checkpoint || "");
   if (!modele) {
@@ -92,7 +74,7 @@ async function demander(chemin) {
   const path = require("path");
   const fs = require("fs");
   const racine = path.join(__dirname, "..");
-  const recettes = JSON.parse(fs.readFileSync(
+  const recipes = JSON.parse(fs.readFileSync(
     path.join(racine, "data/recipes.json"), "utf8"));
   let manifeste = {};
   try {
@@ -100,8 +82,8 @@ async function demander(chemin) {
       path.join(racine, "generation/images/manifest.json"), "utf8"));
   } catch (e) { /* first run */ }
 
-  const aFaire = recettes.filter(function (r) { return !manifeste[r.id]; });
-  notes.push(aFaire.length + " image(s) à générer sur " + recettes.length + " recettes");
+  const aFaire = recipes.filter(function (r) { return !manifeste[r.id]; });
+  notes.push(aFaire.length + " image(s) à générer sur " + recipes.length + " recettes");
 
   console.log("");
   console.log("  AVANT DE PARTIR");

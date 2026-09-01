@@ -1,52 +1,21 @@
-/* Prompts d'image — v2
- *
- * TROIS CHANGEMENTS, ET LE PREMIER EST LE PLUS IMPORTANT.
- *
- * 1. PROMPTS ARE IN ENGLISH. Image models are trained overwhelmingly on
- *    English captions. A French prompt goes through an implicit translation
- *    and loses fidelity — the first cause of soft results.
- *
- * 2. THE AESTHETIC CHANGED. The old one aimed at magazine work: matte
- *    nappe de lin, fond calme. C'est joli et faux. On vise maintenant une
- *    real family kitchen — a wooden counter, window light, a dish towel
- *    lying about, a few crumbs. Imperfection is what makes a photo
- *    believable.
- *
- * 3. COMPOSITION VARIES. Every image used to share the same angle. Thirty
- *    identical photos look like a template, not a collection. The variation
- *    is seeded by the recipe id: deterministic, so a given recipe always
- *    keeps its framing.
- */
+/* Image models are trained overwhelmingly on English captions. Imperfection
+ * is what makes a photo believable. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 
 /* Short on purpose. A 700-character style buries the subject: FLUX weighs the
  * whole prompt, so twenty adjectives about lighting compete with the two words
  * that say what the dish is. The subject leads, the style supports. */
-/* "Unstyled and lived-in" asked for a mood and got a catalogue photo anyway.
- * A model gives you what you NAME, and nothing here named a single concrete
- * imperfection — so it produced a clean dish, centred, wiped, lit evenly.
- *
- * What separates a real photograph of a home kitchen from a rendered one is
- * always the same short list: crumbs, an uneven edge, a portion already
- * taken, a utensil left where someone put it down. Those are now demanded
- * rather than implied. */
-/* No furniture named.
- *
- * "Worn wooden table" and "one corner of the table visible" are what pulled
- * the camera back far enough to include a room. The surface is still there —
- * it is simply not the subject, and naming it made it one. */
-/* WHERE IT SITS, AND WHAT IS BEHIND IT.
- *
- * The kitchen has to be believable and out of focus at the same time. Named
- * without a distance it became the subject; named WITH one it is depth.
- *
- * Every entry is a surface plus what falls away behind it, so the background
- * reads as a real kitchen rather than a wall or a ledge. */
+/* A model gives you what you NAME, and nothing here named a single concrete
+ * imperfection — so it produced a clean dish, centred, wiped, lit evenly. */
+/* No furniture named: "Worn wooden table" and "one corner of the table
+ * visible" are what pulled the camera back far enough to include a room. */
+/* Where it sits, and what is behind it: named without a distance it became
+ * the subject; named WITH one it is depth. */
 const SURFACES = [
   "on a honed marble counter, warm wood cabinetry blurred behind",
   "on a pale oak worktop, a softly lit kitchen falling away behind",
@@ -54,12 +23,9 @@ const SURFACES = [
   "on a light concrete counter, the warm blur of a kitchen behind"
 ];
 
-/* NO LIGHT HERE. The MOMENTS line already says it, two clauses earlier.
- *
- * Saying it twice cost 50 characters and pushed three prompts over the 500
- * limit — where the clause that gets dropped is this one, the style. It also
- * used to CONTRADICT the moment, which is what produced the flat grey
- * windowsill. */
+/* No light here: saying it twice cost 50 characters and pushed three prompts
+ * over the 500 limit — where the clause that gets dropped is this one, the
+ * style. */
 const STYLE = [
   "candid home photo, handheld",
   "shallow depth of field, 85mm macro"
@@ -68,18 +34,8 @@ const STYLE = [
 /* Two of these are drawn per recipe. More than two and the picture starts to
  * look staged in a different way — deliberately messy, which reads as fake
  * just as fast. */
-/* ONE mark per recipe, and short.
- *
- * Two of these pushed the prompt to 569 characters and broke the test that
- * keeps it under 500 — a test I wrote myself, for a reason that still holds:
- * the model weighs the whole string, so every extra adjective competes with
- * the two words that say what the dish is.
- *
- * One concrete imperfection does the work. Eight adjectives about mess do
- * not. */
-/* One mark, and it usually shows the inside.
- *
- * "One piece broken open" earns its place twice: it is the imperfection that
+/* ONE mark per recipe, and short: one concrete imperfection does the work. */
+/* "One piece broken open" earns its place twice: it is the imperfection that
  * says a person was here, AND it is the only way to show the crumb — which is
  * what tells a parent whether their own batch came out right. */
 const IMPERFECTIONS = [
@@ -91,15 +47,7 @@ const IMPERFECTIONS = [
   "the dish slightly off-centre"
 ];
 
-/* CLOSE. THE DISH FILLS THE FRAME.
- *
- * Nothing here used to say how far away the camera stood, so the model chose
- * whatever distance showed everything the prompt named — and the prompt named
- * a table. The result was a beige room with twelve small muffins in it.
- *
- * A recipe photo has two jobs: make someone want to cook it, and show what it
- * looks like when it worked. A room does neither. Every framing now states
- * the distance, and every one is close. */
+/* Close: every framing now states the distance, and every one is close. */
 const CADRAGES = [
   "close-up filling the frame, camera about 30 cm away",
   "three-quarter angle from 40 degrees, very close",
@@ -107,15 +55,8 @@ const CADRAGES = [
   "low eye-level, close enough to see the crumb"
 ];
 
-/* WARM AND DIRECTIONAL, ALL THREE.
- *
- * Two of the old entries asked for cool diffuse light — a morning window, an
- * overcast afternoon — while STYLE asked for warm directional light two lines
- * later. The model got opposite instructions, and the flat grey windowsill in
- * the first muffin photo is what that looks like.
- *
- * They vary by ANGLE and QUALITY now, not by colour temperature. A kitchen
- * that reads as professional is lit, not merely daylit. */
+/* Warm and directional, all three: the model got opposite instructions, and
+ * the flat grey windowsill in the first muffin photo is what that looks like. */
 const MOMENTS = [
   "warm light raking across from the left, deep soft shadows",
   "warm light from behind and to the side, the edges glowing",
@@ -130,15 +71,8 @@ const NEGATIF = [
   /* The catalogue tells: these are what made every render look bought
    * rather than baked. */
   "not a cookbook photo", "no food styling", "no perfect symmetry",
-  /* THE FRAMING STOPS THE ROOM, NOT THESE.
-   *
-   * Naming furniture pulled the camera back only because nothing said how
-   * close to stand. Now every framing states a distance, so the surface can
-   * come back — and it has to, because with the room forbidden AND nothing
-   * named, the model invented the one background left to it: a grey
-   * windowsill.
-   *
-   * What stays banned is the WIDE SHOT, which is the actual fault. */
+    /* The framing stops the room, not these: naming furniture pulled the camera
+   * back only because nothing said how close to stand. */
   "not shot from across a room", "no wide shot", "no empty space around the dish",
   "no blown-out highlights", "no bare wall behind the dish",
   "no cluttered background", "no visible room corners",
@@ -205,23 +139,12 @@ const PLATS_EN = {
   "Snack": "snack", "Dessert": "dessert"
 };
 
-/* How the dish is PRESENTED, read off the servings field.
- *
- * The prompt used to say "a breakfast dish served in an everyday bowl" and
- * then list raw ingredients. FLUX obeyed exactly: a bowl of oats with a raw
- * egg on top, for a muffin recipe. It was never told what the dish IS.
- *
- * The servings field already carries the answer — "12 muffins", "10 patties",
- * "1 loaf" — so the shape and the vessel are derived from it. */
-/* HOW MANY, AND HOW CLOSE.
- *
- * "Cooling on a wire rack" gave a whole rack — twelve muffins, each too small
- * to see. A count belongs in the presentation, because it is the presentation:
- * three muffins photographed close say more about the recipe than twelve
- * photographed from across a room.
- *
- * The number is small everywhere. Nobody needs to see the whole batch; they
- * need to see one, properly. */
+/* How the dish is PRESENTED, read off the servings field: the servings field
+ * already carries the answer — "12 muffins", "10 patties", "1 loaf" — so the
+ * shape and the vessel are derived from it. */
+/* How many, and how close: a count belongs in the presentation, because it is
+ * the presentation: three muffins photographed close say more about the
+ * recipe than twelve photographed from across a room. */
 const PRESENTATION = [
   [/muffins?/i,             "three muffins in paper liners, close together"],
   [/cr[e\u00ea]pes?|pancakes?/i, "a short stack of three pancakes"],
@@ -242,12 +165,8 @@ function presentationPour(recette) {
   for (let i = 0; i < PRESENTATION.length; i++) {
     if (PRESENTATION[i][0].test(p)) return PRESENTATION[i][1];
   }
-  /* THE FALLBACK NEEDS A COUNT TOO.
-   *
-   * Fourteen recipes reach this line, and "a shallow bowl on a table" names
-   * neither how many nor how close — the two things that stop the model from
-   * drawing a whole batch across a room. It also named a table, which is the
-   * word that pulled the camera back in the first place. */
+    /* The fallback needs a count too: it also named a table, which is the word
+   * that pulled the camera back in the first place. */
   return "one shallow bowl, filled to the rim";
 }
 
@@ -278,8 +197,8 @@ function graine(texte) {
   return h;
 }
 
-function promptPour(recette, donnees) {
-  const catalogue = donnees.catalogue;
+function promptPour(recette, data) {
+  const catalogue = data.catalogue;
   const ordre = ["protein", "flour", "vegetable", "fruit", "dairy", "liquid", "fat", "sweetener"];
 
   const visibles = recette.ingredients
@@ -312,18 +231,11 @@ function promptPour(recette, donnees) {
   /* Two imperfections per recipe, keyed to the same seed as the framing so
    * the corpus stays reproducible — a parent reopening a recipe sees the
    * same picture. */
-  const marques = IMPERFECTIONS[g % IMPERFECTIONS.length];
+  const marks = IMPERFECTIONS[g % IMPERFECTIONS.length];
 
-  /* The exclusions are stated POSITIVELY, in the prompt itself.
-   *
-   * Proven by isolation on FLUX schnell: the identical request with a negative
-   * prompt returns an embossed relief, without it a clean photo. FLUX is
+    /* The exclusions are stated POSITIVELY, in the prompt itself: fLUX is
    * distilled without negative guidance, so the negative is subtracted rather
-   * than steered away from.
-   *
-   * Saying "only these foods and nothing else" is how FLUX is meant to be
-   * driven, and the vision check remains the real guard: the prompt asks, the
-   * verification decides. An intruder still gets the image rejected. */
+   * than steered away from. */
   /* THE RECIPE NAME LEADS, then how it is presented, then what it is made of.
    * Naming the dish is what stops FLUX from drawing a bowl of loose
    * ingredients: it renders what you name, and it was never named. */
@@ -340,7 +252,7 @@ function promptPour(recette, donnees) {
       moment,
       /* Named imperfections, before the style block. The subject still
        * leads; these say the picture was taken, not assembled. */
-      marques,
+      marks,
       STYLE
     ].join(". "),
     negatif: NEGATIF + ", " + exclusions.join(", "),
@@ -363,59 +275,59 @@ function empreinte(recette) {
     .digest("hex").slice(0, 12);
 }
 
-function aGenerer(corpus, donnees, manifeste, dossierImages) {
-  manifeste = manifeste || {};
+function aGenerer(corpus, data, manifest, dossierImages) {
+  manifest = manifest || {};
   const base = dossierImages || racine;
 
   return corpus.map(function (r) {
     const emp = empreinte(r);
-    const actuel = manifeste[r.id];
+    const actuel = manifest[r.id];
     /* The manifest says what was verified; the disk says what exists. */
     const surDisque = actuel && actuel.fichier && fs.existsSync(path.join(base, actuel.fichier));
-    const etat = !actuel ? "missing"
+    const state = !actuel ? "missing"
       : (!surDisque ? "file missing"
       : (actuel.empreinte !== emp ? "stale" : "current"));
-    if (etat === "current") return null;
+    if (state === "current") return null;
 
-    const p = promptPour(r, donnees);
+    const p = promptPour(r, data);
     return {
-      id: r.id, name: r.name, etat: etat, empreinte: emp,
+      id: r.id, name: r.name, state: state, empreinte: emp,
       fichier: "images/" + r.id + "-" + emp + ".webp",
       prompt: p.positif, negatif: p.negatif, aVerifier: p.aVerifier
     };
   }).filter(Boolean);
 }
 
-function validerEntree(entree, recette, dossierImages) {
+function validerEntree(entry, recette, dossierImages) {
   const e = [];
-  if (!entree.fichier) e.push("fichier manquant");
+  if (!entry.fichier) e.push("fichier manquant");
   else if (dossierImages !== false) {
     const base = dossierImages || racine;
-    if (!fs.existsSync(path.join(base, entree.fichier))) e.push("fichier introuvable sur le disque");
+    if (!fs.existsSync(path.join(base, entry.fichier))) e.push("fichier introuvable sur le disque");
   }
-  if (!entree.empreinte) e.push("empreinte manquante");
-  if (recette && entree.empreinte !== empreinte(recette))
+  if (!entry.empreinte) e.push("empreinte manquante");
+  if (recette && entry.empreinte !== empreinte(recette))
     e.push("empreinte périmée : les ingrédients ont changé depuis la génération");
-  if (!entree.revisePar) e.push("aucune révision — image non publiable");
-  if (entree.revisePar && /automatique/i.test(entree.revisePar)) {
-    if (!entree.verification) e.push("révision automatique sans verdict de vision");
-    else if (!entree.verification.reconnus) e.push("la vision n'a reconnu aucun ingrédient de la recette");
-    else if (entree.verification.moteur === "absent") e.push("aucun moteur de vision n'a réellement vérifié");
+  if (!entry.revisePar) e.push("aucune révision — image non publiable");
+  if (entry.revisePar && /automatique/i.test(entry.revisePar)) {
+    if (!entry.verification) e.push("révision automatique sans verdict de vision");
+    else if (!entry.verification.reconnus) e.push("la vision n'a reconnu aucun ingrédient de la recette");
+    else if (entry.verification.moteur === "absent") e.push("aucun moteur de vision n'a réellement vérifié");
   }
   /* The display needs 1320 px on an iPhone Pro Max, 1640 on an iPad, and the
    * view crops before it fills. Anything under 1320 is upscaled on screen —
    * which is exactly how a set of soft photos got shipped once. */
   const LARGEUR_MIN = 1320;
-  if (entree.largeur && entree.largeur < LARGEUR_MIN)
-    e.push("image too small: " + entree.largeur + " px wide, " + LARGEUR_MIN + " required");
+  if (entry.largeur && entry.largeur < LARGEUR_MIN)
+    e.push("image too small: " + entry.largeur + " px wide, " + LARGEUR_MIN + " required");
   return { ok: e.length === 0, erreurs: e };
 }
 
-function visuelPour(recette, resultat, manifeste, dossierImages) {
-  const entree = manifeste && manifeste[recette.id];
-  const utilisable = entree && validerEntree(entree, recette, dossierImages).ok;
-  if (utilisable && resultat.status === "as_is") {
-    return { type: "photo", fichier: entree.fichier };
+function visuelPour(recette, result, manifest, dossierImages) {
+  const entry = manifest && manifest[recette.id];
+  const utilisable = entry && validerEntree(entry, recette, dossierImages).ok;
+  if (utilisable && result.status === "as_is") {
+    return { type: "photo", fichier: entry.fichier };
   }
   return { type: "illustration",
            reason: !utilisable ? "aucune photo révisée"
@@ -423,20 +335,20 @@ function visuelPour(recette, resultat, manifeste, dossierImages) {
 }
 
 if (require.main === module) {
-  const donnees = {
-    catalogue: lire("data/ingredients.json"),
-    substitutions: lire("data/substitutions.json"),
-    base: lire("data/base.json")
+  const data = {
+    catalogue: read("data/ingredients.json"),
+    substitutions: read("data/substitutions.json"),
+    base: read("data/base.json")
   };
-  let corpus = lire("data/recipes.json");
+  let corpus = read("data/recipes.json");
   for (const p of ["data/imported/imported-recipes.json",
                    "data/generated/generated-recipes.json"]) {
-    try { corpus = corpus.concat(lire(p)); } catch (e) {}
+    try { corpus = corpus.concat(read(p)); } catch (e) {}
   }
-  let manifeste = {};
-  try { manifeste = lire("generation/images/manifest.json"); } catch (e) {}
+  let manifest = {};
+  try { manifest = read("generation/images/manifest.json"); } catch (e) {}
 
-  const plan = aGenerer(corpus, donnees, manifeste);
+  const plan = aGenerer(corpus, data, manifest);
   fs.mkdirSync(path.join(racine, "generation", "images"), { recursive: true });
   fs.writeFileSync(path.join(racine, "generation", "images", "to-generate.json"),
     JSON.stringify(plan, null, 2) + "\n");

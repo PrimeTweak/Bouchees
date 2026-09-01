@@ -1,37 +1,5 @@
 "use strict";
-/*
- * BUILD THE OFFLINE PRODUCT PACK.
- *
- * Two sources, two files, never merged. That separation is not tidiness — it
- * is the licence.
- *
- *   United States  USDA FoodData Central, Branded Foods.
- *                  Public domain, CC0 1.0. No permission needed. USDA asks,
- *                  as a courtesy, to be named as the source.
- *
- *   Canada         Open Food Facts, filtered on Canada.
- *                  ODbL. Attribution and share-alike.
- *
- * The ODbL treats a collection of otherwise independent databases as a
- * COLLECTIVE database, which is explicitly not a derivative one, and its
- * share-alike reaches only the part that came from them. Fusing their text
- * into our catalogue, or into the American file, would make one derivative
- * database out of three sources and pull everything else in with it.
- *
- * So: one file per source, one source per file, and a checker that refuses a
- * pack where a record sits in the wrong one.
- *
- * THE PACK IS DUMB ON PURPOSE. It carries the ingredient text as printed and
- * derives nothing. The allergens are worked out at run time, by our own
- * catalogue, against the child in front of the phone. Precomputing them here
- * would freeze the reading at build time — and a frozen reading on a safety
- * path is worse than a large file.
- *
- * Usage:
- *   node tools/build-product-pack.js --usda <branded_food.csv> --off <products.jsonl.gz>
- *
- * Either source may be omitted; the pack is then built from the other one.
- */
+/* Build the offline product pack: two sources, two files, never merged. */
 
 const fs = require("fs");
 const path = require("path");
@@ -89,25 +57,11 @@ function parseCSVLine(ligne) {
 
 /* ------------------------------------------------------------------ sources */
 
-/* USDA ships EVERY VERSION of a product, one row per label revision. The
- * December 2025 file holds 1,994,523 rows for 439,936 barcodes — four and a
- * half labels each. Their own download page says as much: the Access export
- * carries only the newest version, and the API is offered for reaching older
- * ones.
- *
- * Keeping them all is not a weight problem, it is a safety one. A product
- * reformulated in 2023 still carries its 2019 row here, and a lookup that
- * takes the first match can read an ingredient list that stopped being true
- * years ago. On a screen that says "no milk for your child", that is the
- * worst failure this pack can produce.
- *
- * Two passes rather than one map of finished records: the first pass holds
- * only a barcode and a version key, a few tens of megabytes, instead of two
- * million ingredient strings. The file is read twice and the memory stays
- * bounded whatever USDA does to the size later. */
-async function versionsRecentes(fichier) {
+/* The December 2025 file holds 1,994,523 rows for 439,936 barcodes — four and
+ * a half labels each. */
+async function versionsRecentes(file) {
   const flux = readline.createInterface({
-    input: fs.createReadStream(fichier),
+    input: fs.createReadStream(file),
     crlfDelay: Infinity
   });
 
@@ -134,11 +88,9 @@ async function versionsRecentes(fichier) {
   return { meilleur: meilleur, cle: cleUtilisee };
 }
 
-/* The version key, in order of preference. `modified_date` is what USDA moves
+/* The version key, in order of preference: `modified_date` is what USDA moves
  * when a label changes; `available_date` is when the row appeared; `fdc_id`
- * rises with every insertion and is the last resort. Whichever is used gets
- * printed, because a silent fallback on a safety path is how a wrong version
- * wins without anyone noticing. */
+ * rises with every insertion and is the last resort. */
 function cleVersion(champs, col) {
   if (col.modifie >= 0) {
     const d = (champs[col.modifie] || "").trim();
@@ -184,15 +136,15 @@ function colonnes(entetes) {
   return col;
 }
 
-async function lireUSDA(fichier, ecrire) {
+async function lireUSDA(file, ecrire) {
   console.log("    1re passe — repérage de la version la plus récente...");
-  const vue = await versionsRecentes(fichier);
+  const vue = await versionsRecentes(file);
   console.log("    version jugée d'après      " + vue.cle);
   console.log("    codes-barres distincts     " + vue.meilleur.size);
 
   console.log("    2e passe — écriture...");
   const flux = readline.createInterface({
-    input: fs.createReadStream(fichier),
+    input: fs.createReadStream(file),
     crlfDelay: Infinity
   });
 
@@ -233,9 +185,9 @@ async function lireUSDA(fichier, ecrire) {
            perimes: perimes };
 }
 
-async function lireOFF(fichier, ecrire) {
-  const brut = fs.createReadStream(fichier);
-  const source = fichier.endsWith(".gz") ? brut.pipe(zlib.createGunzip()) : brut;
+async function lireOFF(file, ecrire) {
+  const brut = fs.createReadStream(file);
+  const source = file.endsWith(".gz") ? brut.pipe(zlib.createGunzip()) : brut;
   const flux = readline.createInterface({ input: source, crlfDelay: Infinity });
 
   let lus = 0, canadiens = 0, gardes = 0, sansIngredients = 0;
@@ -287,13 +239,13 @@ async function lireOFF(fichier, ecrire) {
 
 function sortie(nom) {
   const gz = zlib.createGzip({ level: 9 });
-  const fichier = fs.createWriteStream(path.join(outDir, nom));
-  gz.pipe(fichier);
+  const file = fs.createWriteStream(path.join(outDir, nom));
+  gz.pipe(file);
   return {
     ecrire: function (rec) { gz.write(JSON.stringify(rec) + "\n"); },
     fermer: function () {
       return new Promise(function (res) {
-        fichier.on("close", res);
+        file.on("close", res);
         gz.end();
       });
     }

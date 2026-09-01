@@ -1,17 +1,6 @@
-/* Culinary coherence check.
- *
- * Replaces PART of what a test bake would catch. Let us be exact about which
- * part: this finds recipes that cannot work as written — impossible liquid to
- * flour ratios, an ingredient listed but never used, oven baking with no
- * temperature, a cooking time that does not match the method, a raw protein
- * that is never cooked.
- *
- * What it cannot find: taste, rise, and real texture. "Dry", "bland",
- * "rubbery" — only cooking the dish tells you that.
- *
- * A recipe that has not been cooked can be BAD. It must never be UNSAFE:
- * safety lives in the deterministic tables, not in the kitchen test.
- */
+/* Let us be exact about which part: this finds recipes that cannot work as
+ * written — impossible liquid to flour ratios, an ingredient listed but never
+ * used, oven baking with no temperature, a cooking time that does not. */
 "use strict";
 
 /* Reference volumes in ml, so everything lands on a comparable scale. */
@@ -26,9 +15,8 @@ function enMl(u, catalogue) {
   if (/bo[îi]te|conserve/.test(un)) return q * 400;
   if (/gros|grosse/.test(un)) return q * 400;
   if (/filet/.test(un)) return q * 150;
-  /* Unknown unit with a small quantity ("1 large", "2 grated units"):
-   * c'est un aliment qui se compte, pas un volume. Retourner le nombre brut
-   * would read as 1 ml and trigger false rejections. */
+  /* An unknown unit with a small quantity ("1 large") is a countable food,
+   * not a volume; returning the raw number would read as 1 ml. */
   if (q <= 10) return q * 100;
   return q;
 }
@@ -44,10 +32,8 @@ function totalPourRole(recette, catalogue, roles) {
   }, 0);
 }
 
-/* Word boundaries are mandatory : “fourchette” contains “four”.
- * A checker that cries wolf gets ignored, so it has to be exact.
- * Entries ending in "~" accept an inflection (simmer~ ->
- * mijoter, mijotez, mijote). */
+/* Word boundaries are mandatory : “fourchette” contains “four”. A checker
+ * that cries wolf gets ignored, so it has to be exact. */
 /* Recipe steps are English now, but partner feeds and older content may still
  * be French. Both vocabularies are kept: a checker that only understands one
  * language would silently stop catching anything in the other. */
@@ -62,10 +48,10 @@ const COOK_WORDS = ["cook~", "sear~", "brown~", "sauté~", "saute~", "fry~", "st
 
 function contient(txt, mots) {
   return mots.some(function (m) {
-    const brut = m.replace(/~$/, "");
+    const raw = m.replace(/~$/, "");
     const reason = m.endsWith("~")
-      ? "(^|[^a-zà-ÿ])" + brut
-      : "(^|[^a-zà-ÿ])" + brut + "([^a-zà-ÿ]|$)";
+      ? "(^|[^a-zà-ÿ])" + raw
+      : "(^|[^a-zà-ÿ])" + raw + "([^a-zà-ÿ]|$)";
     return new RegExp(reason, "i").test(txt);
   });
 }
@@ -78,8 +64,8 @@ function normalise(t) {
     .replace(/['\u2019]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function verifier(recette, donnees) {
-  const catalogue = donnees.catalogue;
+function verifier(recette, data) {
+  const catalogue = data.catalogue;
   const erreurs = [], avertissements = [];
   const txt = texteEtapes(recette);
   const txtNorm = normalise(txt);
@@ -179,8 +165,8 @@ function verifier(recette, donnees) {
 
   /* 5. Total volume has to be plausible for the number of servings. */
   const total = recette.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);
-  /* « 500 ml » n'est pas 500 portions. On n'accepte un nombre que s'il est
-   * followed by a serving word, not by a volume unit. */
+  /* "500 ml" is not 500 servings: a number counts only when a serving
+   * word follows it, never a volume unit. */
   /* Yield words, both languages. A partner feed may say "10 galettes" where
    * ours says "10 patties" — both have to be recognised as piece yields. */
   const mp = /(\d+)\s*(servings?|portions?|muffins?|patties?|galettes?|nuggets?|croquettes?|meatballs?|boulettes?|bars?|barres?|cookies?|biscuits?|cr[eê]pes?|glasses?|verres?|loaf|loaves|pains?|slices?|parts?|bites?|boules?|mini)/i

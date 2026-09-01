@@ -1,18 +1,5 @@
-/* Ratings and ranking.
- *
- * ONE RATING PER PERSON PER RECIPE. The latest one wins: a parent who cooks
- * the dish again and changes their mind must be able to correct it.
- *
- * THE RANKING IS NOT A RAW AVERAGE.
- *
- * With few subscribers, a single five-star rating would create "the best
- * recipe in the app". A minimum vote count keeps the worst of that out, but
- * it is not enough: at five votes, a recipe rated perfectly by five people
- * would outrank an excellent one rated by two hundred.
- *
- * Hence a Bayesian average: every recipe starts weighed down by a few
- * imaginary votes at a fixed anchor, and has to earn its way up.
- */
+/* Ratings and ranking: the latest one wins: a parent who cooks the dish again
+ * and changes their mind must be able to correct it. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -20,20 +7,8 @@ const path = require("path");
 const MIN_VOTES = 5;   /* below this, a recipe does not appear in the ranking */
 const WEIGHT = 8;            /* poids de l'ancrage, en votes fictifs */
 
-/* THE ANCHOR IS FIXED, AND THAT IS DELIBERATE.
- *
- * The usual anchor is the observed average of all ratings. That works when
- * ratings are spread out. Here they will not be: a parent mostly rates a recipe
- * they liked, so the overall average climbs toward
- * 4,5 et plus. L'ancrage se retrouverait au level des bonnes recettes, et ne
- * freinerait plus rien.
- *
- * Measured on test data: with a moving anchor, a recipe rated 5/5 by five
- * people came AHEAD of one rated 4.8 by sixty. That
- * n'est pas le ranking qu'on veut montrer.
- *
- * With a fixed anchor at 3.5, a recipe has to convince more than five
- * personnes pour monter — ce qui est exactement l'intention. */
+/* The anchor is fixed, and that is deliberate: the usual anchor is the
+ * observed average of all ratings. */
 const ANCHOR = 3.5;
 
 const FILE = process.env.BOUCHEES_NOTES || path.join(__dirname, "ratings.json");
@@ -90,8 +65,8 @@ function aggregate(recipeId, db) {
   };
 }
 
-/* Overall average, kept for observation and reporting — no longer used
- * comme ancrage, voir le commentaire au-dessus de ANCHOR. */
+/* Overall average, kept for reporting only. The anchor is fixed; see
+ * ANCHOR above. */
 function overallAverage(db) {
   let checksum = 0, n = 0;
   Object.values(db.ratings).forEach(function (byAccount) {
@@ -100,9 +75,8 @@ function overallAverage(db) {
   return n ? checksum / n : 3.5;
 }
 
-/* Le ranking. Retourne des identifiants et des scores; c'est l'appelant
- * that fetches the recipe content — the ranking knows nothing about
- * recettes, seulement les votes. */
+/* The ranking: identifiers and scores only. The caller fetches the
+ * recipe content; the ranking knows votes, not recipes. */
 function ranking(limit) {
   const db = read();
   const out = [];
@@ -141,8 +115,8 @@ function aggregates(ids, email) {
   return out;
 }
 
-/* Combien de recettes approchent du seuil — utile pour savoir si le
- * ranking va se remplir ou rester vide. */
+/* How many recipes are near the threshold: whether the ranking is about
+ * to fill or stay empty. */
 function progress() {
   const db = read();
   const account = { none: 0, onTheWay: 0, ranked: 0 };

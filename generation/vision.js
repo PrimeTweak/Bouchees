@@ -1,18 +1,5 @@
-/* Vision check on generated images.
- *
- * THE MODEL DESCRIBES; THE CODE DECIDES. A vision model is asked what it sees,
- * in plain words. It is never asked whether the image is acceptable — that
- * judgement stays here, in code we can read and test.
- *
- * An image is REJECTED when:
- *   - a food appears that the recipe does not contain;
- *   - a choking hazard is visible for the target age;
- *   - the picture is clearly a different dish;
- *   - the model fails, answers unreadably, or is missing entirely.
- *
- * That last case matters most. A failure never means acceptance: no verdict,
- * no photo, and the app falls back to its illustration.
- */
+/* Vision check on generated images: a vision model is asked what it sees, in
+ * plain words. */
 "use strict";
 const path = require("path");
 
@@ -54,9 +41,9 @@ function normaliser(t) {
     .replace(/['\u2019]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* The plant-based trap: "lait de coco" contains the word lait without being
- * produit laitier, « beurre de tournesol » n'est pas du beurre. Ces formes
- * sont reconnues AVANT le vocabulaire, et elles neutralisent la famille. */
+/* Plant-based false friends: "lait de coco" is not dairy, "beurre de
+ * tournesol" is not butter. Matched before the vocabulary, they cancel
+ * the family they would otherwise trigger. */
 const INNOCENTS = [
   /* Formes anglaises — les descriptions de vision sont maintenant en anglais,
    * dairy, and "coconut milk" does the same in English. */
@@ -111,13 +98,9 @@ function famillesDe(alimentNormalise) {
   return out;
 }
 
-/* The answer comes back in ENGLISH, because the catalogue is English.
- *
- * This asked for French food names while the ingredient catalogue had been
- * translated. The model would say "flocons d'avoine, banane, oeuf", the code
- * would compare against "rolled oats, mashed banana, egg", find nothing in
- * common, and reject a perfectly good photo with "no ingredient recognisable".
- * The two sides have to name food in the same language. */
+/* The answer comes back in ENGLISH, because the catalogue is English. This
+ * asked for French food names while the ingredient catalogue had been
+ * translated. */
 const CONSIGNE = [
   "You describe a photo of a dish. You judge nothing, you conclude nothing: you list.",
   "",
@@ -186,8 +169,8 @@ const openai = {
   }
 };
 
-/* With no vision configured we do not guess: the image is declared unreadable,
- * ce qui la fait rejeter. L'app garde son illustration. */
+/* With no vision engine configured, nothing is guessed: the image is
+ * declared unreadable and rejected, and the app keeps its drawing. */
 const absent = {
   name: "absent",
   disponible: function () { return true; },
@@ -224,8 +207,8 @@ function lireDescription(texte) {
 
 /* The core: compare what the vision named against what the recipe contains.
  * The verdict comes from the code, not from the model. */
-function comparer(description, recette, donnees) {
-  const catalogue = donnees.catalogue;
+function comparer(description, recette, data) {
+  const catalogue = data.catalogue;
   const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
   const erreurs = [], avertissements = [];
 
@@ -237,15 +220,15 @@ function comparer(description, recette, donnees) {
     return { ok: false, erreurs: ["aucun aliment identifié dans l'image"], avertissements: [], detectes: [] };
   }
 
-  const vus = description.aliments.map(normaliser);
+  const seen = description.aliments.map(normaliser);
   const presentes = Engine.analyserAllergenes(recette, catalogue);
 
   /* 1. An allergen ABSENT from the recipe must not appear in the image.
    *    This is the check that really matters. */
-  vus.forEach(function (aliment, i) {
+  seen.forEach(function (aliment, i) {
     famillesDe(aliment).forEach(function (famille) {
       if (presentes.indexOf(famille) !== -1) return;
-      const name = donnees.base.allergens.find(function (a) { return a.id === famille; });
+      const name = data.base.allergens.find(function (a) { return a.id === famille; });
       const msg = "the image shows \"" + description.aliments[i] + "\" while the recipe contains no " +
         (name ? name.name.toLowerCase() : famille);
       if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
@@ -256,20 +239,13 @@ function comparer(description, recette, donnees) {
   Object.keys(RISQUES_VISUELS).forEach(function (risque) {
     const touches = RISQUES_VISUELS[risque].filter(function (mot) {
       const m = normaliser(mot);
-      return vus.some(function (v) { return v.indexOf(m) !== -1; });
+      return seen.some(function (v) { return v.indexOf(m) !== -1; });
     });
     if (touches.length) erreurs.push("l'image montre un risque d'étouffement : " + risque);
   });
 
-  /* 3. THE DISH ITSELF HAS TO MATCH.
-   *
-   *    A bowl of oats topped with a raw egg was accepted for a muffin recipe:
-   *    banana, oats and egg were all present, so the ingredient check passed.
-   *    Ingredients are not a dish. The form has to line up too.
-   *
-   *    The comparison is deliberately loose — "muffins" against "a tray of
-   *    muffins" must pass — but a bowl described where baked goods are
-   *    expected does not. */
+    /* 3: a bowl of oats topped with a raw egg was accepted for a muffin recipe:
+   * banana, oats and egg were all present, so the ingredient check passed. */
   if (description.plat) {
     const platVu = normaliser(description.plat);
     const platAttendu = normaliser(recette.name);
@@ -282,18 +258,18 @@ function comparer(description, recette, donnees) {
     /* Vessel words carry the shape. A dish described as a bowl when the recipe
      * yields muffins is the exact failure this rule exists for. */
     const FORMES = [
-      { mots: ["muffin"], attendu: /muffin/i },
-      { mots: ["pancake", "crepe", "crêpe"], attendu: /pancake|cr[eê]pe/i },
-      { mots: ["patty", "patties", "fritter"], attendu: /patt(y|ies)|galette/i },
-      { mots: ["cookie", "biscuit"], attendu: /cookie|biscuit/i },
-      { mots: ["loaf", "bread"], attendu: /loaf|bread/i },
-      { mots: ["bar", "bars"], attendu: /\bbars?\b/i },
-      { mots: ["nugget"], attendu: /nugget/i },
-      { mots: ["meatball"], attendu: /meatball/i }
+      { mots: ["muffin"], expected: /muffin/i },
+      { mots: ["pancake", "crepe", "crêpe"], expected: /pancake|cr[eê]pe/i },
+      { mots: ["patty", "patties", "fritter"], expected: /patt(y|ies)|galette/i },
+      { mots: ["cookie", "biscuit"], expected: /cookie|biscuit/i },
+      { mots: ["loaf", "bread"], expected: /loaf|bread/i },
+      { mots: ["bar", "bars"], expected: /\bbars?\b/i },
+      { mots: ["nugget"], expected: /nugget/i },
+      { mots: ["meatball"], expected: /meatball/i }
     ];
     FORMES.forEach(function (f) {
-      const recetteVeutCetteForme = f.attendu.test(recette.name) ||
-        f.attendu.test(String(recette.servings || ""));
+      const recetteVeutCetteForme = f.expected.test(recette.name) ||
+        f.expected.test(String(recette.servings || ""));
       if (!recetteVeutCetteForme) return;
       const imageMontreCetteForme = f.mots.some(function (m) { return platVu.indexOf(m) !== -1; });
       if (!imageMontreCetteForme && !seRecoupent) {
@@ -311,15 +287,10 @@ function comparer(description, recette, donnees) {
   }).filter(Boolean);
   const reconnus = principaux.filter(function (p) {
     const mots = p.split(/\s+/).filter(function (w) { return w.length > 3; });
-    return vus.some(function (v) { return mots.some(function (w) { return v.indexOf(w) !== -1 || w.indexOf(v) !== -1; }); });
+    return seen.some(function (v) { return mots.some(function (w) { return v.indexOf(w) !== -1 || w.indexOf(v) !== -1; }); });
   });
-  /* A cooked dish hides its ingredients. On a photo of pancakes you see
-   * pancakes and a plate — not flour, not milk, not egg. Requiring a raw
-   * ingredient rejected every transformed dish, which is most of the corpus.
-   *
-   * The dish being correctly identified is STRONGER evidence than spotting an
-   * ingredient: "a stack of pancakes" for a recipe called Fluffy pancakes says
-   * the image is right, whatever survived the cooking. */
+    /* A cooked dish hides its ingredients: requiring a raw ingredient rejected
+   * every transformed dish, which is most of the corpus. */
   const platReconnu = description.plat &&
     normaliser(recette.name).split(/\s+/)
       .filter(function (w) { return w.length > 3; })
@@ -335,14 +306,8 @@ function comparer(description, recette, donnees) {
     avertissements.push("no raw ingredient visible — normal for a cooked dish, " +
       "the dish itself was identified");
   } else if (reconnus.length < 2 && principaux.length >= 4) {
-    /* One ingredient recognised is sometimes legitimate: in a photo of
-     * muffins on voit « muffin », pas la banane ni l'avoine. Mais si la
-     * vision ALSO hedges, that is the profile of a failed image — the one that
-     * "could be couscous, polenta or turmeric". Measured: an orange mush got
-     * through with recognised=1 and hedging.
-     *
-     * One ingredient recognised AND no hedging: accept.
-     * One ingredient recognised AND hedging: reject. */
+        /* One ingredient recognised is sometimes legitimate: in a photo of
+     * muffins on voit « muffin », pas la banane ni l'avoine. */
     if (description.incertitudes.length) {
       erreurs.push("only one ingredient recognised out of " + principaux.length +
         ", and the vision hedges — the image does not look enough like the recipe");
@@ -358,17 +323,17 @@ function comparer(description, recette, donnees) {
            detectes: description.aliments, reconnus: reconnus.length, attendus: principaux.length };
 }
 
-async function verifier(octets, recette, donnees, options) {
+async function verifier(octets, recette, data, options) {
   options = options || {};
   const moteur = options.moteur || choisir();
-  let brut;
-  try { brut = await moteur.decrire(octets, options.typeMime || "image/png"); }
+  let raw;
+  try { raw = await moteur.decrire(octets, options.typeMime || "image/png"); }
   catch (e) {
     return { ok: false, moteur: moteur.name, erreurs: ["the vision check failed: " + e.message],
              avertissements: [], detectes: [] };
   }
-  const description = lireDescription(brut);
-  const verdict = comparer(description, recette, donnees);
+  const description = lireDescription(raw);
+  const verdict = comparer(description, recette, data);
   verdict.moteur = moteur.name;
   verdict.le = new Date().toISOString();
   return verdict;

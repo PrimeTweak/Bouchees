@@ -1,16 +1,6 @@
-//  SavedAndTopRated.swift
-//
-//  TWO WAYS TO FIND A RECIPE THAT LEFT THE WINDOW
-//
-//  1. SAVED RECIPES. A parent finds a dish they love. Three weeks later it
-//     rotates out. If they lose it, they are right to be angry — and the
-//     rolling window turns against the product. So saving a recipe keeps a
-//     COMPLETE COPY on the device. It survives rotation, the network, and an
-//     expired subscription. It is theirs.
-//
-//  2. THE TOP RATED TAB. Recipes rated by enough people come back on merit.
-//     No artificial rotation: a recipe returns because parents liked it, not
-//     because a script fished it out.
+// If they lose it, they are right to be angry — and the rolling window turns
+// against the product. So saving a recipe keeps a COMPLETE COPY on the
+// device.
 
 import SwiftUI
 import UIKit
@@ -71,13 +61,13 @@ final class SavedRecipes {
 
 struct SaveButton: View {
     let recipe: Recipe
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
 
-    private var isOn: Bool { etat.saved.contains(recipe.id) }
+    private var isOn: Bool { app.saved.contains(recipe.id) }
 
     var body: some View {
         Button {
-            etat.saved.toggle(recipe)
+            app.saved.toggle(recipe)
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } label: {
             Image(systemName: isOn ? "bookmark.fill" : "bookmark")
@@ -91,17 +81,10 @@ struct SaveButton: View {
 // MARK: - Onglet Meilleures
 
 struct TopRatedScreen: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.navigate) private var navigate
-    /* ONE SHELF, NOT TWO BEHIND A SWITCH.
-     *
-     * This screen carried a segmented control whose second half rendered the
-     * saved list a second time, while SavedScreen already existed and held
-     * the same list. Two doors on the Recipes page then led here, one of them
-     * asking again which shelf you meant.
-     *
-     * The choice is made once, outside, on the two tiles above the week. The
-     * title matches the tile that opens it. */
+        /* One shelf, not two behind a switch: the choice is made once, outside,
+     * on the two tiles above the week. */
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -113,24 +96,24 @@ struct TopRatedScreen: View {
         .background(Tone.canvas.ignoresSafeArea())
         .navigationTitle("Top rated")
         .navigationBarTitleDisplayMode(.inline)
-        .refreshable { await etat.loadTopRated() }
-        .task { await etat.loadTopRated() }
+        .refreshable { await app.loadTopRated() }
+        .task { await app.loadTopRated() }
     }
 
     @ViewBuilder
     private var ranking: some View {
-        if etat.topRated.isEmpty {
+        if app.topRated.isEmpty {
             EmptyState(symbol: "star",
                      title: "The ranking is building up",
-                     message: "A recipe lands here once \(etat.ratingThreshold) people have rated it. Rate the ones you try — that is what brings the good ones up.")
+                     message: "A recipe lands here once \(app.ratingThreshold) people have rated it. Rate the ones you try — that is what brings the good ones up.")
         } else {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Recipes rated by at least \(etat.ratingThreshold) people. They stay available once their week has passed.")
+                Text("Recipes rated by at least \(app.ratingThreshold) people. They stay available once their week has passed.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                ForEach(Array(etat.topRated.enumerated()), id: \.element.id) { rank, recipe in
-                    if let res = etat.resultFor(recipe) {
+                ForEach(Array(app.topRated.enumerated()), id: \.element.id) { rank, recipe in
+                    if let res = app.resultFor(recipe) {
                         Button {
                             navigate(.recipe(recipe.id))
                         } label: {
@@ -161,7 +144,7 @@ struct RankRow: View {
     var body: some View {
         HStack(spacing: 13) {
             Text("\(rank)")
-                .font(.system(size: 19, weight: .heavy, design: .rounded))
+                .scaledFont(19, weight: .heavy, design: .rounded)
                 .monospacedDigit()
                 .foregroundStyle(rankColor)
                 .frame(width: 28)
@@ -195,10 +178,10 @@ struct RankRow: View {
 
 struct RatingBlock: View {
     let recipe: Recipe
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @State private var isWorking = false
 
-    private var summary: RatingSummary? { etat.ratings[recipe.id] }
+    private var summary: RatingSummary? { app.ratings[recipe.id] }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 11) {
@@ -212,7 +195,7 @@ struct RatingBlock: View {
                 StarRating(note: summary?.myRating) { nouvelle in
                     Task {
                         isWorking = true
-                        await etat.rate(recipe.id, note: nouvelle)
+                        await app.rate(recipe.id, note: nouvelle)
                         isWorking = false
                     }
                 }
@@ -223,13 +206,13 @@ struct RatingBlock: View {
                 }
             }
 
-            if etat.subscription.serverToken == nil {
-                Text("Sign in from Family to rate — without an account, one person could vote a hundred times.")
+            if app.subscription.serverToken == nil {
+                Text("Kept on this phone. It joins the shared ranking once you sign in with Apple, in the App Store version.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            } else if let a = summary, a.votes > 0, a.votes < etat.ratingThreshold {
+            } else if let a = summary, a.votes > 0, a.votes < app.ratingThreshold {
                 Text(String(format: String(localized: "%lld more ratings and this recipe can enter the ranking."),
-                            etat.ratingThreshold - a.votes))
+                            app.ratingThreshold - a.votes))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -243,17 +226,15 @@ struct RatingBlock: View {
 
 // MARK: - Saved recipes
 
-/// THE SCREEN THAT WAS NEVER REACHABLE.
-///
-/// `SavedRecipes` has persisted to disk since the first build, and the
-/// bookmark on the detail page has always written to it. Nothing ever read it
-/// back — the button saved into a void. This is the way in.
+/// The screen that was never reachable: `SavedRecipes` has persisted to disk
+/// since the first build, and the bookmark on the detail page has always
+/// written to it.
 struct SavedScreen: View {
-    @Environment(AppState.self) private var etat
+    @Environment(AppState.self) private var app
     @Environment(\.navigate) private var navigate
 
     private var pairs: [(recipe: Recipe, result: AdaptedRecipe)] {
-        etat.saved.recipes.compactMap { etat.pairFor(pour: $0.id) }
+        app.saved.recipes.compactMap { app.pairFor(for: $0.id) }
     }
 
     var body: some View {

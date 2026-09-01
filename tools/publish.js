@@ -1,37 +1,27 @@
-/* Publication — bloc A
- * node tools/publish.js  ->  writes dist/manifest.json and dist/batches/<batch>.json
- *
- * The corpus leaves the HTML file. From here the app loads versioned batches,
- * and the server hands over ONLY the batches the account is entitled to. A
- * paywall on the client is bypassed in ten seconds; the only wall that holds
- * is the one that does not send the data.
- *
- * What is NEVER behind the wall: the engine, the substitutions, the age rules.
- * A parent handed a diagnosis on a Tuesday evening must not hit a payment
- * screen.
- */
+/* From here the app loads versioned batches, and the server hands over ONLY
+ * the batches the account is entitled to. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const racine = path.join(__dirname, "..");
-const lire = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 const checksum = (o) => crypto.createHash("sha1").update(JSON.stringify(o)).digest("hex").slice(0, 12);
 const Semaines = require("./weeks.js");
 
 function publier(options) {
   options = options || {};
-  const pub = options.publishing || lire("data/publishing.json");
+  const pub = options.publishing || read("data/publishing.json");
   let corpus = options.corpus;
   if (!corpus) {
-    corpus = lire("data/recipes.json");
-    try { corpus = corpus.concat(lire("data/imported/imported-recipes.json")); } catch (e) {}
+    corpus = read("data/recipes.json");
+    try { corpus = corpus.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
     /* Generated recipes count like any other — leaving them out here made them
      * invisible to the manifest even though they were properly published. */
-    try { corpus = corpus.concat(lire("data/generated/generated-recipes.json")); } catch (e) {}
+    try { corpus = corpus.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
   }
   let manifesteImages = options.images || {};
-  if (!options.images) { try { manifesteImages = lire("generation/images/manifest.json"); } catch (e) {} }
+  if (!options.images) { try { manifesteImages = read("generation/images/manifest.json"); } catch (e) {} }
 
   const parLot = {};
   const orphans = [];
@@ -43,24 +33,26 @@ function publier(options) {
     const copie = JSON.parse(JSON.stringify(r));
     copie.batch = lot;
     const img = manifesteImages[r.id];
-    /* A photo is published only if it was reviewed AND is present on
-     * disque. Sinon l'app demanderait un fichier qui n'existe pas et
-     * retomberait silencieusement sur l'illustration. */
+    /* A photo is published only when reviewed AND present on disk; otherwise
+     * the app would request a missing file and silently fall back to the drawing. */
     if (img && img.revisePar && img.fichier &&
         fs.existsSync(path.join(racine, img.fichier))) {
       copie.image = img.fichier;
+      /* A 480px twin for the list, when PHOTOS-REDUIRE.command made one. */
+      const vignette = img.fichier.replace(/^images\//, "images/thumbs/");
+      if (fs.existsSync(path.join(racine, vignette))) copie.thumb = vignette;
     }
     parLot[lot].push(copie);
   });
 
   /* The safety tables travel with EVERY response, free or not. */
   const securite = {
-    ingredients: lire("data/ingredients.json"),
-    substitutions: lire("data/substitutions.json"),
-    base: lire("data/base.json"),
+    ingredients: read("data/ingredients.json"),
+    substitutions: read("data/substitutions.json"),
+    base: read("data/base.json"),
     /* The scanner's label vocabulary. Ships beside the safety tables, never
      * behind the paywall: reading a label is the free promise. */
-    lexicon: lire("data/label-lexicon.json")
+    lexicon: read("data/label-lexicon.json")
   };
 
   /* The rolling window: a subscriber sees the current week and the two before
@@ -80,12 +72,12 @@ function publier(options) {
   });
 
   return {
-    manifeste: {
+    manifest: {
       version: new Date().toISOString().slice(0, 10),
       safetyChecksum: checksum(securite),
       batches: batches,
-      /* The client knows which batches exist and which are locked,
-       * sans jamais recevoir leur content. */
+      /* The client learns which batches exist and which are locked, without
+       * ever receiving their content. */
       free: batches.filter(function (l) { return l.access === "free"; }).map(function (l) { return l.id; }),
       window: f.window,
       currentWeek: Semaines.identifiantSemaine(new Date()),
@@ -102,13 +94,13 @@ if (require.main === module) {
   const r = publier();
   const dist = path.join(racine, "dist");
   fs.mkdirSync(path.join(dist, "batches"), { recursive: true });
-  fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifeste, null, 2) + "\n");
+  fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
   fs.writeFileSync(path.join(dist, "safety.json"), JSON.stringify(r.securite) + "\n");
   Object.keys(r.content).forEach(function (lot) {
     fs.writeFileSync(path.join(dist, "batches", lot + ".json"), JSON.stringify(r.content[lot]) + "\n");
   });
-  console.log("Published — version " + r.manifeste.version);
-  r.manifeste.batches.forEach(function (l) {
+  console.log("Published — version " + r.manifest.version);
+  r.manifest.batches.forEach(function (l) {
     console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
       String(l.count).padStart(2) + " recipes  " + l.title);
   });

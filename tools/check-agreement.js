@@ -1,23 +1,7 @@
 #!/usr/bin/env node
-/* Cross-module agreement check.
- *   node tools/check-agreement.js
- *
- * WHY THIS EXISTS
- *
- * Four separate breakages tonight came from the same shape of mistake: two
- * pieces of code that must use the same word, renamed on one side only.
- *
- *   the bridge exposed `charger`, Swift called `load`     -> app would not start
- *   the JSON said `stages`, Swift wanted `stades`         -> tables would not decode
- *   the engine emitted `as_is`, Swift declared `telle_quelle`  -> recipes vanished
- *   the vision answered in French, the catalogue was English   -> every photo rejected
- *
- * None of them is a syntax error. Both sides compile, both sides look right,
- * and the failure surfaces at runtime with a message that names nothing.
- *
- * This walks every place where two modules have to agree on a literal value
- * and fails when they do not.
- */
+/* Four separate breakages tonight came from the same shape of mistake: two
+ * pieces of code that must use the same word, renamed on one side only. None
+ * of them is a syntax error. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -41,7 +25,7 @@ function agree(label, produced, accepted, where) {
 /* ---------- 1. image states: images.js produces, cycle.js compares ---------- */
 const imagesSrc = read("generation/images.js");
 const cycleSrc = read("tools/cycle.js");
-const statesProduced = (imagesSrc.match(/etat = [^;]+;/s) || [""])[0]
+const statesProduced = (imagesSrc.match(/state = [^;]+;/s) || [""])[0]
   .match(/"([^"]+)"/g) || [];
 const statesCompared = (cycleSrc.match(/p\.etat === "([^"]+)"/g) || [])
   .map(function (m) { return m.match(/"([^"]+)"/)[1]; });
@@ -139,12 +123,9 @@ if (w && Number(w) < 1320) {
 
 /* ---------- report -------------------------------------------------------- */
 
-/* THE LEXICON MUST COVER EVERY ALLERGEN THE APP CLAIMS TO CATCH.
- *
- * The scanner promised eleven families and the recipe catalogue was the only
+/* The scanner promised eleven families and the recipe catalogue was the only
  * vocabulary behind it — 92 cooking ingredients against a world of industrial
- * label terms. A family with no term in the lexicon is a family the scanner
- * silently cannot see. */
+ * label terms. */
 (function lexiqueComplet() {
   var lexPath = path.join(__dirname, "..", "data", "label-lexicon.json");
   if (!fs.existsSync(lexPath)) {
@@ -169,14 +150,9 @@ if (w && Number(w) < 1320) {
 
 checked.push("label lexicon");
 
-/* EVERY ALLERGEN NEEDS A GLYPH.
- *
- * AllergenGlyphs.swift matched on "lait", "oeuf", "arachide" while base.json
- * says milk, egg, peanut. One case in eleven matched — sesame, spelled the
- * same in both languages — so onboarding drew one icon and ten empty circles.
- *
- * Nothing failed: an unmatched id falls through to a default circle. A silent
- * default is exactly how this reached a device. */
+/* Every allergen needs a glyph: one case in eleven matched — sesame, spelled
+ * the same in both languages — so onboarding drew one icon and ten empty
+ * circles. */
 (function glyphesAllergenes() {
   const swift = path.join(__dirname, "..", "ios", "App", "App",
                           "Illustration", "AllergenGlyphs.swift");

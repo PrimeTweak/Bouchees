@@ -1,14 +1,6 @@
-//  DishArtwork.swift
-//
-//  The dish illustration, drawn with SwiftUI Canvas.
-//
-//  What matters here: the drawing is derived from the ingredients AFTER
-//  adaptation. When peanut butter becomes sunflower seed butter, the tile
-//  changes colour. An image can therefore never contradict the recipe card,
-//  which is the fatal flaw of a stock photo in an allergy app.
-//
-//  Unlike the engine, this port carries no safety risk: a difference between
-//  the JS drawing and the native one is cosmetic.
+// What matters here: the drawing is derived from the ingredients AFTER
+// adaptation. An image can therefore never contradict the recipe card, which
+// is the fatal flaw of a stock photo in an allergy app.
 
 import SwiftUI
 
@@ -207,7 +199,7 @@ private func radians(_ degres: Double) -> Double { degres * Double.pi / 180 }
 /// The same recipe and the same profile always give the same image. A drawing
 /// that changed on every scroll would make the app look like it improvises.
 struct SeededRandom {
-    private var etat: UInt32
+    private var app: UInt32
 
     init(_ seed: String) {
         var h: UInt32 = 2166136261
@@ -215,12 +207,12 @@ struct SeededRandom {
             h ^= UInt32(octet)
             h = h &* 16777619
         }
-        etat = h
+        app = h
     }
 
     mutating func next() -> Double {
-        etat = etat &+ 0x6D2B79F5
-        var t = etat
+        app = app &+ 0x6D2B79F5
+        var t = app
         t = (t ^ (t >> 15)) &* (1 | t)
         t = t &+ ((t ^ (t >> 7)) &* (61 | t)) ^ t
         return Double((t ^ (t >> 14)) & 0x7FFFFFFF) / Double(0x7FFFFFFF)
@@ -228,9 +220,8 @@ struct SeededRandom {
 
     mutating func between(_ a: Double, _ b: Double) -> Double { a + (b - a) * next() }
 
-    /// Same thing, typed CGFloat: the drawing works in CGFloat and mixed
-    /// conversions implicites sont exactement ce qui rend les expressions
-    /// expressions are ambiguous to the compiler.
+    /// The same value as CGFloat: the drawing works in CGFloat, and mixed
+    /// Double/CGFloat expressions are ambiguous to the compiler.
     mutating func betweenCG(_ a: Double, _ b: Double) -> CGFloat { CGFloat(between(a, b)) }
 }
 
@@ -253,11 +244,9 @@ struct DishArtwork: View {
         .accessibilityHidden(true)   // decorative: the verdict is read elsewhere
     }
 
-    /* Typed as LinearGradient, not `some View`.
-     *
-     * A gradient IS a ShapeStyle, but `some View` erases that: the opaque
-     * type only promises View, so AnyShapeStyle cannot take it. The concrete
-     * type keeps both conformances. */
+        /* Typed as LinearGradient, not `some View`: a gradient IS a ShapeStyle,
+     * but `some View` erases that: the opaque type only promises View, so
+     * AnyShapeStyle cannot take it. */
     private var backgroundGradient: LinearGradient {
         /* One neutral field for every category. Tinting the backdrop pink for
          * snacks and green for meals made the grid look like a colour-coded
@@ -292,16 +281,16 @@ struct DishArtwork: View {
 
         var rng = SeededRandom(seed)
 
-        // Le bowl occupe une proportion fixe, quelle que soit la size.
+        // The bowl takes a fixed share of the canvas, whatever its size.
         let side = min(size.width, size.height)
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        let rayonBol = side * 0.38
-        let rayonInterieur = rayonBol * 0.845
+        let bowlRadius = side * 0.38
+        let rayonInterieur = bowlRadius * 0.845
 
         // Crumbs on the cloth: deliberate asymmetry.
         for (i, a) in accents.prefix(3).enumerated() {
             let angle: Double = rng.between(0, 2 * Double.pi) + Double(i) * 2.1
-            let distance = rayonBol * rng.betweenCG(1.22, 1.45)
+            let distance = bowlRadius * rng.betweenCG(1.22, 1.45)
             let p = CGPoint(x: center.x + cosine(angle) * distance,
                             y: center.y + sine(angle) * distance * 0.78)
             guard p.x > 12, p.x < size.width - 12, p.y > 12, p.y < size.height - 12 else { continue }
@@ -312,13 +301,13 @@ struct DishArtwork: View {
 
         // Drop shadow
         context.fill(
-            Path(ellipseIn: CGRect(x: center.x - rayonBol * 0.95, y: center.y + rayonBol * 0.86,
-                                   width: rayonBol * 1.9, height: rayonBol * 0.22)),
+            Path(ellipseIn: CGRect(x: center.x - bowlRadius * 0.95, y: center.y + bowlRadius * 0.86,
+                                   width: bowlRadius * 1.9, height: bowlRadius * 0.22)),
             with: .color(.black.opacity(0.08)))
 
         // Le bowl
-        let bowl = Path(ellipseIn: CGRect(x: center.x - rayonBol, y: center.y - rayonBol,
-                                         width: rayonBol * 2, height: rayonBol * 2))
+        let bowl = Path(ellipseIn: CGRect(x: center.x - bowlRadius, y: center.y - bowlRadius,
+                                         width: bowlRadius * 2, height: bowlRadius * 2))
         context.fill(bowl, with: .color(Color(red: 0.988, green: 0.984, blue: 0.965)))
         context.stroke(bowl, with: .color(.black.opacity(0.12)), lineWidth: 1.5)
 
@@ -337,7 +326,7 @@ struct DishArtwork: View {
 
         // Reflet sur le rebord
         var highlight = Path()
-        highlight.addArc(center: center, radius: rayonBol * 0.92,
+        highlight.addArc(center: center, radius: bowlRadius * 0.92,
                       startAngle: .degrees(198), endAngle: .degrees(248), clockwise: false)
         context.stroke(highlight, with: .color(.white.opacity(0.8)),
                         style: StrokeStyle(lineWidth: side * 0.014, lineCap: .round))

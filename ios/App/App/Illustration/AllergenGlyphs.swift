@@ -1,7 +1,5 @@
-//  Glyphes.swift
-//
-//  The eleven allergen families, drawn as native Paths. A glyph is recognised
-//  at a glance in a grid; a word has to be read.
+// A glyph is recognised at a glance in a grid; a word has to be read.
+// Glyphes.swift
 
 import SwiftUI
 
@@ -27,17 +25,9 @@ struct AllergenGlyph: View {
 
         func point(_ x: Double, _ y: Double) -> CGPoint { CGPoint(x: x * e, y: y * e) }
 
-        /* THE IDS ARE ENGLISH.
-         *
-         * These cases were "lait", "oeuf", "arachide", "ble" — and the
-         * allergen ids in data/base.json are milk, egg, peanut, wheat. Exactly
-         * one of eleven matched: sesame, the same in both languages.
-         *
-         * So the onboarding drew one glyph and ten empty circles, and nothing
-         * failed loudly: an unmatched id falls to the default, which is a
-         * circle. A silent default is why this shipped.
-         *
-         * check-swift now cross-checks these cases against base.json. */
+                /* The ids are english: these cases were "lait", "oeuf", "arachide",
+         * "ble" — and the allergen ids in data/base.json are milk, egg,
+         * peanut, wheat. */
         switch id {
         case "milk":
             // Berlingot

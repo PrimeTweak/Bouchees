@@ -43,7 +43,7 @@ const body = JSON.stringify({
   width: 1664, height: 1104, steps: 8
 });
 
-function ecrire(nom, base64) {
+function write(nom, base64) {
   const b = Buffer.from(base64, "base64");
   fs.writeFileSync("/tmp/" + nom + ".png", b);
   const png = b[0] === 0x89 && b.toString("ascii", 1, 4) === "PNG";
@@ -60,7 +60,7 @@ async function viaFetch() {
     body: body
   });
   const d = await rep.json();
-  ecrire("node-fetch", d.images[0]);
+  write("node-fetch", d.images[0]);
 }
 
 /* 2 — Node fetch with curl's headers: no compression, no keep-alive */
@@ -77,7 +77,7 @@ async function viaFetchCurlHeaders() {
     body: body
   });
   const d = await rep.json();
-  ecrire("node-curl-headers", d.images[0]);
+  write("node-curl-headers", d.images[0]);
 }
 
 /* 3 — the raw http module, closest to what curl does on the wire */
@@ -93,12 +93,12 @@ function viaHttp() {
         "Connection": "close"
       }
     }, function (res) {
-      const morceaux = [];
-      res.on("data", function (c) { morceaux.push(c); });
+      const pieces = [];
+      res.on("data", function (c) { pieces.push(c); });
       res.on("end", function () {
         try {
-          const d = JSON.parse(Buffer.concat(morceaux).toString("utf8"));
-          ecrire("node-raw-http", d.images[0]);
+          const d = JSON.parse(Buffer.concat(pieces).toString("utf8"));
+          write("node-raw-http", d.images[0]);
           resolve();
         } catch (e) { reject(e); }
       });

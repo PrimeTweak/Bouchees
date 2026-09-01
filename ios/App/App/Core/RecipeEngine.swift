@@ -1,14 +1,5 @@
-//  RecipeEngine.swift
-//
-//  The substitution engine runs inside JavaScriptCore. This is not a web view:
-//  no HTML, no DOM, no WKWebView. It is a computation interpreter, called from
-//  Swift, whose JSON output is decoded into Swift types. The interface itself
-//  is entirely SwiftUI.
-//
-//  The choice is deliberate. The engine is covered by a test suite, including
-//  an invariant checked across thousands of combinations. Porting it to Swift
-//  would create a second truth, and a divergence between the two on food
-//  allergies is not a display bug.
+// The substitution engine runs inside JavaScriptCore. This is not a web view:
+// no HTML, no DOM, no WKWebView.
 
 import Foundation
 import JavaScriptCore
@@ -40,7 +31,7 @@ enum EngineError: LocalizedError {
 final class RecipeEngine {
 
     private let context: JSContext
-    private var pont: JSValue?
+    private var bridge: JSValue?
     private var derniereException: String?
 
     /// Cache per profile: recomputing 30 recipes on every redraw would be
@@ -75,16 +66,12 @@ final class RecipeEngine {
         guard let p = context.objectForKeyedSubscript("PONT"), !p.isUndefined else {
             throw EngineError.exception("PONT not found after loading")
         }
-        pont = p
+        bridge = p
     }
 
-    /// Injects the safety tables. Until that is done the engine refuses to
-    /// answer — never a silent default value.
-    /// - Parameter lexicon: label vocabulary for the scanner. The recipe
-    ///   catalogue holds 92 cooking ingredients; a product label says
-    ///   "durum wheat semolina" and "thiamine mononitrate", which are not
-    ///   cooking ingredients at all. Without this every processed product
-    ///   came back "not sure".
+    /// Injects the safety tables: until that is done the engine refuses to
+    /// answer — never a silent default value. - Parameter lexicon: label
+    /// vocabulary for the scanner.
     func chargerDonnees(ingredients: Data, substitutions: Data, base baseData: Data,
                         lexicon: Data? = nil) throws {
         let lex = lexicon.map { String(decoding: $0, as: UTF8.self) } ?? "null"
@@ -107,9 +94,9 @@ final class RecipeEngine {
 
     @discardableResult
     private func appeler(_ methode: String, _ arguments: [Any]) throws -> String {
-        guard let pont else { throw EngineError.exception("bridge not initialised") }
+        guard let bridge else { throw EngineError.exception("bridge not initialised") }
         derniereException = nil
-        let retour = pont.invokeMethod(methode, withArguments: arguments)
+        let retour = bridge.invokeMethod(methode, withArguments: arguments)
         if let e = derniereException { throw EngineError.exception("\(methode) — \(e)") }
         guard let texte = retour?.toString(), !texte.isEmpty, texte != "undefined" else {
             throw EngineError.reponseVide(methode)
@@ -136,55 +123,53 @@ final class RecipeEngine {
 
     /// Adapts the whole corpus at once. One round trip into JS instead of
     /// thirty, and the result is cached for this profile.
-    func adapter(_ recipes: [Recipe], pour profile: ChildProfile) throws -> [AdaptedRecipe] {
+    func adapt(_ recipes: [Recipe], for profile: ChildProfile) throws -> [AdaptedRecipe] {
         guard pret else { throw EngineError.exception("data not loaded") }
         let k = key(profile, recipes.count)
-        if let deja = cache[k] { return deja }
+        if let existing = cache[k] { return existing }
 
         let encodeur = JSONEncoder()
         let jsonRecettes = String(decoding: try encodeur.encode(recipes), as: UTF8.self)
         let jsonProfil = String(decoding: try encodeur.encode(
             ProfilPourMoteur(ageMonths: profile.ageMonths, allergens: profile.allergens)), as: UTF8.self)
 
-        let brut = try appeler("adaptBatch", [jsonRecettes, jsonProfil])
-        let resultats = try decoder([AdaptedRecipe].self, brut, "adapterLot")
+        let raw = try appeler("adaptBatch", [jsonRecettes, jsonProfil])
+        let resultats = try decoder([AdaptedRecipe].self, raw, "adapterLot")
         cache[k] = resultats
         return resultats
     }
 
-    func adapter(_ recipe: Recipe, pour profile: ChildProfile) throws -> AdaptedRecipe {
+    func adapt(_ recipe: Recipe, for profile: ChildProfile) throws -> AdaptedRecipe {
         let encodeur = JSONEncoder()
         let jsonRecette = String(decoding: try encodeur.encode(recipe), as: UTF8.self)
         let jsonProfil = String(decoding: try encodeur.encode(
             ProfilPourMoteur(ageMonths: profile.ageMonths, allergens: profile.allergens)), as: UTF8.self)
-        let brut = try appeler("adapt", [jsonRecette, jsonProfil])
-        return try decoder(AdaptedRecipe.self, brut, "adapter")
+        let raw = try appeler("adapt", [jsonRecette, jsonProfil])
+        return try decoder(AdaptedRecipe.self, raw, "adapter")
     }
 
-    func stage(pour ageMonths: Int) throws -> TextureStage {
-        let brut = try appeler("stage", [ageMonths])
-        return try decoder(TextureStage.self, brut, "stage")
+    func stage(for ageMonths: Int) throws -> TextureStage {
+        let raw = try appeler("stage", [ageMonths])
+        return try decoder(TextureStage.self, raw, "stage")
     }
 
     /// Reads the label of a scanned product. The engine aggregates; Swift only displays.
-    func shoppingList(_ recipes: [Recipe], pour profile: ChildProfile) throws -> [ShoppingItem] {
+    func shoppingList(_ recipes: [Recipe], for profile: ChildProfile) throws -> [ShoppingItem] {
         guard pret else { throw EngineError.exception("data not loaded") }
         let encodeur = JSONEncoder()
         let jsonRecettes = String(decoding: try encodeur.encode(recipes), as: UTF8.self)
         let jsonProfil = String(decoding: try encodeur.encode(
             ProfilPourMoteur(ageMonths: profile.ageMonths,
                              allergens: profile.allergens)), as: UTF8.self)
-        let brut = try appeler("shoppingList", [jsonRecettes, jsonProfil])
-        return try decoder([ShoppingItem].self, brut, "shoppingList")
+        let raw = try appeler("shoppingList", [jsonRecettes, jsonProfil])
+        return try decoder([ShoppingItem].self, raw, "shoppingList")
     }
 
     func evaluateLabel(_ texte: String, evites: [String]) throws -> ProductVerdict {
         let jsonEvites = String(decoding: try JSONEncoder().encode(evites), as: UTF8.self)
-        let brut = try appeler("evaluateLabel", [texte, jsonEvites])
-        return try decoder(ProductVerdict.self, brut, "evaluateLabel")
+        let raw = try appeler("evaluateLabel", [texte, jsonEvites])
+        return try decoder(ProductVerdict.self, raw, "evaluateLabel")
     }
-
-    func viderCache() { cache.removeAll() }
 
     // MARK: - Confort
 
@@ -199,7 +184,7 @@ final class RecipeEngine {
     }
 }
 
-/// Forme minimale attendue par le pont JS.
+/// Forme minimale attendue par le bridge JS.
 private struct ProfilPourMoteur: Encodable {
     let ageMonths: Int
     let allergens: [String]

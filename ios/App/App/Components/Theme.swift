@@ -1,19 +1,13 @@
-//  Theme.swift
-//
-//  Le langage visuel, en un seul endroit. Les couleurs viennent des assets
-//  (light and dark), no values hard-coded in the views.
+// Theme.swift Le langage visuel, en un seul endroit.
 
 import SwiftUI
 
 /* Kept as an alias so nothing breaks, but every colour now resolves through
- * Tone — one source, named by role, switching with the appearance. The asset
- * catalogue entries are no longer read: they had dark variants, but they were
- * a second place to keep in sync. */
+ * Tone — one source, named by role, switching with the appearance. */
 enum Tint {
     static let betterave = Tone.brand
     static let pois = Tone.yes
     static let courge = Tone.swap
-    static let courgePale = Tone.swapWash
     static let canneberge = Tone.no
     static let background = Tone.canvas
 }
@@ -81,12 +75,8 @@ struct Verdict {
         }
     }
 
-    /// The short form on a card.
-    ///
-    /// Parent words, not engine words. "As is" and "Adapted" describe what the
+    /// The short form on a card: "As is" and "Adapted" describe what the
     /// engine did; "Ready" and "2 swaps" describe what the parent has to do.
-    /// A card is scanned by eye — the badge has to answer "how much work is
-    /// this" in one glance.
     static func token(_ result: AdaptedRecipe) -> String {
         switch result.status {
         case .asIs: return String(localized: "Ready")
@@ -110,7 +100,7 @@ struct VerdictChip: View {
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: result.status.symbol)
-                .font(.system(size: 10, weight: .bold))
+                .scaledFont(10, weight: .bold)
             Text(Verdict.token(result))
                 .font(.caption2.weight(.semibold))
         }
@@ -132,84 +122,6 @@ struct GuidanceChip: View {
             .padding(.vertical, 5)
             .background(.thinMaterial, in: Capsule())
             .accessibilityLabel("\(count) age-related safety note\(count > 1 ? "s" : "")")
-    }
-}
-
-struct RecipeCard: View {
-    let recipe: Recipe
-    let result: AdaptedRecipe
-
-    private var estBloquee: Bool { result.status == .notAdaptable }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            /* Square, like the photos. The generated images are 1:1 — FLUX is
-             * trained square — so a 4:3 frame cropped a clean photo for no
-             * reason and made the drawings and the photos disagree. */
-            RecipeVisual(recipe: recipe, result: result)
-                .aspectRatio(1, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .clipped()
-                .saturation(estBloquee ? 0.35 : 1)
-                .opacity(estBloquee ? 0.75 : 1)
-                .overlay(alignment: .topLeading) {
-                    VerdictChip(result: result).padding(9)
-                }
-                .overlay(alignment: .topTrailing) {
-                    if !estBloquee && result.ageGuidanceCount > 0 {
-                        GuidanceChip(count: result.ageGuidanceCount).padding(9)
-                    }
-                }
-
-            /* Two lines are RESERVED for the title whether it needs them or
-             * not, and the meta row is pushed to the bottom. Without that, a
-             * title that wraps makes its card taller than the one beside it
-             * and the grid stops lining up. */
-            VStack(alignment: .leading, spacing: 5) {
-                Text(recipe.name)
-                    .font(.headline)
-                    .lineLimit(2, reservesSpace: true)
-                    .multilineTextAlignment(.leading)
-                    .foregroundStyle(.primary)
-
-                HStack(spacing: 7) {
-                    Text(recipe.subtitle)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    if let v = recipe.votes, v > 0 {
-                        RatingBadge(votes: v, average: recipe.average, compact: true)
-                    }
-                }
-
-                if let bloquante = result.blockingAlert {
-                    Text(bloquante.message)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2, reservesSpace: true)
-                        .padding(.top, 4)
-                } else if let e = result.firstSwap {
-                    SwapLine(de: e.de, to: e.to, autres: result.swapCount - 1)
-                        .padding(.top, 4)
-                } else {
-                    /* Keeps the block the same height when there is nothing to
-                     * say, so a card with no swap sits level with one that has. */
-                    Color.clear.frame(height: 1).padding(.top, 4)
-                }
-                Spacer(minLength: 0)
-            }
-            .frame(maxWidth: .infinity, minHeight: 108, alignment: .topLeading)
-            .padding(.horizontal, 13)
-            .padding(.vertical, 12)
-        }
-        .background(Tone.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(estBloquee ? Tint.canneberge.opacity(0.25) : Color.primary.opacity(0.07),
-                              style: StrokeStyle(lineWidth: 1, dash: estBloquee ? [4, 3] : []))
-        )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(recipe.name). \(Verdict.token(result)).")
     }
 }
 
@@ -242,7 +154,7 @@ struct EmptyState: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: symbol)
-                .font(.system(size: 40))
+                .scaledFont(40)
                 .foregroundStyle(Tint.betterave.opacity(0.7))
             Text(title).font(.title3.weight(.bold))
             Text(message)
@@ -279,21 +191,5 @@ struct MessageBanner: View {
     }
 }
 
-struct SectionHeader: View {
-    let title: String
-    let compte: Int
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 9) {
-            Text(title).font(.title3.weight(.bold))
-            Text("\(compte)").font(.caption.monospacedDigit()).foregroundStyle(.tertiary)
-            Rectangle().frame(height: 1).foregroundStyle(.quaternary)
-        }
-    }
-}
-
 // MARK: - Grid adaptative
 
-enum Grid {
-    static let colonnes = [GridItem(.adaptive(minimum: 158), spacing: 14)]
-}

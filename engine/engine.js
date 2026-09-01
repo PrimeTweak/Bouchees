@@ -1,20 +1,5 @@
-/* Substitution engine — the only place that decides anything.
- *
- * Zero dependencies, UMD, runs identically in Node, a browser and
- * JavaScriptCore. That is deliberate: one engine means one truth, and on food
- * allergies a second implementation would be a second truth.
- *
- * INVARIANTS, PROVEN BY THE TEST SUITE
- *   - An adapted recipe never contains an avoided allergen.
- *   - No substitute is ever offered below its minimum age.
- *   - Allergens are DERIVED from the ingredient catalogue, never read off an
- *     external label. A partner feed can be wrong; our catalogue is the
- *     reference.
- *   - When no safe substitute exists, the recipe is marked not_adaptable with
- *     a blocking alert. Never a silent removal — a parent must see the reason.
- *   - Age rules apply to the FINAL ingredient, after substitution. Swapping in
- *     honey for a nine-month-old would otherwise slip through.
- */
+/* Substitution engine — the only place that decides anything: zero
+ * dependencies, UMD, runs identically in Node, a browser and JavaScriptCore. */
 (function (racine, fabrique) {
   if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
   else racine.Engine = fabrique();
@@ -34,19 +19,19 @@
   /* Allergen families present in a list of ingredient usages, derived from the
    * catalogue — never read off an external label. */
   function allergenesDe(usages, catalogue) {
-    var vus = {};
+    var seen = {};
     usages.forEach(function (u) {
       if (u.status === "omitted" || u.status === "blocked") return;
       var id = u.to || u.id;
       var def = catalogue[id];
       if (!def) return;
-      def.allergens.forEach(function (a) { vus[a] = true; });
+      def.allergens.forEach(function (a) { seen[a] = true; });
     });
-    return Object.keys(vus).sort();
+    return Object.keys(seen).sort();
   }
 
-  function analyserAllergenes(recette, catalogue) {
-    return allergenesDe(recette.ingredients, catalogue);
+  function analyserAllergenes(recipe, catalogue) {
+    return allergenesDe(recipe.ingredients, catalogue);
   }
 
   /* Texture stage that applies to a given age. */
@@ -62,9 +47,9 @@
 
     if (!swaps.length) return etapes;
 
-    return etapes.map(function (etape) {
-      var texte = typeof etape === "string" ? etape : etape.text;
-      if (!texte) return etape;
+    return etapes.map(function (step) {
+      var texte = typeof step === "string" ? step : step.text;
+      if (!texte) return step;
 
       swaps.forEach(function (i) {
         /* A step says "milk" where the catalogue says "Cow's milk". Try the
@@ -74,12 +59,9 @@
         if (!motif.test(texte)) {
           var court = nomCourt(i.name);
           if (!court) return;
-          /* Match the WHOLE noun phrase, not the last word alone.
-           *
-           * Replacing just "butter" in "peanut butter" leaves "peanut
-           * sunflower seed butter" — with the allergen still in the sentence.
-           * So any leading words from the ingredient's own name are consumed
-           * too, and the plural is allowed. */
+                    /* Match the WHOLE noun phrase, not the last word alone: so any
+           * leading words from the ingredient's own name are consumed too,
+           * and the plural is allowed. */
           var prefixes = motsAvant(i.name, court);
           motif = new RegExp("\\b(?:" + prefixes + "\\s+)?" + echapper(court) + "s?\\b", "gi");
         } else {
@@ -94,14 +76,14 @@
         });
       });
 
-      return typeof etape === "string" ? texte
-        : Object.assign({}, etape, { text: texte });
+      return typeof step === "string" ? texte
+        : Object.assign({}, step, { text: texte });
     });
   }
 
   /* "Cow's milk" -> "milk". Skips words that are too generic to match safely. */
-  function nomCourt(nom) {
-    var mots = String(nom).toLowerCase().split(/[\s']+/).filter(Boolean);
+  function nomCourt(name) {
+    var mots = String(name).toLowerCase().split(/[\s']+/).filter(Boolean);
     var dernier = mots[mots.length - 1];
     if (!dernier || dernier.length < 3) return null;
     if (["oil", "water", "salt", "sugar", "powder"].indexOf(dernier) !== -1) return null;
@@ -110,44 +92,37 @@
 
   /* The words that sit before the head noun, as an alternation: for
    * "Peanut butter" and head "butter", this yields "peanut". */
-  function motsAvant(nom, tete) {
-    var mots = String(nom).toLowerCase().split(/[\s']+/).filter(Boolean);
-    var avant = mots.slice(0, mots.lastIndexOf(tete)).filter(function (m) {
+  function motsAvant(name, tete) {
+    var mots = String(name).toLowerCase().split(/[\s']+/).filter(Boolean);
+    var before = mots.slice(0, mots.lastIndexOf(tete)).filter(function (m) {
       return m.length > 2;
     });
-    return avant.length ? avant.map(echapper).join("|") : "";
+    return before.length ? before.map(echapper).join("|") : "";
   }
 
   function echapper(t) {
     return String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
-  /* THE WEEK'S SHOPPING LIST.
-   *
-   * Everything a parent buys for one batch, already adapted: no milk on the
-   * list, fortified soy beverage instead, with the swap noted so they know why
-   * when they are standing in front of the shelf.
-   *
-   * Quantities are added only when the units MATCH. The corpus mixes "125 ml"
-   * with "1 unit", and inventing a total across those would be a lie on a
-   * shopping list — mismatched entries are listed side by side instead.
-   */
-  function listeEpicerie(recettes, options, donnees) {
-    var catalogue = donnees.catalogue;
-    var lignes = {};
+    /* Everything a parent buys for one batch, already adapted: no milk on the
+   * list, fortified soy beverage instead, with the swap noted so they know
+   * why when they are standing in front of the shelf. */
+  function listeEpicerie(recipes, options, data) {
+    var catalogue = data.catalogue;
+    var lines = {};
 
-    recettes.forEach(function (recette) {
-      var adaptee = adapterRecette(recette, options, donnees);
+    recipes.forEach(function (recipe) {
+      var adaptee = adapterRecette(recipe, options, data);
 
       adaptee.ingredients.forEach(function (ing) {
         if (ing.status === "omitted") return;
 
-        var nom = ing.toName || ing.name;
-        var cle = nom.toLowerCase();
+        var name = ing.toName || ing.name;
+        var key = name.toLowerCase();
 
-        if (!lignes[cle]) {
-          lignes[cle] = {
-            name: nom,
+        if (!lines[key]) {
+          lines[key] = {
+            name: name,
             aisle: rayonPour(ing, catalogue),
             quantities: [],
             recipes: [],
@@ -155,32 +130,32 @@
           };
         }
 
-        var ligne = lignes[cle];
-        if (ligne.recipes.indexOf(recette.name) === -1) {
-          ligne.recipes.push(recette.name);
+        var ligne = lines[key];
+        if (ligne.recipes.indexOf(recipe.name) === -1) {
+          ligne.recipes.push(recipe.name);
         }
 
         /* qty arrives as a bare number from the published batches and as
          * { value } from the local corpus. Accept both rather than depending
          * on which path loaded the recipe. */
-        var valeur = typeof ing.qty === "number" ? ing.qty
+        var value = typeof ing.qty === "number" ? ing.qty
                    : (ing.qty && ing.qty.value) || 0;
-        if (valeur) {
+        if (value) {
           var unite = ing.unit || "";
           var existante = null;
           for (var i = 0; i < ligne.quantities.length; i++) {
             if (ligne.quantities[i].unit === unite) { existante = ligne.quantities[i]; break; }
           }
-          if (existante) existante.value += valeur;
-          else ligne.quantities.push({ value: valeur, unit: unite });
+          if (existante) existante.value += value;
+          else ligne.quantities.push({ value: value, unit: unite });
         }
       });
     });
 
-    var sortie = [];
-    for (var k in lignes) { if (lignes.hasOwnProperty(k)) sortie.push(lignes[k]); }
+    var output = [];
+    for (var k in lines) { if (lines.hasOwnProperty(k)) output.push(lines[k]); }
 
-    return sortie.sort(function (a, b) {
+    return output.sort(function (a, b) {
       if (a.aisle !== b.aisle) {
         return ORDRE_RAYONS.indexOf(a.aisle) - ORDRE_RAYONS.indexOf(b.aisle);
       }
@@ -238,11 +213,9 @@
     return null;
   }
 
-  /* Deterministic pick of a substitute: the first option in the table that
-   * (1) introduces no avoided allergen,
-   * (2) meets its own minimum age,
-   * (3) is not itself blocked at that age with no way out.
-   * Retourne null si aucune option ne passe. */
+    /* Deterministic pick of a substitute: the first option in the table that
+   * (1) introduces no avoided allergen, (2) meets its own minimum age, (3) is
+   * not itself blocked at that age with no way out. */
   function choisirSubstitut(regle, allergenesEvites, ageMois, catalogue, base) {
     if (!regle) return null;
     for (var i = 0; i < regle.options.length; i++) {
@@ -261,35 +234,34 @@
 
   /* ---------- fonction principale ---------- */
 
-  /* adapterRecette(recette, { allergens: [...], ageMois: n }, donnees)
-   * donnees = { catalogue, substitutions, base }
-   * Returns a complete object: ingredients carrying the origin of every
-   * decision, graded alerts, texture guidance, overall status. */
-  function adapterRecette(recette, options, donnees) {
+    /* adapterRecette(recipe, { allergens: [...], ageMois: n }, data)
+   * data = { catalogue, substitutions, base } Returns a complete object:
+   * ingredients carrying the origin of every decision, graded alerts, */
+  function adapterRecette(recipe, options, data) {
     var evites = (options.allergens || []).slice().sort();
     var ageMois = options.ageMois;
-    var catalogue = donnees.catalogue;
-    var base = donnees.base;
+    var catalogue = data.catalogue;
+    var base = data.base;
 
-    var resultat = {
-      id: recette.id,
-      name: recette.name,
+    var result = {
+      id: recipe.id,
+      name: recipe.name,
       status: "as_is",          /* telle_quelle | adaptee | non_adaptable */
       swapCount: 0,
       ingredients: [],
       alerts: [],
       texture: stadePour(ageMois, base),
-      steps: recette.steps
+      steps: recipe.steps
     };
 
-    if (ageMois < recette.minAgeMonths) {
-      resultat.alerts.push({
+    if (ageMois < recipe.minAgeMonths) {
+      result.alerts.push({
         level: "caution",
-        message: "This recipe is written for " + recette.minAgeMonths + " months and up — texture and shape need rethinking below that age."
+        message: "This recipe is written for " + recipe.minAgeMonths + " months and up — texture and shape need rethinking below that age."
       });
     }
 
-    recette.ingredients.forEach(function (usage) {
+    recipe.ingredients.forEach(function (usage) {
       var def = catalogue[usage.id];
       var role = roleDe(usage, def);
       var item = {
@@ -305,13 +277,13 @@
       /* 1 — allergen conflict on the original ingredient */
       var conflit = def ? intersection(def.allergens, evites) : [];
       if (conflit.length > 0) {
-        var regle = reglePour(usage.id, role, donnees.substitutions);
+        var regle = reglePour(usage.id, role, data.substitutions);
         var choix = choisirSubstitut(regle, evites, ageMois, catalogue, base);
         if (!choix) {
           item.status = "blocked";
           item.reason = "Contains: " + conflit.join(", ");
-          resultat.status = "not_adaptable";
-          resultat.alerts.push({
+          result.status = "not_adaptable";
+          result.alerts.push({
             level: "blocking",
             message: "No safe substitute for " + item.name + " (" + conflit.join(", ") + ") at this age."
           });
@@ -319,7 +291,7 @@
           item.status = "omitted";
           item.reason = "Contains: " + conflit.join(", ");
           item.ratio = choix.ratio;
-          resultat.swapCount++;
+          result.swapCount++;
         } else {
           var defSub = catalogue[choix.id];
           item.status = "swapped";
@@ -329,7 +301,7 @@
           item.reason = "Contains: " + conflit.join(", ");
           if (choix.note) item.substituteNote = choix.note;
           if (defSub.note) item.ingredientNote = defSub.note;
-          resultat.swapCount++;
+          result.swapCount++;
         }
       }
 
@@ -343,8 +315,8 @@
             var conflitSwap = intersection(defSwap.allergens, evites);
             if (conflitSwap.length > 0) {
               item.status = "blocked";
-              resultat.status = "not_adaptable";
-              resultat.alerts.push({
+              result.status = "not_adaptable";
+              result.alerts.push({
                 level: "blocking",
                 message: item.name + " should be avoided before " + interdit.beforeMonths +
                   " months, and its replacement (" + defSwap.name + ") contains: " + conflitSwap.join(", ") + "."
@@ -355,19 +327,19 @@
               item.toName = defSwap.name;
               item.ratio = interdit.action.ratio;
               item.reason = interdit.reason;
-              resultat.swapCount++;
-              resultat.alerts.push({ level: "info", message: item.name + " -> " + defSwap.name + ": " + interdit.reason + "." });
+              result.swapCount++;
+              result.alerts.push({ level: "info", message: item.name + " -> " + defSwap.name + ": " + interdit.reason + "." });
             }
           } else if (interdit.action.type === "prep") {
             item.prep = interdit.action.note;
-            resultat.alerts.push({
+            result.alerts.push({
               level: "safety",
               message: item.name + " — " + interdit.reason + ". " + interdit.action.note + "."
             });
           } else {
             item.status = "blocked";
-            resultat.status = "not_adaptable";
-            resultat.alerts.push({
+            result.status = "not_adaptable";
+            result.alerts.push({
               level: "blocking",
               message: item.name + " should be avoided before " + interdit.beforeMonths + " months: " + interdit.reason + "."
             });
@@ -375,33 +347,23 @@
         }
       }
 
-      resultat.ingredients.push(item);
+      result.ingredients.push(item);
     });
 
-    if (resultat.status !== "not_adaptable" && resultat.swapCount > 0) {
-      resultat.status = "adapted";
+    if (result.status !== "not_adaptable" && result.swapCount > 0) {
+      result.status = "adapted";
     }
 
     /* Checkable invariant: the allergens derived from the result never
      * intersect the avoided list, except when status is not_adaptable. */
-    resultat.remainingAllergens = allergenesDe(resultat.ingredients, catalogue);
-    /* THE STEP TEXT NAMES THE INGREDIENT THAT WAS REMOVED.
-     *
-     * Step 2 of the banana muffins reads "Mix the banana, egg, milk and oil"
-     * — but the engine has just replaced the egg with applesauce and the milk
-     * with soy. A parent mid-recipe reads the name of the food their child
-     * cannot eat, at the step where they are told to add it, and has to scroll
-     * back to the swap list to translate. With their hands in the batter.
-     *
-     * Measured on the corpus: eight of the seventeen adapted recipes carry
-     * this conflict for a milk/egg/peanut profile.
-     *
-     * So the steps are rewritten with the names the parent actually has. The
-     * original stays available in `stepsOriginal` for anyone who wants it. */
-    resultat.stepsOriginal = recette.steps;
-    resultat.steps = reecrireEtapes(recette.steps, resultat.ingredients);
+    result.remainingAllergens = allergenesDe(result.ingredients, catalogue);
+        /* The step text names the ingredient that was removed: step 2 of the
+     * banana muffins reads "Mix the banana, egg, milk and oil" — but the
+     * engine has just replaced the egg with applesauce and the milk with soy. */
+    result.stepsOriginal = recipe.steps;
+    result.steps = reecrireEtapes(recipe.steps, result.ingredients);
 
-    return resultat;
+    return result;
   }
 
   return {
