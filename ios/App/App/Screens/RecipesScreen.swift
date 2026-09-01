@@ -41,7 +41,12 @@ struct RecipesScreen: View {
                  * the week starts, not in the middle of it. */
                 shelves
                 weekHeader
-                upsell
+                /* ONE ASK PER SCREEN.
+                 *
+                 * A locked week puts its own offer where the parent just
+                 * tapped, so this banner would be the second pitch on one
+                 * screen, saying the same thing less precisely. */
+                if etat.currentSlot.unlocked { upsell }
                 weekStrip
                 list
                 disclaimer
@@ -200,13 +205,24 @@ struct RecipesScreen: View {
      * always weekly — seven recipes each, which is exactly the subscription
      * promise. Nothing in the UI ever showed it.
      */
+    /// THE HEADING FOLLOWS THE RAIL.
+    ///
+    /// It was the literal "This week" with the count of the CURRENT week, so
+    /// selecting another one left a section title describing something else:
+    /// "This week · 7 recipes" sat over next week's days, and over a locked
+    /// week it announced seven recipes above seven empty cards.
+    ///
+    /// The rail underneath carries the dates, so the name only has to say
+    /// which of the three is open.
     private var weekHeader: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text("This week")
+        let slot = etat.currentSlot
+        return HStack(alignment: .firstTextBaseline) {
+            Text(slot.offset == 0 ? "This week"
+                 : slot.offset < 0 ? "Last week" : "Next week")
                 .font(.system(size: 19, weight: .bold))
                 .foregroundStyle(Tone.text)
             Spacer(minLength: 8)
-            Text(String(format: String(localized: "%lld recipes"), week.count))
+            Text(String(format: String(localized: "%lld recipes"), slot.count))
                 .font(.system(size: 12))
                 .foregroundStyle(Tone.text2)
         }
@@ -350,36 +366,103 @@ struct RecipesScreen: View {
     /// Thursday. Now every day is there and the page scrolls, which is what
     /// was missing: five of seven days hold a single recipe, so one day at a
     /// time ended above the fold.
+    @ViewBuilder
     private var list: some View {
         let slot = etat.currentSlot
-        return LazyVStack(spacing: 0) {
-            ForEach(0..<7, id: \.self) { jour in
-                daySection(jour, slot: slot)
+        if slot.unlocked {
+            LazyVStack(spacing: 0) {
+                ForEach(0..<7, id: \.self) { jour in
+                    daySection(jour, slot: slot)
+                }
             }
-            if !slot.unlocked { lockedFooter(slot) }
+        } else {
+            /* A LOCKED WEEK IS ONE PANEL, NOT SEVEN EMPTY CARDS.
+             *
+             * The server answers 402 for a week that has not been paid for
+             * and sends nothing at all, so every day fell through to the
+             * "Nothing planned" placeholder. Seven of those say the week is
+             * EMPTY, which is the opposite of what is true.
+             *
+             * The count, the span and the child's name come from the
+             * manifest rather than from the recipes, which is why this panel
+             * names no dish: there is nothing to name until the server
+             * learns to serve a reduced form. */
+            lockedPanel(slot)
         }
     }
 
+    /// TODAY IS MARKED AS A BLOCK, NOT AS A WORD.
+    ///
+    /// The marker was the word "today" in brand ink, at the same size and
+    /// letterspacing as the six other headings above and below it. Colour
+    /// alone in a nine-point eyebrow does not survive a column of seven.
+    ///
+    /// A rule down the side and a wash behind the whole day answer the
+    /// question the parent is actually asking — where am I — and keep
+    /// answering it after the header has scrolled past the recipes.
+    ///
+    /// The wash is INK, not brand. A pale red field here would sit on the
+    /// same screen as the subscription card, which is already a pale warm
+    /// field, and the two would read as the same kind of thing. The rule
+    /// carries the colour; the wash only separates.
     @ViewBuilder
     private func daySection(_ jour: Int, slot: WeekSlot) -> some View {
         let plats = etat.recipesOfSelectedWeek(on: jour).compactMap { r in
             etat.resultFor(r).map { (recipe: r, result: $0) }
         }
+        let cestAujourdhui = slot.offset == 0 && jour == WeekDay.today
 
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Text(dayTitle(jour, slot: slot)).eyebrow()
-            if slot.offset == 0 && jour == WeekDay.today {
-                Text("today").eyebrow(Tone.brand)
+        if cestAujourdhui {
+            HStack(alignment: .top, spacing: 0) {
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(Tone.brand)
+                    .frame(width: 3)
+                    .padding(.vertical, 9)
+                    .padding(.leading, 6)
+                VStack(alignment: .leading, spacing: 0) {
+                    dayHeader(jour, slot: slot, count: plats.count, today: true)
+                    dayBody(jour, plats: plats, slot: slot)
+                }
             }
+            .background(Tone.text.opacity(0.04),
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            /* Eight rather than the gutter's fifteen: the block reaches
+             * further out than the days around it, which is what makes it
+             * read as a block instead of a heavier line. */
+            .padding(.horizontal, 8)
+            .padding(.top, 10)
+        } else {
+            dayHeader(jour, slot: slot, count: plats.count, today: false)
+            dayBody(jour, plats: plats, slot: slot)
+        }
+    }
+
+    /// The date line. Inside the block it loses the outer gutter, since the
+    /// block supplies its own.
+    private func dayHeader(_ jour: Int, slot: WeekSlot,
+                           count: Int, today: Bool) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 5) {
+            /* One string rather than two Texts: the eyebrow kerns what it is
+             * given, and a separator living outside the run it separates
+             * spaced unevenly against it. */
+            Text(today
+                 ? dayTitle(jour, slot: slot) + " \u{00B7} " + String(localized: "today")
+                 : dayTitle(jour, slot: slot))
+                .eyebrow(today ? Tone.text : Tone.text3)
             Spacer(minLength: 0)
-            Text("\(plats.count)")
+            Text("\(count)")
                 .font(.system(size: 9, weight: .semibold))
                 .foregroundStyle(Tone.text3)
         }
-        .padding(.horizontal, Layout.gutter)
-        .padding(.top, 19)
+        .padding(.horizontal, today ? 13 : Layout.gutter)
+        .padding(.top, today ? 11 : 19)
         .padding(.bottom, 2)
+    }
 
+    @ViewBuilder
+    private func dayBody(_ jour: Int,
+                         plats: [(recipe: Recipe, result: AdaptedRecipe)],
+                         slot: WeekSlot) -> some View {
         if plats.isEmpty {
             EmptyDay(day: jour)
                 .padding(.horizontal, Layout.gutter)
@@ -430,42 +513,62 @@ struct RecipesScreen: View {
         return nom + " " + f.string(from: d)
     }
 
-    /// What a locked week offers, at the foot of its list.
-    @ViewBuilder
-    private func lockedFooter(_ slot: WeekSlot) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(String(format: String(localized: "Week of %@"), slot.span()))
-                .eyebrow(Tone.brand)
-            Text(String(format: String(localized: "%lld recipes, already adapted"),
-                        slot.count))
-                .font(.system(size: 17, weight: .bold))
-                .foregroundStyle(Tone.text)
-                .padding(.top, 3)
-            Text("You can see the names and the verdict. The ingredients, the steps and the shopping list come with the subscription.")
-                .font(.system(size: 11))
-                .foregroundStyle(Tone.text2)
+    /// What a locked week offers, in place of its list.
+    ///
+    /// The old copy promised the names and the verdict, which the parent
+    /// could not see: the server sends nothing for a week that is not paid
+    /// for. This says only what the manifest actually knows — how many, when,
+    /// and for whom.
+    private func lockedPanel(_ slot: WeekSlot) -> some View {
+        VStack(spacing: 0) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Tone.brand)
+                .frame(width: 34, height: 34)
+                .background(Tone.brand.opacity(0.12), in: Circle())
+
+            Text(String(format: String(localized: "%lld recipes waiting"), slot.count))
+                .font(.system(size: 19, weight: .semibold))
+                .foregroundStyle(Tone.upsellText)
+                .padding(.top, 12)
+
+            Text(String(format: String(localized: "%@, already adapted to %@"),
+                        slot.span(), etat.activeProfile.name))
+                .font(.system(size: 12.5))
+                .foregroundStyle(Tone.upsellText2)
+                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 4)
+                .padding(.top, 5)
+
             Button { showPaywall = true } label: {
                 Text("Try 7 days free")
-                    .font(.system(size: 13.5, weight: .semibold))
-                    .frame(maxWidth: .infinity)
+                    .font(.system(size: 14, weight: .semibold))
+                    .padding(.horizontal, 26)
                     .frame(height: Layout.tapTarget)
             }
             .buttonStyle(PrimaryButton())
-            .padding(.top, 11)
+            .padding(.top, 17)
+
+            /* The same literal the subscription card uses, so the two never
+             * quote different prices on the same product. */
+            Text("Then $4.99/month. Cancel any time.")
+                .font(.system(size: 11))
+                .foregroundStyle(Tone.upsellText2)
+                .padding(.top, 9)
         }
-        .padding(16)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 26)
+        .padding(.horizontal, 20)
         .background {
-            RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .fill(Tone.brand.opacity(0.07))
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Tone.upsellField)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 19, style: .continuous)
-                        .strokeBorder(Tone.brand.opacity(0.16), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .strokeBorder(Tone.brand.opacity(0.18), lineWidth: 1)
                 }
         }
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 16)
+        .padding(.top, 18)
     }
 
 

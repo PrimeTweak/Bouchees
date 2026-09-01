@@ -63,7 +63,8 @@ struct RecipeVisual: View {
                     .scaledToFill()
                     .transition(.opacity)
                     /* SAY WHEN THE PICTURE IS OF THE ORIGINAL. */
-                    .overlay(alignment: .bottomTrailing) { originWarning }
+                    .overlay(alignment: showsOriginLabel ? .topTrailing
+                                                        : .bottomTrailing) { originWarning }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)
@@ -90,13 +91,20 @@ struct RecipeVisual: View {
     private var originWarning: some View {
         if photoDuPlatOriginal {
             if showsOriginLabel {
+                /* TOP TRAILING, ON A FIRM FIELD.
+                 *
+                 * It sat bottom-trailing at 42 per cent black, which on the
+                 * detail hero puts it inside the stretch where the photo has
+                 * already faded to canvas: pale grey on pale cream. Moved to
+                 * the corner the fade never reaches, and the field raised to
+                 * the 62 per cent the thumbnail mark already uses. */
                 Text("Original recipe")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(.black.opacity(0.42), in: Capsule())
-                    .padding(10)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 5)
+                    .background(.black.opacity(0.62), in: Capsule())
+                    .padding(11)
             } else {
                 Image(systemName: "arrow.uturn.backward")
                     .font(.system(size: 8.5, weight: .bold))

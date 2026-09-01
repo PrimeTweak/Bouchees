@@ -395,3 +395,6 @@
 "Made near it" = "Fabriqué à proximité";
 "may contain %@" = "peut contenir %@";
 "May contain: %@." = "Peut contenir : %@.";
+"%lld recipes waiting" = "%lld recettes vous attendent";
+"%@, already adapted to %@" = "%@, déjà adaptées pour %@";
+"Then $4.99/month. Cancel any time." = "Puis 4,99 $/mois. Annulable en tout temps.";

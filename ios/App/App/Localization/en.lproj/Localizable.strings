@@ -397,3 +397,6 @@
 "Made near it" = "Made near it";
 "may contain %@" = "may contain %@";
 "May contain: %@." = "May contain: %@.";
+"%lld recipes waiting" = "%lld recipes waiting";
+"%@, already adapted to %@" = "%@, already adapted to %@";
+"Then $4.99/month. Cancel any time." = "Then $4.99/month. Cancel any time.";

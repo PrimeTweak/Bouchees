@@ -546,9 +546,16 @@ struct IngredientLine: View {
     var body: some View {
         Button(action: tap) {
             HStack(alignment: .top, spacing: 13) {
+                /* Text2, not text3.
+                 *
+                 * The quantity was set in the palette's faintest ink, which
+                 * is meant for counts and captions, not for a number someone
+                 * measures with. Text2 clears 5.4:1 on the canvas. It stops
+                 * short of full ink on purpose: the quantity supports the
+                 * ingredient and must not compete with its name. */
                 Text(quantity)
                     .font(.system(size: 12.5, design: .monospaced))
-                    .foregroundStyle(Tone.text3)
+                    .foregroundStyle(Tone.text2)
                     .frame(width: 66, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -694,7 +701,10 @@ struct SubstitutionRuleSheet: View {
                     .padding(.top, 22)
             }
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 6)
+            /* Clear of the drag handle. The indicator is drawn OVER the
+             * sheet rather than laid out above it, so six points put the
+             * first eyebrow underneath it. */
+            .padding(.top, 26)
             .padding(.bottom, 40)
         }
         .background(Tone.canvas)

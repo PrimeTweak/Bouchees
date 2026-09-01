@@ -671,9 +671,14 @@ struct ProductDetailSheet: View {
     }
     private var sains: [String] { profile.allergens.filter { !bloquants.contains($0) } }
 
+    /// The measured height of the content, so the sheet stops where it ends.
+    @State private var hauteur: CGFloat = 0
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
+            /* 22 between blocks rather than each block carrying its own top
+             * padding of 12 to 15. One rhythm instead of six. */
+            VStack(alignment: .leading, spacing: 22) {
                 head
                 reason
                 clearLine
@@ -681,9 +686,26 @@ struct ProductDetailSheet: View {
                 alternatives
                 attribution
             }
+            .padding(.top, 26)
             .padding(.bottom, 30)
+            .background {
+                GeometryReader { geo in
+                    Color.clear.onAppear { hauteur = geo.size.height }
+                        .onChange(of: geo.size.height) { _, h in hauteur = h }
+                }
+            }
         }
         .background(Tone.canvas.ignoresSafeArea())
+        /* THE SHEET STOPS WHERE THE CONTENT DOES.
+         *
+         * No detent was declared at all, so iOS opened it full height: a
+         * short ingredient list sat in the top third of the screen with two
+         * thirds of empty canvas under it.
+         *
+         * Floored so a one-line product still gets a sheet worth grabbing,
+         * and capped at three quarters of the screen so a long list does not
+         * quietly become full height again. */
+        .presentationDetents([.height(min(max(hauteur, 260), UIScreen.main.bounds.height * 0.75)), .large])
         .presentationDragIndicator(.visible)
     }
 
@@ -710,7 +732,7 @@ struct ProductDetailSheet: View {
             }
         }
         .padding(.horizontal, Layout.gutter)
-        .padding(.top, 20)
+        /* The stack spaces the blocks now; a top padding here would add to it. */
     }
 
     /// ONE CARD FOR THE REASON.
@@ -877,7 +899,7 @@ struct ProductDetailSheet: View {
                             profile.firstName))
                     .eyebrow()
                     .padding(.horizontal, Layout.gutter)
-                    .padding(.top, 24)
+                    .padding(.top, 4)
                 ForEach(pool, id: \.recipe.id) { pair in
                     Button {
                         dismiss()
@@ -897,7 +919,7 @@ struct ProductDetailSheet: View {
             .foregroundStyle(Tone.text3)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, Layout.gutter)
-            .padding(.top, 22)
+            .padding(.top, 4)
     }
 }
 

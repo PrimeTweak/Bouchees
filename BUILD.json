@@ -1,11 +1,17 @@
 {
-  "build": 117,
+  "build": 118,
   "date": "2026-09-01",
   "carries": [
-    "three switches over the verdict status still missed the caution case and broke the build",
-    "they sat below the point where a truncated search stopped, and the search was treated as complete",
-    "check-swift now refuses a switch that misses a case of the enum it walks, with no default",
-    "the rule reads every case in a clause, because case .a, .b: declares two",
-    "comments are blanked rather than removed so a reported line matches the file, verified against the compiler's own line 962"
+    "the week heading was the literal This week with the current week's count, so it described something else whenever another week was open",
+    "a locked week is one panel instead of seven Nothing planned cards, which said empty when the truth was locked",
+    "the subscription card hides on a locked week: the panel is the offer, where the parent just tapped",
+    "the panel names no dish because the server answers 402 and sends none; the count and span come from the manifest",
+    "today is a block with a brand rule and a 4 per cent ink wash, not a coloured word among six identical eyebrows",
+    "the wash is ink and not brand, so it never reads as a second subscription card on the same screen",
+    "the scan sheet declared no detent at all, so iOS opened it full height; it now stops at its content, floored at 260 and capped at three quarters",
+    "one rhythm of 22 between the sheet's blocks instead of six separate top paddings",
+    "ingredient quantities move from the faintest ink to text2, 5.4 to 1",
+    "the Original recipe label moves to the corner the photo fade never reaches, on a firmer field",
+    "the substitution sheet clears the drag handle, 6 points becomes 26"
   ]
 }
