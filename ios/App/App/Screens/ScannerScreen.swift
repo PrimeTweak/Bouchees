@@ -441,7 +441,10 @@ struct ProductSheet: View {
         switch verdict?.status {
         case .safe: return Tone.yes
         case .avoid: return Tone.no
-        case .uncertain: return Tone.swap
+        /* Caution shares the swap amber with uncertain, and is separated by
+         * its words rather than its colour. Both mean "stop and read"; a
+         * fourth colour in a viewfinder is a fourth thing to learn. */
+        case .uncertain, .caution: return Tone.swap
         case nil: return Tone.brand
         }
     }
@@ -452,6 +455,7 @@ struct ProductSheet: View {
         case .safe: return String(format: String(localized: "Good for %@"), who)
         case .avoid: return String(format: String(localized: "Not for %@"), who)
         case .uncertain: return String(localized: "I am not sure")
+        case .caution: return String(localized: "Made near it")
         }
     }
 
@@ -465,6 +469,12 @@ struct ProductSheet: View {
             return label + " — " + String(format: String(localized: "contains %@"), noms)
         case .uncertain:
             return String(localized: "Something on the label was not recognised. Check the package.")
+        case .caution:
+            /* The distinction this state exists for: the list is clean, the
+             * factory is not. A parent decides this one, not the app. */
+            let noms = v.mayContain.joined(separator: ", ")
+            let label = p.name ?? String(localized: "This product")
+            return label + " — " + String(format: String(localized: "may contain %@"), noms)
         }
     }
 }
@@ -587,7 +597,7 @@ struct ProductVerdictBanner: View {
         switch verdict.status {
         case .safe: return Tone.yes
         case .avoid: return Tone.no
-        case .uncertain: return Tone.swap
+        case .uncertain, .caution: return Tone.swap
         }
     }
 
@@ -596,6 +606,7 @@ struct ProductVerdictBanner: View {
         case .safe: return "checkmark.circle.fill"
         case .avoid: return "xmark.octagon.fill"
         case .uncertain: return "questionmark.circle.fill"
+        case .caution: return "exclamationmark.triangle.fill"
         }
     }
 
@@ -606,8 +617,17 @@ struct ProductVerdictBanner: View {
                 Text(verdict.message).font(.callout.weight(.semibold))
             }
 
+            /* Shown whatever the status is. A product that must be avoided
+             * for milk can still carry a peanut warning, and hiding it behind
+             * the stronger verdict loses a fact the parent needs. */
+            if !verdict.mayContain.isEmpty {
+                Text("May contain: \(verdict.mayContain.joined(separator: ", ")).")
+                    .font(.footnote)
+                    .foregroundStyle(Tone.swap)
+            }
+
             if !verdict.unknownIngredients.isEmpty {
-                Text("Non reconnus : \(verdict.unknownIngredients.joined(separator: ", ")).")
+                Text("Not recognised: \(verdict.unknownIngredients.joined(separator: ", ")).")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

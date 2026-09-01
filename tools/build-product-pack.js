@@ -89,39 +89,131 @@ function parseCSVLine(ligne) {
 
 /* ------------------------------------------------------------------ sources */
 
-async function lireUSDA(fichier, ecrire) {
+/* USDA ships EVERY VERSION of a product, one row per label revision. The
+ * December 2025 file holds 1,994,523 rows for 439,936 barcodes — four and a
+ * half labels each. Their own download page says as much: the Access export
+ * carries only the newest version, and the API is offered for reaching older
+ * ones.
+ *
+ * Keeping them all is not a weight problem, it is a safety one. A product
+ * reformulated in 2023 still carries its 2019 row here, and a lookup that
+ * takes the first match can read an ingredient list that stopped being true
+ * years ago. On a screen that says "no milk for your child", that is the
+ * worst failure this pack can produce.
+ *
+ * Two passes rather than one map of finished records: the first pass holds
+ * only a barcode and a version key, a few tens of megabytes, instead of two
+ * million ingredient strings. The file is read twice and the memory stays
+ * bounded whatever USDA does to the size later. */
+async function versionsRecentes(fichier) {
   const flux = readline.createInterface({
     input: fs.createReadStream(fichier),
     crlfDelay: Infinity
   });
 
-  let entetes = null;
-  let col = {};
-  let lus = 0, gardes = 0, sansIngredients = 0;
+  let entetes = null, col = null, cleUtilisee = null;
+  const meilleur = new Map();
 
   for await (const ligne of flux) {
     if (!ligne.trim()) continue;
     if (!entetes) {
-      entetes = parseCSVLine(ligne).map(function (h) {
-        return h.trim().toLowerCase().replace(/^\ufeff/, "");
-      });
-      col = {
-        code: entetes.indexOf("gtin_upc"),
-        marque: entetes.indexOf("brand_owner"),
-        nom: entetes.indexOf("description"),
-        ingredients: entetes.indexOf("ingredients")
-      };
-      if (col.code < 0 || col.ingredients < 0) {
-        throw new Error("USDA CSV is missing gtin_upc or ingredients. " +
-                        "Columns seen: " + entetes.slice(0, 12).join(", "));
-      }
+      entetes = enTetes(ligne);
+      col = colonnes(entetes);
+      cleUtilisee = col.versionNom;
       continue;
     }
+    const champs = parseCSVLine(ligne);
+    const code = normalise(champs[col.code]);
+    if (!code) continue;
+
+    const version = cleVersion(champs, col);
+    const vu = meilleur.get(code);
+    if (vu === undefined || version > vu) meilleur.set(code, version);
+  }
+
+  return { meilleur: meilleur, cle: cleUtilisee };
+}
+
+/* The version key, in order of preference. `modified_date` is what USDA moves
+ * when a label changes; `available_date` is when the row appeared; `fdc_id`
+ * rises with every insertion and is the last resort. Whichever is used gets
+ * printed, because a silent fallback on a safety path is how a wrong version
+ * wins without anyone noticing. */
+function cleVersion(champs, col) {
+  if (col.modifie >= 0) {
+    const d = (champs[col.modifie] || "").trim();
+    if (d) return d;
+  }
+  if (col.dispo >= 0) {
+    const d = (champs[col.dispo] || "").trim();
+    if (d) return d;
+  }
+  return String(champs[col.id] || "").padStart(12, "0");
+}
+
+function enTetes(ligne) {
+  return parseCSVLine(ligne).map(function (h) {
+    return h.trim().toLowerCase().replace(/^\ufeff/, "");
+  });
+}
+
+function colonnes(entetes) {
+  const col = {
+    code: entetes.indexOf("gtin_upc"),
+    marque: entetes.indexOf("brand_owner"),
+    nom: entetes.indexOf("description"),
+    ingredients: entetes.indexOf("ingredients"),
+    modifie: entetes.indexOf("modified_date"),
+    dispo: entetes.indexOf("available_date"),
+    id: entetes.indexOf("fdc_id")
+  };
+  if (col.code < 0 || col.ingredients < 0) {
+    throw new Error("USDA CSV is missing gtin_upc or ingredients. " +
+                    "Columns seen: " + entetes.slice(0, 20).join(", "));
+  }
+  col.versionNom = col.modifie >= 0 ? "modified_date"
+                 : col.dispo >= 0 ? "available_date"
+                 : col.id >= 0 ? "fdc_id"
+                 : null;
+  if (col.versionNom === null) {
+    throw new Error("USDA CSV carries no modified_date, available_date or " +
+                    "fdc_id, so the newest version of a product cannot be " +
+                    "told from an old one. Columns seen: " +
+                    entetes.slice(0, 20).join(", "));
+  }
+  return col;
+}
+
+async function lireUSDA(fichier, ecrire) {
+  console.log("    1re passe — repérage de la version la plus récente...");
+  const vue = await versionsRecentes(fichier);
+  console.log("    version jugée d'après      " + vue.cle);
+  console.log("    codes-barres distincts     " + vue.meilleur.size);
+
+  console.log("    2e passe — écriture...");
+  const flux = readline.createInterface({
+    input: fs.createReadStream(fichier),
+    crlfDelay: Infinity
+  });
+
+  let entetes = null, col = null;
+  const ecrits = new Set();
+  let lus = 0, gardes = 0, sansIngredients = 0, perimes = 0;
+
+  for await (const ligne of flux) {
+    if (!ligne.trim()) continue;
+    if (!entetes) { entetes = enTetes(ligne); col = colonnes(entetes); continue; }
 
     lus++;
     const champs = parseCSVLine(ligne);
     const code = normalise(champs[col.code]);
     if (!code) continue;
+
+    /* Not the newest label for this barcode. */
+    if (cleVersion(champs, col) !== vue.meilleur.get(code)) { perimes++; continue; }
+    /* Two rows can share the newest key; the first one wins, and the second
+     * is dropped rather than written as a duplicate. */
+    if (ecrits.has(code)) { perimes++; continue; }
 
     const texte = (champs[col.ingredients] || "").trim();
     if (!texte) { sansIngredients++; continue; }
@@ -133,10 +225,12 @@ async function lireUSDA(fichier, ecrire) {
       i: texte,
       s: "us"
     });
+    ecrits.add(code);
     gardes++;
   }
 
-  return { lus: lus, gardes: gardes, sansIngredients: sansIngredients };
+  return { lus: lus, gardes: gardes, sansIngredients: sansIngredients,
+           perimes: perimes };
 }
 
 async function lireOFF(fichier, ecrire) {
@@ -149,6 +243,12 @@ async function lireOFF(fichier, ecrire) {
   for await (const ligne of flux) {
     if (!ligne.trim()) continue;
     lus++;
+    /* A sign of life. Four and a half million lines through a gunzip is long
+     * enough that a still cursor reads as a hang. */
+    if (lus % 250000 === 0) {
+      process.stdout.write("    ... " + lus + " lignes lues, " +
+                           gardes + " gardées\r");
+    }
 
     let p;
     try { p = JSON.parse(ligne); } catch (e) { continue; }
@@ -178,6 +278,7 @@ async function lireOFF(fichier, ecrire) {
     gardes++;
   }
 
+  process.stdout.write("                                                        \r");
   return { lus: lus, canadiens: canadiens, gardes: gardes,
            sansIngredients: sansIngredients };
 }
@@ -251,9 +352,10 @@ async function main() {
       licence: "CC0-1.0",
       records: stats.gardes
     };
-    console.log("    lignes lues            " + stats.lus);
-    console.log("    sans ingrédients       " + stats.sansIngredients + "  (écartées)");
-    console.log("    gardées                " + stats.gardes);
+    console.log("    lignes lues                " + stats.lus);
+    console.log("    versions périmées          " + stats.perimes + "  (écartées)");
+    console.log("    sans ingrédients           " + stats.sansIngredients + "  (écartées)");
+    console.log("    gardées                    " + stats.gardes);
   }
 
   if (fOFF) {

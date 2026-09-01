@@ -383,3 +383,15 @@
 "Nothing saved yet · tap the bookmark on a recipe" = "Rien d'enregistré · touchez le signet sur une recette";
 "%lld rated by other parents" = "%lld notées par d'autres parents";
 "Waiting on enough votes to rank" = "En attente d'assez de votes pour classer";
+"Taken out" = "On retire";
+"Put in" = "On met";
+"Why it is out for %@" = "Pourquoi on le retire pour %@";
+"All the choices" = "Tous les choix";
+"from %lld months" = "dès %lld mois";
+"Nothing yet" = "Rien encore";
+"Building up" = "En construction";
+"%lld kept" = "%lld gardées";
+"%lld ranked" = "%lld classées";
+"Made near it" = "Fabriqué à proximité";
+"may contain %@" = "peut contenir %@";
+"May contain: %@." = "Peut contenir : %@.";

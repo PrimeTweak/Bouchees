@@ -252,14 +252,24 @@ struct ProductVerdict: Codable, Sendable {
      * conversion, and nothing could see it: the fallback is deliberate, so
      * nothing crashed and nothing complained. */
     enum Statut: String, Codable, Sendable {
-        case safe, avoid, uncertain
+        /* `caution` is a declared factory warning: the ingredient list itself
+         * came back clean, and the label says the product may have met the
+         * allergen elsewhere. It sits below `uncertain` on purpose — an
+         * unread word is a risk nobody has measured, and that must never be
+         * softened by a risk that has been. */
+        case safe, avoid, uncertain, caution
         init(from decoder: Decoder) throws {
             let brut = try decoder.singleValueContainer().decode(String.self)
+            /* An unknown state falls to `uncertain`, never to `safe`. */
             self = Statut(rawValue: brut) ?? .uncertain
         }
     }
     let status: Statut
     let allergensFound: [String]
+    /* Allergens the label warns about without declaring. Always present, even
+     * when the status is driven by something else, so a screen can show the
+     * warning beside an `avoid` or an `uncertain`. */
+    let mayContain: [String]
     let unknownIngredients: [String]
     let message: String
 }

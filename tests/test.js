@@ -532,6 +532,89 @@ test("label: milk hides behind sodium caseinate", () => {
   assert.equal(v.status, "avoid", "caseinate is a milk protein");
 });
 
+/* ---------- etiquettes : "contient" contre "peut contenir" ---------- */
+
+test("label: a factory warning is caution, not avoid", () => {
+  const v = evaluerEtiquette(
+    "wheat flour, sugar, canola oil. May contain peanuts.", ["peanut"]);
+  assert.equal(v.status, "caution", "a warning is not an ingredient");
+  assert.deepEqual(v.allergensFound, [], "nothing is declared present");
+  assert.equal(v.mayContain.length, 1, "the warning is reported");
+});
+
+test("label: the same allergen IN the list is still avoid", () => {
+  const v = evaluerEtiquette(
+    "wheat flour, peanut butter, sugar", ["peanut"]);
+  assert.equal(v.status, "avoid", "peanut butter is an ingredient");
+});
+
+test("label: THE FALSE SAFE — 'may contain less than 2%' is a list, not a warning", () => {
+  /* American labels open a sub-list of ingredients with the same two words a
+   * cross-contamination warning uses. Reading it as a warning would turn real
+   * whey into "caution" for a milk-allergic child. */
+  const v = evaluerEtiquette(
+    "enriched macaroni, salt. May contain less than 2% of: whey, butterfat.",
+    ["milk"]);
+  assert.equal(v.status, "avoid", "whey in a percentage sub-list IS present");
+  assert.equal(v.mayContain.length, 0, "and it is not a factory warning");
+});
+
+test("label: a warning does not swallow the sentence after it", () => {
+  const v = evaluerEtiquette(
+    "rice flour, sugar. May contain tree nuts. Contains: milk.", ["milk", "tree_nut"]);
+  assert.equal(v.status, "avoid", "the milk after the warning still counts");
+  assert.ok(v.allergensFound.length >= 1, "milk is declared");
+  assert.ok(v.mayContain.length >= 1, "the nut warning survives too");
+});
+
+test("label: an allergen both present and warned about is named once", () => {
+  const v = evaluerEtiquette(
+    "wheat flour, peanut butter. May contain peanuts.", ["peanut"]);
+  assert.equal(v.status, "avoid");
+  assert.equal(v.mayContain.length, 0,
+    "warning about something already in it adds nothing");
+});
+
+test("label: French warnings are read too", () => {
+  ["Peut contenir des traces d'arachides.",
+   "Fabrique dans une usine qui utilise des arachides.",
+   "Traces possibles d'arachides."].forEach((phrase) => {
+    const v = evaluerEtiquette("farine de riz, sucre. " + phrase, ["peanut"]);
+    assert.equal(v.status, "caution", phrase + " should read as a warning");
+  });
+});
+
+test("label: English warning wordings are read too", () => {
+  ["May contain traces of peanuts.",
+   "Manufactured in a facility that also processes peanuts.",
+   "Made on shared equipment with peanuts.",
+   "Produced in a plant that handles peanuts."].forEach((phrase) => {
+    const v = evaluerEtiquette("rice flour, sugar. " + phrase, ["peanut"]);
+    assert.equal(v.status, "caution", phrase + " should read as a warning");
+  });
+});
+
+test("label: an unread word outranks a warning", () => {
+  /* A known risk a parent can weigh must never hide an unmeasured one. */
+  const v = evaluerEtiquette(
+    "rice flour, zorbulax gum. May contain peanuts.", ["peanut"]);
+  assert.equal(v.status, "uncertain", "the unreadable word wins");
+  assert.equal(v.mayContain.length, 1, "the warning still travels");
+});
+
+test("label: a warning about an allergen the child does not avoid is silent", () => {
+  const v = evaluerEtiquette(
+    "rice flour, sugar. May contain peanuts.", ["milk"]);
+  assert.equal(v.status, "safe", "a peanut warning is nothing to a milk profile");
+  assert.equal(v.mayContain.length, 0);
+});
+
+test("label: no warning at all still reaches safe", () => {
+  const v = evaluerEtiquette("rice flour, sugar, salt", ["peanut"]);
+  assert.equal(v.status, "safe");
+  assert.equal(v.mayContain.length, 0);
+});
+
 test("label: whey, lactose and butterfat are all milk", () => {
   ["whey powder", "lactose", "butterfat", "milk solids"].forEach((t) => {
     assert.equal(evaluerEtiquette("sugar, " + t, ["milk"]).status, "avoid",

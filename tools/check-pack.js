@@ -20,6 +20,12 @@
  *   4. A record with no ingredient text. The pack exists to answer an
  *      allergen question; an entry that cannot answer it is weight.
  *
+ *   5. A repeated barcode. This started as a note and passed a pack that had
+ *      no business passing: USDA ships every historical version of a product,
+ *      so a repeat is not a curiosity, it is an ingredient list that stopped
+ *      being true. Whichever row a lookup happens to reach first decides what
+ *      a parent is told. It refuses now.
+ *
  * What it reports rather than refuses: the coverage per source. That number
  * is the one worth watching over time.
  */
@@ -127,7 +133,12 @@ async function verifierFichier(nom, manifeste) {
     problemes.push(nom + ": " + sansTexte + " record(s) with no ingredient " +
                    "text — weight that answers nothing");
   }
-  if (doublons > 0) rapport.push(nom + " — " + doublons + " duplicate barcode(s)");
+  if (doublons > 0) {
+    problemes.push(nom + ": " + doublons + " repeated barcode(s) — one row " +
+                   "per barcode, or a lookup reads whichever version it " +
+                   "reaches first and a reformulated product can still " +
+                   "answer with its old ingredient list");
+  }
 
   const declare = ((manifeste.files || {})[nom] || {}).records;
   if (typeof declare === "number" && declare !== lignes) {

@@ -1,14 +1,15 @@
 {
-  "build": 112,
-  "date": "2026-08-31",
+  "build": 116,
+  "date": "2026-09-01",
   "carries": [
-    "the offline product pack is built from two sources kept in two files, which is the licence and not tidiness",
-    "United States from USDA FoodData Central Branded Foods, public domain under CC0, nothing to comply with",
-    "Canada from Open Food Facts filtered on Canada, ODbL, attribution and share-alike on that file only",
-    "the pack carries printed ingredient text and derives no allergens: a frozen reading on a safety path is worse than a large file",
-    "check-pack refuses a record in the wrong file, a third joined file, or a missing notice, each proven by reintroducing it",
-    "both notices travel inside the pack manifest, so a copied pack still says what it is",
-    "the privacy page names both sources and states that neither is merged into our own tables",
-    "pack/ is git-ignored: 150 MB rebuilt monthly would sink the repository the way the photos nearly did"
+    "a label is split into what is in the product and what the factory warns about",
+    "the old code stripped 'traces de' off a fragment, so a warning and an actual peanut produced the same verdict",
+    "a fourth state, caution, sits below uncertain: an unread word is a risk nobody measured and is never softened by one that was",
+    "MAY CONTAIN LESS THAN 2% is an ingredient sub-list, not a warning; reading it as one would turn real whey into caution for a milk allergy",
+    "a warning stops at its sentence, so Contains: milk after it still counts",
+    "an allergen both present and warned about is named once",
+    "10 new tests, including the false-safe trap and both languages",
+    "check-decoding caught the missing caution case in Swift before the build did",
+    "the verdict messages in the bridge were still French, from before English became the base language"
   ]
 }
