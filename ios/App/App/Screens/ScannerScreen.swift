@@ -963,6 +963,7 @@ private struct VerdictBadge: View {
         case .safe: return "checkmark"
         case .avoid: return "exclamationmark.triangle.fill"
         case .uncertain: return "questionmark"
+        case .caution: return "exclamationmark.triangle"
         }
     }
 
@@ -970,7 +971,7 @@ private struct VerdictBadge: View {
         switch status {
         case .safe: return Tone.yes
         case .avoid: return Tone.no
-        case .uncertain: return Tone.swap
+        case .uncertain, .caution: return Tone.swap
         }
     }
 
@@ -979,6 +980,7 @@ private struct VerdictBadge: View {
         case .safe: return String(format: String(localized: "Good for %@"), firstName)
         case .avoid: return String(format: String(localized: "Not for %@"), firstName)
         case .uncertain: return String(localized: "I am not sure")
+        case .caution: return String(localized: "Made near it")
         }
     }
 }

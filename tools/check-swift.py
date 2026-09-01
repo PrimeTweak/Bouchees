@@ -1236,7 +1236,95 @@ def check():
                 level = problems if module in ("JavaScriptCore", "StoreKit", "AVFoundation") else warnings
                 level.append(f"{filename}: uses {module} without importing it")
 
+    problems += switches_non_exhaustifs()
     return problems, warnings
+
+
+def switches_non_exhaustifs():
+    """A switch that misses a case of the enum it walks.
+
+    Build 116 added `caution` to ProductVerdict.Statut and patched five of the
+    eight switches that walk it. The three missed ones were below the point
+    where a truncated search stopped, and the compiler found them instead of
+    this file. That is the whole reason this rule exists: adding a case to an
+    enum breaks every switch on it, silently, until a build says so.
+
+    Text only, so it is deliberately narrow. A switch is flagged only when
+    every case it names belongs to ONE enum declared in the project, it has no
+    `default:`, and that enum has a case the switch never mentions. Anything
+    less certain is left alone: a false alarm here would train someone to
+    ignore the output, which costs more than the bug.
+    """
+    out = []
+
+    # enum Name: ... { case a, b   /   case c
+    enums = {}
+    for path in swift_files():
+        src = strip_strings_and_comments(open(path, encoding="utf-8").read())
+        for m in re.finditer(r"enum\s+(\w+)\s*:[^{]*\{", src):
+            nom = m.group(1)
+            corps, prof, i = "", 0, m.end() - 1
+            while i < len(src):
+                if src[i] == "{":
+                    prof += 1
+                elif src[i] == "}":
+                    prof -= 1
+                    if prof == 0:
+                        break
+                corps += src[i]
+                i += 1
+            cas = set()
+            for c in re.finditer(r"^\s*case\s+([A-Za-z_][\w,\s]*)$", corps, re.M):
+                for nom_cas in c.group(1).split(","):
+                    nom_cas = nom_cas.strip()
+                    if nom_cas and "(" not in nom_cas:
+                        cas.add(nom_cas)
+            if len(cas) >= 2:
+                enums.setdefault(nom, set()).update(cas)
+
+    def depouiller_en_gardant_les_lignes(src):
+        """Blanks strings and comments without losing a single newline, so a
+        reported line number matches the file someone opens."""
+        src = re.sub(r"/\*(?:.|\n)*?\*/",
+                     lambda m: "\n" * m.group(0).count("\n"), src)
+        src = re.sub(r"//[^\n]*", "", src)
+        src = re.sub(r'"(?:\\.|[^"\\\n])*"', '""', src)
+        return src
+
+    for path in swift_files():
+        src = depouiller_en_gardant_les_lignes(open(path, encoding="utf-8").read())
+        lignes = src.split("\n")
+        for i, ligne in enumerate(lignes):
+            if not re.search(r"\bswitch\b.*\{\s*$", ligne):
+                continue
+            corps, prof = [], 0
+            for j in range(i, len(lignes)):
+                prof += lignes[j].count("{") - lignes[j].count("}")
+                corps.append(lignes[j])
+                if prof <= 0 and j > i:
+                    break
+            bloc = "\n".join(corps)
+            if re.search(r"^\s*default\s*:", bloc, re.M):
+                continue
+            # A clause can carry several: "case .uncertain, .caution:".
+            # Reading only the first is how this rule missed three switches
+            # the first time it ran.
+            vus = set()
+            for clause in re.findall(r"^\s*case\s+([^:\n]+):", bloc, re.M):
+                vus.update(re.findall(r"\.(\w+)", clause))
+            if not vus:
+                continue
+            candidats = [n for n, c in enums.items() if vus and vus <= c]
+            if len(candidats) != 1:
+                continue
+            manquants = enums[candidats[0]] - vus
+            if manquants:
+                out.append(
+                    f"{os.path.basename(path)}:{i + 1}: a switch over {candidats[0]} never "
+                    f"mentions {', '.join(sorted(manquants))} and has no "
+                    f"default — adding a case to an enum breaks every switch "
+                    f"on it, and only a build says so")
+    return out
 
 
 if __name__ == "__main__":

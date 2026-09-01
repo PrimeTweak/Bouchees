@@ -1,15 +1,11 @@
 {
-  "build": 116,
+  "build": 117,
   "date": "2026-09-01",
   "carries": [
-    "a label is split into what is in the product and what the factory warns about",
-    "the old code stripped 'traces de' off a fragment, so a warning and an actual peanut produced the same verdict",
-    "a fourth state, caution, sits below uncertain: an unread word is a risk nobody measured and is never softened by one that was",
-    "MAY CONTAIN LESS THAN 2% is an ingredient sub-list, not a warning; reading it as one would turn real whey into caution for a milk allergy",
-    "a warning stops at its sentence, so Contains: milk after it still counts",
-    "an allergen both present and warned about is named once",
-    "10 new tests, including the false-safe trap and both languages",
-    "check-decoding caught the missing caution case in Swift before the build did",
-    "the verdict messages in the bridge were still French, from before English became the base language"
+    "three switches over the verdict status still missed the caution case and broke the build",
+    "they sat below the point where a truncated search stopped, and the search was treated as complete",
+    "check-swift now refuses a switch that misses a case of the enum it walks, with no default",
+    "the rule reads every case in a clause, because case .a, .b: declares two",
+    "comments are blanked rather than removed so a reported line matches the file, verified against the compiler's own line 962"
   ]
 }
