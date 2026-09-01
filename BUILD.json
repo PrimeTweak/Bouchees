@@ -1,22 +1,18 @@
 {
-  "build": 119,
+  "build": 120,
   "date": "2026-09-01",
   "carries": [
-    "sign-in answers 503 until it is real: the route handed a session token to any address with no proof of ownership, on the live deployment",
-    "request bodies stop at 64 KB with a 413; there was no ceiling at all",
-    "session tokens expire after thirty days; entries in the old bare-email shape migrate on first sight instead of logging anyone out",
-    "accounts.json is written to a temp file and renamed over, so a crash mid-write cannot truncate it",
-    "product lookups go through a shared cache, hits kept thirty days and misses one day, keyed on the canonical thirteen-digit form",
-    "a sliding budget of twelve Open Food Facts calls a minute answers 503 with a retry delay instead of eight refused requests",
-    "food is tried with both barcode forms and the sibling databases with one, five requests on a miss instead of eight",
-    "a 429, a 5xx or an HTML page is unavailable, not not-found; the app says busy and try again rather than unknown",
-    "the User-Agent fallback names a domain that resolves",
-    "PrivacyInfo.xcprivacy declares UserDefaults under CA92.1 and the email as the only collected data; it was missing entirely",
-    "the camera prompt is localised through InfoPlist.strings in both languages; it was French for everyone",
-    "MARKETING_VERSION 1.0.0",
-    "the six remaining system card colours use the palette's own, identical in light and warm in dark",
-    "the medical disclaimer sits on the scan verdict, not only in Settings",
-    "the scan sheet opens at medium until measured instead of a 260pt stub that grows",
-    "six server tests run against a real instance on a free port, each with its own files"
+    "the child pill is on the scanner, the one screen where the wrong child has a physical consequence",
+    "with two profiles, Everyone is one tap beside the pill instead of two levels into a sheet",
+    "one line under every verdict says what it is made of: the printed ingredient list, and that the package still needs reading",
+    "the Settings tab is Family, with the children first and the theme last",
+    "Done at the end of cooking asks how it was, three stars and a skip, and marks the recipe cooked for the week",
+    "a cooked recipe shows a check on its row; the week becomes a record nobody had to keep",
+    "the day list starts tomorrow on the current week, so the hero and the list no longer name the same dish twice",
+    "the hero eyebrow is dated, since it is now the only place today appears",
+    "the subscription card moves under the day list, after the value and not before it",
+    "the onboarding counter says 2 of 3, which is how many screens there are",
+    "the first eyebrow says nothing to sign up for, works without a signal, in the voice of the rest of the app",
+    "the sign-in hint for ratings names the renamed tab"
   ]
 }

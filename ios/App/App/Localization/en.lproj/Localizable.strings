@@ -176,8 +176,8 @@
 "Remove from saved" = "Remove from saved";
 "Save this recipe" = "Save this recipe";
 "A saved recipe stays available even after its week." = "A saved recipe stays available even after its week.";
-"Sign in from Settings to rate — without an account, one person could vote a hundred times." = "Sign in from Settings to rate — without an account, one person could vote a hundred times.";
-"Sign in from Settings to rate a recipe." = "Sign in from Settings to rate a recipe.";
+"Sign in from Family to rate — without an account, one person could vote a hundred times." = "Sign in from Family to rate — without an account, one person could vote a hundred times.";
+"Sign in from Family to rate a recipe." = "Sign in from Family to rate a recipe.";
 "The rating couldn’t be saved. Try again later." = "The rating couldn’t be saved. Try again later.";
 "Not rated yet" = "Not rated yet";
 
@@ -401,3 +401,12 @@
 "%@, already adapted to %@" = "%@, already adapted to %@";
 "Then $4.99/month. Cancel any time." = "Then $4.99/month. Cancel any time.";
 "The product database is busy. Try again in a moment — and when in doubt, read the label." = "The product database is busy. Try again in a moment — and when in doubt, read the label.";
+"From the printed ingredient list. Always check the package." = "From the printed ingredient list. Always check the package.";
+"One child" = "One child";
+"Family" = "Family";
+"How was it?" = "How was it?";
+"%@, for %@" = "%@, for %@";
+"Cooked" = "Cooked";
+"Skip" = "Skip";
+"Step 2 of 3" = "Step 2 of 3";
+"Nothing to sign up for. Works without a signal." = "Nothing to sign up for. Works without a signal.";

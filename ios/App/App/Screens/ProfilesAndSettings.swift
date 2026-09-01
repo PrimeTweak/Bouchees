@@ -248,14 +248,21 @@ struct SettingsScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Settings")
+                /* FAMILY, NOT SETTINGS.
+                 *
+                 * The children lived under a gear, after the dark-mode toggle.
+                 * The core object of the app — who the cooking is for — was
+                 * filed as a technical preference. The order now follows what
+                 * a parent comes here for: the children, then what they pay,
+                 * then how it looks. */
+                Text("Family")
                     .font(Type.display)
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
-                appearanceSection
                 childrenSection
                 subscriptionSection
+                appearanceSection
                 contentSection
                 footnotes
             }

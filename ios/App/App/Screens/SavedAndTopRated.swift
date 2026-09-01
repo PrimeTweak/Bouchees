@@ -224,7 +224,7 @@ struct RatingBlock: View {
             }
 
             if etat.subscription.serverToken == nil {
-                Text("Sign in from Settings to rate — without an account, one person could vote a hundred times.")
+                Text("Sign in from Family to rate — without an account, one person could vote a hundred times.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else if let a = summary, a.votes > 0, a.votes < etat.ratingThreshold {

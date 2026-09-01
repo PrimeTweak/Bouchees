@@ -196,7 +196,7 @@ struct RootView: View {
             Tab("Scan", systemImage: "barcode.viewfinder", value: 2) {
                 OngletPile { ScannerScreen(tab: $tab) }
             }
-            Tab("Settings", systemImage: "gearshape", value: 3) {
+            Tab("Family", systemImage: "person.2", value: 3) {
                 OngletPile { SettingsScreen() }
             }
             /* The search role gives the separated island for free, and iOS
@@ -230,7 +230,7 @@ struct RootView: View {
                 .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
                 .tag(2)
             OngletPile { SettingsScreen() }
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tabItem { Label("Family", systemImage: "person.2") }
                 .tag(3)
             OngletPile { SearchScreen() }
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }

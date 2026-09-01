@@ -124,6 +124,19 @@ final class LocalStore {
         Set(UserDefaults.standard.stringArray(forKey: "checked.\(week)") ?? [])
     }
 
+    /* WHAT GOT COOKED. Recorded when "Done" is tapped at the end of cooking
+     * mode, nothing asked. Same shape as the shopping checkmarks: one small
+     * list per week, in UserDefaults, and gone with the week. */
+    func markCooked(_ id: String, week: String) {
+        var ids = loadCooked(week: week)
+        ids.insert(id)
+        UserDefaults.standard.set(Array(ids), forKey: "cooked.\(week)")
+    }
+
+    func loadCooked(week: String) -> Set<String> {
+        Set(UserDefaults.standard.stringArray(forKey: "cooked.\(week)") ?? [])
+    }
+
 
     private let fm = FileManager.default
 

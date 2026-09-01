@@ -174,8 +174,8 @@
 "Remove from saved" = "Retirer des favoris";
 "Save this recipe" = "Enregistrer dans les favoris";
 "A saved recipe stays available even after its week." = "Une recette enregistrée reste accessible même après sa semaine.";
-"Sign in from Settings to rate — without an account, one person could vote a hundred times." = "Connectez-vous dans les réglages pour noter — sans compte, une même personne pourrait voter cent fois.";
-"Sign in from Settings to rate a recipe." = "Connectez-vous dans les réglages pour noter une recette.";
+"Sign in from Family to rate — without an account, one person could vote a hundred times." = "Connectez-vous dans Famille pour noter — sans compte, une même personne pourrait voter cent fois.";
+"Sign in from Family to rate — without an account, one person could vote a hundred times." = "Connectez-vous dans Famille pour noter une recette.";
 "The rating couldn’t be saved. Try again later." = "La note n’a pas pu être enregistrée. Réessayez plus tard.";
 "Not rated yet" = "Pas encore noté";
 
@@ -399,3 +399,13 @@
 "%@, already adapted to %@" = "%@, déjà adaptées pour %@";
 "Then $4.99/month. Cancel any time." = "Puis 4,99 $/mois. Annulable en tout temps.";
 "The product database is busy. Try again in a moment — and when in doubt, read the label." = "La base de produits est occupée. Réessayez dans un instant — et dans le doute, lisez l'étiquette.";
+"From the printed ingredient list. Always check the package." = "D'après la liste d'ingrédients imprimée. Vérifiez toujours l'emballage.";
+"One child" = "Un enfant";
+"Family" = "Famille";
+"How was it?" = "C'était comment ?";
+"%@, for %@" = "%@, pour %@";
+"Cooked" = "Cuisiné";
+"Skip" = "Passer";
+"Step 2 of 3" = "Étape 2 sur 3";
+"Nothing to sign up for. Works without a signal." = "Rien à créer. Fonctionne sans réseau.";
+"Sign in from Family to rate a recipe." = "Connectez-vous dans Famille pour noter une recette.";

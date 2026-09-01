@@ -237,6 +237,15 @@ final class AppState {
         local.saveChecked(ids, week: currentWeek ?? "")
     }
 
+    /// Recipes cooked this week, by id. Set by the end of cooking mode.
+    var cooked: Set<String> {
+        local.loadCooked(week: currentWeek ?? "")
+    }
+
+    func markCooked(_ id: String) {
+        local.markCooked(id, week: currentWeek ?? "")
+    }
+
     /// Every option the table holds for an ingredient.
     ///
     /// `chosenName` is the substitute the engine actually took. It used to be
@@ -519,7 +528,7 @@ final class AppState {
     /// serveur confirme — c'est lui qui fait foi.
     func rate(_ recetteId: String, note: Int?) async {
         guard let token = subscription.serverToken else {
-            syncMessage = "Sign in from Settings to rate a recipe."
+            syncMessage = String(localized: "Sign in from Family to rate a recipe.")
             return
         }
         do {

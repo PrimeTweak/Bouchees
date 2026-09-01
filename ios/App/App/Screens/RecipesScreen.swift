@@ -41,14 +41,16 @@ struct RecipesScreen: View {
                  * the week starts, not in the middle of it. */
                 shelves
                 weekHeader
-                /* ONE ASK PER SCREEN.
-                 *
-                 * A locked week puts its own offer where the parent just
-                 * tapped, so this banner would be the second pitch on one
-                 * screen, saying the same thing less precisely. */
-                if etat.currentSlot.unlocked { upsell }
                 weekStrip
                 list
+                /* AFTER THE VALUE, NOT BEFORE IT.
+                 *
+                 * The card sat between the week heading and the rail: a title,
+                 * then an offer, then only what the title announced. Under the
+                 * list, the parent has seen the week before being asked to pay
+                 * for the next one. A locked week carries its own offer in its
+                 * panel, so this one stays for unlocked weeks only. */
+                if etat.currentSlot.unlocked { upsell }
                 disclaimer
             }
             .padding(.bottom, 16)
@@ -169,7 +171,10 @@ struct RecipesScreen: View {
                         startPoint: .top, endPoint: .bottom)
 
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Tonight").eyebrow(Tone.heroAccent)
+                        /* Dated, now that the list below starts tomorrow: the
+                         * hero is the only place today's name appears. */
+                        Text(String(localized: "Tonight") + " \u{00B7} " + dayTitle(WeekDay.today, slot: etat.currentSlot))
+                            .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.7), radius: 10)
                         Text(h.recipe.name)
                             .font(.system(size: 34, weight: .bold))
@@ -366,12 +371,29 @@ struct RecipesScreen: View {
     /// Thursday. Now every day is there and the page scrolls, which is what
     /// was missing: five of seven days hold a single recipe, so one day at a
     /// time ended above the fold.
+    /// The day indices a week shows: tomorrow onward for the current week,
+    /// all seven for any other. Sunday evening on the current week therefore
+    /// shows nothing, which is honest — the week is over.
+    private func days(for slot: WeekSlot) -> [Int] {
+        guard slot.offset == 0 else { return Array(0..<7) }
+        let demain = WeekDay.today + 1
+        return demain < 7 ? Array(demain..<7) : []
+    }
+
     @ViewBuilder
     private var list: some View {
         let slot = etat.currentSlot
         if slot.unlocked {
             LazyVStack(spacing: 0) {
-                ForEach(0..<7, id: \.self) { jour in
+                /* THE LIST STARTS TOMORROW ON THE CURRENT WEEK.
+                 *
+                 * The hero above already says "Tonight — Silky hummus"; three
+                 * blocks down the list said "Monday · today — Silky hummus".
+                 * The same dish twice on the first screen a parent sees, and
+                 * the hero lost its reason to exist. Today is the hero's line;
+                 * the list carries the days that follow. Other weeks have no
+                 * tonight and show all seven. */
+                ForEach(days(for: slot), id: \.self) { jour in
                     daySection(jour, slot: slot)
                 }
             }
@@ -483,7 +505,8 @@ struct RecipesScreen: View {
                      slot: WeekSlot) -> some View {
         if slot.unlocked {
             Button { navigate(.recipe(pair.recipe.id)) } label: {
-                RecipeRow(recipe: pair.recipe, result: pair.result)
+                RecipeRow(recipe: pair.recipe, result: pair.result,
+                          cooked: etat.cooked.contains(pair.recipe.id))
             }
             .buttonStyle(.plain)
             /* Only the current week can be rearranged. A parent does not
@@ -806,6 +829,7 @@ struct RecipeRow: View {
     /// and hiding them leaves nothing to subscribe for. The picture goes: a
     /// photo of the dish is content.
     var locked: Bool = false
+    var cooked: Bool = false
 
     var body: some View {
         HStack(spacing: 15) {
@@ -843,6 +867,14 @@ struct RecipeRow: View {
             Spacer(minLength: 8)
 
             HStack(spacing: 7) {
+                /* Set by "Done" in cooking mode. The week becomes a record of
+                 * what was made without anyone keeping one. */
+                if cooked {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Tone.yes)
+                        .accessibilityLabel(Text("Cooked"))
+                }
                 VerdictMark(status: result.status)
                 Text(short)
                     .font(.system(size: 13, weight: .semibold))

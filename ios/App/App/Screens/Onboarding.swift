@@ -74,7 +74,7 @@ private struct LiveDemoStep: View {
                 BoucheesMark(size: 34)
                     .padding(.bottom, 18)
 
-                Text("No account. No network.")
+                Text("Nothing to sign up for. Works without a signal.")
                     .font(Type.label)
                     .foregroundStyle(Tone.brand)
                     .textCase(.uppercase)
@@ -344,7 +344,7 @@ private struct WhoStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Step 2 of 2")
+                Text("Step 2 of 3")
                     .font(Type.label)
                     .foregroundStyle(Tone.brand)
                     .textCase(.uppercase)

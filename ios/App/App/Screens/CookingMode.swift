@@ -21,9 +21,11 @@ struct CookingMode: View {
     let firstName: String
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var etat
     @State private var step = 0
     @State private var secondsLeft: Int?
     @State private var running = false
+    @State private var askingForRating = false
 
     private let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -51,6 +53,11 @@ struct CookingMode: View {
         .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
         .onReceive(tick) { _ in advanceTimer() }
+        .sheet(isPresented: $askingForRating, onDismiss: { dismiss() }) {
+            HowWasIt(recipe: recipe, firstName: etat.activeProfile.firstName)
+                .presentationDetents([.height(340)])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     // MARK: - Pieces
@@ -262,7 +269,15 @@ struct CookingMode: View {
             secondsLeft = nil
             running = false
         } else {
-            dismiss()
+            /* THE MOMENT TO ASK.
+             *
+             * "Done" used to dismiss straight back to the recipe page, where
+             * the rating lives and where nobody returns. This is the one
+             * moment a parent knows whether it was good; a one-second screen
+             * catches it. The "cooked" mark is set here whatever they answer,
+             * so the week keeps a trace without asking for one. */
+            etat.markCooked(recipe.id)
+            askingForRating = true
         }
     }
 
@@ -274,5 +289,59 @@ struct CookingMode: View {
         } else {
             dismiss()
         }
+    }
+}
+
+/// One second, three stars, a skip.
+///
+/// Nothing else: the parent has just finished cooking and is about to eat.
+/// Whatever they choose, the sheet closes and cooking mode closes with it.
+private struct HowWasIt: View {
+    let recipe: Recipe
+    let firstName: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("How was it?")
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(Tone.text)
+                .padding(.top, 30)
+            Text(firstName.isEmpty ? recipe.name
+                 : String(format: String(localized: "%@, for %@"), recipe.name, firstName))
+                .font(.system(size: 12.5))
+                .foregroundStyle(Tone.text2)
+                .padding(.top, 5)
+
+            RatingBlock(recipe: recipe)
+                .padding(.top, 22)
+                .padding(.horizontal, Layout.gutter)
+
+            HStack(spacing: 6) {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 9, weight: .bold))
+                Text("Cooked")
+                    .font(.system(size: 11, weight: .semibold))
+            }
+            .foregroundStyle(Tone.yes)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Tone.yes.opacity(0.08), in: Capsule())
+            .padding(.top, 20)
+
+            Button { dismiss() } label: {
+                Text("Skip")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Tone.text3)
+                    .frame(height: Layout.tapTarget)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 8)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity)
+        .background(Tone.canvas.ignoresSafeArea())
     }
 }

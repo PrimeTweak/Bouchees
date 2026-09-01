@@ -170,9 +170,18 @@ struct ScannerScreen: View {
 
             ViewfinderFrame()
                 .allowsHitTesting(false)
-
-
         }
+        /* THE CHILD, ON THE ONE SCREEN WHERE THE WRONG ONE HURTS.
+         *
+         * The pill lived on Recipes and Shopping and not here. The verdict
+         * names the child, but a parent of two, standing in an aisle with the
+         * second one in mind, had to leave the scanner to switch. They would
+         * not; they would read "Good for Livia" thinking of the other child.
+         *
+         * With two profiles, "Everyone" sits beside the pill as one tap —
+         * "does this pass for the whole house" is the question asked in a
+         * store, and it was two levels deep in a sheet. */
+        .softTopBar { ScannerTopBar() }
         .sheet(isPresented: $showDetails) {
             if let p = product, let v = verdict {
                 ProductDetailSheet(product: p, verdict: v)
@@ -362,6 +371,18 @@ struct ProductSheet: View {
                     .font(Type.secondary)
                     .foregroundStyle(.white.opacity(0.88))
                     .padding(.top, 7)
+
+                /* WHAT THE VERDICT IS MADE OF, IN ONE LINE.
+                 *
+                 * "Good for Livia" is the voice of a parent, and it stays.
+                 * Under it, the app says what it actually did — read a
+                 * printed list — and what remains to do. It shows under all
+                 * four verdicts; it is under the green one that it matters,
+                 * because that is where overconfidence lives. */
+                Text("From the printed ingredient list. Always check the package.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(0.62))
+                    .padding(.top, 5)
 
                 /* The offending allergen is solid white, the rest translucent.
                  * The culprit is seen before anything is read. */
@@ -743,6 +764,10 @@ struct ProductDetailSheet: View {
 
                 VerdictBadge(status: verdict.status, firstName: profile.firstName)
                     .padding(.top, 8)
+                Text("From the printed ingredient list. Always check the package.")
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(Tone.text3)
+                    .padding(.top, 6)
             }
         }
         .padding(.horizontal, Layout.gutter)
@@ -984,6 +1009,37 @@ private struct PackageThumb: View {
             RoundedRectangle(cornerRadius: 11, style: .continuous)
                 .strokeBorder(Tone.hairline, lineWidth: 1)
         }
+    }
+}
+
+/// The child pill and, with two profiles, the one-tap "Everyone" beside it.
+private struct ScannerTopBar: View {
+    @Environment(AppState.self) private var etat
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Spacer(minLength: 0)
+            if etat.profiles.count > 1 {
+                Button {
+                    etat.familyMode.toggle()
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    Text(etat.familyMode ? "One child" : "Everyone")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(etat.familyMode ? Tone.canvas : Tone.text)
+                        .padding(.horizontal, 12)
+                        .frame(height: 30)
+                        .background(etat.familyMode ? AnyShapeStyle(Tone.text)
+                                                    : AnyShapeStyle(Tone.canvas.opacity(0.85)),
+                                    in: Capsule())
+                        .overlay { Capsule().strokeBorder(Tone.hairline, lineWidth: 1) }
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+            }
+            CookingContextHeader(compact: true)
+        }
+        .padding(.horizontal, Layout.gutter)
     }
 }
 
