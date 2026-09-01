@@ -11,7 +11,7 @@ struct BoucheesApp: App {
         WindowGroup {
             RootView()
                 .environment(app)
-                                /* nil hands the decision back to iOS, which is the default:
+                /* nil hands the decision back to iOS, which is the default:
                  * the parent already chose light or dark once, at the system
                  * level, and an app that ignores that is an app that. */
                 /* Not preferredColorScheme: it cannot return to Auto once
@@ -23,21 +23,11 @@ struct BoucheesApp: App {
     }
 }
 
-/// Clears the cached launch snapshot: that image is gone from the bundle, but
-/// iOS keeps a SNAPSHOT of it under Library/SplashBoard/Snapshots and draws it
-/// on every launch.
-enum LaunchCache {
-    static func clear() {
-        let folder = NSHomeDirectory() + "/Library/SplashBoard"
-        guard FileManager.default.fileExists(atPath: folder) else { return }
-        try? FileManager.default.removeItem(atPath: folder)
-    }
-}
 
 struct RootView: View {
     @Environment(AppState.self) private var app
     @State private var tab = 0
-        /* No path and no sheet here: a sheet at the root never appeared at all —
+    /* No path and no sheet here: a sheet at the root never appeared at all —
      * a TabView on iOS 26 owns the system bar, and a sheet it presents
      * competes with it. */
 
@@ -51,9 +41,8 @@ struct RootView: View {
             if let error = app.fatalError {
                 FatalErrorScreen(message: error)
             } else if showLaunch {
-                                /* The recipes are BUNDLED, decoded synchronously from local
-                 * files, so they are never empty — and the whole of start()
-                 * takes a few milliseconds. */
+                /* Held only for the local part of start(): bundled files and
+                 * the engine, a few milliseconds. The network never holds it. */
                 LaunchView()
             } else if app.needsOnboarding {
                 OnboardingFlow()
@@ -67,10 +56,6 @@ struct RootView: View {
             /* Long enough for the mark to rise and the bite to settle, short
              * enough that nobody waits on it. Measured against the animation
              * in Mark.swift, not guessed. */
-            /* Before the sleep, not after: the parent should not wait on a
-             * file operation, and the cache only matters at the NEXT launch
-             * anyway. */
-            LaunchCache.clear()
             try? await Task.sleep(for: .milliseconds(1100))
             launchPlayed = true
         }
@@ -106,7 +91,7 @@ struct RootView: View {
             /* The search role gives the separated island for free, and iOS
              * owns its transition into a field. */
             Tab(value: 4, role: .search) {
-                                /* Its own path: `navigate` is injected on the TabView, above
+                /* Its own path: `navigate` is injected on the TabView, above
                  * every stack, so a route appended from the search tab landed
                  * in the Recipes stack — which is not on screen. */
                 OngletPile { SearchScreen() }

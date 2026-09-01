@@ -235,12 +235,12 @@ struct SettingsScreen: View {
     @State private var email = ""
     @State private var accountMessage: String?
 
-        /* A single body holding all five defeats the type checker — "unable to
+    /* A single body holding all five defeats the type checker — "unable to
      * type-check in reasonable time" is what a 200-line ViewBuilder earns. */
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                                /* Family, not settings: the core object of the app — who the
+                /* Family, not settings: the core object of the app — who the
                  * cooking is for — was filed as a technical preference. */
                 Text("Family")
                     .scaledFont(Type.display)
@@ -258,7 +258,7 @@ struct SettingsScreen: View {
         }
         .background(Tone.canvas.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-                /* The field is the same modifier Recipes and Shopping use; it carries
+        /* The field is the same modifier Recipes and Shopping use; it carries
          * no pill here because this screen names the children in a section of
          * its own. */
         .softTopBar { EmptyView() }

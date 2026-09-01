@@ -23,12 +23,12 @@ struct RecipesScreen: View {
                  * floats over it. Everything after it is ordinary content
                  * and must clear the status bar on its own. */
                 hero
-                                /* The shelves sit above the week. */
+                /* The shelves sit above the week. */
                 shelves
                 weekHeader
                 weekStrip
                 list
-                                /* After the value, not before it: the card sat between the
+                /* After the value, not before it: the card sat between the
                  * week heading and the rail: a title, then an offer, then
                  * only what the title announced. */
                 if app.currentSlot.unlocked { upsell }
@@ -37,14 +37,14 @@ struct RecipesScreen: View {
             .padding(.bottom, 16)
         }
         .background(Tone.canvas.ignoresSafeArea())
-                /* No `ignoresSafeArea` here any more: this ensures legibility of
+        /* No `ignoresSafeArea` here any more: this ensures legibility of
          * overlapping content in the bars." That is the scroll edge effect,
          * and it is free — but only for a scroll view that sits UNDER a bar. */
         .toolbar(.hidden, for: .navigationBar)
-                /* In a family with two children on different profiles, cooking for
+        /* In a family with two children on different profiles, cooking for
          * the wrong one is the worst failure this app has — so it is pinned,
          * and the content passes under it. */
-                /* A fade, not a band: now the bar falls off downward and the photo
+        /* A fade, not a band: now the bar falls off downward and the photo
          * lightens upward over the same distance; where they overlap there is
          * no edge. */
         .softTopBar { ChildTopBar() }
@@ -54,7 +54,7 @@ struct RecipesScreen: View {
 
     // MARK: - Hero
 
-        /* It is the essence of a recipe app, and it is also the one thing here
+    /* It is the essence of a recipe app, and it is also the one thing here
      * nobody else can produce: the image is generated from the ADAPTED
      * ingredient list, so a milk-free recipe shows a milk-free dish. */
     @ViewBuilder
@@ -65,7 +65,7 @@ struct RecipesScreen: View {
                                         /* When there is no photo, do not pretend: blown up to 430
                      * it reads as a flat beige polygon — worse than no
                      * picture at all. */
-                                        /* The hero is dark, whatever the theme: apple Music,
+                    /* The hero is dark, whatever the theme: apple Music,
                      * Spotify, Airbnb all do this: the image area never
                      * switches to light. */
                     ZStack {
@@ -75,7 +75,7 @@ struct RecipesScreen: View {
                                 .frame(height: Layout.heroPhoto)
                                 .frame(maxWidth: .infinity)
                         } else {
-                                                        /* The drawing was made for a 66pt thumbnail. */
+                            /* The drawing was made for a 66pt thumbnail. */
                             RecipeVisual(recipe: h.recipe, result: h.result,
                                          drawingBackground: false)
                                 .frame(width: 190, height: 190)
@@ -95,7 +95,7 @@ struct RecipesScreen: View {
                                                 /* Three of these sit in the last quarter, which is
                          * where the eye catches banding, and the final stop
                          * is the CANVAS — cream in light, near-black in. */
-                                                /* The TOP now lightens to the canvas instead of
+                        /* The TOP now lightens to the canvas instead of
                          * darkening. */
                         stops: [.init(color: Tone.canvas, location: 0),
                                 .init(color: Tone.canvas.opacity(0.9), location: 0.06),
@@ -139,7 +139,7 @@ struct RecipesScreen: View {
         }
     }
 
-        /* The week, not the verdict: a recipe with two swaps is not lesser; it
+    /* The week, not the verdict: a recipe with two swaps is not lesser; it
      * has two different lines on the shopping list. */
     /// The heading follows the rail: the rail underneath carries the dates, so
     /// the name only has to say which of the three is open.
@@ -159,7 +159,7 @@ struct RecipesScreen: View {
         .padding(.top, 20)
     }
 
-        /* The bookmark led nowhere: savedRecipes has persisted to disk since the
+    /* The bookmark led nowhere: savedRecipes has persisted to disk since the
      * first build and the bookmark on the detail page has always written to
      * it. */
     @ViewBuilder
@@ -274,7 +274,7 @@ struct RecipesScreen: View {
         let slot = app.currentSlot
         if slot.unlocked {
             LazyVStack(spacing: 0) {
-                                /* The list starts tomorrow on the current week: today is the
+                /* The list starts tomorrow on the current week: today is the
                  * hero's line; the list carries the days that follow. */
                 ForEach(days(for: slot), id: \.self) { dayIndex in
                     daySection(dayIndex, slot: slot)
@@ -284,7 +284,7 @@ struct RecipesScreen: View {
                 }
             }
         } else {
-                        /* The server answers 402 for a week that has not been paid for
+            /* The server answers 402 for a week that has not been paid for
              * and sends nothing at all, so every day fell through to the
              * "Nothing planned" placeholder. */
             lockedPanel(slot)
@@ -456,7 +456,7 @@ struct RecipesScreen: View {
     }
 
 
-    // (EmptyDay follows the screen, at file scope)
+// (EmptyDay follows the screen, at file scope)
 }
 
 /// What an unplanned day says: rather than spread them thin to look complete,
@@ -515,7 +515,7 @@ extension RecipesScreen {
 
     // MARK: - Tail
 
-        /* The subscription is the point of the app: it now comes right under the
+    /* The subscription is the point of the app: it now comes right under the
      * week, as the only DARK block on a light page, so the eye lands on it. */
     @ViewBuilder
     private var upsell: some View {
@@ -556,7 +556,7 @@ extension RecipesScreen {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(17)
-                                /* Warm peach, not black: a near-black card on a cream page
+                /* Warm peach, not black: a near-black card on a cream page
                  * reads as a hole rather than an offer, and it crushed the
                  * meal chips right below it. */
                 .background {

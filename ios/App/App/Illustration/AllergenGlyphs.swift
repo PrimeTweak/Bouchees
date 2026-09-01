@@ -25,7 +25,7 @@ struct AllergenGlyph: View {
 
         func point(_ x: Double, _ y: Double) -> CGPoint { CGPoint(x: x * e, y: y * e) }
 
-                /* The ids are english: these cases were "lait", "oeuf", "arachide",
+        /* The ids are english: these cases were "lait", "oeuf", "arachide",
          * "ble" — and the allergen ids in data/base.json are milk, egg,
          * peanut, wheat. */
         switch id {

@@ -40,21 +40,21 @@ struct ShoppingScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 header
 
-                                /* The space the pill left behind: twelve go to the picker,
+                /* The space the pill left behind: twelve go to the picker,
                  * ten to the gap above it, eight below — and the rest stays
                  * empty. */
                 scopePicker
                     .padding(.horizontal, Layout.gutter)
                     .padding(.top, 24)
 
-                                /* Shown only in day mode. */
+                /* Shown only in day mode. */
                 if dayFilter {
                     weekStrip
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
                 progress
                 ForEach(byAisle, id: \.aisle) { group in
-                                        /* A count per aisle, and a way to shut it: "1/6" tells a
+                    /* A count per aisle, and a way to shut it: "1/6" tells a
                      * parent when they can leave the aisle, which is the only
                      * question being asked while standing in one. */
                     let open = isOpen(group)
@@ -114,7 +114,7 @@ struct ShoppingScreen: View {
         }
         .background(Tone.canvas.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-                /* The same bar as recipes: that is what lets the title sit at
+        /* The same bar as recipes: that is what lets the title sit at
          * `padding(.top, 8)` and land at the same height as Settings, while
          * the pill still shows top-trailing and stays there through the */
         .softTopBar { ChildTopBar() }

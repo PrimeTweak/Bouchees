@@ -21,7 +21,7 @@ struct RecipeVisual: View {
     @State private var photo: UIImage?
     @State private var echec = false
 
-        /* The rule existed for a real reason — the photo is of the ORIGINAL dish,
+    /* The rule existed for a real reason — the photo is of the ORIGINAL dish,
      * and showing a milk-and-egg muffin on a page whose whole point is that
      * both were replaced would be a lie in the place it matters most. */
     private var photoPertinente: Bool {
@@ -59,7 +59,7 @@ struct RecipeVisual: View {
     private var originWarning: some View {
         if photoDuPlatOriginal {
             if showsOriginLabel {
-                                /* Top trailing, on a firm field: moved to the corner the fade
+                /* Top trailing, on a firm field: moved to the corner the fade
                  * never reaches, and the field raised to the 62 per cent the
                  * thumbnail mark already uses. */
                 Text("Original recipe")
@@ -101,7 +101,7 @@ actor PhotoCache {
     static let partage = PhotoCache()
 
     private let fm = FileManager.default
-        /* Nscache, not a dictionary: nSCache hands memory back under pressure,
+    /* Nscache, not a dictionary: nSCache hands memory back under pressure,
      * which is the whole reason it exists. */
     private let enMemoire: NSCache<NSString, UIImage> = {
         let c = NSCache<NSString, UIImage>()
@@ -156,7 +156,7 @@ actor PhotoCache {
         for f in items where !gardes.contains(f.lastPathComponent) {
             try? fm.removeItem(at: f)
         }
-                /* Emptying it is correct here: this runs when batches rotate, and
+        /* Emptying it is correct here: this runs when batches rotate, and
          * whatever is still needed is one disk read away. */
         enMemoire.removeAllObjects()
     }

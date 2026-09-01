@@ -320,6 +320,8 @@ final class AppState {
 
     // MARK: - Startup
 
+    /// Local work first, then the network. The launch screen waits only for
+    /// the local part; a cold server updates the screen when it answers.
     func start() async {
         isLoading = true
         /* The plan is keyed on the batch, so it is rebuilt whenever the set of
@@ -357,6 +359,8 @@ final class AppState {
 
         chargerCorpusLocal()
         recompute()
+        isLoading = false
+        refreshPlan()
         await sync()
     }
 

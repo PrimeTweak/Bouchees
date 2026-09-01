@@ -83,7 +83,7 @@ struct SaveButton: View {
 struct TopRatedScreen: View {
     @Environment(AppState.self) private var app
     @Environment(\.navigate) private var navigate
-        /* One shelf, not two behind a switch: the choice is made once, outside,
+    /* One shelf, not two behind a switch: the choice is made once, outside,
      * on the two tiles above the week. */
     var body: some View {
         ScrollView {

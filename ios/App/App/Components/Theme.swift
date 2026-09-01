@@ -174,22 +174,5 @@ struct EmptyState: View {
     }
 }
 
-struct MessageBanner: View {
-    let texte: String
-    var color: Color = Tint.courge
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 9) {
-            Image(systemName: "wifi.slash").font(.caption)
-            Text(texte).font(.footnote)
-        }
-        .foregroundStyle(color)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
-}
-
 // MARK: - Grid adaptative
 

@@ -27,7 +27,7 @@ struct CookingContextHeader: View {
     var ownGlass: Bool = true
 
     @Environment(AppState.self) private var app
-        /* The sheet is not ours to own: so the first tap set the flag, the view
+    /* The sheet is not ours to own: so the first tap set the flag, the view
      * was recreated, the fresh state came back false, and the sheet never
      * opened. */
     @Environment(\.presentSheet) private var present
@@ -271,7 +271,7 @@ struct TallyLine: View {
 
     var body: some View {
         if tally.total > 0 {
-                        /* The distinction was never the parent's concern — what they want
+            /* The distinction was never the parent's concern — what they want
              * to know when picking a child is how many recipes that profile
              * opens up. */
             HStack(spacing: 4) {
@@ -310,7 +310,7 @@ struct SearchSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-                        /* The field is the title: "Search" written above a search field
+            /* The field is the title: "Search" written above a search field
              * is a duplicate — the field already says what it is, and the row
              * it occupied was the height of two recipes. */
             field
@@ -332,7 +332,7 @@ struct SearchSheet: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .background(Tone.canvas.ignoresSafeArea())
-                /* Sized to its content, not full screen. */
+        /* Sized to its content, not full screen. */
         .presentationDetents(query.isEmpty ? [.height(sheetHeight)] : [.large])
         .presentationDragIndicator(.visible)
         .task {
@@ -500,9 +500,9 @@ struct SearchSheet: View {
             .buttonStyle(.plain)
         }
 
-                /* No "Try instead" chips: they pointed at Snacks, Meals and Breakfast
-         * — three places already reachable, offered here only to fill the
-         * space under a miss. */
+    /* No "Try instead" chips: they pointed at Snacks, Meals and Breakfast
+     * — three places already reachable, offered here only to fill the
+     * space under a miss. */
     }
 
     /// The week's recipes, so a miss still ends on something cookable.
@@ -520,15 +520,51 @@ struct SearchSheet: View {
 /// move one, which is the only decision worth offering.
 struct ChildTopBar: View {
     @Environment(AppState.self) private var app
+    @State private var expanded = false
 
+    /// The pill never yields its place. A sync message is a one-word chip
+    /// beside it; a tap unfolds the full text under the row for a moment.
     var body: some View {
-        HStack {
-            if let message = app.syncMessage {
-                MessageBanner(texte: message)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
                 Spacer(minLength: 0)
-            } else {
-                Spacer(minLength: 0)
+                if let message = app.syncMessage {
+                    Button {
+                        withAnimation(.soft(0.22)) { expanded.toggle() }
+                        if expanded {
+                            Task {
+                                try? await Task.sleep(for: .seconds(5))
+                                withAnimation(.soft(0.22)) { expanded = false }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 5) {
+                            Circle().fill(Tone.swap).frame(width: 6, height: 6)
+                            Text(app.isOffline ? "Offline" : "Notice")
+                                .scaledFont(11, weight: .semibold)
+                                .foregroundStyle(Tone.swap)
+                        }
+                        .padding(.horizontal, 10)
+                        .frame(height: 30)
+                        .background(Tone.swap.opacity(0.12), in: Capsule())
+                        .overlay { Capsule().strokeBorder(Tone.swap.opacity(0.3), lineWidth: 0.5) }
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(Text(message))
+                }
                 CookingContextHeader(compact: true)
+            }
+            if expanded, let message = app.syncMessage {
+                Text(message)
+                    .scaledFont(11)
+                    .foregroundStyle(Tone.swap)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Tone.swap.opacity(0.12),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .transition(.opacity)
             }
         }
         .padding(.horizontal, Layout.gutter)
@@ -718,13 +754,13 @@ struct SearchScreen: View {
             .padding(.bottom, 24)
         }
         .background(Tone.canvas.ignoresSafeArea())
-                /* Applied to the scroll view rather than outside the toolbar
+        /* Applied to the scroll view rather than outside the toolbar
          * modifiers, so the navigation stack still reads the title, the
          * search field and the clear button from the modifiers below. */
         .softTopBar { EmptyView() }
         /* The system field, not one of ours. `Tab(role: .search)` places it
          * and animates it; declaring our own would fight that. */
-                /* A way out: `Tab(role: .search)` places the field and animates it,
+        /* A way out: `Tab(role: .search)` places the field and animates it,
          * but it does not give the parent a way back — the only exit was
          * another tab, and that is not an exit, it is a detour. */
         .searchable(text: $query, prompt: Text("Recipes and ingredients"))
@@ -742,7 +778,7 @@ struct SearchScreen: View {
         }
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
-                /* The hard band under the title, removed: hiding only the background
+        /* The hard band under the title, removed: hiding only the background
          * leaves all three floating over the fade, which is how the pill sits
          * on Recipes and Shopping. */
         .toolbarBackground(.hidden, for: .navigationBar)

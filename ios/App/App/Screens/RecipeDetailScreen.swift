@@ -18,7 +18,7 @@ struct RecipeDetailScreen: View {
     /// The photo runs to the top of the screen and the content scrolls
     /// beneath the floating controls. No opaque navigation bar: a gradient
     /// keeps the status bar legible, which is the platform's own pattern.
-        /* As a safeAreaInset on a ScrollView that also carries
+    /* As a safeAreaInset on a ScrollView that also carries
      * `.ignoresSafeArea(edges: .top)`, they were drawn in the right place but
      * outside their parent's hit region — so neither back nor favourite */
     var body: some View {
@@ -41,7 +41,7 @@ struct RecipeDetailScreen: View {
                     .overlay { PhotoScrim() }
 
                     VStack(alignment: .leading, spacing: 0) {
-                                                /* The child is already named in the verdict pill
+                        /* The child is already named in the verdict pill
                          * below and in the ingredients header — repeating the
                          * whole profile here pushed the line to two rows. */
                         Text(recipe.subtitle)
@@ -85,7 +85,7 @@ struct RecipeDetailScreen: View {
          * and it no longer collides with the tab bar — which is hidden here,
          * as it is in any app once you are inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
-                /* The cause was never layout: on iOS 26 a glass container inside the
+        /* The cause was never layout: on iOS 26 a glass container inside the
          * toolbar area intercepts touches, and `hitTest:` on it returns
          * itself, so an overlay drawn there receives nothing. */
         .toolbar {
@@ -115,12 +115,12 @@ struct RecipeDetailScreen: View {
 
     /// Glass circles floating over the photo, with content scrolling beneath —
     /// the exact pattern the platform describes for fixed buttons.
-        /* One list, already adjusted: the swap is an annotation on the line, not
+    /* One list, already adjusted: the swap is an annotation on the line, not
      * a structure: an amber tag says what it replaces, and the ratio sits
      * underneath when one is needed. */
     private var ingredientList: some View {
         VStack(alignment: .leading, spacing: 0) {
-                        /* No rules between lines: a full-width divider between two
+            /* No rules between lines: a full-width divider between two
              * columns is an invoice. */
             HStack(alignment: .firstTextBaseline) {
                 Text(String(format: String(localized: "For %@"), firstName))
@@ -165,7 +165,7 @@ struct RecipeDetailScreen: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 26)
         .padding(.top, 40)
-                /* Edge to edge, not behind the button: a background wraps the shape
+        /* Edge to edge, not behind the button: a background wraps the shape
          * it dresses, so this one stopped at the button's margins — and a
          * gradient that stops draws a box. */
         .frame(maxWidth: .infinity)
@@ -419,7 +419,7 @@ struct IngredientLine: View {
     var body: some View {
         Button(action: tap) {
             HStack(alignment: .top, spacing: 13) {
-                                /* Text2, not text3: the quantity was set in the palette's
+                /* Text2, not text3: the quantity was set in the palette's
                  * faintest ink, which is meant for counts and captions, not
                  * for a number someone measures with. */
                 Text(quantity)
@@ -459,7 +459,7 @@ struct IngredientLine: View {
                         }
                         .padding(.top, 2)
 
-                                        /* Say that the row opens: the row has always been a
+                    /* Say that the row opens: the row has always been a
                      * button, disabled unless the ingredient was swapped, and
                      * nothing on it said so. */
                     Image(systemName: "chevron.right")
@@ -494,7 +494,7 @@ struct SubstitutionRuleSheet: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                                /* The swap as a swap, not as a sentence with an arrow:
+                /* The swap as a swap, not as a sentence with an arrow:
                  * stacked and labelled, it holds at any length and says which
                  * way it goes. */
                 Text("Taken out").eyebrow()

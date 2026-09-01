@@ -114,7 +114,7 @@ private struct DemoCard: View {
     let recipe: Recipe
     let result: AdaptedRecipe
 
-        /* One body holding the photo, the title, three swap rows and a verdict
+    /* One body holding the photo, the title, three swap rows and a verdict
      * defeats the type checker — the error it gives, "unable to type-check in
      * reasonable time", names the body and not the part that is heavy. */
     var body: some View {
@@ -211,7 +211,7 @@ private struct AllergenPad: View {
                              toggle: { toggle(a.id) })
             }
         }
-                /* A settle, not a fade: this grid is the demonstration: tick milk and
+        /* A settle, not a fade: this grid is the demonstration: tick milk and
          * the card above changes, the counts diverge, the recipe is re-
          * adapted in front of you. */
         .animation(.spring(response: 0.34, dampingFraction: 0.66), value: selected)
@@ -274,7 +274,7 @@ private struct AllergenTile: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(isOn ? .clear : Tone.hairline, lineWidth: 1)
             }
-                        /* A tick, not just a colour: eleven tiles is too many to scan by
+            /* A tick, not just a colour: eleven tiles is too many to scan by
              * colour alone, and it is the only cue for a parent who cannot
              * separate the two. */
             .overlay(alignment: .topTrailing) {

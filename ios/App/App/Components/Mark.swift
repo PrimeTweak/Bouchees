@@ -63,7 +63,7 @@ struct LaunchView: View {
             Tone.canvas.ignoresSafeArea()
 
             VStack(spacing: 14) {
-                                /* 116, not 64: the glyph occupies about 55% of its 100-unit
+                /* 116, not 64: the glyph occupies about 55% of its 100-unit
                  * box — the stem runs x=28.75 to 37.25, the bowl to x=69.5 —
                  * so `size: 64` drew a mark 35pt wide. */
                 BoucheesMark(size: 116, bite: bitten ? 1 : 0)

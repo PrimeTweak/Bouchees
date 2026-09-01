@@ -242,11 +242,11 @@ struct AdaptedRecipe: Codable, Sendable {
 // MARK: - Verdict on a scanned product
 
 struct ProductVerdict: Codable, Sendable {
-        /* This declared sur / a_eviter / incertain, so EVERY scanned product fell
+    /* This declared sur / a_eviter / incertain, so EVERY scanned product fell
      * through to the fallback and came back "uncertain" — the scanner has
      * been silently broken since the conversion, and nothing could see. */
     enum Statut: String, Codable, Sendable {
-                /* `caution` is a declared factory warning: the ingredient list itself
+        /* `caution` is a declared factory warning: the ingredient list itself
          * came back clean, and the label says the product may have met the
          * allergen elsewhere. */
         case safe, avoid, uncertain, caution

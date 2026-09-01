@@ -50,7 +50,7 @@ final class BarcodeSession: NSObject, ObservableObject,
         }
         session.addInput(input)
 
-                /* Near focus: a barcode is read at arm's length or closer; with the
+        /* Near focus: a barcode is read at arm's length or closer; with the
          * default range the lens hunts between the jar and the shelf behind
          * it, and a small code on a yogurt cup never gets a sharp frame. */
         if (try? camera.lockForConfiguration()) != nil {
@@ -73,10 +73,10 @@ final class BarcodeSession: NSObject, ObservableObject,
                 /* Everything a grocery item can carry: iTF-14 is on cartons and
          * multipacks, Data Matrix and QR on newer packaging, Code 39 on some
          * store labels. */
-                /* No `.upca`: AVFoundation has no such type. iOS reads a UPC-A as an
+        /* No `.upca`: AVFoundation has no such type. iOS reads a UPC-A as an
          * EAN-13 with a leading zero, which is exactly the form Open Food
          * Facts indexes — so the twelve-digit case is already covered by. */
-                /* GS1 DataBar was missing, and it is the code on produce, meat,
+        /* GS1 DataBar was missing, and it is the code on produce, meat,
          * bakery and coupons — the aisle where a "did not read" complaint
          * most often comes from. iOS reads it since 15.4; the target is 17. */
         out.metadataObjectTypes = [.ean8, .ean13, .upce, .code128,
@@ -85,7 +85,7 @@ final class BarcodeSession: NSObject, ObservableObject,
         configured = true
     }
 
-        /* Which code to trust when a frame holds several: a carton shows its
+    /* Which code to trust when a frame holds several: a carton shows its
      * ITF-14 next to the retail EAN-13; a box carries a QR beside its UPC. */
     private static let preference: [AVMetadataObject.ObjectType] = [
         .ean13, .upce, .ean8, .gs1DataBar, .gs1DataBarLimited,
@@ -159,18 +159,18 @@ struct ScannerScreen: View {
             default: prompt
             }
         }
-                /* All three states fill the screen: only `content` did — it holds a
+        /* All three states fill the screen: only `content` did — it holds a
          * camera preview, which is greedy by nature. */
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("Scan")
-        .navigationBarTitleDisplayMode(.inline)
+        /* No navigation bar, like Recipes and Shopping: the title said what
+         * the tab already says, and the bar pushed the child pill down. */
+        .toolbar(.hidden, for: .navigationBar)
         .onDisappear { scanner.stop() }
     }
 
     private var content: some View {
-                /* NOT a bottom-aligned ZStack: a ZStack aligns to the bottom of its
-         * CONTAINER, not to the safe area, so the verdict sat under the tab
-         * bar however much padding it carried. */
+        /* Not a bottom-aligned ZStack: it aligns to its container, not to the
+         * safe area, so the verdict sat under the tab bar. */
         ZStack {
             CameraPreview(session: scanner.session)
                 .ignoresSafeArea()
@@ -178,8 +178,7 @@ struct ScannerScreen: View {
             ViewfinderFrame()
                 .allowsHitTesting(false)
         }
-                /* The child, on the one screen where the wrong one hurts: the pill
-         * lived on Recipes and Shopping and not here. */
+        /* The child pill, on the one screen where the wrong child hurts. */
         .softTopBar { ScannerTopBar() }
         .sheet(isPresented: $showDetails) {
             if let p = product, let v = verdict {
@@ -264,7 +263,7 @@ struct ScannerScreen: View {
             messageErreur = String(localized:
                 "That code is not a product barcode. Look for the striped one on the package.")
         } catch RepositoryError.network(503) {
-                        /* Not the same as 404: the server is out of lookups for this
+            /* Not the same as 404: the server is out of lookups for this
              * minute, or the database is refusing it. */
             messageErreur = String(localized:
                 "The product database is busy. Try again in a moment — and when in doubt, read the label.")
@@ -390,7 +389,7 @@ struct ProductSheet: View {
                 }
             }
 
-                        /* Two actions, side by side: in an aisle with a stroller there
+            /* Two actions, side by side: in an aisle with a stroller there
              * are exactly two things to do: understand why, or move on. */
             HStack(spacing: 8) {
                 if product != nil && verdict != nil {
@@ -626,7 +625,7 @@ struct ProductDetailSheet: View {
             }
         }
         .background(Tone.canvas.ignoresSafeArea())
-                /* No detent was declared at all, so iOS opened it full height: a
+        /* No detent was declared at all, so iOS opened it full height: a
          * short ingredient list sat in the top third of the screen with two
          * thirds of empty canvas under it. */
         .presentationDetents(measuredHeight > 0
@@ -665,7 +664,7 @@ struct ProductDetailSheet: View {
             }
         }
         .padding(.horizontal, Layout.gutter)
-        /* The stack spaces the blocks now; a top padding here would add to it. */
+    /* The stack spaces the blocks now; a top padding here would add to it. */
     }
 
     /// One card for the reason: proportion carries the verdict now: what
@@ -837,7 +836,7 @@ struct ProductDetailSheet: View {
 
     private var attribution: some View {
         VStack(alignment: .leading, spacing: 8) {
-                        /* The disclaimer where the risk is: a parent reading "Good for
+            /* The disclaimer where the risk is: a parent reading "Good for
              * Livia" in green, standing in an aisle, never sees Settings. */
             Text(Settings.medicalDisclaimer)
                 .scaledFont(10)
@@ -892,29 +891,34 @@ private struct PackageThumb: View {
 private struct ScannerTopBar: View {
     @Environment(AppState.self) private var app
 
+    /// The child pill and, with two profiles, the one-tap "Everyone" beside it —
+    /// in the pill's own glass, at the pill's own height.
     var body: some View {
         HStack(spacing: 8) {
             Spacer(minLength: 0)
             if app.profiles.count > 1 {
                 Button {
-                    app.familyMode.toggle()
+                    withAnimation(.soft(0.22)) { app.familyMode.toggle() }
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
-                    Text(app.familyMode ? "One child" : "Everyone")
-                        .accessibilityLabel(app.familyMode
-                            ? Text("Checking for everyone. Tap to check for one child.")
-                            : Text("Checking for one child. Tap to check for everyone."))
-                        .scaledFont(12, weight: .semibold)
-                        .foregroundStyle(app.familyMode ? Tone.canvas : Tone.text)
-                        .padding(.horizontal, 12)
-                        .frame(height: 30)
-                        .background(app.familyMode ? AnyShapeStyle(Tone.text)
-                                                    : AnyShapeStyle(Tone.canvas.opacity(0.85)),
-                                    in: Capsule())
-                        .overlay { Capsule().strokeBorder(Tone.hairline, lineWidth: 1) }
-                        .contentShape(.rect)
+                    HStack(spacing: 7) {
+                        Image(systemName: app.familyMode ? "person.fill" : "person.2.fill")
+                            .scaledFont(12, weight: .semibold)
+                        Text(app.familyMode ? "One child" : "Everyone")
+                            .scaledFont(13, weight: .semibold)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(app.familyMode ? Tone.brand : Tone.text)
+                    .frame(height: 30)
+                    .padding(.horizontal, 13)
+                    .padding(.vertical, 8)
+                    .contentShape(Capsule())
                 }
+                .glass(Capsule(), tinted: app.familyMode)
                 .buttonStyle(.plain)
+                .accessibilityLabel(app.familyMode
+                    ? Text("Checking for everyone. Tap to check for one child.")
+                    : Text("Checking for one child. Tap to check for everyone."))
             }
             CookingContextHeader(compact: true)
         }

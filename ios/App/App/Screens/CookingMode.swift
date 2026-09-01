@@ -258,7 +258,7 @@ struct CookingMode: View {
             secondsLeft = nil
             running = false
         } else {
-                        /* The moment to ask: the "cooked" mark is set here whatever they
+            /* The moment to ask: the "cooked" mark is set here whatever they
              * answer, so the week keeps a trace without asking for one. */
             app.markCooked(recipe.id)
             askingForRating = true

@@ -244,7 +244,7 @@ struct DishArtwork: View {
         .accessibilityHidden(true)   // decorative: the verdict is read elsewhere
     }
 
-        /* Typed as LinearGradient, not `some View`: a gradient IS a ShapeStyle,
+    /* Typed as LinearGradient, not `some View`: a gradient IS a ShapeStyle,
      * but `some View` erases that: the opaque type only promises View, so
      * AnyShapeStyle cannot take it. */
     private var backgroundGradient: LinearGradient {

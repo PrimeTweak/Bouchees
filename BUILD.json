@@ -1,21 +1,11 @@
 {
-  "build": 123,
+  "build": 126,
   "date": "2026-09-01",
   "carries": [
-    "last week opens to every account; the free tier runs one week behind",
-    "iPad is out of the device family until a real pass; a reviewer opens on iPad what an app declares",
-    "ratings are kept on the device and no longer invite a sign-in that answers 503; they join the shared ranking once Sign in with Apple exists",
-    "family mode persists and is restored at launch; Everyone chosen in a store still holds at home",
-    "Sunday evening, the current week says it is done instead of showing nothing",
-    "every comment is three lines at most, impersonal, in English; 360 blocks reduced, 27 translated, and the checker now refuses longer or French ones",
-    "30 dead declarations removed; Codable fields and swapDays deliberately kept",
-    "200 font sites follow Dynamic Type through scaledFont; the checker refuses a fixed size",
-    "etat is app; 30 French identifiers renamed in Swift and 29 JS files, tests aligned; JSON data keys stay as the data has them",
-    "14 server error messages in English",
-    "the paywall compares free and subscription side by side and says weekly, not monthly",
-    "a Monday-morning local notification, off until the parent turns it on in Family",
-    "VoiceOver reads the scan verdict as one announcement; 28 animations respect Reduce Motion",
-    "recipes carry a thumb field for a 480px twin; PHOTOS-REDUIRE.command makes them with sips",
-    "179 tests"
+    "cumulative: 123, 124, 125 and this",
+    "the Everyone control on the scanner wears the pill's own glass at the pill's own height, tinted brand when active; it was a flat 30pt capsule beside a 46pt glass one",
+    "fifty-nine more comment blocks realigned to the code they precede",
+    "the launch screen waits only for local work; the sync runs after it",
+    "a sync message is a chip beside the child pill; the banner and its view are gone"
   ]
 }

@@ -41,7 +41,7 @@ enum Tone {
 
     static let text = dyn(light: 0x17140F, dark: 0xF4F1EC)       // 15.8:1
     static let text2 = dyn(light: 0x6B635A, dark: 0x948C83)      // 5.4:1
-        /* 2.9:1 — under the body threshold ON PURPOSE. Reserved for quantities
+    /* 2.9:1 — under the body threshold ON PURPOSE. Reserved for quantities
      * beside a name that carries the meaning, never for a word standing
      * alone. */
     static let text3 = dyn(light: 0xA69C92, dark: 0x615A52)
@@ -49,7 +49,7 @@ enum Tone {
     // ---- verdicts ----
     // One meaning each. Nothing else touches them.
 
-        /* Contrast ratios, measured on the canvas: the amber that shipped was
+    /* Contrast ratios, measured on the canvas: the amber that shipped was
      * 1.9:1 — the DARK value used in light mode by mistake. */
     static let yes = dyn(light: 0x1E8347, dark: 0x5FD08A)      // 4.8:1 / 8.9:1
     static let swap = dyn(light: 0xA35F00, dark: 0xF0AC46)     // 4.8:1 / 9.4:1
@@ -59,7 +59,7 @@ enum Tone {
     // Actions, selection, the active tab. NEVER a verdict.
 
     static let brand = dyn(light: 0xC03A20, dark: 0xFF7A5C)      // 4.6:1 / 7.7:1
-        /* The subscription card: warm peach rather than near-black: a dark card
+    /* The subscription card: warm peach rather than near-black: a dark card
      * on a cream page reads as a hole, and it crushed the meal chips
      * underneath. */
     static var upsellField: LinearGradient {
@@ -74,7 +74,7 @@ enum Tone {
     /// Behind a drawing in the hero, where a photograph would otherwise be.
     /// Warm and deep enough that white text sits on it without a scrim doing
     /// all the work.
-        /* Fixed, not themed: these are constants. */
+    /* Fixed, not themed: these are constants. */
     static var heroField: LinearGradient {
         LinearGradient(colors: [Color(red: 0.29, green: 0.22, blue: 0.15),
                                 Color(red: 0.10, green: 0.07, blue: 0.04)],
@@ -235,16 +235,16 @@ struct Glass: ViewModifier {
     var shape: AnyShape = AnyShape(Capsule())
     var tinted: Bool = false
 
-        /* No `glassEffect` here, deliberately: the runner builds with Xcode 16.4,
-     * whose SDK is iOS 18.5. */
+    /* No `glassEffect` below the compiler check: the runner builds with
+     * Xcode 16.4, whose SDK is iOS 18.5. */
     @ViewBuilder
     func body(content: Content) -> some View {
         #if compiler(>=6.2)
-                /* It carries the highlight, the shadow, the illumination and Apple's
+        /* It carries the highlight, the shadow, the illumination and Apple's
          * own refraction — and, from iOS 27, the user's transparency slider
          * and the system's consistent corner radius, both applied. */
         if #available(iOS 26, *) {
-                        /* `.interactive()` makes the material illuminate and spring at
+            /* `.interactive()` makes the material illuminate and spring at
              * the touch point. */
             content.glassEffect(tinted ? .regular.tint(Tone.brand.opacity(0.14)).interactive()
                                        : .regular.interactive(),
@@ -270,7 +270,7 @@ struct Glass: ViewModifier {
                     .blendMode(.plusLighter)
             }
             .overlay {
-                                /* The specular line on the top edge: without it the material
+                /* The specular line on the top edge: without it the material
                  * reads as frosted plastic rather than glass. */
                 shape.stroke(
                     LinearGradient(colors: [.white.opacity(0.55),
@@ -320,7 +320,7 @@ struct PhotoScrim: View {
             }
             VStack(spacing: 0) {
                 Spacer(minLength: 0)
-                                /* The fade passes through black before it reaches canvas: it
+                /* The fade passes through black before it reaches canvas: it
                  * held only while every photo was a dark drawing. */
                 LinearGradient(
                     stops: [.init(color: .clear, location: 0),
@@ -407,7 +407,7 @@ struct PrimaryButton: ButtonStyle {
 /// `safeAreaInset`, which reserves the space but does not carry the edge
 /// effect — acceptable, because the effect itself is an iOS 26 feature.
 struct TopBar<Bar: View>: ViewModifier {
-        /* No `@ViewBuilder` on this stored property: the attribute makes the
+    /* No `@ViewBuilder` on this stored property: the attribute makes the
      * memberwise initialiser take `() -> Bar` rather than `Bar`, so
      * `TopBar(bar: bar())` passed a value where a closure was expected. */
     let bar: Bar
@@ -449,16 +449,16 @@ struct SoftTopBar<Bar: View>: ViewModifier {
     func body(content: Content) -> some View {
         tracked(content).overlay(alignment: .top) {
             ZStack(alignment: .top) {
-                                /* It spans the safe area and stops there, so it covers the
+                /* It spans the safe area and stops there, so it covers the
                  * clock, the signal and the battery and reaches no content: a
                  * scroll view starts BELOW the inset, so a title cannot. */
                 field(height: SafeArea.top, cutoff: 0.62)
 
-                                /* The extension: only while content passes under it. */
+                /* The extension: only while content passes under it. */
                 field(height: height, cutoff: 1)
                     .opacity(reveal)
 
-                                /* Applying the modifier to the ZStack gave it to both, so
+                /* Applying the modifier to the ZStack gave it to both, so
                  * `padding(.top, 46)` measured from the physical edge — and a
                  * Dynamic Island occupies 59. */
                 bar
