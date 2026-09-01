@@ -388,7 +388,7 @@ struct AgePicker: View {
                     .padding(.horizontal, 15)
                     .padding(.vertical, 13)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(isOn ? Tone.brand.opacity(0.1) : Color(.secondarySystemGroupedBackground),
+                    .background(isOn ? Tone.brand.opacity(0.1) : Tone.surface,
                                 in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)

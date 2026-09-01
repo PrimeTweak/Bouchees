@@ -36,11 +36,93 @@ function readAccounts() {
   try { return JSON.parse(fs.readFileSync(FICHIER_COMPTES, "utf8")); }
   catch (e) { return { accounts: {}, jetons: {} }; }
 }
+/* Written to a sibling file and renamed over the original. A rename is
+ * atomic on the file system, so a crash or a second request mid-write leaves
+ * either the old file or the new one, never a truncated one. The old code
+ * wrote in place. */
 function writeAccounts(db) {
-  fs.writeFileSync(FICHIER_COMPTES, JSON.stringify(db, null, 2));
+  const tmp = FICHIER_COMPTES + "." + process.pid + ".tmp";
+  fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
+  fs.renameSync(tmp, FICHIER_COMPTES);
 }
+
+/* Thirty days. A token used to live forever: a phone lost in 2026 could still
+ * rate recipes in 2030. */
+const TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
 function normaliserCourriel(c) { return String(c || "").trim().toLowerCase(); }
 function jetonNeuf() { return crypto.randomBytes(24).toString("hex"); }
+
+/* ---------- product lookups: cache and budget ---------- */
+
+/* Shared across every caller. Hits keep for thirty days, misses for a day.
+ * Persisted beside accounts.json so a redeploy does not start cold. */
+const FICHIER_CACHE = process.env.BOUCHEES_PRODUCT_CACHE ||
+                      path.join(__dirname, "product-cache.json");
+const ProductCache = (function () {
+  const HIT_TTL = 30 * 24 * 3600 * 1000, MISS_TTL = 24 * 3600 * 1000, MAX = 50000;
+  let table = {};
+  try { table = JSON.parse(fs.readFileSync(FICHIER_CACHE, "utf8")); } catch (e) { table = {}; }
+  let sales = 0;
+  function persist() {
+    try {
+      const tmp = FICHIER_CACHE + "." + process.pid + ".tmp";
+      fs.writeFileSync(tmp, JSON.stringify(table));
+      fs.renameSync(tmp, FICHIER_CACHE);
+    } catch (e) { /* the cache is a convenience; losing it costs a lookup */ }
+  }
+  return {
+    get: function (code) {
+      const e = table[code];
+      if (!e) return null;
+      if (Date.now() - e.at > (e.hit ? HIT_TTL : MISS_TTL)) { delete table[code]; return null; }
+      return e;
+    },
+    set: function (code, entree) {
+      entree.at = Date.now();
+      table[code] = entree;
+      if (Object.keys(table).length > MAX) table = {};
+      if (++sales % 20 === 0) persist();
+    },
+    /* For the tests, and for a rebuild after a change to the shape. */
+    _reset: function () { table = {}; },
+    _size: function () { return Object.keys(table).length; },
+    _flush: persist
+  };
+})();
+
+/* A sliding minute, kept below Open Food Facts' fifteen per address. */
+const OffBudget = (function () {
+  const PAR_MINUTE = Number(process.env.OFF_BUDGET_PER_MINUTE) || 12;
+  let marques = [];
+  function nettoyer() {
+    const seuil = Date.now() - 60000;
+    marques = marques.filter(function (t) { return t > seuil; });
+  }
+  return {
+    take: function () {
+      nettoyer();
+      if (marques.length >= PAR_MINUTE) return false;
+      marques.push(Date.now());
+      return true;
+    },
+    secondsUntilFree: function () {
+      nettoyer();
+      if (marques.length < PAR_MINUTE) return 0;
+      return Math.max(1, Math.ceil((marques[0] + 60000 - Date.now()) / 1000));
+    },
+    _reset: function () { marques = []; }
+  };
+})();
+
+function absent(brut, formes, via) {
+  return {
+    error: "product not found",
+    scanned: brut,
+    tried: formes,
+    via: via,
+    contribute: "https://world.openfoodfacts.org/cgi/product.pl?code=" + formes[0]
+  };
+}
 
 /* ---------- droits ---------- */
 function activeFrom(a) {
@@ -82,19 +164,53 @@ function json(res, code, corps) {
   });
   res.end(s);
 }
+/* Sixty-four kilobytes is forty times the largest body any route here
+ * expects. Without a ceiling, one request of a few gigabytes exhausts the
+ * server's memory: the chunks are kept until the end of the stream. */
+const MAX_BODY = 64 * 1024;
+
 function rawBody(req) {
   return new Promise(function (res, rej) {
     const m = [];
-    req.on("data", function (c) { m.push(c); });
+    let total = 0;
+    req.on("data", function (c) {
+      total += c.length;
+      if (total > MAX_BODY) {
+        /* Stop reading, answer, then let the handler close the socket: a
+         * destroy here would reset the connection before the 413 goes out. */
+        req.pause();
+        const e = new Error("body too large");
+        e.status = 413;
+        return rej(e);
+      }
+      m.push(c);
+    });
     req.on("end", function () { res(Buffer.concat(m)); });
     req.on("error", rej);
   });
 }
+/* A token entry is either the bare email (the old shape, treated as issued
+ * now on first sight so nothing already installed is logged out) or an object
+ * with the email and the issue time. */
+function jetonValide(db, token) {
+  const entree = db.jetons[token];
+  if (!entree) return null;
+  if (typeof entree === "string") {
+    db.jetons[token] = { email: entree, cree: Date.now() };
+    return entree;
+  }
+  if (Date.now() - (entree.cree || 0) > TOKEN_TTL_MS) {
+    delete db.jetons[token];
+    return null;
+  }
+  return entree.email;
+}
+
 function compteDeLaRequete(req, db) {
   const auth = req.headers.authorization || "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
-  const email = db.jetons[token];
+  const email = jetonValide(db, token);
   return email ? db.accounts[email] || null : null;
 }
 
@@ -179,7 +295,7 @@ const routes = {
     }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
 
     const r = corps.rating === null
       ? Ratings.removeRating(corps.recipe, ctx.account.email)
@@ -247,7 +363,7 @@ const routes = {
     if (!ctx.account) return json(res, 401, { error: "connexion requise" });
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
     const v = Apple.verifierJWS(corps.signedTransaction);
     if (!v.ok) return json(res, 400, { error: "transaction refusée", detail: v.reason });
     const etat = Apple.etatDepuisTransaction(v.charge);
@@ -275,7 +391,7 @@ const routes = {
   "POST /api/webhook/apple": async function (req, res, ctx) {
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
     const n = Apple.lireNotification(corps.signedPayload);
     if (!n.ok) return json(res, 400, { error: "notification refusée", detail: n.reason });
     if (n.ignored) return json(res, 200, { ignored: n.ignored });
@@ -333,79 +449,138 @@ const routes = {
     const formes = Barcode.formes(brut);
     if (!formes.length) return json(res, 400, { error: "invalid barcode" });
 
-    /* Food first: it is the common case and the only one with a full
-     * ingredient list most of the time. */
-    const bases = [
-      { hote: "world.openfoodfacts.org", genre: "food" },
-      { hote: "world.openbeautyfacts.org", genre: "beauty" },
-      { hote: "world.openpetfoodfacts.org", genre: "petfood" },
-      { hote: "world.openproductsfacts.org", genre: "product" }
-    ];
+    /* THE CACHE ANSWERS FIRST, FOR EVERYONE.
+     *
+     * Open Food Facts allows fifteen product reads a minute PER ADDRESS, and
+     * this server is one address for every parent using the app. A product
+     * already looked up costs nothing here; only a barcode nobody has scanned
+     * before goes out. Misses are remembered too, briefly: a product added to
+     * the database tomorrow must not stay invisible for a month. */
+    /* Keyed on the canonical form — the longest, which is the thirteen-digit
+     * one — so a UPC-A and its EAN-13 twin share one entry. `formes[0]` is
+     * whatever was scanned, and the same product would have been cached
+     * twice under two names. */
+    const cle = formes.reduce(function (a, b) { return b.length > a.length ? b : a; }, formes[0]);
+    const connu = ProductCache.get(cle);
+    if (connu) {
+      if (connu.hit) return json(res, 200, connu.payload);
+      return json(res, 404, absent(brut, formes, "cache"));
+    }
+
+    /* THE BUDGET STOPS US BEFORE THE BAN DOES. Twelve a minute, under their
+     * fifteen: when it is spent, the answer is "try again shortly", not eight
+     * requests that will all be refused. */
+    if (!OffBudget.take()) {
+      return json(res, 503, {
+        error: "product database unavailable",
+        retryAfterSeconds: OffBudget.secondsUntilFree(),
+        scanned: brut
+      });
+    }
 
     const champs = "product_name,product_name_fr,brands,ingredients_text_fr," +
                    "ingredients_text,allergens_tags,traces_tags,image_small_url";
     const entetes = {
-      "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/0.7 (contact@bouchees.example)"
+      /* The fallback names a domain that resolves. The old one, ".example",
+       * gave Open Food Facts no one to contact before blocking an address. */
+      "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
     };
 
-    const essais = [];
-    for (const base of bases) {
-      for (const forme of formes) {
-        try {
-          const r = await fetch("https://" + base.hote + "/api/v2/product/" + forme +
-                                "?fields=" + champs, { headers: entetes });
-          const d = await r.json();
-          essais.push(base.genre + ":" + forme);
-          if (!d || d.status !== 1 || !d.product) continue;
-
-          const p = d.product;
-          return json(res, 200, {
-            code: forme,
-            scanned: brut,
-            source: base.genre,
-            name: p.product_name_fr || p.product_name || null,
-            brand: p.brands || null,
-            ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
-            allergenTags: p.allergens_tags || [],
-            traceTags: p.traces_tags || [],
-            image: p.image_small_url || null,
-            assignment: "Data from Open Food Facts and its sibling databases, " +
-                        "ODbL licence (opendatacommons.org/licenses/odbl/1-0)",
-            notice: "The database's own allergen tags are indicative — Bouchees " +
-                    "re-derives everything from the ingredient list."
-          });
-        } catch (e) {
-          /* One database being unreachable must not end the cascade. */
-          essais.push(base.genre + ":" + forme + ":error");
-        }
-      }
+    /* FOOD WITH BOTH FORMS, THEN ONE FORM PER SIBLING.
+     *
+     * The old cascade tried four databases times two forms, eight requests
+     * on every miss — two misses in a minute crossed the limit on their own.
+     * Food is where a grocery product lives; the siblings only need a look. */
+    const plan = [];
+    for (const forme of formes) plan.push({ hote: "world.openfoodfacts.org", genre: "food", forme: forme });
+    for (const b of [["world.openbeautyfacts.org", "beauty"],
+                     ["world.openpetfoodfacts.org", "petfood"],
+                     ["world.openproductsfacts.org", "product"]]) {
+      plan.push({ hote: b[0], genre: b[1], forme: formes[0] });
     }
 
-    /* Nothing anywhere. Say what was tried, and say what the parent can do —
-     * a dead end with a next step is not a dead end. */
-    json(res, 404, {
-      error: "product not found",
-      scanned: brut,
-      tried: formes,
-      databases: bases.map(function (b) { return b.genre; }),
-      attempts: essais.length,
-      contribute: "https://world.openfoodfacts.org/cgi/product.pl?code=" + formes[0]
-    });
+    let indisponible = false;
+    for (const etape of plan) {
+      if (!OffBudget.take()) { indisponible = true; break; }
+      let r;
+      try {
+        r = await fetch("https://" + etape.hote + "/api/v2/product/" + etape.forme +
+                        "?fields=" + champs, { headers: entetes });
+      } catch (e) { indisponible = true; continue; }
+
+      /* "LIMITED" IS NOT "NOT FOUND". A refused request comes back as a
+       * 429, a 503, or an HTML page. Parsing that as JSON used to throw into
+       * the catch below and end as "product not found" — a ban and a
+       * missing product were the same message. */
+      const type = (r.headers.get("content-type") || "").toLowerCase();
+      if (r.status === 429 || r.status >= 500 || type.indexOf("json") < 0) {
+        indisponible = true;
+        continue;
+      }
+      let d;
+      try { d = await r.json(); } catch (e) { indisponible = true; continue; }
+      if (!d || d.status !== 1 || !d.product) continue;
+
+      const p = d.product;
+      const payload = {
+        code: etape.forme,
+        scanned: brut,
+        source: etape.genre,
+        name: p.product_name_fr || p.product_name || null,
+        brand: p.brands || null,
+        ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
+        allergenTags: p.allergens_tags || [],
+        traceTags: p.traces_tags || [],
+        image: p.image_small_url || null,
+        assignment: "Data from Open Food Facts and its sibling databases, " +
+                    "ODbL licence (opendatacommons.org/licenses/odbl/1-0)",
+        notice: "The database's own allergen tags are indicative — Bouchees " +
+                "re-derives everything from the ingredient list."
+      };
+      ProductCache.set(cle, { hit: true, payload: payload });
+      return json(res, 200, payload);
+    }
+
+    /* A miss is only a miss when every database actually answered. If one
+     * was refusing, say so rather than remember a "not found" that is not
+     * known to be true. */
+    if (indisponible) {
+      return json(res, 503, {
+        error: "product database unavailable",
+        retryAfterSeconds: OffBudget.secondsUntilFree(),
+        scanned: brut
+      });
+    }
+    ProductCache.set(cle, { hit: false });
+    json(res, 404, absent(brut, formes, "live"));
   },
 
   /* Connexion volontairement minimale : un email, un token. Pas de mot de
    * password to manage, so no password to leak. In production this token is
    * emailed instead of being returned here. */
   "POST /api/login": async function (req, res, ctx) {
+    /* CLOSED UNTIL SIGN-IN IS REAL.
+     *
+     * This route hands a session token to any well-formed address, with no
+     * proof that the caller owns it. The note below says the token is
+     * emailed in production; the deployment on Render IS production, and the
+     * token came back in the response. Anyone typing a subscriber's email
+     * got their subscription.
+     *
+     * Until a magic link exists, the route answers 503. The environment
+     * variable reopens it for local testing only, knowingly. */
+    if (!ctx.insecureLogin) {
+      return json(res, 503, { error: "sign-in is not available yet" });
+    }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
-    catch (e) { return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
     const email = normaliserCourriel(corps.email);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: "email invalide" });
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
     const token = jetonNeuf();
-    db.jetons[token] = email;
+    db.jetons[token] = { email: email, cree: Date.now() };
     writeAccounts(db);
     json(res, 200, { token: token, email: email, subscribed: subscriptionActive(db.accounts[email]),
                      note: "En production, ce token s'envoie par email — il ne revient pas dans la réponse." });
@@ -445,7 +620,7 @@ const routes = {
 
     let evt;
     try { evt = JSON.parse(brut.toString("utf8")); }
-    catch (e) { return json(res, 400, { error: "JSON invalide" }); }
+    catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "JSON invalide" }); }
 
     const maj = evenementPertinent(evt);
     if (!maj) return json(res, 200, { ignored: evt.type });
@@ -524,8 +699,15 @@ function serveStatic(req, res, url) {
   });
 }
 
-function createServer() {
+function createServer(options) {
+  /* Read once, here, rather than from the environment on every request, so
+   * a test can open the door on one instance without opening it on another
+   * running beside it. */
+  const insecureLogin = options && "allowInsecureLogin" in options
+    ? !!options.allowInsecureLogin
+    : process.env.ALLOW_INSECURE_LOGIN === "1";
   return http.createServer(async function (req, res) {
+    req.on("error", function () { /* aborted by rawBody; the 413 below answers */ });
     const url = new URL(req.url, "http://x");
     const cle = req.method + " " + url.pathname;
     res.setHeader("X-Content-Type-Options", "nosniff");
@@ -533,9 +715,16 @@ function createServer() {
     const route = routes[cle];
     if (!route) return serveStatic(req, res, url);
     const db = readAccounts();
-    const ctx = { db: db, url: url, account: compteDeLaRequete(req, db) };
+    const ctx = { db: db, url: url, account: compteDeLaRequete(req, db),
+                  insecureLogin: insecureLogin };
     try { await route(req, res, ctx); }
-    catch (err) { json(res, 500, { error: err.message }); }
+    catch (err) {
+      if (res.headersSent) return;
+      /* A body that blew past the ceiling is the caller's fault, not ours. */
+      json(res, err.status === 413 ? 413 : 500,
+           { error: err.status === 413 ? "body too large" : err.message });
+      if (err.status === 413) res.on("finish", function () { req.destroy(); });
+    }
   });
 }
 
@@ -548,4 +737,7 @@ if (require.main === module) {
 }
 
 module.exports = { createServer: createServer, allowedBatches: allowedBatches,
-                   subscriptionActive: subscriptionActive, routes: routes };
+                   subscriptionActive: subscriptionActive, routes: routes,
+                   /* Exposed for the tests only. */
+                   _ProductCache: ProductCache, _OffBudget: OffBudget,
+                   _MAX_BODY: MAX_BODY, _TOKEN_TTL_MS: TOKEN_TTL_MS };

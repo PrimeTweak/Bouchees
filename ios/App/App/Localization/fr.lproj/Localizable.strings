@@ -398,3 +398,4 @@
 "%lld recipes waiting" = "%lld recettes vous attendent";
 "%@, already adapted to %@" = "%@, déjà adaptées pour %@";
 "Then $4.99/month. Cancel any time." = "Puis 4,99 $/mois. Annulable en tout temps.";
+"The product database is busy. Try again in a moment — and when in doubt, read the label." = "La base de produits est occupée. Réessayez dans un instant — et dans le doute, lisez l'étiquette.";

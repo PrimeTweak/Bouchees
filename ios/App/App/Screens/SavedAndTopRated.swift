@@ -184,7 +184,7 @@ struct RankRow: View {
             Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
         }
         .padding(11)
-        .background(Color(.secondarySystemGroupedBackground),
+        .background(Tone.surface,
                     in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Rang \(rank). \(recipe.name).")
@@ -236,7 +236,7 @@ struct RatingBlock: View {
         }
         .padding(17)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground),
+        .background(Tone.surface,
                     in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }

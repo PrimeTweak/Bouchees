@@ -1672,4 +1672,112 @@ test("vision: a single recognised ingredient with no hesitation is accepted", as
   assert(v.avertissements.some((a) => /weak resemblance/.test(a)));
 });
 
+
+/* ---------- serveur : les correctifs du rapport QA (build 119) ---------- */
+
+/* A real instance on a free port, so what is tested is the wire, not the
+ * functions behind it. The accounts and the product cache go to files the
+ * test owns, and never to the repository's. */
+let serveursDeTest = 0;
+async function serveurDeTest(db, options) {
+  const http = require("http");
+  /* One file per instance. The tests run in parallel, and a shared file
+   * meant one test's empty accounts overwrote another's fixture between
+   * its write and its first request. */
+  const seq = process.pid + "-" + (++serveursDeTest);
+  const comptes = path.join(require("os").tmpdir(), "bouchees-test-accounts-" + seq + ".json");
+  const cache = path.join(require("os").tmpdir(), "bouchees-test-cache-" + seq + ".json");
+  process.env.BOUCHEES_COMPTES = comptes;
+  process.env.BOUCHEES_PRODUCT_CACHE = cache;
+  fs.writeFileSync(comptes, JSON.stringify(db || { accounts: {}, jetons: {} }));
+  try { fs.unlinkSync(cache); } catch (e) {}
+  delete require.cache[require.resolve("../server/server.js")];
+  const S = require("../server/server.js");
+  const srv = S.createServer(options || { allowInsecureLogin: false });
+  await new Promise((res) => srv.listen(0, res));
+  /* Never keep the process alive, and never keep a socket alive: a
+   * keep-alive connection makes server.close() wait for a client that has
+   * already gone, and the whole suite hangs at the end. */
+  srv.unref();
+  const base = "http://127.0.0.1:" + srv.address().port;
+  function call(method, chemin, body, headers) {
+    return new Promise((res) => {
+      const r = http.request(base + chemin, { method: method, headers: headers || {}, agent: false }, (resp) => {
+        let d = ""; resp.on("data", (c) => d += c);
+        resp.on("end", () => { let j = null; try { j = JSON.parse(d); } catch (e) {} res({ status: resp.statusCode, json: j }); });
+      });
+      r.on("error", () => res({ status: -1, json: null }));
+      if (body) r.write(body);
+      r.end();
+    });
+  }
+  return { S: S, call: call, close: () => { if (srv.closeAllConnections) srv.closeAllConnections(); srv.close(); } };
+}
+
+test("server: sign-in answers 503 until it is real", async () => {
+  const t = await serveurDeTest();
+  const r = await t.call("POST", "/api/login", JSON.stringify({ email: "a@b.co" }), { "content-type": "application/json" });
+  assert.equal(r.status, 503, "a token must not be handed to an unverified address");
+  t.close();
+});
+
+test("server: a body over the ceiling is refused with 413, not swallowed as bad JSON", async () => {
+  const t = await serveurDeTest(null, { allowInsecureLogin: true });
+  const r = await t.call("POST", "/api/login", "x".repeat(t.S._MAX_BODY + 1024), { "content-type": "application/json" });
+  assert.equal(r.status, 413);
+  t.close();
+});
+
+test("server: a token older than the TTL no longer authenticates, a fresh one does, the old shape migrates", async () => {
+  const S0 = require("../server/server.js");
+  const t = await serveurDeTest({
+    accounts: { "x@y.z": { email: "x@y.z", subscription: null } },
+    jetons: {
+      vieux: { email: "x@y.z", cree: Date.now() - S0._TOKEN_TTL_MS - 1000 },
+      neuf: { email: "x@y.z", cree: Date.now() },
+      ancien: "x@y.z"
+    }
+  });
+  async function me(tok) { return (await t.call("GET", "/api/me", null, { authorization: "Bearer " + tok })).json.connecte; }
+  assert.equal(await me("vieux"), false, "expired");
+  assert.equal(await me("neuf"), true, "fresh");
+  assert.equal(await me("ancien"), true, "a bare-email entry from before is not a logout");
+  t.close();
+});
+
+test("server: a spent budget answers 503 with a retry delay and touches no network", async () => {
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
+  for (let i = 0; i < 12; i++) t.S._OffBudget.take();
+  const r = await t.call("GET", "/api/product?code=064200115209");
+  assert.equal(r.status, 503);
+  assert(r.json.retryAfterSeconds >= 1, "the caller is told when to come back");
+  t.close();
+});
+
+test("server: the product cache answers hits and remembered misses without spending budget", async () => {
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
+  for (let i = 0; i < 12; i++) t.S._OffBudget.take();   // budget gone: any network path would 503
+  t.S._ProductCache.set("0064200115209", { hit: true, payload: { code: "0064200115209", name: "Cheddar" } });
+  t.S._ProductCache.set("0099999999999", { hit: false });
+  const hit = await t.call("GET", "/api/product?code=064200115209");
+  assert.equal(hit.status, 200); assert.equal(hit.json.name, "Cheddar");
+  const miss = await t.call("GET", "/api/product?code=099999999999");
+  assert.equal(miss.status, 404); assert.equal(miss.json.via, "cache");
+  t.close();
+});
+
+test("server: the cache key is the canonical thirteen-digit form, whichever form was scanned", async () => {
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
+  for (let i = 0; i < 12; i++) t.S._OffBudget.take();
+  t.S._ProductCache.set("0064200115209", { hit: true, payload: { name: "Cheddar" } });
+  const douze = await t.call("GET", "/api/product?code=064200115209");
+  const treize = await t.call("GET", "/api/product?code=0064200115209");
+  assert.equal(douze.json.name, "Cheddar", "UPC-A reaches the entry");
+  assert.equal(treize.json.name, "Cheddar", "EAN-13 reaches the same entry");
+  t.close();
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

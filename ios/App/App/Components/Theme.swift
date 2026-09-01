@@ -201,7 +201,7 @@ struct RecipeCard: View {
             .padding(.horizontal, 13)
             .padding(.vertical, 12)
         }
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Tone.surface)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)

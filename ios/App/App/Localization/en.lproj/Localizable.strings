@@ -400,3 +400,4 @@
 "%lld recipes waiting" = "%lld recipes waiting";
 "%@, already adapted to %@" = "%@, already adapted to %@";
 "Then $4.99/month. Cancel any time." = "Then $4.99/month. Cancel any time.";
+"The product database is busy. Try again in a moment — and when in doubt, read the label." = "The product database is busy. Try again in a moment — and when in doubt, read the label.";

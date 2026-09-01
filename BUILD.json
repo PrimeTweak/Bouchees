@@ -1,17 +1,22 @@
 {
-  "build": 118,
+  "build": 119,
   "date": "2026-09-01",
   "carries": [
-    "the week heading was the literal This week with the current week's count, so it described something else whenever another week was open",
-    "a locked week is one panel instead of seven Nothing planned cards, which said empty when the truth was locked",
-    "the subscription card hides on a locked week: the panel is the offer, where the parent just tapped",
-    "the panel names no dish because the server answers 402 and sends none; the count and span come from the manifest",
-    "today is a block with a brand rule and a 4 per cent ink wash, not a coloured word among six identical eyebrows",
-    "the wash is ink and not brand, so it never reads as a second subscription card on the same screen",
-    "the scan sheet declared no detent at all, so iOS opened it full height; it now stops at its content, floored at 260 and capped at three quarters",
-    "one rhythm of 22 between the sheet's blocks instead of six separate top paddings",
-    "ingredient quantities move from the faintest ink to text2, 5.4 to 1",
-    "the Original recipe label moves to the corner the photo fade never reaches, on a firmer field",
-    "the substitution sheet clears the drag handle, 6 points becomes 26"
+    "sign-in answers 503 until it is real: the route handed a session token to any address with no proof of ownership, on the live deployment",
+    "request bodies stop at 64 KB with a 413; there was no ceiling at all",
+    "session tokens expire after thirty days; entries in the old bare-email shape migrate on first sight instead of logging anyone out",
+    "accounts.json is written to a temp file and renamed over, so a crash mid-write cannot truncate it",
+    "product lookups go through a shared cache, hits kept thirty days and misses one day, keyed on the canonical thirteen-digit form",
+    "a sliding budget of twelve Open Food Facts calls a minute answers 503 with a retry delay instead of eight refused requests",
+    "food is tried with both barcode forms and the sibling databases with one, five requests on a miss instead of eight",
+    "a 429, a 5xx or an HTML page is unavailable, not not-found; the app says busy and try again rather than unknown",
+    "the User-Agent fallback names a domain that resolves",
+    "PrivacyInfo.xcprivacy declares UserDefaults under CA92.1 and the email as the only collected data; it was missing entirely",
+    "the camera prompt is localised through InfoPlist.strings in both languages; it was French for everyone",
+    "MARKETING_VERSION 1.0.0",
+    "the six remaining system card colours use the palette's own, identical in light and warm in dark",
+    "the medical disclaimer sits on the scan verdict, not only in Settings",
+    "the scan sheet opens at medium until measured instead of a 260pt stub that grows",
+    "six server tests run against a real instance on a free port, each with its own files"
   ]
 }

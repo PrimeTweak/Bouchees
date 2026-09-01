@@ -251,8 +251,17 @@ struct ScannerScreen: View {
             messageErreur = String(localized:
                 "Not in any open database yet. Read the label — and you can add this product so the next parent finds it.")
             canContribute = true
+        } catch RepositoryError.network(503) {
+            /* NOT THE SAME AS 404. The server is out of lookups for this
+             * minute, or the database is refusing it. The product may well
+             * exist; saying "unknown" here would teach a parent the app
+             * cannot read something it simply has not been allowed to read
+             * yet. */
+            messageErreur = String(localized:
+                "The product database is busy. Try again in a moment — and when in doubt, read the label.")
         } catch {
-            messageErreur = "Lookup failed. Check your connection — and when in doubt, read the label."
+            messageErreur = String(localized:
+                "Lookup failed. Check your connection — and when in doubt, read the label.")
         }
     }
 
@@ -705,7 +714,12 @@ struct ProductDetailSheet: View {
          * Floored so a one-line product still gets a sheet worth grabbing,
          * and capped at three quarters of the screen so a long list does not
          * quietly become full height again. */
-        .presentationDetents([.height(min(max(hauteur, 260), UIScreen.main.bounds.height * 0.75)), .large])
+        .presentationDetents(hauteur > 0
+            ? [.height(min(max(hauteur, 260), UIScreen.main.bounds.height * 0.75)), .large]
+            /* Before the first measurement: medium, which is close to what a
+             * typical product needs, instead of a 260pt stub that visibly
+             * grows on the next frame. */
+            : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
 
@@ -914,12 +928,23 @@ struct ProductDetailSheet: View {
     }
 
     private var attribution: some View {
-        Text("From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.")
-            .font(.system(size: 10))
-            .foregroundStyle(Tone.text3)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(.horizontal, Layout.gutter)
-            .padding(.top, 4)
+        VStack(alignment: .leading, spacing: 8) {
+            /* THE DISCLAIMER WHERE THE RISK IS.
+             *
+             * It lived in Settings only. A parent reading "Good for Livia" in
+             * green, standing in an aisle, never sees Settings. It belongs on
+             * the verdict, under the data it qualifies. */
+            Text(Settings.medicalDisclaimer)
+                .font(.system(size: 10))
+                .foregroundStyle(Tone.text3)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.")
+                .font(.system(size: 10))
+                .foregroundStyle(Tone.text3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, Layout.gutter)
+        .padding(.top, 4)
     }
 }
 

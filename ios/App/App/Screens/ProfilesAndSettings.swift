@@ -178,7 +178,7 @@ struct ProfileEditor: View {
                             .autocorrectionDisabled()
                             .font(.title3.weight(.semibold))
                             .padding(14)
-                            .background(Color(.secondarySystemGroupedBackground),
+                            .background(Tone.surface,
                                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
 

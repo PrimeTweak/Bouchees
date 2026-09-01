@@ -172,7 +172,7 @@ struct AllergenToggle: View {
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundStyle(isOn ? Color.white : Color.secondary)
-            .background(isOn ? Color.primary : Color(.secondarySystemGroupedBackground),
+            .background(isOn ? Color.primary : Tone.surface,
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)

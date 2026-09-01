@@ -8,7 +8,7 @@ options:
   xcodeVersion: '16.0'
 settings:
   base:
-    MARKETING_VERSION: 0.6.0
+    MARKETING_VERSION: 1.0.0
     CURRENT_PROJECT_VERSION: '1'
     SWIFT_VERSION: '5.10'
     DEVELOPMENT_TEAM: ''
@@ -31,6 +31,7 @@ targets:
     - path: App/App/Services
     - path: App/App/Assets.xcassets
     - path: App/App/Bouchees.storekit
+    - path: App/App/PrivacyInfo.xcprivacy
     - path: App/App/Localization
       type: group
     - path: App/App/Bundled
@@ -62,8 +63,10 @@ targets:
         - UIInterfaceOrientationPortrait
         - UIInterfaceOrientationLandscapeLeft
         - UIInterfaceOrientationLandscapeRight
+        # The literal here is the fallback for the fr-CA development region.
+        # English phones read Localization/en.lproj/InfoPlist.strings instead.
         NSCameraUsageDescription: Bouchées utilise la caméra pour lire le code-barres d'un produit et
-          vérifier sa liste d'ingrédients. Aucune photo n'est enregistrée ni envoyée.
+          vérifier ses ingrédients contre les allergènes de votre enfant. Aucune image n'est conservée ni envoyée.
         CFBundleDevelopmentRegion: fr-CA
         CFBundleLocalizations:
         - fr
