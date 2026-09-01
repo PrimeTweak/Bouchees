@@ -58,6 +58,21 @@ final class BarcodeSession: NSObject, ObservableObject,
         }
         session.addInput(input)
 
+        /* NEAR FOCUS. A barcode is read at arm's length or closer; with the
+         * default range the lens hunts between the jar and the shelf behind
+         * it, and a small code on a yogurt cup never gets a sharp frame. The
+         * restriction is a hint, not a lock: far focus still works, it is
+         * just not tried first. */
+        if (try? appareil.lockForConfiguration()) != nil {
+            if appareil.isAutoFocusRangeRestrictionSupported {
+                appareil.autoFocusRangeRestriction = .near
+            }
+            if appareil.isFocusModeSupported(.continuousAutoFocus) {
+                appareil.focusMode = .continuousAutoFocus
+            }
+            appareil.unlockForConfiguration()
+        }
+
         let out = AVCaptureMetadataOutput()
         guard session.canAddOutput(out) else {
             error = String(localized: "Barcode reading could not start.")
@@ -74,16 +89,37 @@ final class BarcodeSession: NSObject, ObservableObject,
          * EAN-13 with a leading zero, which is exactly the form Open Food
          * Facts indexes — so the twelve-digit case is already covered by
          * .ean13, and the server normalises the rest. */
+        /* GS1 DataBar was missing, and it is the code on produce, meat,
+         * bakery and coupons — the aisle where a "did not read" complaint
+         * most often comes from. iOS reads it since 15.4; the target is 17.
+         * Its expanded form hands over a GS1 element string, which the
+         * server now unpacks like a Data Matrix. */
         out.metadataObjectTypes = [.ean8, .ean13, .upce, .code128,
-                                   .code39, .itf14, .dataMatrix, .qr]
+                                   .code39, .itf14, .dataMatrix, .qr,
+                                   .gs1DataBar, .gs1DataBarExpanded, .gs1DataBarLimited]
         configured = true
     }
+
+    /* Which code to trust when a frame holds several. A carton shows its
+     * ITF-14 next to the retail EAN-13; a box carries a QR beside its UPC.
+     * `objets.first` took whichever the detector listed first, and that was
+     * not reliably the one the parent meant. Retail codes first, then the
+     * carton form, then everything else. */
+    private static let preference: [AVMetadataObject.ObjectType] = [
+        .ean13, .upce, .ean8, .gs1DataBar, .gs1DataBarLimited,
+        .gs1DataBarExpanded, .itf14, .dataMatrix, .qr, .code128, .code39
+    ]
 
     nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput,
                                     didOutput objets: [AVMetadataObject],
                                     from connection: AVCaptureConnection) {
-        guard let objet = objets.first as? AVMetadataMachineReadableCodeObject,
-              let value = objet.stringValue else { return }
+        let lisibles = objets.compactMap { $0 as? AVMetadataMachineReadableCodeObject }
+        let choisi = lisibles.min { a, b in
+            let ia = Self.preference.firstIndex(of: a.type) ?? Int.max
+            let ib = Self.preference.firstIndex(of: b.type) ?? Int.max
+            return ia < ib
+        }
+        guard let objet = choisi, let value = objet.stringValue else { return }
         Task { @MainActor in
             guard self.lastCode != value else { return }
             self.lastCode = value
@@ -260,6 +296,12 @@ struct ScannerScreen: View {
             messageErreur = String(localized:
                 "Not in any open database yet. Read the label — and you can add this product so the next parent finds it.")
             canContribute = true
+        } catch RepositoryError.network(400) {
+            /* The code was read, and there was no product number in it — a
+             * QR that points at a website, a serial, a coupon. Not a network
+             * problem, and not a missing product. */
+            messageErreur = String(localized:
+                "That code is not a product barcode. Look for the striped one on the package.")
         } catch RepositoryError.network(503) {
             /* NOT THE SAME AS 404. The server is out of lookups for this
              * minute, or the database is refusing it. The product may well

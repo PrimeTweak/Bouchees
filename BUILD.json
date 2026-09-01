@@ -1,18 +1,13 @@
 {
-  "build": 120,
+  "build": 121,
   "date": "2026-09-01",
   "carries": [
-    "the child pill is on the scanner, the one screen where the wrong child has a physical consequence",
-    "with two profiles, Everyone is one tap beside the pill instead of two levels into a sheet",
-    "one line under every verdict says what it is made of: the printed ingredient list, and that the package still needs reading",
-    "the Settings tab is Family, with the children first and the theme last",
-    "Done at the end of cooking asks how it was, three stars and a skip, and marks the recipe cooked for the week",
-    "a cooked recipe shows a check on its row; the week becomes a record nobody had to keep",
-    "the day list starts tomorrow on the current week, so the hero and the list no longer name the same dish twice",
-    "the hero eyebrow is dated, since it is now the only place today appears",
-    "the subscription card moves under the day list, after the value and not before it",
-    "the onboarding counter says 2 of 3, which is how many screens there are",
-    "the first eyebrow says nothing to sign up for, works without a signal, in the voice of the rest of the app",
-    "the sign-in hint for ratings names the renamed tab"
+    "the lookup budget was charged before the plan and again per step, so a first-try hit cost two and the real budget was six a minute, not twelve; the first check only looks",
+    "a QR with a GS1 Digital Link and a Data Matrix with a GS1 element string were accepted by the camera and rejected by the server as seventeen-digit nonsense; the GTIN inside is found first",
+    "GS1 DataBar, in all three forms, joins the symbologies: produce, meat, bakery and coupons carry it",
+    "when a frame holds several codes, retail forms win over the carton and the QR beside them",
+    "focus is restricted to near range and continuous, so a small code on a jar gets a sharp frame instead of a hunt between it and the shelf",
+    "a code with no product number answers 400 and the app says so, instead of blaming the connection",
+    "nine new tests: every GS1 payload shape, every UPC-E rule, the carton form, and the budget cost measured in units against a live instance"
   ]
 }

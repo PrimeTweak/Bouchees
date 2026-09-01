@@ -99,6 +99,10 @@ const OffBudget = (function () {
     marques = marques.filter(function (t) { return t > seuil; });
   }
   return {
+    available: function () {
+      nettoyer();
+      return marques.length < PAR_MINUTE;
+    },
     take: function () {
       nettoyer();
       if (marques.length >= PAR_MINUTE) return false;
@@ -441,9 +445,14 @@ const routes = {
    * merging.
    */
   "GET /api/product": async function (req, res, ctx) {
-    const brut = (ctx.url.searchParams.get("code") || "").replace(/[^0-9]/g, "");
-    if (brut.length < 6 || brut.length > 14) {
-      return json(res, 400, { error: "invalid barcode" });
+    /* GS1-aware: a QR or a Data Matrix hands over a URL or an element
+     * string, and keeping only their digits gave a seventeen-digit key that
+     * nothing indexes. `digits` finds the GTIN inside, or says there is
+     * none. */
+    const brut = Barcode.digits(ctx.url.searchParams.get("code"));
+    if (!brut) {
+      return json(res, 400, { error: "no barcode in this code",
+                              scanned: String(ctx.url.searchParams.get("code") || "").slice(0, 80) });
     }
 
     const formes = Barcode.formes(brut);
@@ -469,8 +478,12 @@ const routes = {
 
     /* THE BUDGET STOPS US BEFORE THE BAN DOES. Twelve a minute, under their
      * fifteen: when it is spent, the answer is "try again shortly", not eight
-     * requests that will all be refused. */
-    if (!OffBudget.take()) {
+     * requests that will all be refused.
+     *
+     * A LOOK, NOT A TAKE. Build 119 took one unit here and one more per
+     * step below, so a first-try hit cost two and a full miss cost six: the
+     * real budget was half the declared one. */
+    if (!OffBudget.available()) {
       return json(res, 503, {
         error: "product database unavailable",
         retryAfterSeconds: OffBudget.secondsUntilFree(),

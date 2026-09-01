@@ -97,4 +97,42 @@ function formes(brut) {
   return out.filter(function (v, i, a) { return v && a.indexOf(v) === i; });
 }
 
-module.exports = { formes: formes, expandUPCE: expandUPCE, checkDigit: checkDigit };
+/* WHAT THE CAMERA HANDS OVER IS NOT ALWAYS A NUMBER.
+ *
+ * A QR code on a package usually carries a GS1 Digital Link — a URL with the
+ * GTIN after "/01/". A Data Matrix or an expanded DataBar carries a GS1
+ * element string — "01" then fourteen digits, then other fields. Keeping
+ * only the digits of either produces a seventeen- or thirty-digit string
+ * that no database indexes, and the server used to answer "invalid barcode"
+ * to a perfectly good package.
+ *
+ * Returns the digit string a lookup should start from, or null when the
+ * payload carries no GTIN at all. A plain numeric barcode passes through. */
+function digits(payload) {
+  let p = String(payload || "").trim();
+  if (!p) return null;
+
+  /* Symbology identifiers some readers prepend: ]d2 Data Matrix, ]Q3 QR,
+   * ]e0 DataBar, ]C1 Code 128. Three characters, always. */
+  if (/^\][A-Za-z][0-9]/.test(p)) p = p.slice(3);
+
+  /* GS1 Digital Link, in any of its spellings. */
+  const lien = p.match(/\/01\/(\d{14})(?:[\/?#]|$)/);
+  if (lien) return lien[1];
+
+  /* GS1 element string. FNC1 arrives as \u001d; the (01) form is what a
+   * human types. The GTIN is the fourteen digits after AI 01. */
+  const sansSep = p.replace(/\u001d/g, "").replace(/[()]/g, "");
+  const element = sansSep.match(/^01(\d{14})/);
+  if (element && !/^\d{8}$|^\d{12,14}$/.test(p)) return element[1];
+
+  /* Anything else: a plain barcode, possibly with spaces or dashes. */
+  const nus = p.replace(/[^0-9]/g, "");
+  if (nus.length >= 6 && nus.length <= 14) return nus;
+
+  /* Digits alone that are too long to be a barcode: the payload carried
+   * something else — a URL without a GTIN, a serial. Not a lookup. */
+  return null;
+}
+
+module.exports = { formes: formes, expandUPCE: expandUPCE, checkDigit: checkDigit, digits: digits };

@@ -1673,6 +1673,49 @@ test("vision: a single recognised ingredient with no hesitation is accepted", as
 });
 
 
+/* ---------- codes-barres : ce que la camera tend au serveur (build 121) ---------- */
+
+const Barcode2 = require(path.join(__dirname, "..", "engine", "barcode.js"));
+
+test("barcode: a GS1 Digital Link QR yields the GTIN inside it, not its digits concatenated", () => {
+  assert.equal(Barcode2.digits("https://id.gs1.org/01/09506000134352"), "09506000134352");
+  assert.equal(Barcode2.digits("https://id.gs1.org/01/09506000134352/10/ABC123?17=251231"), "09506000134352");
+});
+
+test("barcode: a GS1 element string from a Data Matrix or an expanded DataBar yields its GTIN", () => {
+  assert.equal(Barcode2.digits("0109506000134352172512311021ABC"), "09506000134352");
+  assert.equal(Barcode2.digits("]d20109506000134352\u001d10ABC"), "09506000134352", "with a symbology identifier and FNC1");
+  assert.equal(Barcode2.digits("(01)09506000134352(17)251231"), "09506000134352", "human-readable form");
+});
+
+test("barcode: a real EAN-13 that happens to start with 01 is a barcode, not an element string", () => {
+  assert.equal(Barcode2.digits("0123456789012"), "0123456789012");
+});
+
+test("barcode: plain codes pass through, with spaces and dashes removed", () => {
+  assert.equal(Barcode2.digits("0 36000 29145 2"), "036000291452");
+  assert.equal(Barcode2.digits("5901234123457"), "5901234123457");
+  assert.equal(Barcode2.digits("96385074"), "96385074");
+});
+
+test("barcode: a payload with no product number is null, not a garbage lookup", () => {
+  assert.equal(Barcode2.digits("https://example.com/promo/2026"), null);
+  assert.equal(Barcode2.digits(""), null);
+  assert.equal(Barcode2.digits("ABC"), null);
+});
+
+test("barcode: every UPC-E expansion rule reaches a UPC-A with a fresh check digit", () => {
+  /* X6 = 0..2, 3, 4, 5..9 are the four patterns of the UPC-E table. */
+  for (const [e, attendu] of [["01010000", "010000001006"], ["01234535", "012300000451"],
+                              ["01234545", "012340000053"], ["01234599", "012345000096"]]) {
+    assert(Barcode2.formes(e).indexOf(attendu) !== -1, e + " should expand to " + attendu);
+  }
+});
+
+test("barcode: a GTIN-14 carton code reaches the retail EAN-13 with its own check digit", () => {
+  assert(Barcode2.formes("10012345678902").indexOf("0012345678905") !== -1);
+});
+
 /* ---------- serveur : les correctifs du rapport QA (build 119) ---------- */
 
 /* A real instance on a free port, so what is tested is the wire, not the
@@ -1777,6 +1820,31 @@ test("server: the cache key is the canonical thirteen-digit form, whichever form
   const treize = await t.call("GET", "/api/product?code=0064200115209");
   assert.equal(douze.json.name, "Cheddar", "UPC-A reaches the entry");
   assert.equal(treize.json.name, "Cheddar", "EAN-13 reaches the same entry");
+  t.close();
+});
+
+test("server: a QR with no GTIN answers 400 with a clear reason, never a lookup", async () => {
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
+  const r = await t.call("GET", "/api/product?code=" + encodeURIComponent("https://example.com/promo"));
+  assert.equal(r.status, 400);
+  assert(/no barcode/.test(r.json.error));
+  t.close();
+});
+
+test("server: a full miss spends one unit per request made, and nothing before the first", async () => {
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
+  /* Offline, every step of the plan is attempted and fails: food twice,
+   * three siblings once — five requests. Build 119 also took a unit BEFORE
+   * the plan, so the same call cost six. Count what is left of twelve. */
+  const code = "036000291452";                         // a UPC-A: two forms
+  const requetes = Barcode2.formes(code).length + 3;    // food per form, one per sibling
+  await t.call("GET", "/api/product?code=" + code);
+  let restants = 0;
+  while (t.S._OffBudget.take()) restants++;
+  assert.equal(restants, 12 - requetes,
+    requetes + " requests must cost " + requetes + " units, not " + (requetes + 1));
   t.close();
 });
 
