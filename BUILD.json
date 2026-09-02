@@ -1,9 +1,8 @@
 {
-  "build": 147,
+  "build": 148,
   "date": "2026-09-02",
   "carries": [
-    "cumulative from 144: the photo notice standing on its own (146), Family's duplicate removed, About's links on one line at body size and its sheet sized to its content",
-    "the recipe page trades three grey paragraphs for one row — Not medical advice, and what it covers — which opens the same About sheet Family opens",
-    "the line under the stars waits until something has been rated: before that it explains a send that has not happened"
+    "PHOTOS.command makes the thumbnails and republishes on its own; they were two scripts written at two moments and never chained, so a 3 MB photo was downloaded for a 66-point square unless the second one was run by hand",
+    "PHOTOS-REDUIRE.command stays, for rebuilding every thumbnail at once"
   ]
 }

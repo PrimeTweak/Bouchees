@@ -1,6 +1,6 @@
 #!/bin/bash
-# Double-clique ceci. Il fabrique une version 480 px de chaque photo pour
-# les vignettes. sips est integre a macOS : rien a installer.
+# Les vignettes. PHOTOS.command les fait deja tout seul : ce script sert a
+# les refaire toutes, par exemple apres avoir vide images/thumbs/.
 cd "$(dirname "$0")"
 mkdir -p images/thumbs
 n=0; d=0
@@ -15,7 +15,6 @@ echo "  VIGNETTES"
 echo "    fabriquees   $n"
 echo "    deja a jour  $d"
 echo ""
-echo "  Ensuite : node tools/publish.js  (ou PHOTOS.command), puis pousse"
-echo "  images/thumbs/ AVEC dist/."
+echo "  Ensuite : node tools/publish.js, puis pousse images/thumbs/ AVEC dist/."
 echo ""
 read -n 1 -p "  Appuie sur une touche pour fermer."
