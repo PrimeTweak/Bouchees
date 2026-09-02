@@ -1,124 +1,146 @@
 {
-  "le": "2026-08-31T19:38:57.118Z",
-  "recettes": null,
-  "images": {
-    "generees": 19,
-    "acceptees": 15,
+  "le": "2026-09-02T13:01:33.252Z",
+  "recettes": {
+    "commandees": 20,
+    "redigees": 20,
+    "acceptees": 1,
     "rejetees": [
       {
-        "id": "sweet-potato-and-chicken-puree",
-        "reason": "the image shows \"butter\" while the recipe contains no milk ; only one ingredient recognised out of 4, and the vision hedges — the image does not look enough like the recipe",
-        "detectes": [
-          "sweet potato",
-          "butter"
-        ],
-        "fichier": "images/rejected/sweet-potato-and-chicken-puree.png"
+        "id": "lentil-sweet-potato-rice-bowl",
+        "erreurs": [
+          "standard 5: step 3 cooks without a duration",
+          "standard 5: step 3 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "pasta-in-rose-sauce-with-chicken",
-        "reason": "the image shows \"tuna\" while the recipe contains no fish",
-        "detectes": [
-          "spaghetti",
-          "tomato",
-          "onion",
-          "tuna",
-          "chicken"
-        ],
-        "fichier": "images/rejected/pasta-in-rose-sauce-with-chicken.png"
+        "id": "turkey-zucchini-quinoa-patties",
+        "erreurs": [
+          "standard 5: step 2 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "baked-fish-nuggets",
-        "reason": "the image shows \"crab\" while the recipe contains no crustaceans and molluscs ; the image shows \"shrimp\" while the recipe contains no crustaceans and molluscs ; the recipe is Baked fish nuggets but the image shows four crab cakes — the dish does not match",
-        "detectes": [
-          "crab",
-          "shrimp",
-          "onion",
-          "breadcrumb",
-          "egg"
-        ],
-        "fichier": "images/rejected/baked-fish-nuggets.png"
+        "id": "turkey-and-vegetable-rice-bowl",
+        "erreurs": [
+          "standard 5: step 1 cooks without a duration",
+          "standard 5: step 1 cooks without a doneness cue",
+          "standard 5: step 2 cooks without a duration",
+          "standard 5: step 2 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "banana-bread",
-        "reason": "the image shows \"walnut\" while the recipe contains no tree nuts ; only one ingredient recognised out of 8, and the vision hedges — the image does not look enough like the recipe",
-        "detectes": [
-          "banana",
-          "walnut"
-        ],
-        "fichier": "images/rejected/banana-bread.png"
+        "id": "sweet-potato-oat-bites",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-oat-bites"
+        ]
       },
       {
-        "id": "chicken-couscous",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "banana-chickpea-flour-mini-pancakes",
+        "erreurs": [
+          "standard 6: step 9 runs past twenty words",
+          "standard 5: step 4 cooks without a duration",
+          "standard 5: step 4 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "creamy-shrimp-and-pea-risotto",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "turkey-sweet-potato-rice-bowl",
+        "erreurs": [
+          "standard 5: step 1 cooks without a duration",
+          "standard 5: step 1 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "soft-apricot-granola",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "salmon-lentil-veggie-patties",
+        "erreurs": [
+          "id déjà utilisé : salmon-lentil-veggie-patties"
+        ]
       },
       {
-        "id": "mild-chicken-quesadillas",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "banana-oat-bites",
+        "erreurs": [
+          "id déjà utilisé : banana-oat-bites"
+        ]
       },
       {
-        "id": "tomato-alphabet-soup",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "sweet-potato-chickpea-patties",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-chickpea-patties"
+        ]
       },
       {
-        "id": "crispy-tofu-with-sweet-maple-sauce",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "turkey-sweet-potato-rice-bowl",
+        "erreurs": [
+          "standard 5: step 3 cooks without a duration",
+          "standard 5: step 3 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "carrot-and-maple-muffins",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "salmon-lentil-vegetable-stew",
+        "erreurs": [
+          "standard 5: step 3 cooks without a duration",
+          "standard 5: step 3 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "creamy-salmon-pasta",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "sweet-potato-chickpea-bites",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-chickpea-bites"
+        ]
       },
       {
-        "id": "banana-oat-pancakes",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "banana-oat-blueberry-muffins",
+        "erreurs": [
+          "id déjà utilisé : banana-oat-blueberry-muffins"
+        ]
       },
       {
-        "id": "vegetable-fried-rice",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "lentil-sweet-potato-bowl",
+        "erreurs": [
+          "standard 5: step 4 cooks without a duration",
+          "standard 5: step 4 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "coconut-rice-pudding-with-mango",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "turkey-zucchini-rice-patties",
+        "erreurs": [
+          "standard 5: step 2 cooks without a duration"
+        ]
       },
       {
-        "id": "apple-and-date-cinnamon-sauce",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "sweet-potato-oat-bites",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-oat-bites"
+        ]
       },
       {
-        "id": "lentil-squash-and-carrot-puree",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "banana-chickpea-mini-muffins",
+        "erreurs": [
+          "standard 6: step 8 runs past twenty words"
+        ]
       },
       {
-        "id": "chicken-sweet-potato-and-green-peas",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "turkey-veggie-rice-bowl",
+        "erreurs": [
+          "standard 5: step 4 cooks without a duration",
+          "standard 5: step 4 cooks without a doneness cue"
+        ]
       },
       {
-        "id": "roasted-sweet-potato-sticks",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
-      },
-      {
-        "id": "soft-banana-oat-patties",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
-      },
-      {
-        "id": "creamy-mango-oatmeal",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
-      },
-      {
-        "id": "tender-rice-flour-crepes",
-        "reason": "génération : connexion a Draw Things : Draw Things n'ecoute plus — l'API Server s'est ferme"
+        "id": "salmon-sweet-potato-patties",
+        "erreurs": [
+          "id déjà utilisé : salmon-sweet-potato-patties"
+        ]
       }
+    ],
+    "aRevoir": [],
+    "nouvelles": [
+      "baked-salmon-with-sweet-potato-and-broccoli"
     ]
-  }
+  },
+  "images": null
 }

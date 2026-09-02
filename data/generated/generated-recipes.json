@@ -388,5 +388,919 @@
       "cookedByAHuman": false,
       "source": "génération assistée, import manuel"
     }
+  },
+  {
+    "id": "salmon-sweet-potato-patties",
+    "name": "Salmon and Sweet Potato Patties",
+    "category": "Meal",
+    "servings": "4 family portions · about 12 patties",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 350,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "breadcrumbs",
+        "qty": 60,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "green_onion",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "plain_yogurt",
+        "qty": 100,
+        "unit": "ml",
+        "role": "dairy"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F); line a large baking sheet with parchment.",
+      "Peel Sweet potato, cut into chunks, and steam 10 minutes until fork-tender.",
+      "Mash Sweet potato in a large bowl until smooth; let cool 5 minutes.",
+      "Flake cooked Salmon (skin removed) into the bowl with the mashed Sweet potato.",
+      "Thinly slice Green onion and chop Fresh dill; add both to the bowl.",
+      "Add Egg, Breadcrumbs, and Lemon juice; mix until a firm mixture forms.",
+      "Shape mixture into 12 patties about 1.5 cm thick; place on the prepared sheet.",
+      "Brush patties lightly with Canola oil on both sides.",
+      "Bake 18 to 20 minutes, flipping once at 10 minutes, until golden and firm.",
+      "Serve with Plain yogurt for dipping. Keeps refrigerated 2 days; freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "oat-banana-bites",
+    "name": "Oat and Banana Energy Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "peanut_butter",
+        "qty": 60,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 30,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 15,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "raisins",
+        "qty": 50,
+        "unit": "g",
+        "role": "fruit"
+      }
+    ],
+    "steps": [
+      "Peel and mash 2 Bananas in a large bowl until smooth.",
+      "Add Natural peanut butter and Maple syrup to the bowl.",
+      "Stir in Cinnamon and Chia seeds until evenly combined.",
+      "Add Rolled oats and Raisins; stir to form a thick dough.",
+      "Refrigerate the dough for 10 minutes until firm enough to roll.",
+      "Roll the dough into 18 balls of about 3 cm each.",
+      "Arrange balls on a parchment-lined plate in a single layer.",
+      "Serve immediately or refrigerate in an airtight container for up to 4 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sweet-potato-chickpea-patties",
+    "name": "Sweet Potato and Chickpea Patties",
+    "category": "Snack",
+    "servings": "10 patties · 4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "paprika",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F); line a baking sheet with parchment.",
+      "Peel and cube Sweet potato; microwave 5 minutes until fork-tender.",
+      "Mash Sweet potato and Cooked chickpeas together in a large bowl.",
+      "Add Egg, Chickpea flour, Ground cumin, Sweet paprika, and Salt.",
+      "Mix until a firm dough forms that holds its shape.",
+      "Divide into 10 patties about 1.5 cm thick; place on the lined sheet.",
+      "Brush each patty lightly with Olive oil on both sides.",
+      "Bake 20 to 22 minutes, flipping halfway, until golden and firm.",
+      "Cool 5 minutes before serving; store in the fridge up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sweet-potato-chickpea-bites",
+    "name": "Sweet Potato and Chickpea Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 250,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "salt",
+        "qty": 1,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment.",
+      "Peel and cube sweet potato, then steam until fork-tender, about 10 minutes.",
+      "Mash sweet potato in a large bowl until smooth and lump-free.",
+      "Drain and rinse cooked chickpeas, then add to the bowl.",
+      "Mash chickpeas roughly, leaving some texture.",
+      "Add egg, chickpea flour, cumin, turmeric, and salt; stir until combined.",
+      "Roll mixture into 18 balls and place on the prepared baking sheet.",
+      "Brush each bite lightly with olive oil.",
+      "Bake 18 to 20 minutes, until golden and firm to the touch.",
+      "Cool 5 minutes before serving. Refrigerate leftovers up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-oat-blueberry-muffins",
+    "name": "Banana, Oat and Blueberry Muffins",
+    "category": "Snack",
+    "servings": "12 muffins · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 240,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 160,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "plain_yogurt",
+        "qty": 120,
+        "unit": "ml",
+        "role": "dairy"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 30,
+        "unit": "ml"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "blueberries",
+        "qty": 120,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a 12-cup muffin tin with paper liners.",
+      "Whisk mashed banana, eggs, plain yogurt, canola oil, maple syrup, and vanilla in a large bowl.",
+      "Add oat flour, rolled oats, baking powder, and cinnamon to the bowl.",
+      "Stir until just combined; do not overmix.",
+      "Fold in blueberries gently with a spatula.",
+      "Divide batter evenly among the 12 muffin cups.",
+      "Bake 20 to 22 minutes, until a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a rack.",
+      "Store in an airtight container at room temperature up to 2 days, or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "salmon-sweet-potato-sheet-pan",
+    "name": "Baked Salmon with Sweet Potato and Broccoli",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 600,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "broccoli",
+        "qty": 300,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 30,
+        "unit": "ml"
+      },
+      {
+        "id": "paprika",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "salt",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+      "Peel and cube Sweet potato into 2 cm pieces; cut Broccoli into small florets.",
+      "Mince Garlic and whisk together with Olive oil, Lemon juice, Paprika, and Salt in a small bowl.",
+      "Toss Sweet potato cubes with half the olive oil mixture; spread on one side of the baking sheet.",
+      "Roast Sweet potato 15 minutes until beginning to soften.",
+      "Add Broccoli and Salmon portions to the baking sheet; drizzle remaining olive oil mixture over all.",
+      "Roast 12 to 15 minutes until Salmon flakes easily and Sweet potato is golden and tender.",
+      "Sprinkle Fresh dill over everything before serving. Yield: 4 family portions. Refrigerate leftovers up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sweet-potato-oat-bites",
+    "name": "Sweet Potato & Oat Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment.",
+      "Peel and cube Sweet potato, then steam for 12 minutes until completely tender.",
+      "Mash the cooked Sweet potato in a large bowl until smooth.",
+      "Add the Egg and Canola oil to the bowl and stir well.",
+      "Stir in the Rolled oats and Cinnamon until a thick dough forms.",
+      "Scoop tablespoon-sized portions and roll into balls.",
+      "Arrange balls on the prepared sheet, spacing 3 cm apart.",
+      "Bake for 15 to 18 minutes, until golden and firm to the touch.",
+      "Cool completely on the sheet before serving. Keep refrigerated up to 3 days or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "salmon-lentil-vegetable-patties",
+    "name": "Salmon and Lentil Vegetable Patties",
+    "category": "Meal",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "lentils",
+        "qty": 200,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "zucchini",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 100,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F); line a large baking sheet with parchment.",
+      "Finely grate Zucchini; squeeze firmly in a clean cloth to remove excess water.",
+      "Grate cooked Carrot and mince Garlic.",
+      "Flake cooked Salmon into a large bowl, removing any bones.",
+      "Add Cooked lentils, Egg, grated Zucchini, Carrot, Garlic, Fresh dill, and Lemon juice to the bowl.",
+      "Add Oat flour; stir until the mixture holds together when pressed.",
+      "Shape into 16 patties about 1.5 cm thick; place on the prepared baking sheet.",
+      "Brush patties lightly with Olive oil.",
+      "Bake 18 to 20 minutes, until golden and firm to the touch.",
+      "Cool 5 minutes before serving. Refrigerate up to 3 days or freeze up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-oat-bites",
+    "name": "Banana Oat Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "applesauce",
+        "qty": 60,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "vanilla",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "blueberries",
+        "qty": 80,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment.",
+      "Mash two ripe bananas in a large bowl until completely smooth.",
+      "Add the Unsweetened applesauce, Cinnamon, and Vanilla extract to the bowl.",
+      "Stir in the Rolled oats until a thick, cohesive dough forms.",
+      "Fold the Blueberries gently into the dough without crushing them.",
+      "Scoop tablespoon-sized mounds onto the prepared baking sheet, 2 cm apart.",
+      "Flatten each mound slightly with the back of a damp spoon.",
+      "Bake 14 to 16 minutes, until the edges are golden and the centres feel set.",
+      "Cool on the sheet for 5 minutes before transferring to a rack.",
+      "Makes 18 bites. Store in an airtight container: 3 days at room temperature or 1 month frozen."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-sweet-potato-patties",
+    "name": "Chickpea and Sweet Potato Patties",
+    "category": "Snack",
+    "servings": "12 patties · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment.",
+      "Peel the Sweet potato, cube it, and steam until fork-tender, about 10 minutes.",
+      "Mash the cooked Sweet potato in a large bowl until smooth.",
+      "Drain and rinse the Cooked chickpeas, then add them to the bowl.",
+      "Mash the Cooked chickpeas coarsely, leaving some texture in the mixture.",
+      "Add the Chickpea flour, Ground cumin, Turmeric, and Lemon juice; stir to combine.",
+      "Divide the mixture into 12 equal balls and flatten each into a 1 cm patty.",
+      "Place the patties on the sheet and brush the tops lightly with Olive oil.",
+      "Bake 18 to 20 minutes, flipping once halfway, until firm and golden on both sides.",
+      "Makes 12 patties. Store refrigerated for up to 3 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "salmon-lentil-veggie-patties",
+    "name": "Salmon and Lentil Patties with Zucchini",
+    "category": "Meal",
+    "servings": "4 family portions · 12 patties",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "lentils",
+        "qty": 200,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "gf_breadcrumbs",
+        "qty": 60,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "ground_flaxseed",
+        "qty": 15,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "water",
+        "qty": 45,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F); line a large baking sheet with parchment.",
+      "Combine Ground flaxseed and Water in a small bowl; rest 5 minutes to gel.",
+      "Grate Zucchini coarsely, then squeeze firmly in a clean towel to remove excess water.",
+      "Flake Salmon into a large bowl, removing any bones.",
+      "Add Cooked lentils, Zucchini, Gluten-free breadcrumbs, minced Garlic, Fresh dill, Lemon juice, and Salt.",
+      "Add the flaxseed gel and mix until the mixture holds together when pressed.",
+      "Shape into 12 patties, each about 1.5 cm thick, and arrange on the prepared baking sheet.",
+      "Brush patties lightly with Olive oil on top.",
+      "Bake 18 to 20 minutes until golden on top and cooked through.",
+      "Cool 5 minutes before serving; refrigerate leftovers up to 2 days or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "baked-salmon-with-sweet-potato-and-broccoli",
+    "name": "Baked Salmon with Sweet Potato and Broccoli",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 600,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "broccoli",
+        "qty": 400,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 30,
+        "unit": "ml"
+      },
+      {
+        "id": "dijon_mustard",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "paprika",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "dill",
+        "qty": 10,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F) and line a large baking sheet with parchment.",
+      "Peel and cut Sweet potato into 2 cm cubes; cut Broccoli into small florets.",
+      "Toss Sweet potato and Broccoli with 20 ml Olive oil and Salt on the baking sheet.",
+      "Roast vegetables 15 minutes, until Sweet potato begins to soften.",
+      "Mince Garlic; whisk with Lemon juice, Dijon mustard, remaining Olive oil, Paprika, and Dill.",
+      "Place Salmon portions on the baking sheet alongside the vegetables.",
+      "Brush Salmon evenly with the mustard-dill mixture.",
+      "Return baking sheet to oven for 12 to 14 minutes, until Salmon flakes easily with a fork.",
+      "Check that Sweet potato and Broccoli are golden and tender.",
+      "Serve immediately. Refrigerate leftovers in an airtight container up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]
