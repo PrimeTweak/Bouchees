@@ -355,5 +355,429 @@
         "la vision hésite sur : the dip could be tzatziki, ranch, or sour cream-based, the herb mixed into the dip is not clearly identifiable"
       ]
     }
+  },
+  "banana-bread": {
+    "fichier": "images/banana-bread-6927dd39a965.png",
+    "empreinte": "6927dd39a965",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T13:44:09.587Z",
+      "detectes": [
+        "banana",
+        "flour",
+        "butter"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : walnut, cream cheese"
+      ]
+    }
+  },
+  "white-bean-and-tomato-stew": {
+    "fichier": "images/white-bean-and-tomato-stew-b26c645ae6de.png",
+    "empreinte": "b26c645ae6de",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T13:56:52.985Z",
+      "detectes": [
+        "white bean",
+        "carrot",
+        "tomato",
+        "onion",
+        "celery"
+      ],
+      "reconnus": 4,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : celery or leek, tomato sauce or crushed tomato"
+      ]
+    }
+  },
+  "chicken-and-broccoli-rice": {
+    "fichier": "images/chicken-and-broccoli-rice-3d09880bcc6a.png",
+    "empreinte": "3d09880bcc6a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:03:13.962Z",
+      "detectes": [
+        "rice",
+        "broccoli",
+        "chicken"
+      ],
+      "reconnus": 4,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : brown rice vs white rice, chicken breast vs chicken thigh"
+      ]
+    }
+  },
+  "lentil-shepherds-pie": {
+    "fichier": "images/lentil-shepherds-pie-3b9b83f06c66.png",
+    "empreinte": "3b9b83f06c66",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:09:35.799Z",
+      "detectes": [
+        "lentil",
+        "potato",
+        "carrot",
+        "celery"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : onion, turnip"
+      ]
+    }
+  },
+  "tofu-and-vegetable-fried-rice": {
+    "fichier": "images/tofu-and-vegetable-fried-rice-0918a82ae0d0.png",
+    "empreinte": "0918a82ae0d0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:15:55.347Z",
+      "detectes": [
+        "rice",
+        "tofu",
+        "pea",
+        "carrot"
+      ],
+      "reconnus": 4,
+      "attendus": 8,
+      "avertissements": []
+    }
+  },
+  "chicken-couscous": {
+    "fichier": "images/chicken-couscous-e0964b7bd23f.png",
+    "empreinte": "e0964b7bd23f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:22:15.376Z",
+      "detectes": [
+        "couscous",
+        "chicken",
+        "carrot",
+        "onion"
+      ],
+      "reconnus": 5,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : the meat could be turkey rather than chicken, the pale chunks could be turnip or potato rather than onion"
+      ]
+    }
+  },
+  "creamy-shrimp-and-pea-risotto": {
+    "fichier": "images/creamy-shrimp-and-pea-risotto-e99de6a80299.png",
+    "empreinte": "e99de6a80299",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:28:36.799Z",
+      "detectes": [
+        "shrimp",
+        "rice",
+        "pea",
+        "onion"
+      ],
+      "reconnus": 4,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : the rice could be arborio risotto-style or regular long-grain rice, possible butter or oil not distinctly visible"
+      ]
+    }
+  },
+  "soft-apricot-granola": {
+    "fichier": "images/soft-apricot-granola-0edfd222ff92.png",
+    "empreinte": "0edfd222ff92",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:34:57.841Z",
+      "detectes": [
+        "rolled oat",
+        "dried apricot",
+        "raisin"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : some darker pieces could be dried cranberry rather than raisin"
+      ]
+    }
+  },
+  "mild-chicken-quesadillas": {
+    "fichier": "images/mild-chicken-quesadillas-481a1a79575f.png",
+    "empreinte": "481a1a79575f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:41:20.224Z",
+      "detectes": [
+        "flour tortilla",
+        "chicken",
+        "red bell pepper",
+        "green bell pepper",
+        "yellow bell pepper",
+        "cheddar cheese"
+      ],
+      "reconnus": 4,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : the protein could be pork rather than chicken, yellow bell pepper or onion"
+      ]
+    }
+  },
+  "tomato-alphabet-soup": {
+    "fichier": "images/tomato-alphabet-soup-81c7913f347a.png",
+    "empreinte": "81c7913f347a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T14:47:40.797Z",
+      "detectes": [
+        "macaroni",
+        "tomato",
+        "carrot",
+        "onion"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : celery, diced tomato vs crushed tomato, other small pasta shape"
+      ]
+    }
+  },
+  "carrot-and-maple-muffins": {
+    "fichier": "images/carrot-and-maple-muffins-3cfe324cd690.png",
+    "empreinte": "3cfe324cd690",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:00:29.772Z",
+      "detectes": [
+        "carrot",
+        "flour",
+        "sugar"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : walnut, cinnamon, oat, whole wheat flour, raisin"
+      ]
+    }
+  },
+  "creamy-salmon-pasta": {
+    "fichier": "images/creamy-salmon-pasta-db395547b6e9.png",
+    "empreinte": "db395547b6e9",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:06:55.954Z",
+      "detectes": [
+        "spaghetti",
+        "salmon",
+        "cream sauce"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : exact type of cream sauce (could include butter, parmesan, or bechamel)"
+      ]
+    }
+  },
+  "vegetable-fried-rice": {
+    "fichier": "images/vegetable-fried-rice-94a31c482bfc.png",
+    "empreinte": "94a31c482bfc",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:19:35.451Z",
+      "detectes": [
+        "rice",
+        "egg",
+        "pea",
+        "carrot"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": []
+    }
+  },
+  "coconut-rice-pudding-with-mango": {
+    "fichier": "images/coconut-rice-pudding-with-mango-b4cc825e83cc.png",
+    "empreinte": "b4cc825e83cc",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:25:55.888Z",
+      "detectes": [
+        "rice",
+        "coconut",
+        "corn"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : toasted coconut or browned sugar crust, corn or pineapple pieces"
+      ]
+    }
+  },
+  "apple-and-date-cinnamon-sauce": {
+    "fichier": "images/apple-and-date-cinnamon-sauce-cda50745aea1.png",
+    "empreinte": "cda50745aea1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:32:18.967Z",
+      "detectes": [
+        "apple",
+        "date",
+        "kidney bean",
+        "caramel sauce",
+        "cinnamon"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : kidney bean or date (the dark oval pieces could be medjool dates or cooked kidney beans), the brown sauce could be caramel, apple butter, or a spiced syrup, cinnamon is inferred from color but not confirmed"
+      ]
+    }
+  },
+  "lentil-squash-and-carrot-puree": {
+    "fichier": "images/lentil-squash-and-carrot-puree-cb7c553dbab0.png",
+    "empreinte": "cb7c553dbab0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:38:43.779Z",
+      "detectes": [
+        "lentil",
+        "butternut squash",
+        "carrot",
+        "sweet potato"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : butternut squash or sweet potato (orange cubes could be either), carrot (some orange pieces may be carrot rather than squash)"
+      ]
+    }
+  },
+  "roasted-sweet-potato-sticks": {
+    "fichier": "images/roasted-sweet-potato-sticks-bb6d0b3760c5.png",
+    "empreinte": "bb6d0b3760c5",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T15:51:27.418Z",
+      "detectes": [
+        "sweet potato"
+      ],
+      "reconnus": 1,
+      "attendus": 3,
+      "avertissements": []
+    }
+  },
+  "salmon-sweet-potato-patties": {
+    "fichier": "images/salmon-sweet-potato-patties-622d906ff50e.png",
+    "empreinte": "622d906ff50e",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T16:16:51.387Z",
+      "detectes": [
+        "salmon",
+        "sweet potato",
+        "green onion",
+        "breadcrumb"
+      ],
+      "reconnus": 4,
+      "attendus": 9,
+      "avertissements": [
+        "la vision hésite sur : could contain egg or mayonnaise as binder, green herb could be chive instead of green onion"
+      ]
+    }
+  },
+  "oat-banana-bites": {
+    "fichier": "images/oat-banana-bites-6e77add52485.png",
+    "empreinte": "6e77add52485",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T16:23:10.992Z",
+      "detectes": [
+        "oat",
+        "raisin"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : binding agent unclear (could be peanut butter, almond butter, honey, or banana), inner crumb texture suggests possible use of almond flour or oat flour"
+      ]
+    }
   }
 }
