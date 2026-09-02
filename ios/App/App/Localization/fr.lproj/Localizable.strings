@@ -463,3 +463,7 @@
 "Not medical advice" = "Pas un avis médical";
 "Photo for illustration · swaps from versioned tables" = "Photo d'illustration · substitutions issues de tables versionnées";
 "Swaps and age guidance from versioned tables" = "Substitutions et repères d'âge issus de tables versionnées";
+"original recipe" = "recette d'origine";
+"Adapted, %lld swaps" = "Adaptée, %lld substitutions";
+"Not adaptable" = "Pas adaptable";
+"Unknown ingredient" = "Ingrédient inconnu";

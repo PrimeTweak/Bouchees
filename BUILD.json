@@ -1,8 +1,10 @@
 {
-  "build": 148,
+  "build": 149,
   "date": "2026-09-02",
   "carries": [
-    "PHOTOS.command makes the thumbnails and republishes on its own; they were two scripts written at two moments and never chained, so a 3 MB photo was downloaded for a 66-point square unless the second one was run by hand",
-    "PHOTOS-REDUIRE.command stays, for rebuilding every thumbnail at once"
+    "the week list carries one coloured dot per row, and a number only when the recipe was adapted: green ready as is, amber with the count of swaps already made, red not adaptable, grey an unknown ingredient; the glyph and the word move to the recipe page where the verdict is spelled out",
+    "VoiceOver reads the state in words, since the dot carries none",
+    "the thumbnails lose the backward arrow nobody could read; the mention lives on the hero, where a parent actually looks at the photo",
+    "on the hero it is an amber dot and lowercase text on a soft shadow, not a black capsule"
   ]
 }

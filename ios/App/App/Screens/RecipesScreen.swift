@@ -650,11 +650,20 @@ struct RecipeRow: View {
                         .foregroundStyle(Tone.yes)
                         .accessibilityLabel(Text("Cooked"))
                 }
-                VerdictMark(status: result.status)
-                Text(short)
-                    .scaledFont(Type.secondary, weight: .semibold)
-                    .foregroundStyle(result.status.tone)
+                /* A dot, and a number only when there are swaps. The word and
+                 * the glyph are on the recipe page, where the verdict is
+                 * spelled out; a list of dishes stays a list of dishes. */
+                Circle()
+                    .fill(result.status.tone)
+                    .frame(width: 9, height: 9)
+                if result.status == .adapted {
+                    Text("\(result.swapCount)")
+                        .scaledFont(Type.secondary, weight: .semibold)
+                        .foregroundStyle(result.status.tone)
+                        .monospacedDigit()
+                }
             }
+            .accessibilityLabel(Text(spoken))
         }
         .padding(.horizontal, Layout.gutter)
         .padding(.vertical, 13)
@@ -662,13 +671,13 @@ struct RecipeRow: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// The number says how much work. An adjective says nothing.
-    private var short: String {
+    /// What VoiceOver reads: the dot carries no word, so the label does.
+    private var spoken: String {
         switch result.status {
-        case .asIs: return String(localized: "Yes")
-        case .adapted: return "\(result.swapCount)"
-        case .notAdaptable: return String(localized: "No")
-        case .unknown: return "?"
+        case .asIs: return String(localized: "Ready as is")
+        case .adapted: return String(format: String(localized: "Adapted, %lld swaps"), result.swapCount)
+        case .notAdaptable: return String(localized: "Not adaptable")
+        case .unknown: return String(localized: "Unknown ingredient")
         }
     }
 }

@@ -464,3 +464,7 @@
 "Not medical advice" = "Not medical advice";
 "Photo for illustration · swaps from versioned tables" = "Photo for illustration · swaps from versioned tables";
 "Swaps and age guidance from versioned tables" = "Swaps and age guidance from versioned tables";
+"original recipe" = "original recipe";
+"Adapted, %lld swaps" = "Adapted, %lld swaps";
+"Not adaptable" = "Not adaptable";
+"Unknown ingredient" = "Unknown ingredient";

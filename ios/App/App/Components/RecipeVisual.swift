@@ -48,8 +48,7 @@ struct RecipeVisual: View {
                     .scaledToFill()
                     .transition(.opacity)
                     /* SAY WHEN THE PICTURE IS OF THE ORIGINAL. */
-                    .overlay(alignment: showsOriginLabel ? .topTrailing
-                                                        : .bottomTrailing) { originWarning }
+                    .overlay(alignment: .topTrailing) { originWarning }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)
@@ -65,28 +64,25 @@ struct RecipeVisual: View {
     /// on the recipe page, where the photo runs 430pt and the parent meets the
     /// sentence once.
     @ViewBuilder
+    /// The photo shows the dish before the swaps. Said on the hero, where a
+    /// parent actually looks at it; a thumbnail is too small to carry a
+    /// second mark next to the row's own dot.
+    @ViewBuilder
     private var originWarning: some View {
-        if photoDuPlatOriginal {
-            if showsOriginLabel {
-                /* Top trailing, on a firm field: moved to the corner the fade
-                 * never reaches, and the field raised to the 62 per cent the
-                 * thumbnail mark already uses. */
-                Text("Original recipe")
-                    .scaledFont(Type.micro, weight: .semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 9)
-                    .padding(.vertical, 5)
-                    .background(.black.opacity(0.62), in: Capsule())
-                    .padding(11)
-            } else {
-                Image(systemName: "arrow.uturn.backward")
-                    .scaledFont(Type.micro, weight: .bold)
-                    .foregroundStyle(Tone.swap)
-                    .frame(width: 17, height: 17)
-                    .background(.black.opacity(0.62), in: Circle())
-                    .padding(5)
-                    .accessibilityLabel(Text("Original recipe"))
+        if photoDuPlatOriginal && showsOriginLabel {
+            HStack(spacing: 5) {
+                Circle()
+                    .fill(Tone.swap)
+                    .frame(width: 7, height: 7)
+                    .overlay { Circle().strokeBorder(.black.opacity(0.25), lineWidth: 2) }
+                Text("original recipe")
+                    .scaledFont(Type.micro)
+                    .foregroundStyle(.white.opacity(0.9))
             }
+            /* No capsule: a shadow keeps it readable on a pale photo without
+             * cutting a rectangle out of the picture. */
+            .shadow(color: .black.opacity(0.6), radius: 3, y: 1)
+            .padding(12)
         }
     }
 
