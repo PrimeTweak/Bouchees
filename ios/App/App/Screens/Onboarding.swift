@@ -72,7 +72,7 @@ private struct LiveDemoStep: View {
                     .padding(.top, 8)
 
                 Text("Tap one and watch.")
-                    .scaledFont(Type.secondary)
+                    .scaledFont(Type.body)
                     .foregroundStyle(Tone.textSecondary)
                     .padding(.top, 8)
 
@@ -91,14 +91,14 @@ private struct LiveDemoStep: View {
             VStack(spacing: 8) {
                 Button(action: next) {
                     Text("Continue")
-                        .scaledFont(Type.body.weight(.semibold))
+                        .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
                 .buttonStyle(PrimaryButton())
 
                 Text("Nothing leaves this device.")
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.textTertiary)
             }
             .padding(.horizontal, Layout.gutter)
@@ -338,7 +338,7 @@ private struct WhoStep: View {
                         .textCase(.uppercase)
                         .kerning(1.2)
                     TextField("First name", text: $name)
-                        .scaledFont(Type.title, weight: .semibold)
+                        .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.text)
                         .focused($focused)
                         .submitLabel(.next)
@@ -375,14 +375,14 @@ private struct WhoStep: View {
             VStack(spacing: 9) {
                 Button(action: next) {
                     Text("See the recipes")
-                        .scaledFont(Type.body.weight(.semibold))
+                        .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
                 .buttonStyle(PrimaryButton())
 
                 Text("Not medical advice. Swaps come from versioned tables a professional should review.")
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.textTertiary)
                     .multilineTextAlignment(.center)
             }
@@ -420,9 +420,9 @@ private struct StageRow: View {
         Button(action: tap) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(String(localized: stage.title))
-                    .scaledFont(Type.secondary.weight(.semibold))
+                    .scaledFont(Type.body, weight: .semibold)
                 Text(String(localized: stage.detail))
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.secondary)
                     .opacity(selected ? 0.85 : 1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -487,7 +487,7 @@ private struct OfferStep: View {
             VStack(spacing: 6) {
                 Button(action: finish) {
                     Text("Try 7 days free")
-                        .scaledFont(Type.body.weight(.semibold))
+                        .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
@@ -498,7 +498,7 @@ private struct OfferStep: View {
                  * feeling tricked. */
                 Button(action: finish) {
                     Text("Continue with the free recipes")
-                        .scaledFont(Type.secondary)
+                        .scaledFont(Type.body)
                         .foregroundStyle(Tone.textSecondary)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget)
@@ -506,7 +506,7 @@ private struct OfferStep: View {
                 .buttonStyle(.plain)
 
                 Text("Then $4.99/month. Cancel any time.")
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.textTertiary)
             }
             .padding(.horizontal, Layout.gutter)
@@ -544,7 +544,7 @@ private struct GrowthBars: View {
                 }
             }
             Text("\(points.last?.value ?? 0) recipes a year from now")
-                .scaledFont(Type.caption)
+                .scaledFont(Type.secondary)
                 .foregroundStyle(Tone.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -558,11 +558,11 @@ private struct FreeForever: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(Tone.yes)
                 Text("Free, forever")
-                    .scaledFont(Type.secondary.weight(.semibold))
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.yes)
             }
             Text("The first recipes, the adaptation engine, and the product scanner. We never sell the answer to \"can my child eat this\".")
-                .scaledFont(Type.caption)
+                .scaledFont(Type.secondary)
                 .foregroundStyle(Tone.textSecondary)
         }
         .padding(15)
@@ -585,10 +585,10 @@ private struct Perk: View {
                 .frame(width: 19)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .scaledFont(Type.secondary.weight(.semibold))
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 Text(detail)
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.textSecondary)
             }
             Spacer(minLength: 0)

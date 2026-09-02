@@ -342,13 +342,13 @@ struct ProductSheet: View {
                 HStack(spacing: 11) {
                     ProgressView().tint(.white)
                     Text("Reading the label…")
-                        .scaledFont(Type.secondary.weight(.medium))
+                        .scaledFont(Type.body, weight: .medium)
                         .foregroundStyle(.white)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else if let error {
                 Text(error)
-                    .scaledFont(Type.secondary)
+                    .scaledFont(Type.body)
                     .foregroundStyle(.white)
             } else if let v = verdict, let p = product {
                 /* VoiceOver reads the verdict first, as one announcement:
@@ -362,7 +362,7 @@ struct ProductSheet: View {
                     .accessibilityAddTraits(.isHeader)
 
                 Text(subline(v, p))
-                    .scaledFont(Type.secondary)
+                    .scaledFont(Type.body)
                     .foregroundStyle(.white.opacity(0.88))
                     .padding(.top, 7)
 
@@ -395,7 +395,7 @@ struct ProductSheet: View {
                 if product != nil && verdict != nil {
                     Button { onDetails() } label: {
                         Text("See details")
-                            .scaledFont(Type.secondary.weight(.semibold))
+                            .scaledFont(Type.body, weight: .semibold)
                             .foregroundStyle(background)
                             .frame(maxWidth: .infinity)
                             .frame(height: Layout.tapTarget)
@@ -407,7 +407,7 @@ struct ProductSheet: View {
 
                 Button(action: onDismiss) {
                     Text("Scan another")
-                        .scaledFont(Type.secondary.weight(.medium))
+                        .scaledFont(Type.body, weight: .medium)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget)
@@ -652,7 +652,7 @@ struct ProductDetailSheet: View {
                         .foregroundStyle(Tone.text2)
                 }
                 Text(product.code)
-                    .scaledFont(Type.micro, weight: .regular, design: .monospaced)
+                    .scaledFont(Type.micro, design: .monospaced)
                     .foregroundStyle(Tone.text3)
 
                 VerdictBadge(status: verdict.status, firstName: profile.firstName)

@@ -206,7 +206,7 @@ struct ShoppingScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 7) {
                 Text("\(toBuy.filter { !checked.contains($0.id) }.count)")
-                    .scaledFont(Type.title, weight: .bold)
+                    .scaledFont(Type.display)
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
                     .contentTransition(.numericText())
@@ -317,7 +317,7 @@ private struct ShoppingRow: View {
 
                     if !item.quantityLabel.isEmpty {
                         Text(item.quantityLabel)
-                            .scaledFont(Type.caption, weight: .regular, design: .monospaced)
+                            .scaledFont(Type.caption, design: .monospaced)
                             .foregroundStyle(Tone.text2)
                     }
 
@@ -367,7 +367,7 @@ private struct ShoppingRow: View {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(Tone.yes)
                 Image(systemName: "checkmark")
-                    .scaledFont(Type.caption, weight: .bold)
+                    .scaledFont(Type.label, weight: .bold)
                     .foregroundStyle(.white)
             }
         }

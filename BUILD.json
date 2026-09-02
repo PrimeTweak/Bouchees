@@ -1,10 +1,9 @@
 {
-  "build": 134,
+  "build": 135,
   "date": "2026-09-02",
   "carries": [
-    "recipe rows use Apple's Headline and Subheadline: 17 semibold and 15",
-    "cooking mode plays a small drawing of the step's verb instead of the recipe photo on every step: twenty-one drawings as data in one renderer, one per verb family",
-    "the verb table lives in data/step-verbs.json and ships in the app; a verb in no family shows the photo instead, never a wrong gesture",
-    "under Reduce Motion the drawing stands still"
+    "the 133 remap paired lines by a key every bare scaledFont line shared, so sizes swapped between neighbours; every site is recomputed from its 128 size, keyed on the line it dresses; the step text is display again",
+    "the verb drawing fills the middle of the step at 220 points",
+    "the Screen stays awake badge overlapped the progress bars; it is gone, the screen still stays awake"
   ]
 }

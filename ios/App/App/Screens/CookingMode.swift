@@ -37,7 +37,6 @@ struct CookingMode: View {
         .padding(.horizontal, 22)
         .padding(.top, 12)
         .background(Tone.canvas.ignoresSafeArea())
-        .overlay(alignment: .topTrailing) { awakeBadge }
         .toolbar(.hidden, for: .navigationBar)
         /* Tasty does this and it is one line: the screen must not dim while
          * someone is following a step with their hands full. Scoped to this
@@ -79,7 +78,7 @@ struct CookingMode: View {
 
     private var stepText: some View {
         Text(steps.indices.contains(step) ? steps[step] : "")
-            .scaledFont(Type.caption)
+            .scaledFont(Type.display, weight: .semibold)
             .lineSpacing(5)
             .foregroundStyle(Tone.text)
             .fixedSize(horizontal: false, vertical: true)
@@ -94,9 +93,9 @@ struct CookingMode: View {
     private var stepPhoto: some View {
         if StepVerbs.family(for: steps[step]) != nil {
             StepVerbView(step: steps[step])
-                .frame(width: 96, height: 96)
+                .frame(width: 220, height: 220)
                 .frame(maxWidth: .infinity)
-                .padding(.top, 20)
+                .padding(.top, 16)
                 .id(step)
                 .transition(.opacity)
         } else {
@@ -239,17 +238,6 @@ struct CookingMode: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-    }
-
-    private var awakeBadge: some View {
-        HStack(spacing: 5) {
-            Image(systemName: "moon.zzz")
-            Text("Screen stays awake")
-        }
-        .scaledFont(Type.micro)
-        .foregroundStyle(Tone.text3)
-        .padding(.trailing, 24)
-        .padding(.top, 4)
     }
 
     // MARK: - Logic
