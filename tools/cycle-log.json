@@ -1,146 +1,193 @@
 {
-  "le": "2026-09-02T13:01:33.252Z",
-  "recettes": {
-    "commandees": 20,
-    "redigees": 20,
-    "acceptees": 1,
+  "le": "2026-09-02T17:27:42.142Z",
+  "recettes": null,
+  "images": {
+    "generees": 40,
+    "acceptees": 22,
     "rejetees": [
       {
-        "id": "lentil-sweet-potato-rice-bowl",
-        "erreurs": [
-          "standard 5: step 3 cooks without a duration",
-          "standard 5: step 3 cooks without a doneness cue"
-        ]
+        "id": "banana-oat-muffins",
+        "reason": "only one ingredient recognised out of 8, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "oat",
+          "muffin"
+        ],
+        "fichier": "images/rejected/banana-oat-muffins.png"
       },
       {
-        "id": "turkey-zucchini-quinoa-patties",
-        "erreurs": [
-          "standard 5: step 2 cooks without a doneness cue"
-        ]
+        "id": "sweet-potato-and-chicken-puree",
+        "reason": "the image shows \"butter\" while the recipe contains no milk ; only one ingredient recognised out of 4, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "sweet potato",
+          "butter",
+          "mushroom"
+        ],
+        "fichier": "images/rejected/sweet-potato-and-chicken-puree.png"
       },
       {
-        "id": "turkey-and-vegetable-rice-bowl",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration",
-          "standard 5: step 1 cooks without a doneness cue",
-          "standard 5: step 2 cooks without a duration",
-          "standard 5: step 2 cooks without a doneness cue",
-          "standard 5: step 5 cooks without a duration",
-          "standard 5: step 5 cooks without a doneness cue"
-        ]
+        "id": "pasta-in-rose-sauce-with-chicken",
+        "reason": "the image shows \"tuna\" while the recipe contains no fish",
+        "detectes": [
+          "spaghetti",
+          "tuna",
+          "tomato",
+          "onion"
+        ],
+        "fichier": "images/rejected/pasta-in-rose-sauce-with-chicken.png"
       },
       {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
+        "id": "baked-fish-nuggets",
+        "reason": "the image shows \"crab\" while the recipe contains no crustaceans and molluscs ; the recipe is Baked fish nuggets but the image shows four crab cakes — the dish does not match",
+        "detectes": [
+          "crab",
+          "breadcrumb",
+          "onion",
+          "egg"
+        ],
+        "fichier": "images/rejected/baked-fish-nuggets.png"
       },
       {
-        "id": "banana-chickpea-flour-mini-pancakes",
-        "erreurs": [
-          "standard 6: step 9 runs past twenty words",
-          "standard 5: step 4 cooks without a duration",
-          "standard 5: step 4 cooks without a doneness cue"
-        ]
+        "id": "salmon-and-sweet-potato-cakes",
+        "reason": "the image shows \"egg\" while the recipe contains no eggs",
+        "detectes": [
+          "salmon",
+          "sweet potato",
+          "green onion",
+          "egg"
+        ],
+        "fichier": "images/rejected/salmon-and-sweet-potato-cakes.png"
       },
       {
-        "id": "turkey-sweet-potato-rice-bowl",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration",
-          "standard 5: step 1 cooks without a doneness cue",
-          "standard 5: step 5 cooks without a duration",
-          "standard 5: step 5 cooks without a doneness cue"
-        ]
+        "id": "crispy-tofu-with-sweet-maple-sauce",
+        "reason": "only one ingredient recognised out of 7, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "tofu"
+        ],
+        "fichier": "images/rejected/crispy-tofu-with-sweet-maple-sauce.png"
       },
       {
-        "id": "salmon-lentil-veggie-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-lentil-veggie-patties"
-        ]
+        "id": "banana-oat-pancakes",
+        "reason": "only one ingredient recognised out of 7, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "oat",
+          "pancake"
+        ],
+        "fichier": "images/rejected/banana-oat-pancakes.png"
       },
       {
-        "id": "banana-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : banana-oat-bites"
-        ]
+        "id": "chicken-sweet-potato-and-green-peas",
+        "reason": "the image shows \"tuna\" while the recipe contains no fish",
+        "detectes": [
+          "green pea",
+          "sweet potato",
+          "chicken",
+          "tuna"
+        ],
+        "fichier": "images/rejected/chicken-sweet-potato-and-green-peas.png"
+      },
+      {
+        "id": "soft-banana-oat-patties",
+        "reason": "the recipe is Soft banana oat patties but the image shows an oat cake — the dish does not match ; only one ingredient recognised out of 5, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "oat",
+          "brown sugar"
+        ],
+        "fichier": "images/rejected/soft-banana-oat-patties.png"
+      },
+      {
+        "id": "creamy-mango-oatmeal",
+        "reason": "the image shows \"milk\" while the recipe contains no milk",
+        "detectes": [
+          "oat",
+          "chia seed",
+          "milk"
+        ],
+        "fichier": "images/rejected/creamy-mango-oatmeal.png"
+      },
+      {
+        "id": "tender-rice-flour-crepes",
+        "reason": "no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Tender rice flour crêpes",
+        "detectes": [
+          "pancake"
+        ],
+        "fichier": "images/rejected/tender-rice-flour-crepes.png"
       },
       {
         "id": "sweet-potato-chickpea-patties",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-chickpea-patties"
-        ]
-      },
-      {
-        "id": "turkey-sweet-potato-rice-bowl",
-        "erreurs": [
-          "standard 5: step 3 cooks without a duration",
-          "standard 5: step 3 cooks without a doneness cue",
-          "standard 5: step 5 cooks without a duration",
-          "standard 5: step 5 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-lentil-vegetable-stew",
-        "erreurs": [
-          "standard 5: step 3 cooks without a duration",
-          "standard 5: step 3 cooks without a doneness cue"
-        ]
+        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
+        "detectes": [
+          "chickpea",
+          "sweet potato",
+          "zucchini",
+          "breadcrumb"
+        ],
+        "fichier": "images/rejected/sweet-potato-chickpea-patties.png"
       },
       {
         "id": "sweet-potato-chickpea-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-chickpea-bites"
-        ]
+        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
+        "detectes": [
+          "chickpea",
+          "breadcrumb",
+          "falafel"
+        ],
+        "fichier": "images/rejected/sweet-potato-chickpea-bites.png"
       },
       {
         "id": "banana-oat-blueberry-muffins",
-        "erreurs": [
-          "id déjà utilisé : banana-oat-blueberry-muffins"
-        ]
+        "reason": "only one ingredient recognised out of 11, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "blueberry",
+          "oat",
+          "muffin liner"
+        ],
+        "fichier": "images/rejected/banana-oat-blueberry-muffins.png"
       },
       {
-        "id": "lentil-sweet-potato-bowl",
-        "erreurs": [
-          "standard 5: step 4 cooks without a duration",
-          "standard 5: step 4 cooks without a doneness cue"
-        ]
+        "id": "salmon-lentil-vegetable-patties",
+        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
+        "detectes": [
+          "lentil",
+          "zucchini",
+          "salmon",
+          "breadcrumb",
+          "rice"
+        ],
+        "fichier": "images/rejected/salmon-lentil-vegetable-patties.png"
       },
       {
-        "id": "turkey-zucchini-rice-patties",
-        "erreurs": [
-          "standard 5: step 2 cooks without a duration"
-        ]
+        "id": "banana-oat-bites",
+        "reason": "only one ingredient recognised out of 6, and the vision hedges — the image does not look enough like the recipe",
+        "detectes": [
+          "oat",
+          "blueberry"
+        ],
+        "fichier": "images/rejected/banana-oat-bites.png"
       },
       {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
+        "id": "salmon-lentil-veggie-patties",
+        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the image shows \"sesame seed\" while the recipe contains no sesame",
+        "detectes": [
+          "lentil",
+          "zucchini",
+          "salmon",
+          "breadcrumb",
+          "sesame seed"
+        ],
+        "fichier": "images/rejected/salmon-lentil-veggie-patties.png"
       },
       {
-        "id": "banana-chickpea-mini-muffins",
-        "erreurs": [
-          "standard 6: step 8 runs past twenty words"
-        ]
-      },
-      {
-        "id": "turkey-veggie-rice-bowl",
-        "erreurs": [
-          "standard 5: step 4 cooks without a duration",
-          "standard 5: step 4 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-sweet-potato-patties"
-        ]
+        "id": "baked-salmon-with-sweet-potato-and-broccoli",
+        "reason": "the image shows \"cream sauce\" while the recipe contains no milk",
+        "detectes": [
+          "salmon",
+          "broccoli",
+          "sweet potato",
+          "rice",
+          "cream sauce"
+        ],
+        "fichier": "images/rejected/baked-salmon-with-sweet-potato-and-broccoli.png"
       }
-    ],
-    "aRevoir": [],
-    "nouvelles": [
-      "baked-salmon-with-sweet-potato-and-broccoli"
     ]
-  },
-  "images": null
+  }
 }

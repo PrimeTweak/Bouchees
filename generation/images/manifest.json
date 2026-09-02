@@ -801,5 +801,53 @@
         "la vision hésite sur : seasoning or herb on salmon difficult to identify precisely"
       ]
     }
+  },
+  "sweet-potato-oat-bites": {
+    "fichier": "images/sweet-potato-oat-bites-642c421cd31b.png",
+    "empreinte": "642c421cd31b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T16:55:33.674Z",
+      "detectes": [
+        "oat",
+        "pumpkin",
+        "sweet potato",
+        "date",
+        "nut"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : pumpkin or sweet potato (orange interior filling), date or dried apricot (visible orange chunks), nut type (possibly almond or cashew mixed in interior)"
+      ]
+    }
+  },
+  "chickpea-sweet-potato-patties": {
+    "fichier": "images/chickpea-sweet-potato-patties-90ab634ca662.png",
+    "empreinte": "90ab634ca662",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T17:15:00.548Z",
+      "detectes": [
+        "chickpea",
+        "carrot",
+        "quinoa",
+        "white bean",
+        "herb"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : exact herb variety (parsley, cilantro, or spinach), possible sweet potato in the mixture, exact grain (quinoa or couscous or breadcrumb)"
+      ]
+    }
   }
 }
