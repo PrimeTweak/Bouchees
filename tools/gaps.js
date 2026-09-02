@@ -5,8 +5,8 @@
 const fs = require("fs");
 const path = require("path");
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 
 const data = {
   catalogue: read("data/ingredients.json"),
@@ -103,7 +103,7 @@ function bloquantsGlobaux(cases) {
 /* A recipe with no milk AND no egg AND no peanut serves all three profiles.
  * So gaps sharing an age and a category are merged: the month's batch becomes
  * a handful of strong instructions instead of twenty redundant lines. */
-function commande(classement, target) {
+function brief(classement, target) {
   target = target || 8;
   const groupes = {};
   for (const c of classement) {
@@ -218,7 +218,7 @@ function report(corpus, pub) {
   const cases = analyser(corpus);
   const classement = classer(cases);
   const blockers = bloquantsGlobaux(cases);
-  const cmd = commande(classement);
+  const cmd = brief(classement);
   return { cases: cases, classement: classement, blockers: blockers, commande: cmd,
            pool: poolStatus(corpus, pub) };
 }
@@ -234,9 +234,9 @@ if (require.main === module) {
               r.pool.Snack.have + "/" + r.pool.Snack.target + " snacks — a meal returns after ~" +
               r.pool.Meal.rotationDays + " days, a snack after ~" + r.pool.Snack.rotationDays +
               " (target " + r.pool.rotationWeeks * 7 + ")");
-  fs.writeFileSync(path.join(racine, "tools", "rapport-trous.md"),
+  fs.writeFileSync(path.join(root, "tools", "rapport-trous.md"),
     markdown(r.classement, r.blockers, r.commande, corpus.length) + "\n");
-  fs.writeFileSync(path.join(racine, "tools", "rapport-trous.json"),
+  fs.writeFileSync(path.join(root, "tools", "rapport-trous.json"),
     JSON.stringify({ classement: r.classement.slice(0, 25), blockers: r.blockers, commande: r.commande }, null, 2) + "\n");
   console.log("Gaps analysed: " + r.cases.length + " combinations (" + PROFILS.length + " profiles x " + STADES.length + " ages)");
   r.classement.slice(0, 5).forEach(function (c) {
@@ -246,4 +246,4 @@ if (require.main === module) {
   console.log("Suggested commission: " + r.commande.reduce((s, c) => s + c.n, 0) + " recipes");
 }
 
-module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, poolStatus: poolStatus, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };
+module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, poolStatus: poolStatus, analyser: analyser, classer: classer, commande: brief, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };

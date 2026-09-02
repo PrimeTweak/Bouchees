@@ -4,9 +4,9 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
-const write = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
+const write = (p, o) => fs.writeFileSync(path.join(root, p), JSON.stringify(o, null, 2) + "\n");
 
 const Valideur = require("../generation/recipe-validator.js");
 const Coherence = require("../generation/coherence.js");
@@ -34,7 +34,7 @@ function principal() {
     process.exit(1);
   }
 
-  const filePath = path.isAbsolute(fichier) ? fichier : path.join(racine, fichier);
+  const filePath = path.isAbsolute(fichier) ? fichier : path.join(root, fichier);
   if (!fs.existsSync(filePath)) {
     console.error("Fichier introuvable : " + filePath);
     process.exit(1);
@@ -89,7 +89,7 @@ function principal() {
   /* --- 2. Culinary coherence --- */
   console.log("\nCulinary coherence");
   console.log("─".repeat(42));
-  const gardees = [];
+  const kept = [];
   survivantes.forEach(function (r) {
     const c = Coherence.verifier(r, data);
     if (!c.ok) {
@@ -98,7 +98,7 @@ function principal() {
       return;
     }
     if (c.avertissements.length) aRevoir.push({ id: r.id, avertissements: c.avertissements });
-    gardees.push(r);
+    kept.push(r);
     console.log("  ok " + r.id + (c.avertissements.length ? "  (" + c.avertissements.length + " reservation[s])" : ""));
   });
 
@@ -110,7 +110,7 @@ function principal() {
     });
   }
 
-  if (!gardees.length) {
+  if (!kept.length) {
     console.log("\nNothing to publish.");
     return;
   }
@@ -120,15 +120,15 @@ function principal() {
   console.log("\u2500".repeat(42));
 
   if (sec) {
-    gardees.forEach(function (r) { console.log("  [dry run] " + r.name); });
-    console.log("\n" + gardees.length + " recipe(s) would join the pool. Nothing written.");
+    kept.forEach(function (r) { console.log("  [dry run] " + r.name); });
+    console.log("\n" + kept.length + " recipe(s) would join the pool. Nothing written.");
     return;
   }
 
   let generees = [];
   try { generees = read("data/generated/generated-recipes.json"); } catch (e) {}
   const dejaLa = new Set(generees.map((r) => r.id));
-  gardees.forEach(function (r) {
+  kept.forEach(function (r) {
     if (dejaLa.has(r.id)) return;
     const copie = JSON.parse(JSON.stringify(r));
     copie.source = {
@@ -140,11 +140,11 @@ function principal() {
     generees.push(copie);
     console.log("  + " + r.name);
   });
-  fs.mkdirSync(path.join(racine, "data", "generated"), { recursive: true });
+  fs.mkdirSync(path.join(root, "data", "generated"), { recursive: true });
   write("data/generated/generated-recipes.json", generees);
 
   const r = Publier.publier();
-  const dist = path.join(racine, "dist");
+  const dist = path.join(root, "dist");
   fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
   fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
@@ -156,7 +156,7 @@ function principal() {
 
   console.log("\nSummary");
   console.log("\u2500".repeat(42));
-  console.log("  published: " + gardees.length + " \u00b7 rejected: " + rejetees.length);
+  console.log("  published: " + kept.length + " \u00b7 rejected: " + rejetees.length);
   console.log("  pool: " + r.manifest.counts.Meal + " meals, " + r.manifest.counts.Snack + " snacks");
   console.log("\n  What is NOT checked: taste, rise, real texture.");
   console.log("  A recipe that was never cooked can be bad — never unsafe.\n");

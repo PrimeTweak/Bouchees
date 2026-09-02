@@ -1,15 +1,10 @@
 {
-  "build": 127,
+  "build": 128,
   "date": "2026-09-02",
   "carries": [
-    "cumulative: 123 to 126 and the pool",
-    "one pool of recipes, each a meal or a snack; breakfasts and desserts are snacks; no batches, no window",
-    "publishing writes a public catalogue with each recipe's allergens and an adaptability matrix from the engine, and one body file per recipe",
-    "the server serves the catalogue to everyone and a body only when free or subscribed; a refused request sends nothing, tested on a live instance",
-    "each device follows its own sequence: a seed, a day zero, a meal and a snack per day, a sixteen-week rotation with a whole-pool fallback while the pool is small, the first two weeks from the free recipes, past days frozen",
-    "the hero is today's meal; every week shows its days, a locked recipe with its name and a verdict from the matrix",
-    "search runs its four cuts over what the account can open: the free tier and its two weeks, or the whole pool for a subscriber, whose sync fetches every body",
-    "the cycle, the manual import and the gaps report feed and measure the pool against 112 meals and 112 snacks",
-    "a JavaScript twin of the sequence proves its four properties in the suite"
+    "the cycle counted published photos in dist/batches, which no longer exists; it reads the catalogue",
+    "variable-only French identifiers renamed in the pipeline tools; the words that double as data keys stay as the data has them",
+    "the probe's usage header fits the three-line rule",
+    "the two workflow files and the weeks.js removal that the Finder hid on the last apply"
   ]
 }

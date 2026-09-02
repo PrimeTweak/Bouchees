@@ -4,8 +4,8 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 
 /* Short on purpose. A 700-character style buries the subject: FLUX weighs the
  * whole prompt, so twenty adjectives about lighting compete with the two words
@@ -160,8 +160,8 @@ const PRESENTATION = [
   [/\bml\b|cups?/i,        "one shallow bowl, filled to the rim"]
 ];
 
-function presentationPour(recette) {
-  const p = String(recette.servings || "");
+function presentationPour(recipe) {
+  const p = String(recipe.servings || "");
   for (let i = 0; i < PRESENTATION.length; i++) {
     if (PRESENTATION[i][0].test(p)) return PRESENTATION[i][1];
   }
@@ -197,11 +197,11 @@ function graine(texte) {
   return h;
 }
 
-function promptPour(recette, data) {
+function promptPour(recipe, data) {
   const catalogue = data.catalogue;
   const ordre = ["protein", "flour", "vegetable", "fruit", "dairy", "liquid", "fat", "sweetener"];
 
-  const visibles = recette.ingredients
+  const visibles = recipe.ingredients
     .map(function (u) {
       const d = catalogue[u.id];
       if (!d) return null;
@@ -216,17 +216,17 @@ function promptPour(recette, data) {
     .map(function (x) { return x.name; });
 
   const presents = require(path.join(__dirname, "..", "engine", "engine.js"))
-    .analyserAllergenes(recette, catalogue);
+    .analyserAllergenes(recipe, catalogue);
   const exclusions = Object.keys(EXCLUSIONS)
     .filter(function (id) { return presents.indexOf(id) === -1; })
     .map(function (id) { return EXCLUSIONS[id]; });
 
-  const g = graine(recette.id);
+  const g = graine(recipe.id);
   const cadrage = CADRAGES[g % CADRAGES.length];
   /* Same seed as the framing, so one recipe always gets the same kitchen. */
   const surface = SURFACES[g % SURFACES.length];
   const moment = MOMENTS[Math.floor(g / CADRAGES.length) % MOMENTS.length];
-  const plat = PLATS_EN[recette.category] || "home-cooked dish";
+  const plat = PLATS_EN[recipe.category] || "home-cooked dish";
 
   /* Two imperfections per recipe, keyed to the same seed as the framing so
    * the corpus stays reproducible — a parent reopening a recipe sees the
@@ -244,8 +244,8 @@ function promptPour(recette, data) {
       /* The dish, cooked and finished. Saying "cooked and ready to eat" stops
        * FLUX from laying out raw ingredients, which is what a list of them
        * invites — it drew a bowl of loose oats for a muffin recipe. */
-      "Homemade " + recette.name.toLowerCase() + ", cooked and ready to eat",
-      presentationPour(recette),
+      "Homemade " + recipe.name.toLowerCase() + ", cooked and ready to eat",
+      presentationPour(recipe),
       "made with " + visibles.slice(0, 4).join(", "),
       cadrage,
       surface,
@@ -258,26 +258,26 @@ function promptPour(recette, data) {
     negatif: NEGATIF + ", " + exclusions.join(", "),
     /* Passed to the vision check so it can be asked whether the image looks
      * like THIS dish, not merely whether the ingredients are present. */
-    plat: recette.name,
+    plat: recipe.name,
     typePlat: plat,
     /* The review list is for a human reader, not for the model. */
     aVerifier: [
-      "the dish looks like: " + recette.name,
+      "the dish looks like: " + recipe.name,
       "the visible ingredients match: " + visibles.join(", "),
       "no ingredient outside the recipe appears in the image"
     ].concat(exclusions.map(function (x) { return "check: " + x; }))
   };
 }
 
-function empreinte(recette) {
+function empreinte(recipe) {
   return crypto.createHash("sha1")
-    .update(recette.id + "|" + recette.ingredients.map(function (u) { return u.id; }).sort().join(","))
+    .update(recipe.id + "|" + recipe.ingredients.map(function (u) { return u.id; }).sort().join(","))
     .digest("hex").slice(0, 12);
 }
 
 function aGenerer(corpus, data, manifest, dossierImages) {
   manifest = manifest || {};
-  const base = dossierImages || racine;
+  const base = dossierImages || root;
 
   return corpus.map(function (r) {
     const emp = empreinte(r);
@@ -298,15 +298,15 @@ function aGenerer(corpus, data, manifest, dossierImages) {
   }).filter(Boolean);
 }
 
-function validerEntree(entry, recette, dossierImages) {
+function validerEntree(entry, recipe, dossierImages) {
   const e = [];
   if (!entry.fichier) e.push("fichier manquant");
   else if (dossierImages !== false) {
-    const base = dossierImages || racine;
+    const base = dossierImages || root;
     if (!fs.existsSync(path.join(base, entry.fichier))) e.push("fichier introuvable sur le disque");
   }
   if (!entry.empreinte) e.push("empreinte manquante");
-  if (recette && entry.empreinte !== empreinte(recette))
+  if (recipe && entry.empreinte !== empreinte(recipe))
     e.push("empreinte périmée : les ingrédients ont changé depuis la génération");
   if (!entry.revisePar) e.push("aucune révision — image non publiable");
   if (entry.revisePar && /automatique/i.test(entry.revisePar)) {
@@ -323,9 +323,9 @@ function validerEntree(entry, recette, dossierImages) {
   return { ok: e.length === 0, erreurs: e };
 }
 
-function visuelPour(recette, result, manifest, dossierImages) {
-  const entry = manifest && manifest[recette.id];
-  const utilisable = entry && validerEntree(entry, recette, dossierImages).ok;
+function visuelPour(recipe, result, manifest, dossierImages) {
+  const entry = manifest && manifest[recipe.id];
+  const utilisable = entry && validerEntree(entry, recipe, dossierImages).ok;
   if (utilisable && result.status === "as_is") {
     return { type: "photo", fichier: entry.fichier };
   }
@@ -349,11 +349,11 @@ if (require.main === module) {
   try { manifest = read("generation/images/manifest.json"); } catch (e) {}
 
   const plan = aGenerer(corpus, data, manifest);
-  fs.mkdirSync(path.join(racine, "generation", "images"), { recursive: true });
-  fs.writeFileSync(path.join(racine, "generation", "images", "to-generate.json"),
+  fs.mkdirSync(path.join(root, "generation", "images"), { recursive: true });
+  fs.writeFileSync(path.join(root, "generation", "images", "to-generate.json"),
     JSON.stringify(plan, null, 2) + "\n");
-  if (!fs.existsSync(path.join(racine, "generation", "images", "manifest.json"))) {
-    fs.writeFileSync(path.join(racine, "generation", "images", "manifest.json"), "{}\n");
+  if (!fs.existsSync(path.join(root, "generation", "images", "manifest.json"))) {
+    fs.writeFileSync(path.join(root, "generation", "images", "manifest.json"), "{}\n");
   }
   console.log("À générer : " + plan.length + " image(s) sur " + corpus.length + " recipes");
   if (plan.length) {

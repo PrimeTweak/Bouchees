@@ -1,19 +1,5 @@
-#!/usr/bin/env node
-/* curl versus Node, same request.
- *   node tools/probe-drawthings.js
- *
- * The JSON my adapter sends is byte-for-byte what a curl that produces a clean
- * photo sends — printed and compared. Yet the adapter gets an embossed
- * anaglyph and curl does not. So the difference is not the body; it is the
- * HTTP conversation around it.
- *
- * Node's fetch adds headers curl does not: accept-encoding for compressed
- * responses, and keep-alive. Either can corrupt a multi-megabyte body if the
- * server mishandles it — and Draw Things is a desktop app with a minimal HTTP
- * implementation, not a hardened server.
- *
- * This sends the SAME body three ways and writes three files to compare.
- */
+/* curl versus Node, the same request: tells whether Draw Things answers Node
+ * differently. Run: node tools/probe-drawthings.js */
 "use strict";
 const fs = require("fs");
 const http = require("http");

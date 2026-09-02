@@ -207,7 +207,7 @@ function lireDescription(texte) {
 
 /* The core: compare what the vision named against what the recipe contains.
  * The verdict comes from the code, not from the model. */
-function comparer(description, recette, data) {
+function comparer(description, recipe, data) {
   const catalogue = data.catalogue;
   const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
   const erreurs = [], avertissements = [];
@@ -221,7 +221,7 @@ function comparer(description, recette, data) {
   }
 
   const seen = description.aliments.map(normaliser);
-  const presentes = Engine.analyserAllergenes(recette, catalogue);
+  const presentes = Engine.analyserAllergenes(recipe, catalogue);
 
   /* 1. An allergen ABSENT from the recipe must not appear in the image.
    *    This is the check that really matters. */
@@ -248,11 +248,11 @@ function comparer(description, recette, data) {
    * banana, oats and egg were all present, so the ingredient check passed. */
   if (description.plat) {
     const platVu = normaliser(description.plat);
-    const platAttendu = normaliser(recette.name);
+    const platAttendu = normaliser(recipe.name);
     const motsAttendus = platAttendu.split(/\s+/).filter(function (w) { return w.length > 3; });
     const seRecoupent = motsAttendus.some(function (w) {
-      const racine = w.length > 6 ? w.slice(0, 6) : w;
-      return platVu.indexOf(racine) !== -1;
+      const root = w.length > 6 ? w.slice(0, 6) : w;
+      return platVu.indexOf(root) !== -1;
     });
 
     /* Vessel words carry the shape. A dish described as a bowl when the recipe
@@ -268,12 +268,12 @@ function comparer(description, recette, data) {
       { mots: ["meatball"], expected: /meatball/i }
     ];
     FORMES.forEach(function (f) {
-      const recetteVeutCetteForme = f.expected.test(recette.name) ||
-        f.expected.test(String(recette.servings || ""));
+      const recetteVeutCetteForme = f.expected.test(recipe.name) ||
+        f.expected.test(String(recipe.servings || ""));
       if (!recetteVeutCetteForme) return;
       const imageMontreCetteForme = f.mots.some(function (m) { return platVu.indexOf(m) !== -1; });
       if (!imageMontreCetteForme && !seRecoupent) {
-        erreurs.push("the recipe is " + recette.name + " but the image shows " +
+        erreurs.push("the recipe is " + recipe.name + " but the image shows " +
           description.plat + " — the dish does not match");
       }
     });
@@ -281,7 +281,7 @@ function comparer(description, recette, data) {
 
   /* 4. The image has to look like the recipe: at least one main ingredient
    *    recognised, otherwise it may well be a picture of another dish. */
-  const principaux = recette.ingredients.map(function (u) {
+  const principaux = recipe.ingredients.map(function (u) {
     const d = catalogue[u.id];
     return d ? normaliser(d.name.split("(")[0].trim()) : null;
   }).filter(Boolean);
@@ -292,16 +292,16 @@ function comparer(description, recette, data) {
     /* A cooked dish hides its ingredients: requiring a raw ingredient rejected
    * every transformed dish, which is most of the corpus. */
   const platReconnu = description.plat &&
-    normaliser(recette.name).split(/\s+/)
+    normaliser(recipe.name).split(/\s+/)
       .filter(function (w) { return w.length > 3; })
       .some(function (w) {
-        const racine = w.length > 6 ? w.slice(0, 6) : w;
-        return normaliser(description.plat).indexOf(racine) !== -1;
+        const root = w.length > 6 ? w.slice(0, 6) : w;
+        return normaliser(description.plat).indexOf(root) !== -1;
       });
 
   if (!reconnus.length && !platReconnu) {
     erreurs.push("no ingredient from the recipe is recognisable in the image, " +
-      "and the dish itself was not identified as " + recette.name);
+      "and the dish itself was not identified as " + recipe.name);
   } else if (!reconnus.length && platReconnu) {
     avertissements.push("no raw ingredient visible — normal for a cooked dish, " +
       "the dish itself was identified");
@@ -323,7 +323,7 @@ function comparer(description, recette, data) {
            detectes: description.aliments, reconnus: reconnus.length, attendus: principaux.length };
 }
 
-async function verifier(octets, recette, data, options) {
+async function verifier(octets, recipe, data, options) {
   options = options || {};
   const moteur = options.moteur || choisir();
   let raw;
@@ -333,7 +333,7 @@ async function verifier(octets, recette, data, options) {
              avertissements: [], detectes: [] };
   }
   const description = lireDescription(raw);
-  const verdict = comparer(description, recette, data);
+  const verdict = comparer(description, recipe, data);
   verdict.moteur = moteur.name;
   verdict.le = new Date().toISOString();
   return verdict;

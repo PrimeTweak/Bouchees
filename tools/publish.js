@@ -4,8 +4,8 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 const checksum = (o) => crypto.createHash("sha1").update(JSON.stringify(o)).digest("hex").slice(0, 12);
 const Engine = require("../engine/engine.js");
 
@@ -59,10 +59,10 @@ function publier(options) {
     const copie = JSON.parse(JSON.stringify(r));
     const img = manifesteImages[r.id];
     /* A photo is published only when reviewed AND present on disk. */
-    if (img && img.revisePar && img.fichier && fs.existsSync(path.join(racine, img.fichier))) {
+    if (img && img.revisePar && img.fichier && fs.existsSync(path.join(root, img.fichier))) {
       copie.image = img.fichier;
       const vignette = img.fichier.replace(/^images\//, "images/thumbs/");
-      if (fs.existsSync(path.join(racine, vignette))) copie.thumb = vignette;
+      if (fs.existsSync(path.join(root, vignette))) copie.thumb = vignette;
     }
     const card = {};
     PUBLIC.forEach(function (k) { if (copie[k] !== undefined) card[k] = copie[k]; });
@@ -95,7 +95,7 @@ function publier(options) {
 
 if (require.main === module) {
   const r = publier();
-  const dist = path.join(racine, "dist");
+  const dist = path.join(root, "dist");
   fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
   fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");

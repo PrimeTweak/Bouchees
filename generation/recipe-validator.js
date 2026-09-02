@@ -1,5 +1,5 @@
 /* This validator is the gate that stops it. Validator for generated recipes
- * valider(recette, commande, data) → { ok, erreurs[], avertissements[] } */
+ * valider(recette, brief, data) → { ok, erreurs[], avertissements[] } */
 "use strict";
 const path = require("path");
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
@@ -9,7 +9,7 @@ const ROLES = ["flour", "binder", "fat", "liquid", "dairy", "protein", "sweetene
 const UNITES = ["ml", "g", "unit", "unit", "clove", "clove", "tranche", "tranches",
                 "boîte", "boîtes", "filet", "filets", "au goût"];
 
-function valider(r, commande, data, idsExistants) {
+function valider(r, brief, data, idsExistants) {
   const e = [], a = [];
   const catalogue = data.catalogue;
   idsExistants = idsExistants || [];
@@ -43,17 +43,17 @@ function valider(r, commande, data, idsExistants) {
   if (e.length) return { ok: false, erreurs: e, avertissements: a };
 
   /* --- honouring the commission: the excluded allergen must be absent --- */
-  const evite = (commande && commande.evite) || [];
+  const evite = (brief && brief.evite) || [];
   const presents = Engine.analyserAllergenes(r, catalogue);
   const fuite = presents.filter(function (x) { return evite.indexOf(x) !== -1; });
   if (fuite.length) e.push("contient un allergène que la commande exclut : " + fuite.join(", "));
 
   if (r.category !== "Meal" && r.category !== "Snack")
     e.push("category must be Meal or Snack, not \"" + r.category + "\"");
-  if (commande && commande.categories && commande.categories.indexOf(r.category) === -1)
-    a.push("catégorie « " + r.category + " » différente de la commande (" + commande.categories.join("/") + ")");
-  if (commande && r.minAgeMonths > commande.ageMois)
-    a.push("âge minimal " + r.minAgeMonths + " mois alors que la commande visait " + commande.ageMois + " mois");
+  if (brief && brief.categories && brief.categories.indexOf(r.category) === -1)
+    a.push("catégorie « " + r.category + " » différente de la commande (" + brief.categories.join("/") + ")");
+  if (brief && r.minAgeMonths > brief.ageMois)
+    a.push("âge minimal " + r.minAgeMonths + " mois alors que la commande visait " + brief.ageMois + " mois");
 
   /* --- age guidance: it has to be workable at the target age --- */
   r.ingredients.forEach(function (u) {
@@ -86,11 +86,11 @@ function valider(r, commande, data, idsExistants) {
   return { ok: e.length === 0, erreurs: e, avertissements: a };
 }
 
-function validerLot(recettes, commande, data, idsExistants) {
+function validerLot(recettes, brief, data, idsExistants) {
   const seen = (idsExistants || []).slice();
   const acceptees = [], rejetees = [], aRevoir = [];
   (recettes || []).forEach(function (r) {
-    const v = valider(r, commande, data, seen);
+    const v = valider(r, brief, data, seen);
     if (!v.ok) { rejetees.push({ recette: r, erreurs: v.erreurs }); return; }
     seen.push(r.id);
     if (v.avertissements.length) aRevoir.push({ recette: r, avertissements: v.avertissements });

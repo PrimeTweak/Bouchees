@@ -1,11 +1,11 @@
-/* The cycle log says so on every run. Le cycle du mois — une seule commande
+/* The cycle log says so on every run. Le cycle du mois — une seule brief
  * node tools/cycle.js */
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
-const write = (p, o) => fs.writeFileSync(path.join(racine, p), JSON.stringify(o, null, 2) + "\n");
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
+const write = (p, o) => fs.writeFileSync(path.join(root, p), JSON.stringify(o, null, 2) + "\n");
 
 const Trous = require("./gaps.js");
 const Publier = require("./publish.js");
@@ -42,64 +42,64 @@ function chargerCorpus() {
 
 /* ---------- 1 to 5: the recipes ---------- */
 async function cycleRecettes(data, options) {
-  const journal = { commandees: 0, redigees: 0, acceptees: 0, rejetees: [], aRevoir: [], nouvelles: [] };
+  const log = { commandees: 0, redigees: 0, acceptees: 0, rejetees: [], aRevoir: [], nouvelles: [] };
   const corpus = chargerCorpus();
 
   title("1 · Where recipes are missing");
   const r = Trous.report(corpus);
-  fs.writeFileSync(path.join(racine, "tools", "rapport-trous.md"), "");
-  const commande = r.commande;
-  if (!commande.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return journal; }
-  commande.forEach(function (c) {
+  fs.writeFileSync(path.join(root, "tools", "rapport-trous.md"), "");
+  const brief = r.commande;
+  if (!brief.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return log; }
+  brief.forEach(function (c) {
     console.log("  " + c.n + " x " + c.categories[0].toLowerCase() + " from " + c.ageMois + " months" +
       (c.passePartout ? " (works for everyone)" : " — no " + c.evite.join(", ")));
   });
-  journal.commandees = commande.reduce((s, c) => s + c.n, 0);
+  log.commandees = brief.reduce((s, c) => s + c.n, 0);
 
   title("2 · Writing");
   const moteur = options.moteurTexte || MoteursTexte.choisir();
   console.log("  text engine: " + moteur.name + (moteur.name === "simule" ? "  (no API key — placeholder recipes)" : ""));
   const idsExistants = corpus.map((x) => x.id);
-  let brutes = [];
-  for (const ligne of commande) {
+  let drafts = [];
+  for (const ligne of brief) {
     const prompt = PromptRecette.construire(ligne, data);
     try {
       const output = await moteur.rediger(prompt);
-      output.forEach(function (rec) { brutes.push({ rec: rec, commande: ligne }); });
+      output.forEach(function (rec) { drafts.push({ rec: rec, commande: ligne }); });
     } catch (e) { console.log("  writing failed: " + e.message); }
   }
-  journal.redigees = brutes.length;
-  console.log("  " + brutes.length + " recette(s) rédigée(s)");
+  log.redigees = drafts.length;
+  console.log("  " + drafts.length + " recette(s) rédigée(s)");
 
   title("3 · Validation — catalogue, allergens, ages");
   const survivantes = [];
-  brutes.forEach(function (b) {
+  drafts.forEach(function (b) {
     const v = Valideur.valider(b.rec, b.commande, data, idsExistants.concat(survivantes.map((s) => s.rec.id)));
-    if (!v.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: v.erreurs }); console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return; }
-    if (v.avertissements.length) journal.aRevoir.push({ id: b.rec.id, avertissements: v.avertissements });
+    if (!v.ok) { log.rejetees.push({ id: b.rec.id, erreurs: v.erreurs }); console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return; }
+    if (v.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: v.avertissements });
     survivantes.push(b);
     console.log("  ok " + b.rec.id);
   });
 
   title("4 · Culinary coherence");
-  const gardees = [];
+  const kept = [];
   survivantes.forEach(function (b) {
     const c = Coherence.verifier(b.rec, data);
-    if (!c.ok) { journal.rejetees.push({ id: b.rec.id, erreurs: c.erreurs }); console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return; }
-    if (c.avertissements.length) journal.aRevoir.push({ id: b.rec.id, avertissements: c.avertissements });
-    gardees.push(b.rec);
+    if (!c.ok) { log.rejetees.push({ id: b.rec.id, erreurs: c.erreurs }); console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return; }
+    if (c.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: c.avertissements });
+    kept.push(b.rec);
     console.log("  ok " + b.rec.id + (c.avertissements.length ? "  (" + c.avertissements.length + " reservation[s])" : ""));
   });
-  journal.acceptees = gardees.length;
-  journal.nouvelles = gardees.map((g) => g.id);
+  log.acceptees = kept.length;
+  log.nouvelles = kept.map((g) => g.id);
 
   title("5 · Into the pool");
-  if (!gardees.length) { console.log("  nothing to publish"); return journal; }
-  if (options.sec) { console.log("  [dry run] " + gardees.length + " recipe(s) would join the pool"); return journal; }
+  if (!kept.length) { console.log("  nothing to publish"); return log; }
+  if (options.sec) { console.log("  [dry run] " + kept.length + " recipe(s) would join the pool"); return log; }
 
   let generees = [];
   try { generees = read("data/generated/generated-recipes.json"); } catch (e) {}
-  generees = generees.concat(gardees.map(function (g) {
+  generees = generees.concat(kept.map(function (g) {
     const copie = JSON.parse(JSON.stringify(g));
     copie.source = { source: "assisted generation", engine: moteur.name,
                      on: new Date().toISOString().slice(0, 10),
@@ -107,23 +107,23 @@ async function cycleRecettes(data, options) {
                      cookedByAHuman: false };
     return copie;
   }));
-  fs.mkdirSync(path.join(racine, "data", "generated"), { recursive: true });
+  fs.mkdirSync(path.join(root, "data", "generated"), { recursive: true });
   write("data/generated/generated-recipes.json", generees);
   /* No batch to declare: a recipe in the corpus is in the pool. */
-  console.log("  " + gardees.length + " recipe(s) joined the pool");
-  return journal;
+  console.log("  " + kept.length + " recipe(s) joined the pool");
+  return log;
 }
 
 /* ---------- 6 to 8: the images ---------- */
 async function cycleImages(data, options) {
-  const journal = { generees: 0, acceptees: 0, rejetees: [] };
+  const log = { generees: 0, acceptees: 0, rejetees: [] };
   const corpus = chargerCorpus();
   let manifest = {};
   try { manifest = read("generation/images/manifest.json"); } catch (e) {}
 
   title("6 · Images to produce");
   const plan = Images.aGenerer(corpus, data, manifest);
-  if (!plan.length) { console.log("  every image is up to date"); return journal; }
+  if (!plan.length) { console.log("  every image is up to date"); return log; }
   console.log("  " + plan.length + " image(s) — " +
     plan.filter((p) => p.state === "missing").length + " missing, " +
     plan.filter((p) => p.state === "stale").length + " stale");
@@ -168,12 +168,12 @@ async function cycleImages(data, options) {
   /* Images live at the root, in images/. That is exactly what the client's
    * /images/... URL resolves to on the server — writing them anywhere else
    * donnait un 404 silencieux et un repli permanent sur l'illustration. */
-  const folder = path.join(racine, "images");
+  const folder = path.join(root, "images");
   if (!options.sec) fs.mkdirSync(folder, { recursive: true });
 
   title("7 · Generation and verification");
   for (const p of plan.slice(0, limite)) {
-    const recette = corpus.find((r) => r.id === p.id);
+    const recipe = corpus.find((r) => r.id === p.id);
     let img;
         /* SQUARE, and that is the whole point: fLUX schnell is trained square,
      * and forcing a 3:2 frame through the API degrades the render. */
@@ -199,18 +199,18 @@ async function cycleImages(data, options) {
     }
     if (!img) {
       const m = erreurReseau ? erreurReseau.message : "unknown";
-      journal.rejetees.push({ id: p.id, reason: "génération : " + m });
+      log.rejetees.push({ id: p.id, reason: "génération : " + m });
       console.log("  x  " + p.name + " — " + m);
       continue;
     }
-    journal.generees++;
+    log.generees++;
 
         /* Draw Things has one renderer; firing the next call the instant the last
      * byte arrives gives it no room, and that is one of the three
      * explanations for a socket dropping mid-batch. */
     await new Promise(function (r) { setTimeout(r, 3000); });
 
-    let verdict = await Vision.verifier(img.octets, recette, data, { moteur: mVision, typeMime: "image/png" });
+    let verdict = await Vision.verifier(img.octets, recipe, data, { moteur: mVision, typeMime: "image/png" });
 
         /* One retry when the render itself failed, not when the content is wrong. */
     const rendudRate = !verdict.ok && verdict.erreurs.some(function (e) {
@@ -224,7 +224,7 @@ async function cycleImages(data, options) {
           largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
           hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
         });
-        const v2 = await Vision.verifier(img2.octets, recette, data,
+        const v2 = await Vision.verifier(img2.octets, recipe, data,
           { moteur: mVision, typeMime: "image/png" });
         if (v2.ok) { img = img2; verdict = v2; }
       } catch (e) {
@@ -236,21 +236,21 @@ async function cycleImages(data, options) {
             /* Otherwise a rejection is a sentence with nothing behind it: "no
        * ingredient recognisable" reads the same whether the model drew the
        * wrong dish or the API returned a broken render. */
-      const dossierRejets = path.join(racine, "images", "rejected");
+      const dossierRejets = path.join(root, "images", "rejected");
       fs.mkdirSync(dossierRejets, { recursive: true });
       const filePath = path.join(dossierRejets, p.id + ".png");
       fs.writeFileSync(filePath, img.octets);
 
-      journal.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "),
+      log.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "),
                               detectes: verdict.detectes, fichier: "images/rejected/" + p.id + ".png" });
       console.log("  x  " + p.name + " — " + verdict.erreurs[0]);
       console.log("      the app keeps its drawing · look at images/rejected/" + p.id + ".png");
       continue;
     }
-    if (options.sec) { console.log("  ok [dry run] " + p.name); journal.acceptees++; continue; }
+    if (options.sec) { console.log("  ok [dry run] " + p.name); log.acceptees++; continue; }
 
     const fichier = p.fichier.replace(/\.webp$/, ".png");
-    fs.writeFileSync(path.join(racine, fichier), img.octets);
+    fs.writeFileSync(path.join(root, fichier), img.octets);
     manifest[p.id] = {
       fichier: fichier, empreinte: p.empreinte, largeur: img.largeur, hauteur: img.hauteur,
       moteur: img.moteur,
@@ -259,12 +259,12 @@ async function cycleImages(data, options) {
                       reconnus: verdict.reconnus, attendus: verdict.attendus,
                       avertissements: verdict.avertissements }
     };
-    journal.acceptees++;
+    log.acceptees++;
     console.log("  ok " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
 
         /* The manifest is written AFTER EACH image, not at the end: they are
      * invisible to publishing, and the next run regenerates them for nothing. */
-    fs.mkdirSync(path.join(racine, "generation", "images"), { recursive: true });
+    fs.mkdirSync(path.join(root, "generation", "images"), { recursive: true });
     write("generation/images/manifest.json", manifest);
   }
 
@@ -283,10 +283,10 @@ async function cycleImages(data, options) {
       orphelins.slice(0, 5).forEach(function (f) { console.log("      " + f); });
       console.log("  They will NOT be published — an image with no verdict is never shown.");
       console.log("  Relance le cycle pour les refaire, ou supprime-les.");
-      journal.orphelins = orphelins;
+      log.orphelins = orphelins;
     }
   }
-  return journal;
+  return log;
 }
 
 async function principal() {
@@ -303,7 +303,7 @@ async function principal() {
   if (!options.sec) {
     title("8 · Republishing");
     const r = Publier.publier();
-    const dist = path.join(racine, "dist");
+    const dist = path.join(root, "dist");
     fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
     fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
     fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
@@ -346,12 +346,8 @@ async function principal() {
 
     let publiees = 0;
     try {
-      const lots = path.join(__dirname, "..", "dist", "batches");
-      fsx.readdirSync(lots).forEach(function (f) {
-        JSON.parse(fsx.readFileSync(path.join(lots, f), "utf8")).forEach(function (r) {
-          if (r.image) publiees++;
-        });
-      });
+      JSON.parse(fsx.readFileSync(path.join(__dirname, "..", "dist", "catalogue.json"), "utf8"))
+        .forEach(function (c) { if (c.image) publiees++; });
     } catch (e) { /* not published yet */ }
 
     console.log("");

@@ -7,16 +7,16 @@ const path = require("path");
 const adaptateurs = require("./adapters.js");
 const { normalizeLine, construireIndex } = require("./normalizer.js");
 
-const racine = path.join(__dirname, "..");
+const root = path.join(__dirname, "..");
 const UNITES_FR = { clove: "gousse", cloves: "gousses", fillet: "filet", fillets: "filets", can: "boîte", cans: "boîtes", slice: "tranche", slices: "tranches" };
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 
 function importAll(options) {
   options = options || {};
   const catalogue = options.catalogue || read("data/ingredients.json");
   const lexique = options.lexique || read("ingest/lexicon.json");
   const curation = options.curation || read("ingest/curation.json");
-  const dossierSources = options.dossierSources || path.join(racine, "ingest", "sources");
+  const dossierSources = options.dossierSources || path.join(root, "ingest", "sources");
   const idsReserves = new Set((options.idsReserves || read("data/recipes.json").map((r) => r.id)));
   const index = construireIndex(lexique);
 
@@ -107,11 +107,11 @@ function rapportMarkdown(result) {
 
 if (require.main === module) {
   const result = importAll();
-  const folder = path.join(racine, "data", "imported");
+  const folder = path.join(root, "data", "imported");
   fs.mkdirSync(folder, { recursive: true });
   fs.writeFileSync(path.join(folder, "imported-recipes.json"), JSON.stringify(result.imported, null, 2) + "\n");
   fs.writeFileSync(path.join(folder, "import-report.json"), JSON.stringify(result.quarantine, null, 2) + "\n");
-  fs.writeFileSync(path.join(racine, "ingest", "import-report.md"), rapportMarkdown(result) + "\n");
+  fs.writeFileSync(path.join(root, "ingest", "import-report.md"), rapportMarkdown(result) + "\n");
   console.log("Imported: " + result.imported.length + " · Quarantined: " + result.quarantine.length);
   result.quarantine.forEach(function (q) { console.log("  quarantine — " + q.name + " (" + q.reason + ")"); });
 }

@@ -25,8 +25,8 @@ function rolesDe(u, catalogue) {
   const d = catalogue[u.id];
   return u.role ? [u.role] : (d ? d.roles : []);
 }
-function totalPourRole(recette, catalogue, roles) {
-  return recette.ingredients.reduce(function (s, u) {
+function totalPourRole(recipe, catalogue, roles) {
+  return recipe.ingredients.reduce(function (s, u) {
     const r = rolesDe(u, catalogue);
     return r.some(function (x) { return roles.indexOf(x) !== -1; }) ? s + enMl(u, catalogue) : s;
   }, 0);
@@ -64,10 +64,10 @@ function normalise(t) {
     .replace(/['\u2019]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function verifier(recette, data) {
+function verifier(recipe, data) {
   const catalogue = data.catalogue;
   const erreurs = [], avertissements = [];
-  const txt = texteEtapes(recette);
+  const txt = texteEtapes(recipe);
   const txtNorm = normalise(txt);
 
   /* 1. Every ingredient has to appear somewhere in the steps. An ingredient
@@ -78,7 +78,7 @@ function verifier(recette, data) {
   const collectif = /(les |tous les |le reste des )?(ingr[ée]dients|secs|humides)\b|le reste\b|tout le reste/.test(txt);
   const jamaisNommes = [];
   if (!collectif) {
-    recette.ingredients.forEach(function (u) {
+    recipe.ingredients.forEach(function (u) {
       const d = catalogue[u.id];
       if (!d) return;
       const name = normalise(d.name.replace(/\(.*?\)/g, " "));
@@ -130,8 +130,8 @@ function verifier(recette, data) {
 
   /* 2. Liquid to absorbent ratio. A batter with three times more liquid than
    *    flour does not hold — you can see that without turning on the oven. */
-  const liquide = totalPourRole(recette, catalogue, ["liquid", "dairy"]);
-  const absorbant = totalPourRole(recette, catalogue, ["flour", "binder"]);
+  const liquide = totalPourRole(recipe, catalogue, ["liquid", "dairy"]);
+  const absorbant = totalPourRole(recipe, catalogue, ["flour", "binder"]);
   const cuisson = contient(txt, OVEN_WORDS);
   if (liquide > 0 && absorbant > 0 && cuisson) {
     const ratio = liquide / absorbant;
@@ -156,21 +156,21 @@ function verifier(recette, data) {
   const heures = /(\d{1,2})\s*heures?/.exec(txt);
   const sommeEtapes = minutes.reduce(function (a, b) { return a + b; }, 0) + (heures ? Number(heures[1]) * 60 : 0);
   const repos = contient(txt, REST_WORDS);
-  if (recette.timeMinutes && sommeEtapes > recette.timeMinutes + 10 && !repos)
+  if (recipe.timeMinutes && sommeEtapes > recipe.timeMinutes + 10 && !repos)
     erreurs.push("les étapes totalisent au moins " + sommeEtapes + " minutes mais tempsMin annonce " +
-      recette.timeMinutes);
-  if (recette.timeMinutes && recette.timeMinutes > 20 && sommeEtapes === 0 &&
+      recipe.timeMinutes);
+  if (recipe.timeMinutes && recipe.timeMinutes > 20 && sommeEtapes === 0 &&
       (cuisson || contient(txt, SIMMER_WORDS)))
     avertissements.push("cuisson décrite sans aucune durée dans les étapes");
 
   /* 5. Total volume has to be plausible for the number of servings. */
-  const total = recette.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);
+  const total = recipe.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);
   /* "500 ml" is not 500 servings: a number counts only when a serving
    * word follows it, never a volume unit. */
   /* Yield words, both languages. A partner feed may say "10 galettes" where
    * ours says "10 patties" — both have to be recognised as piece yields. */
   const mp = /(\d+)\s*(servings?|portions?|muffins?|patties?|galettes?|nuggets?|croquettes?|meatballs?|boulettes?|bars?|barres?|cookies?|biscuits?|cr[eê]pes?|glasses?|verres?|loaf|loaves|pains?|slices?|parts?|bites?|boules?|mini)/i
-    .exec(recette.servings || "");
+    .exec(recipe.servings || "");
   const nPortions = mp ? Number(mp[1]) : null;
   /* A meatball is not a serving: piece yields have their own scale, or the
    * check cries wolf on every recipe. */
@@ -186,7 +186,7 @@ function verifier(recette, data) {
   }
 
   /* 6. A raw protein has to be cooked somewhere. */
-  const crus = recette.ingredients.filter(function (u) {
+  const crus = recipe.ingredients.filter(function (u) {
     return rolesDe(u, catalogue).indexOf("protein") !== -1 &&
       ["chicken", "ground_turkey", "white_fish", "salmon", "shrimp"].indexOf(u.id) !== -1;
   });
@@ -196,9 +196,9 @@ function verifier(recette, data) {
     erreurs.push("raw protein with no cooking step");
 
   /* 7. A few steps, and not sentence fragments. */
-  if ((recette.steps || []).length < 3)
+  if ((recipe.steps || []).length < 3)
     avertissements.push("moins de 3 étapes — souvent trop peu pour être suivi");
-  (recette.steps || []).forEach(function (e, i) {
+  (recipe.steps || []).forEach(function (e, i) {
     if (!/[.!?]$/.test(String(e).trim())) avertissements.push("étape " + (i + 1) + " sans ponctuation finale");
   });
 

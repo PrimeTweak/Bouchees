@@ -3,8 +3,8 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const racine = path.join(__dirname, "..");
-const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
+const root = path.join(__dirname, "..");
+const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 
 function ingredientsAutorises(catalogue, evite) {
   return Object.keys(catalogue).filter(function (id) {
@@ -96,8 +96,8 @@ interditsAge.length ? interditsAge.join("\n") : "  aucun",
   ].join("\n");
 }
 
-function construireTout(commande, data) {
-  return commande.map(function (l) { return construire(l, data); });
+function construireTout(brief, data) {
+  return brief.map(function (l) { return construire(l, data); });
 }
 
 if (require.main === module) {
@@ -106,24 +106,24 @@ if (require.main === module) {
     substitutions: read("data/substitutions.json"),
     base: read("data/base.json")
   };
-  let commande;
+  let brief;
   try {
-    commande = read("tools/gap-report.json").commande;
+    brief = read("tools/gap-report.json").commande;
   } catch (e) {
     console.error("Lance d'abord : node tools/gaps.js");
     process.exit(1);
   }
-  if (!commande.length) {
+  if (!brief.length) {
     console.log("Aucun trou sous les seuils — pas de commande à générer ce mois-ci.");
     process.exit(0);
   }
-  const prompts = construireTout(commande, data);
+  const prompts = construireTout(brief, data);
   const output = prompts.map(function (p, i) {
     return "═".repeat(72) + "\nPROMPT " + (i + 1) + " / " + prompts.length + "\n" + "═".repeat(72) + "\n\n" + p;
   }).join("\n\n\n");
-  fs.writeFileSync(path.join(racine, "generation", "prompt-du-mois.txt"), output + "\n");
+  fs.writeFileSync(path.join(root, "generation", "prompt-du-mois.txt"), output + "\n");
   console.log("Écrit : generation/monthly-prompt.txt (" + prompts.length + " prompt(s), " +
-    commande.reduce((s, c) => s + c.n, 0) + " recettes commandées)");
+    brief.reduce((s, c) => s + c.n, 0) + " recettes commandées)");
 }
 
 module.exports = { construire: construire, construireTout: construireTout, ingredientsAutorises: ingredientsAutorises };
