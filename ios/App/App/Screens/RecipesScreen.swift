@@ -244,30 +244,8 @@ struct RecipesScreen: View {
             .padding(.top, 16)
     }
 
-    /// The seven days of the selected week: now every day is there and the
-    /// page scrolls, which is what was missing: five of seven days hold a
-    /// single recipe, so one day at a time ended above the fold.
-    private var weekDone: some View {
-        VStack(spacing: 6) {
-            Text("This week is done.")
-                .scaledFont(Type.body, weight: .semibold)
-                .foregroundStyle(Tone.text)
-            Text("Next week opens Monday.")
-                .scaledFont(Type.caption)
-                .foregroundStyle(Tone.text2)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 28)
-        .padding(.horizontal, Layout.gutter)
-    }
-
-    /// The day indices a week shows: tomorrow onward for the current week,
-    /// all seven for any other. Sunday evening on the current week therefore
-    /// shows nothing, which is honest — the week is over.
-    private func days(for slot: WeekSlot) -> [Int] {
-        guard slot.offset == 0 else { return Array(0..<7) }
-        return Array(WeekDay.today..<7)
-    }
+    /// The seven days, always: the red rule marks today, not a truncation.
+    private func days(for slot: WeekSlot) -> [Int] { Array(0..<7) }
 
     /// Every week shows its days; a locked recipe shows its name and its
     /// verdict from the catalogue, and opens the paywall.
@@ -276,9 +254,6 @@ struct RecipesScreen: View {
         return LazyVStack(spacing: 0) {
             ForEach(days(for: slot), id: \.self) { dayIndex in
                 daySection(dayIndex, slot: slot)
-            }
-            if days(for: slot).isEmpty {
-                weekDone
             }
         }
     }
@@ -643,13 +618,12 @@ struct RecipeRow: View {
                                                     style: .continuous))
                 }
             }
-            /* A snack is smaller and warmer than a meal, so the two read apart
-             * at the thumbnail, before the subtitle says which is which. */
-            .frame(width: recipe.isSnack ? Layout.thumb - 12 : Layout.thumb,
-                   height: recipe.isSnack ? Layout.thumb - 12 : Layout.thumb)
+            /* One size for every row: two sizes side by side read as a mistake,
+             * not as an intention. A snack is told apart by its warm field
+             * and its subtitle. */
+            .frame(width: Layout.thumb, height: Layout.thumb)
             .background(recipe.isSnack ? Tone.swap.opacity(0.10) : .clear,
                         in: RoundedRectangle(cornerRadius: Layout.thumbRadius, style: .continuous))
-            .frame(width: Layout.thumb, height: Layout.thumb)
                 .shadow(color: .black.opacity(recipe.isSnack ? 0.18 : 0.4), radius: 7, y: 4)
                 .saturation(result.status == .notAdaptable ? 0.3 : 1)
 

@@ -1,10 +1,9 @@
 {
-  "build": 140,
+  "build": 142,
   "date": "2026-09-02",
   "carries": [
-    "the first real generation wrote twenty recipes in French against an English validator, which named none of their ingredients: the prompt is in English end to end, asks for the catalogue's exact names in the steps, ASCII ids, and 18 words a step as a hard limit",
-    "an accent in an id is normalised, not refused",
-    "the writing step prints one line per brief, so a five-minute call is not a frozen screen",
-    "GENERER.command generates recipes only; the photos are PHOTOS.command's, and a missing Draw Things no longer aborts a run"
+    "the week stays whole: all seven days show, and the red rule marks today rather than the list starting there; today's meal is still hidden from its row, since the hero above already names it",
+    "one thumbnail size for every row; a snack is told apart by its warm field and its subtitle, not by being smaller",
+    "the Sunday empty state is gone with the truncation that caused it"
   ]
 }
