@@ -72,9 +72,9 @@ const simule = {
     while ((m = re.exec(prompt))) ids.push(m[1]);
     const mCat = prompt.match(/de catégorie « ([^»]+) »/);
     const mAge = prompt.match(/Âge minimal visé : (\d+)/);
-    const mN = prompt.match(/^\s+(\d+) recipe\(s\)/m);
-    const categorie = mCat ? mCat[1].trim() : "Collation";
-    const ageMinBase = mAge ? parseInt(mAge[1], 10) : 12;
+    const mN = prompt.match(/^\s+(\d+) recette\(s\)/m);
+    const category = mCat ? mCat[1].trim() : "Snack";
+    const minAgeMonths = mAge ? parseInt(mAge[1], 10) : 12;
     const n = mN ? parseInt(mN[1], 10) : 1;
 
     const par = function (role) { return ids.filter(function (id) { return SIMULE_ROLES[id] === role; }); };
@@ -84,7 +84,7 @@ const simule = {
       const liant = par("binder")[i % Math.max(par("binder").length, 1)] || ids[1];
       const assais = par("seasoning")[i % Math.max(par("seasoning").length, 1)] || ids[2];
       out.push({
-        id: "simule-" + categorie.toLowerCase() + "-" + (i + 1),
+        id: "simule-" + category.toLowerCase() + "-" + (i + 1),
         name: "Recette simulée " + (i + 1),
         category: category,
         servings: "4 portions",

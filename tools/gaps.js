@@ -16,11 +16,14 @@ const data = {
 
 /* Avoidance profiles: each allergen on its own, plus the combinations that
  * actually turn up often in toddlers. */
+/* The eleven single allergens, then the combinations families actually live
+ * with. Ids are the catalogue's: a name it does not know excludes nothing,
+ * which is how nine of these were silently empty. */
 const PROFILS = data.base.allergens.map((a) => [a.id]).concat([
-  ["lait", "oeuf"], ["lait", "soya"], ["lait", "ble"], ["oeuf", "ble"],
-  ["arachide", "noix"], ["arachide", "noix", "sesame"],
-  ["lait", "oeuf", "ble"], ["lait", "oeuf", "arachide", "noix"],
-  ["poisson", "crustaces_mollusques"]
+  ["milk", "egg"], ["milk", "soy"], ["milk", "wheat"], ["egg", "wheat"],
+  ["peanut", "tree_nut"], ["peanut", "tree_nut", "sesame"],
+  ["milk", "egg", "wheat"], ["milk", "egg", "peanut", "tree_nut"],
+  ["fish", "shellfish"]
 ]);
 const STADES = [6, 9, 12, 24, 48];
 const CATEGORIES = ["Meal", "Snack"];
@@ -109,7 +112,7 @@ function brief(classement, target) {
   for (const c of classement) {
     if (c.missing === 0) continue;
     const cats = Object.keys(c.missingCategories);
-    const cles = cats.length ? cats : ["Repas"];
+    const cles = cats.length ? cats : ["Meal"];
     cles.forEach(function (cat) {
       const key = c.ageMois + "|" + cat;
       if (!groupes[key]) groupes[key] = { ageMois: c.ageMois, category: cat, evite: {}, missing: 0, horsAge: c.outOfAge, usable: c.usable };
@@ -149,6 +152,23 @@ function brief(classement, target) {
         (passePartout ? ". This gap exists for EVERY profile: one recipe that works for all of them fills it." : "")
     });
     reste -= n;
+  }
+  /* The pool has a target beyond coverage: when the gaps are filled and the
+   * quota is not, ask for variety — meals and snacks in turn, one profile
+   * and one age at a time, so no two runs ask for the same thing. */
+  if (reste > 0 && brief.pool) {
+    const deficit = { Meal: brief.pool.Meal.missing, Snack: brief.pool.Snack.missing };
+    const tour = brief.pool.seed || 0;
+    let i = 0;
+    while (reste > 0 && (deficit.Meal > 0 || deficit.Snack > 0)) {
+      const cat = (i % 2 === 0 && deficit.Meal > 0) || deficit.Snack <= 0 ? "Meal" : "Snack";
+      const profile = PROFILS[(tour + i) % PROFILS.length];
+      const age = STADES[(tour + i) % STADES.length];
+      const n = Math.min(reste, 2);
+      out.push({ n: n, ageMois: age, categories: [cat], evite: profile, passePartout: false,
+                 reason: "pool: " + deficit[cat] + " " + cat.toLowerCase() + "s still missing before a recipe waits the full rotation" });
+      deficit[cat] -= n; reste -= n; i++;
+    }
   }
   return out;
 }
@@ -218,9 +238,11 @@ function report(corpus, pub) {
   const cases = analyser(corpus);
   const classement = classer(cases);
   const blockers = bloquantsGlobaux(cases);
-  const cmd = brief(classement);
-  return { cases: cases, classement: classement, blockers: blockers, commande: cmd,
-           pool: poolStatus(corpus, pub) };
+  const pool = poolStatus(corpus, pub);
+  pool.seed = corpus.length;                       /* moves with every run */
+  brief.pool = pool;
+  const cmd = brief(classement, (pub && pub.perRun) || 20);
+  return { cases: cases, classement: classement, blockers: blockers, commande: cmd, pool: pool };
 }
 
 if (require.main === module) {

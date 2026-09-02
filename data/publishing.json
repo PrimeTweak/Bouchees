@@ -1,5 +1,5 @@
 {
-  "_doc": "One pool. Every recipe is a meal or a snack. `free` lists the recipes served to everyone: a device's first two weeks are drawn from them, later weeks from the whole pool, whose bodies the server hands only to subscribers. Target for the free list as the pool grows: 14 meals and 14 snacks.",
+  "_doc": "One pool. Every recipe is a meal or a snack. `free` lists the recipes served to everyone: a device's first two weeks are drawn from them, later weeks from the whole pool, whose bodies the server hands only to subscribers. Target for the free list as the pool grows: 14 meals and 14 snacks. `perRun` is how many recipes one cycle run asks for.",
   "free": [
     "apple-cinnamon-oatmeal",
     "baked-fish-nuggets",
@@ -21,5 +21,6 @@
   "target": {
     "Meal": 112,
     "Snack": 112
-  }
+  },
+  "perRun": 20
 }

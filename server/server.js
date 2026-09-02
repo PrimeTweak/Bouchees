@@ -207,12 +207,26 @@ function jetonValide(db, token) {
   return entry.email;
 }
 
+/* The receipt is the key. A bearer with two dots is a signed Apple
+ * transaction: verified up to Apple's root and still in force, it entitles
+ * this request on its own — no account, no email, nothing stored. A
+ * session token from a real sign-in still works when one exists. */
 function compteDeLaRequete(req, db) {
   const auth = req.headers.authorization || "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
+  if ((token.match(/\./g) || []).length === 2) return compteDepuisRecu(token);
   const email = jetonValide(db, token);
   return email ? db.accounts[email] || null : null;
+}
+
+function compteDepuisRecu(jws) {
+  const v = Apple.verifierJWS(jws);
+  if (!v.ok) return null;
+  const etat = Apple.etatDepuisTransaction(v.charge);
+  if (!etat.ok) return null;
+  return { email: null, fromReceipt: true,
+           abonnementApple: { status: etat.status, periodEnd: etat.periodEnd || null } };
 }
 
 const routes = {
@@ -279,7 +293,7 @@ const routes = {
     /* A rating, 1 to 5: an account is required — otherwise nothing stops one
    * personne de voter cent fois. */
   "POST /api/rating": async function (req, res, ctx) {
-    if (!ctx.account) return json(res, 401, { error: "sign-in required to rate" });
+    if (!ctx.account || !ctx.account.email) return json(res, 401, { error: "sign-in required to rate" });
         /* One rating per second per account: authentication stops a stranger
      * writing, not a signed-in client looping. */
     if (!limiteDebit(ctx.account.email)) {
@@ -301,7 +315,7 @@ const routes = {
   "GET /api/ratings": function (req, res, ctx) {
     const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
     if (!ids.length) return json(res, 200, {});
-    json(res, 200, Ratings.aggregates(ids, ctx.account ? ctx.account.email : null));
+    json(res, 200, Ratings.aggregates(ids, ctx.account && ctx.account.email ? ctx.account.email : null));
   },
 
   /* The Top rated tab. This is how a recipe that left the window comes back:
@@ -328,7 +342,7 @@ const routes = {
       }
       copie.votes = r.votes;
       copie.average = r.average;
-      if (ctx.account) copie.myRating = Ratings.ratingBy(r.recipeId, ctx.account.email);
+      if (ctx.account && ctx.account.email) copie.myRating = Ratings.ratingBy(r.recipeId, ctx.account.email);
       out.push(copie);
     });
     json(res, 200, { threshold: Ratings.MIN_VOTES, recipes: out, progress: Ratings.progress() });
@@ -639,14 +653,16 @@ function serveStatic(req, res, url) {
     });
   }
 
-  const base = rel === "/index.html" ? path.join(root, "web") : root;
-  const target = path.normalize(path.join(base, rel));
-  if (!target.startsWith(root)) { res.writeHead(403); return res.end("interdit"); }
-  fs.readFile(target, function (err, data) {
-    if (err) { res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); return res.end("introuvable"); }
-    res.writeHead(200, { "Content-Type": TYPES[path.extname(target)] || "application/octet-stream" });
-    res.end(data);
-  });
+  /* Nothing else is served. The repository is not a document root: dist/,
+   * data/ and server/ hold the recipe bodies and the accounts, the web demo
+   * inlines the whole corpus, and a wall the API enforces is worth nothing
+   * if a plain URL walks around it. The demo runs locally, from web/. */
+  if (rel === "/" || rel === "/index.html") {
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    return res.end("Bouchees");
+  }
+  res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("introuvable");
 }
 
 function createServer(options) {

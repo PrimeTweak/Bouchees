@@ -1968,4 +1968,34 @@ test("publishing: every source on a card decodes — source, license, an optiona
   });
 });
 
+test("wall: no file of the repository is reachable by URL — bodies, corpus, accounts, source, demo", async () => {
+  const t = await serveurDeTest();
+  const paid = read("../dist/catalogue.json").find((c) => !c.free);
+  const forbidden = ["/dist/recipes/" + paid.id + ".json", "/dist/catalogue.json", "/data/recipes.json",
+    "/data/generated/generated-recipes.json", "/server/server.js", "/server/accounts.json", "/.gitignore",
+    "/tests/test.js", "/web/index.html", "/web/../dist/catalogue.json", "/%2e%2e/data/recipes.json"];
+  for (const p of forbidden) {
+    const r = await t.call("GET", p);
+    assert.notEqual(r.status, 200, p + " is served");
+    assert(!JSON.stringify(r.json || "").includes('"steps"'), p + " leaks a body");
+  }
+  for (const p of ["/", "/index.html"]) {
+    const r = await t.call("GET", p);
+    assert(!(r.json && JSON.stringify(r.json).includes("steps")), p + " inlines the corpus");
+  }
+  t.close();
+});
+
+test("wall: a forged or unsigned receipt as bearer entitles nothing", async () => {
+  const t = await serveurDeTest();
+  const paid = read("../dist/catalogue.json").find((c) => !c.free);
+  const fake = Buffer.from('{"alg":"ES256"}').toString("base64url") + "." +
+    Buffer.from('{"expiresDate":' + (Date.now() + 864e5) + ',"bundleId":"ca.bouchees.app"}').toString("base64url") + ".AAAA";
+  const r = await t.call("GET", "/api/recipes?ids=" + paid.id, null, { authorization: "Bearer " + fake });
+  assert.equal(r.status, 402, "a receipt Apple did not sign opened a body");
+  const me = await t.call("GET", "/api/me", null, { authorization: "Bearer " + fake });
+  assert.equal(me.json.subscribed, false);
+  t.close();
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

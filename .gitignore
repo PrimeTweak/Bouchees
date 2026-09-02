@@ -37,3 +37,6 @@ images/rejected/
 # Le paquet se depose comme fichier de Release sur GitHub, et l'app le
 # telecharge au premier lancement. Il se refabrique avec PAQUET.command.
 pack/
+
+# The API key for GENERER.command. Never versioned.
+cle-api.txt

@@ -1,8 +1,10 @@
 {
-  "build": 137,
+  "build": 139,
   "date": "2026-09-02",
   "carries": [
-    "build fix: scaledFont(spec, design:) had no signature, so two monospace quantities fell to the CGFloat overload and failed to compile; the overload exists and the checker refuses a call shape no signature takes",
-    "the two warnings Xcode raised: a @ViewBuilder over a body that returns explicitly, and a main-actor static read from a nonisolated delegate; both fixed, the first with a rule"
+    "the server served the whole repository as static files — every recipe body, the corpus, the accounts, its own source — through a plain URL that walked around the API's wall; only /images/ and the API remain, and a test asks a live instance for each forbidden file",
+    "the web demo, which inlines the corpus, is no longer served from production",
+    "a signed Apple transaction presented as bearer entitles the request on its own, verified up to Apple's root, with no account; the app sends it when it has no session, so a subscriber reads bodies from day one",
+    "ratings still require a named identity; a forged receipt opens nothing, tested"
   ]
 }

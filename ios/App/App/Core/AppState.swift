@@ -391,7 +391,10 @@ final class AppState {
     /// account is not entitled to stays a card, and the day shows locked.
     func sync() async {
         guard fatalError == nil else { return }
-        let token = subscription.serverToken
+        /* The key for bodies: a session when one exists, otherwise the
+         * signed Apple transaction itself. The server verifies it with
+         * Apple's root and needs no account. */
+        let token = subscription.serverToken ?? (await subscription.currentTransaction())
         do {
             let manif = try await serveur.manifest(token: token)
             if let a = manif.subscribed { subscribed = a }
