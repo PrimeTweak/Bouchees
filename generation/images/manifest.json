@@ -779,5 +779,27 @@
         "la vision hésite sur : binding agent unclear (could be peanut butter, almond butter, honey, or banana), inner crumb texture suggests possible use of almond flour or oat flour"
       ]
     }
+  },
+  "salmon-sweet-potato-sheet-pan": {
+    "fichier": "images/salmon-sweet-potato-sheet-pan-33cb41bdc181.png",
+    "empreinte": "33cb41bdc181",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-02T16:49:04.362Z",
+      "detectes": [
+        "salmon",
+        "broccoli",
+        "sweet potato"
+      ],
+      "reconnus": 4,
+      "attendus": 9,
+      "avertissements": [
+        "la vision hésite sur : seasoning or herb on salmon difficult to identify precisely"
+      ]
+    }
   }
 }
