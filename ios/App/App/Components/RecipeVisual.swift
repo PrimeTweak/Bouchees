@@ -60,13 +60,8 @@ struct RecipeVisual: View {
         .animation(.soft(0.2), value: photo != nil)
     }
 
-    /// The warning that the picture is of the dish BEFORE the swaps. The words
-    /// on the recipe page, where the photo runs 430pt and the parent meets the
-    /// sentence once.
-    @ViewBuilder
     /// The photo shows the dish before the swaps. Said on the hero, where a
-    /// parent actually looks at it; a thumbnail is too small to carry a
-    /// second mark next to the row's own dot.
+    /// parent looks at it; a thumbnail is too small for a second mark.
     @ViewBuilder
     private var originWarning: some View {
         if photoDuPlatOriginal && showsOriginLabel {

@@ -1013,7 +1013,28 @@ def check():
     problems += tailles_fixes()
     problems += viewbuilder_avec_return()
     problems += await_dans_autoclosure()
+    problems += double_view_builder()
     return problems, warnings
+
+
+def double_view_builder():
+    """Two @ViewBuilder on one declaration: Swift refuses a second result
+    builder attribute. Happens when an edit inserts a doc comment and its
+    attribute above an existing pair."""
+    out = []
+    for path in swift_files():
+        lines = open(path, encoding="utf-8").read().split("\n")
+        for i, l in enumerate(lines):
+            if l.strip() != "@ViewBuilder":
+                continue
+            for j in range(i + 1, min(i + 12, len(lines))):
+                t = lines[j].strip()
+                if t.startswith("///") or t == "":
+                    continue
+                if t == "@ViewBuilder":
+                    out.append(f"{os.path.basename(path)}:{i+1}: two @ViewBuilder on one declaration — keep one")
+                break
+    return out
 
 
 def await_dans_autoclosure():
