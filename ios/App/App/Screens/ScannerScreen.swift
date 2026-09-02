@@ -87,7 +87,7 @@ final class BarcodeSession: NSObject, ObservableObject,
 
     /* Which code to trust when a frame holds several: a carton shows its
      * ITF-14 next to the retail EAN-13; a box carries a QR beside its UPC. */
-    private static let preference: [AVMetadataObject.ObjectType] = [
+    nonisolated private static let preference: [AVMetadataObject.ObjectType] = [
         .ean13, .upce, .ean8, .gs1DataBar, .gs1DataBarLimited,
         .gs1DataBarExpanded, .itf14, .dataMatrix, .qr, .code128, .code39
     ]

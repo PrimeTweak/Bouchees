@@ -192,6 +192,60 @@
         "type": "prep",
         "note": "Soak in hot water until plump, then chop"
       }
+    },
+    {
+      "target": "cherries",
+      "beforeMonths": 48,
+      "reason": "Whole cherries are a choking hazard; pit and quarter before 4 years",
+      "action": {
+        "type": "prep",
+        "note": "Pitted and quartered"
+      }
+    },
+    {
+      "target": "corn",
+      "beforeMonths": 12,
+      "reason": "Whole kernels are hard to manage before 12 months; mash or blend",
+      "action": {
+        "type": "prep",
+        "note": "Mashed"
+      }
+    },
+    {
+      "target": "green_beans",
+      "beforeMonths": 9,
+      "reason": "Serve soft-cooked and cut lengthwise before 9 months",
+      "action": {
+        "type": "prep",
+        "note": "Soft-cooked, split lengthwise"
+      }
+    },
+    {
+      "target": "hemp_hearts",
+      "beforeMonths": 6,
+      "reason": "Fine seeds: sprinkle into food rather than serve alone",
+      "action": {
+        "type": "prep",
+        "note": "Stirred into a purée"
+      }
+    },
+    {
+      "target": "pumpkin_seeds",
+      "beforeMonths": 48,
+      "reason": "Whole seeds are a choking hazard before 4 years; grind them",
+      "action": {
+        "type": "prep",
+        "note": "Ground"
+      }
+    },
+    {
+      "target": "sesame_seeds",
+      "beforeMonths": 48,
+      "reason": "Whole seeds are a choking hazard before 4 years; use tahini or grind them",
+      "action": {
+        "type": "prep",
+        "note": "Ground"
+      }
     }
   ]
 }

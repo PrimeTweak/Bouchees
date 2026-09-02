@@ -1011,7 +1011,32 @@ def check():
     problems += switches_non_exhaustifs()
     problems += commentaires_hors_regle()
     problems += tailles_fixes()
+    problems += viewbuilder_avec_return()
     return problems, warnings
+
+
+def viewbuilder_avec_return():
+    """@ViewBuilder above a body that opens with an explicit return: the
+    attribute is silently disabled, and Xcode warns on every build."""
+    out = []
+    for path in swift_files():
+        lines = open(path, encoding="utf-8").read().split("\n")
+        for i, l in enumerate(lines):
+            if l.strip() != "@ViewBuilder":
+                continue
+            # the declaration follows; its first statement decides
+            k = i + 1
+            while k < len(lines) and not re.search(r"\b(var|func)\b", lines[k]): k += 1
+            depth = 0; opened = False
+            for j in range(k, min(k + 12, len(lines))):
+                t = lines[j].strip()
+                if "{" in t: opened = True
+                if opened and t.startswith("return "):
+                    out.append(f"{os.path.basename(path)}:{i+1}: @ViewBuilder over a body that starts with return — drop one of the two")
+                    break
+                if opened and t and not t.startswith(("let ", "var ", "guard ", "if ", "//", "/*", "*")) and "{" not in t:
+                    break
+    return out
 
 
 def tailles_fixes():
@@ -1028,6 +1053,11 @@ def tailles_fixes():
             # dimension (an avatar, a glyph) may stay numeric.
             if re.search(r"\.scaledFont\([0-9]", code):
                 out.append(f"{os.path.basename(path)}:{i}: a font size outside the scale — use Type.display … Type.micro")
+            # The call must match one of the four signatures: (spec), (spec, weight:),
+            # (spec, weight:, design:), (spec, design:).
+            m = re.search(r"\.scaledFont\(Type\.\w+((?:\.weight\([^)]*\))?)([^)]*)\)", code)
+            if m and not re.fullmatch(r"(, weight: [^,]+)?(, design: [^,]+)?", m.group(2)):
+                out.append(f"{os.path.basename(path)}:{i}: scaledFont called with arguments no signature takes")
     return out
 
 

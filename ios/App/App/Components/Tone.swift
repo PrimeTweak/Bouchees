@@ -194,6 +194,10 @@ extension View {
     func scaledFont(_ spec: TypeSpec, weight: Font.Weight, design: Font.Design = .default) -> some View {
         modifier(ScaledFont(spec: TypeSpec(spec.size, weight, design)))
     }
+    /// The spec's own weight in another design: quantities in monospace.
+    func scaledFont(_ spec: TypeSpec, design: Font.Design) -> some View {
+        modifier(ScaledFont(spec: TypeSpec(spec.size, spec.weight, design)))
+    }
 }
 
 extension View {

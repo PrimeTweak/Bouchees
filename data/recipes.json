@@ -470,7 +470,7 @@
     "id": "banana-bread",
     "name": "Banana bread",
     "category": "Snack",
-    "servings": "1 loaf",
+    "servings": "1 loaf · 10 portions",
     "minAgeMonths": 9,
     "timeMinutes": 70,
     "ingredients": [
@@ -519,17 +519,21 @@
       }
     ],
     "steps": [
-      "Preheat the oven to 180 °C.",
-      "Beat the melted butter, sugar, eggs and vanilla.",
-      "Fold in the bananas, then the dry ingredients.",
-      "Bake in a loaf pan for 55 to 60 minutes."
+      "Preheat the oven to 180 °C (350 °F). Grease a 23 × 13 cm loaf pan and line the bottom with parchment.",
+      "Melt the butter in a small pot over low heat, about 2 minutes, until liquid, then let it cool a little.",
+      "In a large bowl, whisk the mashed banana, the eggs, the sugar, the melted butter and the vanilla extract until smooth.",
+      "In another bowl, whisk the wheat flour, the baking powder and the baking soda.",
+      "Fold the dry mixture into the banana mixture with a spatula, just until no dry flour shows. Lumps are fine.",
+      "Pour into the pan and smooth the top.",
+      "Bake 55 to 60 minutes, until deep golden and a toothpick in the centre comes out clean.",
+      "Cool 10 minutes in the pan, then on a rack. Under 12 months, cut a slice into fingers. Keeps 3 days; freezes 2 months."
     ]
   },
   {
     "id": "oatmeal-raisin-cookies",
     "name": "Oatmeal raisin cookies",
     "category": "Snack",
-    "servings": "20 cookies",
+    "servings": "20 cookies · 10 snack portions",
     "minAgeMonths": 12,
     "timeMinutes": 30,
     "ingredients": [
@@ -578,17 +582,21 @@
       }
     ],
     "steps": [
-      "Cream the butter and sugar, then add the egg.",
-      "Fold in the dry ingredients, then the raisins.",
-      "Drop flattened balls onto a baking sheet.",
-      "Bake at 180 °C for 10 to 12 minutes."
+      "Preheat the oven to 180 °C (350 °F). Line a baking sheet with parchment.",
+      "Soak the raisins in hot water 5 minutes, until plump, then drain and chop them roughly.",
+      "In a large bowl, beat the softened butter with the sugar 1 minute, until pale and creamy. Beat in the egg.",
+      "In another bowl, whisk the wheat flour, the rolled oats, the cinnamon and the baking soda.",
+      "Add the dry mixture to the butter mixture with the raisins. Stir just until no dry flour shows.",
+      "Drop tablespoons of dough onto the sheet, 5 cm apart, and flatten each one slightly with wet fingers.",
+      "Bake 11 to 13 minutes, until the edges are golden and the centres still look soft.",
+      "Cool 5 minutes on the sheet, then on a rack. Not for under 12 months; halve for toddlers. Keeps 4 days in a tin."
     ]
   },
   {
     "id": "mini-vegetable-frittatas",
     "name": "Mini vegetable frittatas",
     "category": "Snack",
-    "servings": "8 mini frittatas",
+    "servings": "8 mini frittatas · 4 portions",
     "minAgeMonths": 6,
     "timeMinutes": 30,
     "ingredients": [
@@ -630,17 +638,20 @@
       }
     ],
     "steps": [
-      "Preheat the oven to 180 °C and oil 8 muffin cups.",
-      "Whisk the eggs with the milk.",
-      "Add the drained vegetables and the cheese.",
-      "Bake for 18 to 20 minutes, until the centre is set."
+      "Preheat the oven to 180 °C (350 °F). Brush 8 cups of a muffin tin with the olive oil.",
+      "Grate the zucchini and squeeze it dry in a clean towel. Chop the spinach finely.",
+      "In a bowl, beat the eggs with the cow's milk until no streaks of white remain.",
+      "Stir in the zucchini, the spinach and the grated cheddar.",
+      "Divide between the 8 cups, filling each about three-quarters full.",
+      "Bake 16 to 18 minutes, until puffed, set in the centre and lightly golden at the edges.",
+      "Cool 5 minutes, then run a knife around each one. Under 12 months, cut into strips. Keeps 3 days; freezes 1 month."
     ]
   },
   {
     "id": "squash-and-coconut-soup",
     "name": "Squash and coconut soup",
     "category": "Meal",
-    "servings": "4 servings",
+    "servings": "4 portions",
     "minAgeMonths": 6,
     "timeMinutes": 35,
     "ingredients": [
@@ -673,16 +684,20 @@
       }
     ],
     "steps": [
-      "Soften the onion in the oil.",
-      "Add the cubed squash and the broth, then simmer for 20 minutes.",
-      "Blend with the coconut milk until velvety."
+      "Peel the butternut squash, scoop out the seeds and cut it into 2 cm cubes. Dice the onion.",
+      "Heat the olive oil in a large pot over medium heat, about 1 minute, until it shimmers.",
+      "Add the onion and cook 4 to 5 minutes, stirring, until soft and translucent.",
+      "Add the squash and the chicken broth. Cover and simmer 15 to 18 minutes, until the squash crushes easily against the pot.",
+      "Pour in the coconut milk and heat 2 minutes, until steaming, without boiling.",
+      "Blend smooth with an immersion blender, about 1 minute, until velvety.",
+      "Cool to lukewarm. From 12 months, add a few cooked pasta shapes. Keeps 3 days in the fridge; freezes 2 months."
     ]
   },
   {
     "id": "mac-and-cheese-with-hidden-squash",
     "name": "Mac and cheese with hidden squash",
     "category": "Meal",
-    "servings": "4 servings",
+    "servings": "4 portions",
     "minAgeMonths": 9,
     "timeMinutes": 30,
     "ingredients": [
@@ -730,10 +745,14 @@
       }
     ],
     "steps": [
-      "Cook the pasta and set aside.",
-      "Make a roux with the butter and flour, then pour in the milk.",
-      "Stir in the squash purée and the cheese off the heat.",
-      "Toss with the pasta."
+      "Peel the butternut squash and cut it into 2 cm cubes. Steam 10 to 12 minutes, until a fork slides in easily.",
+      "Bring a large pot of water to a boil, about 8 minutes, until it bubbles hard.",
+      "Cook the wheat pasta 1 minute less than the package says, until just tender. Drain.",
+      "Mash the steamed squash smooth with a fork, or blend it with a splash of the cow's milk.",
+      "Melt the butter in the empty pot over medium heat, about 1 minute, until it foams. Whisk in the wheat flour for 1 minute.",
+      "Pour in the cow's milk a little at a time, whisking. Cook 3 to 4 minutes, until the sauce coats a spoon.",
+      "Off the heat, stir in the grated cheddar, the mashed squash and the salt, about 1 minute, until the cheese melts.",
+      "Fold in the pasta. Under 12 months, chop the pasta small. Keeps 3 days in the fridge."
     ]
   },
   {
@@ -1015,5 +1034,344 @@
       "Stir into the yogurt with the lemon and garlic.",
       "Serve with vegetables prepared to suit the child's age."
     ]
+  },
+  {
+    "id": "salmon-and-sweet-potato-cakes",
+    "name": "Salmon and sweet potato cakes",
+    "category": "Meal",
+    "servings": "10 cakes · 3 family portions",
+    "minAgeMonths": 8,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 250,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "green_onion",
+        "qty": 2,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "dill",
+        "qty": 15,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon",
+        "qty": 0.5,
+        "unit": "unit",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Peel the sweet potato, cut it into 2 cm cubes and steam 12 minutes, until a fork slides in easily. Mash it in a large bowl.",
+      "Check the salmon for bones with your fingertips, then chop it finely with a knife until it looks like coarse mince.",
+      "Slice the green onion thinly and chop the dill. Zest the lemon half.",
+      "Add the salmon, green onion, dill and lemon zest to the sweet potato. Mix with a spoon until it holds together when pressed.",
+      "Shape into 10 flat cakes about 6 cm across. Chill 10 minutes, until firm.",
+      "Heat the olive oil in a large non-stick pan over medium heat, about 1 minute, until it shimmers.",
+      "Cook the cakes 4 minutes per side, until golden and the salmon inside is opaque all the way through.",
+      "Under 12 months, break a cake into small flakes; toddlers eat them whole. Keeps 2 days in the fridge; freezes 1 month."
+    ],
+    "source": {
+      "source": "written for Bouchees",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "white-bean-and-tomato-stew",
+    "name": "White bean and tomato stew",
+    "category": "Meal",
+    "servings": "4 portions",
+    "minAgeMonths": 8,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "white_beans",
+        "qty": 500,
+        "unit": "ml",
+        "role": "protein"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 400,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "oregano",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Dice the onion and the carrot small. Mince the garlic. Drain and rinse the white beans.",
+      "Heat the olive oil in a pot over medium heat, about 1 minute, until it shimmers.",
+      "Add the onion and carrot and cook 5 minutes, stirring, until the onion is soft and translucent.",
+      "Add the garlic and the dried oregano and cook 30 seconds, until fragrant.",
+      "Pour in the crushed tomatoes and the vegetable broth. Simmer 10 minutes, until the carrot is tender.",
+      "Add the beans and simmer 5 minutes more, until heated through and the stew thickens slightly.",
+      "Mash a ladle of beans against the pot to thicken it. Under 12 months, blend a portion smooth. Keeps 4 days; freezes 2 months."
+    ],
+    "source": {
+      "source": "written for Bouchees",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chicken-and-broccoli-rice",
+    "name": "Chicken and broccoli rice",
+    "category": "Meal",
+    "servings": "4 portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "chicken",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "brown_rice",
+        "qty": 250,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "broccoli",
+        "qty": 250,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 500,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Rinse the brown rice in a sieve until the water runs clear. Cut the chicken into 1 cm pieces and mince the garlic.",
+      "Heat the olive oil in a pot over medium heat, about 1 minute, until it shimmers.",
+      "Add the chicken and cook 4 to 5 minutes, stirring, until no pink remains.",
+      "Add the garlic and the rice and stir 1 minute, until the grains look glossy.",
+      "Pour in the chicken broth. Cover and simmer 25 minutes, until the rice is tender and the broth is absorbed.",
+      "Cut the broccoli into small florets. Lay them on top of the rice, cover, and steam 5 minutes, until bright green and tender.",
+      "Stir everything together. Under 12 months, chop the broccoli and chicken small and moisten with a spoon of water. Keeps 3 days."
+    ],
+    "source": {
+      "source": "written for Bouchees",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-shepherds-pie",
+    "name": "Lentil shepherd's pie",
+    "category": "Meal",
+    "servings": "6 portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 50,
+    "ingredients": [
+      {
+        "id": "lentils",
+        "qty": 500,
+        "unit": "ml",
+        "role": "protein"
+      },
+      {
+        "id": "potato",
+        "qty": 4,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 2,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "green_peas",
+        "qty": 125,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "tomato_paste",
+        "qty": 30,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F). Peel the potatoes, cut them into chunks and boil 15 minutes, until a fork slides in easily.",
+      "Dice the onion and the carrot small. Drain the cooked lentils.",
+      "Heat half the olive oil in a pan over medium heat, about 1 minute, until it shimmers. Cook the onion and carrot 6 minutes, until soft.",
+      "Stir in the tomato paste and cook 1 minute, until it darkens. Add the lentils, the green peas and the vegetable broth.",
+      "Simmer 8 minutes, until the sauce thickens. Spread in a 20 × 20 cm baking dish.",
+      "Drain the potatoes and mash them with the remaining olive oil until smooth. Spread over the lentils and rough up the top with a fork.",
+      "Bake 20 minutes, until the top is golden at the ridges and the edges bubble.",
+      "Rest 10 minutes. Under 12 months, mash a portion with a fork. Keeps 4 days in the fridge; freezes 2 months."
+    ],
+    "source": {
+      "source": "written for Bouchees",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "tofu-and-vegetable-fried-rice",
+    "name": "Tofu and vegetable fried rice",
+    "category": "Meal",
+    "servings": "4 portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "tofu",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "rice",
+        "qty": 500,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "carrot",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "green_peas",
+        "qty": 125,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "coconut_aminos",
+        "qty": 15,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "green_onion",
+        "qty": 2,
+        "unit": "unit",
+        "role": "vegetable"
+      }
+    ],
+    "steps": [
+      "Press the firm tofu between paper towels 10 minutes, then cut it into 1 cm cubes. Grate the carrot and slice the green onion.",
+      "Beat the eggs in a bowl. Use cooked rice that is cold from the fridge; it fries without turning gummy.",
+      "Heat half the canola oil in a large pan over medium-high heat, about 1 minute, until it shimmers.",
+      "Cook the tofu 6 to 8 minutes, turning, until golden on most sides. Set aside on a plate.",
+      "Add the remaining oil and the carrot and cook 2 minutes, until softened. Pour in the eggs and stir 1 minute, until just set.",
+      "Add the rice and the green peas and stir-fry 3 to 4 minutes, until the rice is hot and slightly crisp at the edges.",
+      "Return the tofu, add the coconut aminos and the green onion, and toss 30 seconds, until coated.",
+      "Under 12 months, chop the tofu smaller and skip the crisp edges. Keeps 2 days in the fridge."
+    ],
+    "source": {
+      "source": "written for Bouchees",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]

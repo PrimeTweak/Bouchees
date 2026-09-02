@@ -1,9 +1,8 @@
 {
-  "build": 135,
+  "build": 137,
   "date": "2026-09-02",
   "carries": [
-    "the 133 remap paired lines by a key every bare scaledFont line shared, so sizes swapped between neighbours; every site is recomputed from its 128 size, keyed on the line it dresses; the step text is display again",
-    "the verb drawing fills the middle of the step at 220 points",
-    "the Screen stays awake badge overlapped the progress bars; it is gone, the screen still stays awake"
+    "build fix: scaledFont(spec, design:) had no signature, so two monospace quantities fell to the CGFloat overload and failed to compile; the overload exists and the checker refuses a call shape no signature takes",
+    "the two warnings Xcode raised: a @ViewBuilder over a body that returns explicitly, and a main-actor static read from a nonisolated delegate; both fixed, the first with a rule"
   ]
 }

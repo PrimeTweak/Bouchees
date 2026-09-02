@@ -164,7 +164,6 @@ struct RecipesScreen: View {
     /* The bookmark led nowhere: savedRecipes has persisted to disk since the
      * first build and the bookmark on the detail page has always written to
      * it. */
-    @ViewBuilder
     /// The two side doors, always open: both are permanent now and say what
     /// they hold when they hold nothing, which is also where a parent learns
     /// the bookmark exists.

@@ -839,5 +839,566 @@
     "roles": [
       "seasoning"
     ]
+  },
+  "tofu": {
+    "name": "Firm tofu",
+    "nameFr": "Tofu ferme",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "silken_tofu": {
+    "name": "Silken tofu",
+    "nameFr": "Tofu soyeux",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "protein",
+      "binder"
+    ]
+  },
+  "ricotta": {
+    "name": "Ricotta",
+    "nameFr": "Ricotta",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy",
+      "protein"
+    ]
+  },
+  "cottage_cheese": {
+    "name": "Cottage cheese",
+    "nameFr": "Fromage cottage",
+    "allergens": [
+      "milk"
+    ],
+    "roles": [
+      "dairy",
+      "protein"
+    ]
+  },
+  "canned_tuna": {
+    "name": "Canned light tuna",
+    "nameFr": "Thon pâle en conserve",
+    "allergens": [
+      "fish"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "white_beans": {
+    "name": "Cooked white beans",
+    "nameFr": "Haricots blancs cuits",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "black_beans": {
+    "name": "Cooked black beans",
+    "nameFr": "Haricots noirs cuits",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "kidney_beans": {
+    "name": "Cooked kidney beans",
+    "nameFr": "Haricots rouges cuits",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "edamame": {
+    "name": "Shelled edamame",
+    "nameFr": "Edamames écossés",
+    "allergens": [
+      "soy"
+    ],
+    "roles": [
+      "protein"
+    ]
+  },
+  "ground_beef": {
+    "name": "Lean ground beef",
+    "nameFr": "Bœuf haché maigre",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "ground_pork": {
+    "name": "Lean ground pork",
+    "nameFr": "Porc haché maigre",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "turkey_breast": {
+    "name": "Turkey breast",
+    "nameFr": "Poitrine de dinde",
+    "allergens": [],
+    "roles": [
+      "protein"
+    ]
+  },
+  "hemp_hearts": {
+    "name": "Hemp hearts",
+    "nameFr": "Cœurs de chanvre",
+    "allergens": [],
+    "roles": [
+      "topping",
+      "protein"
+    ]
+  },
+  "cauliflower": {
+    "name": "Cauliflower",
+    "nameFr": "Chou-fleur",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "green_beans": {
+    "name": "Green beans",
+    "nameFr": "Haricots verts",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "corn": {
+    "name": "Corn kernels",
+    "nameFr": "Grains de maïs",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "tomato": {
+    "name": "Tomato",
+    "nameFr": "Tomate",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "avocado": {
+    "name": "Avocado",
+    "nameFr": "Avocat",
+    "allergens": [],
+    "roles": [
+      "fruit",
+      "fat"
+    ]
+  },
+  "mushroom": {
+    "name": "Mushrooms",
+    "nameFr": "Champignons",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "kale": {
+    "name": "Kale",
+    "nameFr": "Chou frisé",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "leek": {
+    "name": "Leek",
+    "nameFr": "Poireau",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "celery": {
+    "name": "Celery",
+    "nameFr": "Céleri",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "cabbage": {
+    "name": "Cabbage",
+    "nameFr": "Chou",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "beet": {
+    "name": "Beet",
+    "nameFr": "Betterave",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "parsnip": {
+    "name": "Parsnip",
+    "nameFr": "Panais",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "turnip": {
+    "name": "Turnip",
+    "nameFr": "Navet",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "eggplant": {
+    "name": "Eggplant",
+    "nameFr": "Aubergine",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "red_pepper": {
+    "name": "Red bell pepper",
+    "nameFr": "Poivron rouge",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "pear": {
+    "name": "Pear",
+    "nameFr": "Poire",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "peach": {
+    "name": "Peach",
+    "nameFr": "Pêche",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "strawberries": {
+    "name": "Strawberries",
+    "nameFr": "Fraises",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "raspberries": {
+    "name": "Raspberries",
+    "nameFr": "Framboises",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "orange": {
+    "name": "Orange",
+    "nameFr": "Orange",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "kiwi": {
+    "name": "Kiwi",
+    "nameFr": "Kiwi",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "plum": {
+    "name": "Plum",
+    "nameFr": "Prune",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "melon": {
+    "name": "Melon",
+    "nameFr": "Melon",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "cherries": {
+    "name": "Cherries",
+    "nameFr": "Cerises",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "pineapple": {
+    "name": "Pineapple",
+    "nameFr": "Ananas",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "apricot": {
+    "name": "Apricot",
+    "nameFr": "Abricot",
+    "allergens": [],
+    "roles": [
+      "fruit"
+    ]
+  },
+  "brown_rice": {
+    "name": "Brown rice",
+    "nameFr": "Riz brun",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "potato": {
+    "name": "Potato",
+    "nameFr": "Pomme de terre",
+    "allergens": [],
+    "roles": [
+      "vegetable"
+    ]
+  },
+  "polenta": {
+    "name": "Cornmeal (polenta)",
+    "nameFr": "Semoule de maïs (polenta)",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "buckwheat": {
+    "name": "Buckwheat groats",
+    "nameFr": "Sarrasin",
+    "allergens": [],
+    "roles": [
+      "flour"
+    ]
+  },
+  "barley": {
+    "name": "Pearl barley",
+    "nameFr": "Orge perlé",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "tortilla": {
+    "name": "Wheat tortilla",
+    "nameFr": "Tortilla de blé",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "bread": {
+    "name": "Whole wheat bread",
+    "nameFr": "Pain de blé entier",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "pita": {
+    "name": "Pita bread",
+    "nameFr": "Pain pita",
+    "allergens": [
+      "wheat"
+    ],
+    "roles": [
+      "flour"
+    ]
+  },
+  "coconut_oil": {
+    "name": "Coconut oil",
+    "nameFr": "Huile de coco",
+    "allergens": [],
+    "roles": [
+      "fat"
+    ],
+    "staple": true
+  },
+  "tomato_paste": {
+    "name": "Tomato paste",
+    "nameFr": "Pâte de tomate",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "vegetable_broth": {
+    "name": "Unsalted vegetable broth",
+    "nameFr": "Bouillon de légumes sans sel",
+    "allergens": [],
+    "roles": [
+      "liquid"
+    ]
+  },
+  "oregano": {
+    "name": "Dried oregano",
+    "nameFr": "Origan séché",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "cumin": {
+    "name": "Ground cumin",
+    "nameFr": "Cumin moulu",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "paprika": {
+    "name": "Sweet paprika",
+    "nameFr": "Paprika doux",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "turmeric": {
+    "name": "Turmeric",
+    "nameFr": "Curcuma",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "ginger_ground": {
+    "name": "Ground ginger",
+    "nameFr": "Gingembre moulu",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "nutmeg": {
+    "name": "Nutmeg",
+    "nameFr": "Muscade",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "dill": {
+    "name": "Fresh dill",
+    "nameFr": "Aneth frais",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ]
+  },
+  "basil_dried": {
+    "name": "Dried basil",
+    "nameFr": "Basilic séché",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "lemon": {
+    "name": "Lemon",
+    "nameFr": "Citron",
+    "allergens": [],
+    "roles": [
+      "fruit",
+      "seasoning"
+    ]
+  },
+  "lime": {
+    "name": "Lime",
+    "nameFr": "Lime",
+    "allergens": [],
+    "roles": [
+      "fruit",
+      "seasoning"
+    ]
+  },
+  "white_vinegar": {
+    "name": "White vinegar",
+    "nameFr": "Vinaigre blanc",
+    "allergens": [],
+    "roles": [
+      "seasoning"
+    ],
+    "staple": true
+  },
+  "sesame_seeds": {
+    "name": "Sesame seeds",
+    "nameFr": "Graines de sésame",
+    "allergens": [
+      "sesame"
+    ],
+    "roles": [
+      "topping"
+    ]
+  },
+  "pumpkin_seeds": {
+    "name": "Pumpkin seeds",
+    "nameFr": "Graines de citrouille",
+    "allergens": [],
+    "roles": [
+      "topping"
+    ]
+  },
+  "flax_ground": {
+    "name": "Ground flaxseed",
+    "nameFr": "Graines de lin moulues",
+    "allergens": [],
+    "roles": [
+      "binder",
+      "topping"
+    ]
+  },
+  "green_onion": {
+    "name": "Green onion",
+    "nameFr": "Oignon vert",
+    "allergens": [],
+    "roles": [
+      "vegetable",
+      "seasoning"
+    ]
   }
 }
