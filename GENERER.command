@@ -21,10 +21,11 @@ TOURS="${1:-3}"
 echo ""
 echo "  GÉNÉRATION — $TOURS tour(s) de 20 recettes demandées"
 echo "  Ce qui ne passe pas la norme est rejeté ; c'est normal d'en perdre."
+echo "  Les photos ne sont pas faites ici : PHOTOS.command, après."
 echo ""
 for i in $(seq 1 "$TOURS"); do
   echo "── tour $i ──"
-  node tools/cycle.js || { echo "  le tour $i a échoué ; on s'arrête ici"; break; }
+  node tools/cycle.js --recettes-seulement || { echo "  le tour $i a échoué ; on s'arrête ici"; break; }
 done
 
 echo ""

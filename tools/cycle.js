@@ -61,15 +61,27 @@ async function cycleRecettes(data, options) {
   console.log("  text engine: " + moteur.name + (moteur.name === "simule" ? "  (no API key — placeholder recipes)" : ""));
   const idsExistants = corpus.map((x) => x.id);
   let drafts = [];
+  let k = 0;
   for (const ligne of brief) {
     const prompt = PromptRecette.construire(ligne, data);
+    process.stdout.write("  " + (++k) + "/" + brief.length + "  " + ligne.n + " " + ligne.categories[0].toLowerCase() +
+                         " from " + ligne.ageMois + " months" + (ligne.evite.length ? ", no " + ligne.evite.join("/") : "") + " … ");
     try {
       const output = await moteur.rediger(prompt);
-      output.forEach(function (rec) { drafts.push({ rec: rec, commande: ligne }); });
-    } catch (e) { console.log("  writing failed: " + e.message); }
+      output.forEach(function (rec) {
+        /* Ids are keys: ASCII, lowercase, hyphens. An accent the model
+         * slipped in is normalised rather than refused. */
+        if (rec && typeof rec.id === "string") {
+          rec.id = rec.id.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        }
+        drafts.push({ rec: rec, commande: ligne });
+      });
+      console.log(output.length + " written");
+    } catch (e) { console.log("failed: " + e.message); }
   }
   log.redigees = drafts.length;
-  console.log("  " + drafts.length + " recette(s) rédigée(s)");
+  console.log("  " + drafts.length + " recipe(s) written");
 
   title("3 · Validation — catalogue, allergens, ages");
   const survivantes = [];

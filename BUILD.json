@@ -1,10 +1,10 @@
 {
-  "build": 139,
+  "build": 140,
   "date": "2026-09-02",
   "carries": [
-    "the server served the whole repository as static files — every recipe body, the corpus, the accounts, its own source — through a plain URL that walked around the API's wall; only /images/ and the API remain, and a test asks a live instance for each forbidden file",
-    "the web demo, which inlines the corpus, is no longer served from production",
-    "a signed Apple transaction presented as bearer entitles the request on its own, verified up to Apple's root, with no account; the app sends it when it has no session, so a subscriber reads bodies from day one",
-    "ratings still require a named identity; a forged receipt opens nothing, tested"
+    "the first real generation wrote twenty recipes in French against an English validator, which named none of their ingredients: the prompt is in English end to end, asks for the catalogue's exact names in the steps, ASCII ids, and 18 words a step as a hard limit",
+    "an accent in an id is normalised, not refused",
+    "the writing step prints one line per brief, so a five-minute call is not a frozen screen",
+    "GENERER.command generates recipes only; the photos are PHOTOS.command's, and a missing Draw Things no longer aborts a run"
   ]
 }

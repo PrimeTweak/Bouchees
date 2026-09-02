@@ -70,9 +70,9 @@ const simule = {
     const re = /^\s{2}([a-z0-9_]+)\s+—\s+/gm;
     let m;
     while ((m = re.exec(prompt))) ids.push(m[1]);
-    const mCat = prompt.match(/de catégorie « ([^»]+) »/);
-    const mAge = prompt.match(/Âge minimal visé : (\d+)/);
-    const mN = prompt.match(/^\s+(\d+) recette\(s\)/m);
+    const mCat = prompt.match(/of category "([^"]+)"/);
+    const mAge = prompt.match(/Minimum age: (\d+)/);
+    const mN = prompt.match(/^\s+(\d+) recipe\(s\)/m);
     const category = mCat ? mCat[1].trim() : "Snack";
     const minAgeMonths = mAge ? parseInt(mAge[1], 10) : 12;
     const n = mN ? parseInt(mN[1], 10) : 1;
