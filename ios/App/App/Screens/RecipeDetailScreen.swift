@@ -291,7 +291,14 @@ struct RecipeDetailScreen: View {
                 if let url = p.url, !url.isEmpty {
                     Text(url).font(.caption2.monospaced()).foregroundStyle(.tertiary)
                 }
-                Text("Licence : \(p.license)").font(.caption2).foregroundStyle(.tertiary)
+                Text("Licence: \(p.license)").font(.caption2).foregroundStyle(.tertiary)
+                if recipe.image != nil {
+                    Divider().overlay(Tone.hairline).padding(.vertical, 3)
+                    Text("Photo for illustration — check the ingredients, not the picture.")
+                        .scaledFont(Type.micro)
+                        .foregroundStyle(Tone.text3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .padding(17)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -423,7 +430,7 @@ struct IngredientLine: View {
                  * faintest ink, which is meant for counts and captions, not
                  * for a number someone measures with. */
                 Text(quantity)
-                    .scaledFont(Type.caption, weight: .regular, design: .monospaced)
+                    .scaledFont(Type.caption, design: .monospaced)
                     .foregroundStyle(Tone.text2)
                     .frame(width: 66, alignment: .leading)
 

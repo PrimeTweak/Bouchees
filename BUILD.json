@@ -1,7 +1,10 @@
 {
-  "build": 143,
+  "build": 144,
   "date": "2026-09-02",
   "carries": [
-    "build fix: the Apple receipt fallback used ?? whose right side is an autoclosure, which cannot await; the fallback is spelled out and the checker refuses await inside ?? or assert"
+    "the image exclusions were keyed on French allergen ids the catalogue never had, so none ever applied: that is why four wheat-free patties came back breaded; they use the catalogue's ids and the one the model is most likely to add is stated positively too, since FLUX does not subtract a negative prompt",
+    "a hedge that names an allergen the recipe avoids is now a rejection, not a warning: on that one question the doubt decides against the image",
+    "one recognised ingredient no longer rejects when the dish itself was identified — a muffin hides its banana, and hedging on which nut it might be says nothing about resemblance",
+    "the recipe page carries one line under Source when it has a photo; Family trades two paragraphs for an About screen holding safety, photos, data and licences"
   ]
 }

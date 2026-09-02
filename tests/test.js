@@ -1599,30 +1599,101 @@ test("vision: the shape comes from the servings field too", async () => {
   assert.equal(miche.ok, true, miche.erreurs.join(" / "));
 });
 
-test("vision: an image resembling nothing AND causing hesitation is rejected", async () => {
+test("vision: one ingredient and no dish identified is rejected", async () => {
   const r = parId["banana-oat-muffins"];
-  /* The exact profilee of the orange mush that made it through: one ingredient
-   * vaguely recognised, and the vision listing possibilities. Before the fix
-   * this was only a warning. */
-  const hesitant = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
-    aliments: ["banana"], lisible: true,
-    incertitudes: ["pourrait be du couscous, de la polenta ou du curcuma"] }) };
-  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: hesitant });
-  assert.equal(v.ok, false, "hésitation + un seul ingredient must rejeter");
-  assert(v.erreurs.some((e) => /does not look enough like/.test(e)));
+  const flou = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
+    aliments: ["banana"], lisible: true, incertitudes: ["could be couscous or polenta"] }) };
+  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: flou });
+  assert.equal(v.ok, false, "no dish and one ingredient must reject");
+  assert(v.erreurs.some((e) => /dish was not identified/.test(e)));
 });
 
-test("vision: a single recognised ingredient with no hesitation is accepted", async () => {
+test("vision: a baked dish showing one ingredient passes when the dish IS identified", async () => {
   const r = parId["banana-oat-muffins"];
-  /* Une belle photo de muffins montre « un muffin », pas la banane ni
-   * l'avoine. Il ne faut pas la rejeter pour autant. */
-  const net = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
-    aliments: ["banana"], lisible: true, incertitudes: [] }) };
-  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: net });
+  /* The real photo: muffins with oats on top, the banana and the egg inside.
+   * Hedging on the crumb says nothing about resemblance. */
+  const vrai = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
+    plat: "banana oat muffins", aliments: ["rolled oats"], lisible: true,
+    incertitudes: ["the crumb could suggest oat flour"] }) };
+  const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: vrai });
   assert.equal(v.ok, true, v.erreurs.join(" / "));
-  assert(v.avertissements.some((a) => /weak resemblance/.test(a)));
 });
 
+test("vision: a hedge naming an avoided allergen rejects, certainty or not", async () => {
+  const sansLait = JSON.parse(JSON.stringify(parId["banana-oat-muffins"]));
+  sansLait.ingredients = sansLait.ingredients.filter((i) => i.id !== "cow_milk" && i.id !== "butter");
+  const doute = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
+    plat: "banana oat muffins", aliments: ["rolled oats", "banana"], lisible: true,
+    incertitudes: ["could be butter or oil on top"] }) };
+  const v = await Vision.verifier(Buffer.from("x"), sansLait, data, { moteur: doute });
+  assert.equal(v.ok, false, "a doubt naming milk on a milk-free recipe must reject");
+  assert(v.erreurs.some((e) => /unsure and names/.test(e)));
+});
+
+test("vision: a cooked dish need not show its raw ingredients", async () => {
+  /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
+   * Exiger un ingredient raw rejetait TOUT plat transformé, c'est-à-dire
+   * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
+   * forte que l'ingredient repéré. */
+  const crepes = parId["fluffy-pancakes"];
+  const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
+
+  const cuit = await Vision.verifier(Buffer.from("x"), crepes, data,
+    { moteur: voit(["pancakes", "plate", "butter"], "a stack of pancakes") });
+  assert.equal(cuit.ok, true, cuit.erreurs.join(" / "));
+  assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
+    "l'absence d'ingredient brut must be notée, pas fatale");
+
+  /* Mais sans ingredient ET sans le bon plat, on rejette always. */
+  const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
+    { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
+  assert.equal(rien.ok, false);
+});
+
+test("images: the prompt stays short and names the cooked state", () => {
+  /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
+   * pesaient autant que les deux mots qui disent quel est le plat. */
+  const p = Images.promptPour(parId["fluffy-pancakes"], data).positif;
+  assert(p.length < 500, "prompt trop long : " + p.length + " characters");
+  assert(/cooked and ready to eat/.test(p),
+    "l'état cuit must be dit, sinon FLUX étale les ingredients crus");
+  assert(p.toLowerCase().startsWith("homemade fluffy pancakes"));
+});
+
+test("vision: the DISH must match, not only the ingredients", async () => {
+  /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recipe de
+   * muffins parce que banane, avoine et œuf étaient tous présents. Des
+   * ingredients ne font pas un plat. */
+  const muffins = parId["banana-oat-muffins"];
+  const voit = (plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({
+      aliments: ["banana", "oats", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
+
+  const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
+    { moteur: voit("a bowl of oats with a raw egg") });
+  assert.equal(gruau.ok, false, "un bol de gruau n'est pas des muffins");
+  assert(/does not match/.test(gruau.erreurs.join(" ")));
+
+  const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
+    { moteur: voit("a tray of muffins") });
+  assert.equal(vrais.ok, true, vrais.erreurs.join(" / "));
+});
+
+test("vision: the shape comes from the servings field too", async () => {
+  const pain = parId["banana-bread"];
+  const voit = (plat) => ({ nom: "test", disponible: () => true,
+    decrire: async () => JSON.stringify({
+      aliments: ["banana", "wheat flour", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
+
+  const bol = await Vision.verifier(Buffer.from("x"), pain, data,
+    { moteur: voit("a bowl of porridge") });
+  assert.equal(bol.ok, false, "1 loaf ne se sert pas dans un bol");
+
+  const miche = await Vision.verifier(Buffer.from("x"), pain, data,
+    { moteur: voit("a sliced loaf on a board") });
+  assert.equal(miche.ok, true, miche.erreurs.join(" / "));
+});
 
 /* ---------- codes-barres : ce que la camera tend au serveur (build 121) ---------- */
 

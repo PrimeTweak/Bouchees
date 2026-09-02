@@ -170,18 +170,21 @@ function presentationPour(recipe) {
   return "one shallow bowl, filled to the rim";
 }
 
+/* Keyed on the catalogue's allergen ids. They were French — lait, ble — and
+ * the catalogue says milk, wheat, so no exclusion ever matched: the model
+ * breaded four wheat-free patties by reflex. */
 const EXCLUSIONS = {
-  lait: "no visible cheese, cream or butter",
-  oeuf: "no visible egg",
-  arachide: "no visible peanuts",
-  noix: "no visible tree nuts, whole or chopped",
-  ble: "no visible bread or wheat pasta",
-  soya: "no visible soy sauce",
+  milk: "no visible cheese, cream or butter, no white sauce",
+  egg: "no visible egg, no egg wash or glossy glaze",
+  peanut: "no visible peanuts",
+  tree_nut: "no visible tree nuts, whole or chopped",
+  wheat: "no breadcrumbs or breaded coating, no visible bread or wheat pasta",
+  soy: "no visible soy sauce",
   sesame: "no visible sesame seeds",
-  poisson: "no visible fish",
-  crustaces_mollusques: "no visible shellfish",
-  moutarde: "no visible mustard",
-  sulfites: "no bright orange dried fruit"
+  fish: "no visible fish",
+  shellfish: "no visible shellfish, no shrimp or crab",
+  mustard: "no visible mustard",
+  sulphites: "no bright orange dried fruit"
 };
 
 function nomAnglais(id, catalogue) {
@@ -217,9 +220,24 @@ function promptPour(recipe, data) {
 
   const presents = require(path.join(__dirname, "..", "engine", "engine.js"))
     .analyserAllergenes(recipe, catalogue);
+  /* Only what the model actually confuses with THIS dish: a patty invites
+   * breadcrumbs, a fish dish invites shellfish. Naming all eleven absent
+   * allergens would double the prompt and dilute the subject. */
+  const REFLEXES = {
+    wheat: /pattie|cake|nugget|croquette|ball|bite|fritter/i,
+    egg: /pattie|cake|muffin|bread|pancake|fritter/i,
+    milk: /puree|soup|sauce|pasta|risotto|oatmeal|mash|rice/i,
+    shellfish: /fish|salmon|risotto|rice|paella/i,
+    fish: /pasta|rice|patty|cake/i
+  };
   const exclusions = Object.keys(EXCLUSIONS)
     .filter(function (id) { return presents.indexOf(id) === -1; })
-    .map(function (id) { return EXCLUSIONS[id]; });
+    .filter(function (id) { return REFLEXES[id] && REFLEXES[id].test(recipe.name); })
+    .map(function (id) { return EXCLUSIONS[id]; })
+    /* One only: past 500 characters the style clause at the end is what the
+     * model drops, and the photo stops looking like the others. The negative
+     * prompt still carries every absent allergen. */
+    .slice(0, 1);
 
   const g = graine(recipe.id);
   const cadrage = CADRAGES[g % CADRAGES.length];
@@ -253,9 +271,14 @@ function promptPour(recipe, data) {
       /* Named imperfections, before the style block. The subject still
        * leads; these say the picture was taken, not assembled. */
       marks,
+      /* Stated positively too: FLUX is distilled without negative guidance,
+       * so a negative prompt alone is not subtracted. */
+      exclusions.length ? exclusions.join(", ") : null,
       STYLE
-    ].join(". "),
-    negatif: NEGATIF + ", " + exclusions.join(", "),
+    ].filter(Boolean).join(". "),
+    negatif: NEGATIF + ", " + Object.keys(EXCLUSIONS)
+      .filter(function (id) { return presents.indexOf(id) === -1; })
+      .map(function (id) { return EXCLUSIONS[id]; }).join(", "),
     /* Passed to the vision check so it can be asked whether the image looks
      * like THIS dish, not merely whether the ingredients are present. */
     plat: recipe.name,

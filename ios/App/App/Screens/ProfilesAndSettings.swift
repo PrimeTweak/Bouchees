@@ -232,6 +232,7 @@ struct SettingsScreen: View {
     @Environment(AppState.self) private var app
     @State private var showPaywall = false
     @State private var reminderOn = WeeklyReminder.enabled
+    @State private var showAbout = false
     @State private var email = ""
     @State private var accountMessage: String?
 
@@ -365,16 +366,24 @@ struct SettingsScreen: View {
         }
     }
 
+    /// One row instead of two paragraphs. The notices live in About, where
+    /// the App Store ones will go too.
     private var footnotes: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
+            Button { showAbout = true } label: {
+                SettingRow(title: "About & notices", value: "")
+            }
+            .buttonStyle(.plain)
+            .card()
             Text("Your children's profiles stay on this device and are never sent anywhere.")
-            Text(Settings.medicalDisclaimer)
+                .scaledFont(Type.label)
+                .foregroundStyle(Tone.text3)
+                .lineSpacing(2)
+                .padding(.horizontal, 5)
+                .padding(.top, 16)
         }
-        .scaledFont(Type.label)
-        .foregroundStyle(Tone.text3)
-        .lineSpacing(2)
-        .padding(.horizontal, 5)
         .padding(.top, 20)
+        .sheet(isPresented: $showAbout) { AboutScreen() }
     }
 
     private func childSummary(_ p: ChildProfile) -> String {
@@ -632,5 +641,62 @@ struct SettingRow: View {
         }
         .padding(15)
         .contentShape(Rectangle())
+    }
+}
+
+/// The notices, in one place: safety, photos, data, licences.
+struct AboutScreen: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
+
+                section("Safety", Settings.medicalDisclaimer)
+                section("Photos", String(localized: """
+                    Recipe photos are illustrations and may be improved by AI. \
+                    They can differ from what you make.
+
+                    The ingredients, the quantities and the allergen verdict never \
+                    come from a photo — they come from the recipe itself.
+                    """))
+                section("Your data", String(localized:
+                    "Your children's profiles stay on this device and are never sent anywhere."))
+                section("Licences", String(localized: """
+                    Product data: Open Food Facts (ODbL) and USDA FoodData Central (CC0).
+                    """))
+
+                Link("Terms", destination: Settings.terms)
+                    .scaledFont(Type.caption, weight: .semibold)
+                    .foregroundStyle(Tone.brand)
+                    .padding(.top, 18)
+                Link("Privacy", destination: Settings.privacy)
+                    .scaledFont(Type.caption, weight: .semibold)
+                    .foregroundStyle(Tone.brand)
+                    .padding(.top, 8)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 26)
+            .padding(.bottom, 40)
+        }
+        .background(Tone.canvas.ignoresSafeArea())
+        .presentationDragIndicator(.visible)
+    }
+
+    private func section(_ heading: String, _ body: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(heading).eyebrow()
+            Text(body)
+                .scaledFont(Type.caption)
+                .foregroundStyle(Tone.text2)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(15)
+        .background(Tone.text.opacity(0.04),
+                    in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.top, 18)
     }
 }

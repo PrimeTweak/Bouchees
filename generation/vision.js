@@ -235,6 +235,23 @@ function comparer(description, recipe, data) {
     });
   });
 
+  /* 1b. A HEDGE THAT NAMES AN AVOIDED ALLERGEN IS A REJECTION.
+   *     "could be butter or oil" on a milk-free recipe used to pass as a
+   *     warning. On this one question the doubt decides against the image:
+   *     a parent must never see a photo that might show what they avoid. */
+  description.incertitudes.forEach(function (doute) {
+    normaliser(doute).split(/[^a-z]+/).forEach(function (mot) {
+      if (mot.length < 4) return;
+      famillesDe(mot).forEach(function (famille) {
+        if (presentes.indexOf(famille) !== -1) return;
+        const name = data.base.allergens.find(function (a) { return a.id === famille; });
+        const msg = "the vision is unsure and names \"" + mot + "\" — the recipe contains no " +
+          (name ? name.name.toLowerCase() : famille);
+        if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
+      });
+    });
+  });
+
   /* 2. Choking hazards, whatever the allergens are. */
   Object.keys(RISQUES_VISUELS).forEach(function (risque) {
     const touches = RISQUES_VISUELS[risque].filter(function (mot) {
@@ -305,15 +322,15 @@ function comparer(description, recipe, data) {
   } else if (!reconnus.length && platReconnu) {
     avertissements.push("no raw ingredient visible — normal for a cooked dish, " +
       "the dish itself was identified");
+  } else if (reconnus.length < 2 && principaux.length >= 4 && !platReconnu) {
+    /* One ingredient is normal for a baked dish: a muffin shows its oats and
+     * hides the banana. What matters is whether the DISH was identified;
+     * hedging on which vegetable it is says nothing about resemblance. */
+    erreurs.push("only one ingredient recognised out of " + principaux.length +
+      " and the dish was not identified as " + recipe.name);
   } else if (reconnus.length < 2 && principaux.length >= 4) {
-        /* One ingredient recognised is sometimes legitimate: in a photo of
-     * muffins on voit « muffin », pas la banane ni l'avoine. */
-    if (description.incertitudes.length) {
-      erreurs.push("only one ingredient recognised out of " + principaux.length +
-        ", and the vision hedges — the image does not look enough like the recipe");
-    } else {
-      avertissements.push("only one ingredient recognised out of " + principaux.length + " — weak resemblance");
-    }
+    avertissements.push("only one ingredient recognised out of " + principaux.length +
+      " — normal for a baked dish, the dish itself was identified");
   }
 
   if (description.incertitudes.length)
