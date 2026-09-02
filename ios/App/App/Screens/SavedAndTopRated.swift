@@ -206,7 +206,9 @@ struct RatingBlock: View {
                 }
             }
 
-            if app.subscription.serverToken == nil {
+            if app.subscription.serverToken == nil && summary?.myRating != nil {
+                /* Only once something was rated: before that it explains a
+                 * send that has not happened. */
                 Text("Kept on this phone. It joins the shared ranking once you sign in with Apple, in the App Store version.")
                     .font(.caption)
                     .foregroundStyle(.secondary)

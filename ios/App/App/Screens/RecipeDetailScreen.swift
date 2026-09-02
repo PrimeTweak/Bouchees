@@ -6,6 +6,7 @@ import SwiftUI
 struct RecipeDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var cooking = false
+    @State private var showAbout = false
     @State private var openRule: AdaptedIngredient?
     let recipe: Recipe
     let result: AdaptedRecipe
@@ -67,21 +68,7 @@ struct RecipeDetailScreen: View {
                     blocPreparation
                     RatingBlock(recipe: recipe)
                     blocProvenance
-                    /* Independent of the source block: most cards carry a
-                     * photo and no provenance, and the notice belongs to the
-                     * photo. */
-                    if recipe.image != nil {
-                        Text("Photo for illustration — check the ingredients, not the picture.")
-                            .scaledFont(Type.micro)
-                            .foregroundStyle(Tone.text3)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, 14)
-                    }
-                    Text(Settings.medicalDisclaimer)
-                        .scaledFont(Type.label)
-                        .foregroundStyle(Tone.text3)
-                        .lineSpacing(2)
-                        .padding(.top, 28)
+                    noticeRow
                 }
                 .padding(.horizontal, Layout.gutter)
                 .padding(.top, 4)
@@ -115,6 +102,7 @@ struct RecipeDetailScreen: View {
          * Adding a ToolbarItem beside it gave two — mine and the platform's,
          * side by side. */
         .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showAbout) { AboutScreen() }
         .sheet(item: $openRule) { item in
             SubstitutionRuleSheet(item: item)
         }
@@ -286,6 +274,46 @@ struct RecipeDetailScreen: View {
         guard let premier = nombres.first else { return nil }
         if nombres.count > 1 { return "\(premier)–\(nombres[1]) min" }
         return "\(premier) min"
+    }
+
+    /// The notices, as one row rather than eleven lines of grey. A tap opens
+    /// About, where the full text lives for both this screen and Family.
+    private var noticeRow: some View {
+        Button { showAbout = true } label: {
+            HStack(spacing: 9) {
+                Image(systemName: "info")
+                    .scaledFont(Type.label, weight: .bold)
+                    .foregroundStyle(Tone.text3)
+                    .frame(width: 22, height: 22)
+                    .background(Tone.text3.opacity(0.14), in: Circle())
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Not medical advice")
+                        .scaledFont(Type.caption, weight: .medium)
+                        .foregroundStyle(Tone.text)
+                    Text(recipe.image != nil
+                         ? "Photo for illustration · swaps from versioned tables"
+                         : "Swaps and age guidance from versioned tables")
+                        .scaledFont(Type.micro)
+                        .foregroundStyle(Tone.text3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 6)
+                Image(systemName: "chevron.right")
+                    .scaledFont(Type.micro, weight: .semibold)
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Tone.text.opacity(0.035),
+                        in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Tone.hairline, lineWidth: 0.5)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 18)
     }
 
     @ViewBuilder
