@@ -4,6 +4,7 @@
 
 import SwiftUI
 import StoreKit
+import UIKit
 
 // MARK: - Profiles
 
@@ -375,12 +376,6 @@ struct SettingsScreen: View {
             }
             .buttonStyle(.plain)
             .card()
-            Text("Your children's profiles stay on this device and are never sent anywhere.")
-                .scaledFont(Type.label)
-                .foregroundStyle(Tone.text3)
-                .lineSpacing(2)
-                .padding(.horizontal, 5)
-                .padding(.top, 16)
         }
         .padding(.top, 20)
         .sheet(isPresented: $showAbout) { AboutScreen() }
@@ -667,22 +662,33 @@ struct AboutScreen: View {
                     Product data: Open Food Facts (ODbL) and USDA FoodData Central (CC0).
                     """))
 
-                Link("Terms", destination: Settings.terms)
-                    .scaledFont(Type.caption, weight: .semibold)
-                    .foregroundStyle(Tone.brand)
-                    .padding(.top, 18)
-                Link("Privacy", destination: Settings.privacy)
-                    .scaledFont(Type.caption, weight: .semibold)
-                    .foregroundStyle(Tone.brand)
-                    .padding(.top, 8)
+                HStack(spacing: 22) {
+                    Link("Terms", destination: Settings.terms)
+                    Link("Privacy", destination: Settings.privacy)
+                }
+                .scaledFont(Type.body, weight: .semibold)
+                .foregroundStyle(Tone.brand)
+                .padding(.top, 20)
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.top, 26)
-            .padding(.bottom, 40)
+            .padding(.bottom, 34)
+            .background {
+                GeometryReader { geo in
+                    Color.clear.onAppear { hauteur = geo.size.height }
+                        .onChange(of: geo.size.height) { _, h in hauteur = h }
+                }
+            }
         }
         .background(Tone.canvas.ignoresSafeArea())
+        /* Sized to its content, like the other sheets. */
+        .presentationDetents(hauteur > 0
+            ? [.height(min(max(hauteur, 320), UIScreen.main.bounds.height * 0.92)), .large]
+            : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
+
+    @State private var hauteur: CGFloat = 0
 
     private func section(_ heading: String, _ body: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {

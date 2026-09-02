@@ -630,6 +630,9 @@ final class AppState {
         var garder = Set<String>()
         for r in recipes + saved.recipes + topRated {
             if let f = r.image { garder.insert(f) }
+            /* The thumbnail too: it is a separate file, and pruning without
+             * it deleted every list thumbnail on each sync. */
+            if let t = r.thumb { garder.insert(t) }
         }
         await PhotoCache.partage.nettoyer(garder: garder)
     }

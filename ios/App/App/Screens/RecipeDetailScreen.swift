@@ -67,6 +67,16 @@ struct RecipeDetailScreen: View {
                     blocPreparation
                     RatingBlock(recipe: recipe)
                     blocProvenance
+                    /* Independent of the source block: most cards carry a
+                     * photo and no provenance, and the notice belongs to the
+                     * photo. */
+                    if recipe.image != nil {
+                        Text("Photo for illustration — check the ingredients, not the picture.")
+                            .scaledFont(Type.micro)
+                            .foregroundStyle(Tone.text3)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, 14)
+                    }
                     Text(Settings.medicalDisclaimer)
                         .scaledFont(Type.label)
                         .foregroundStyle(Tone.text3)
@@ -292,13 +302,6 @@ struct RecipeDetailScreen: View {
                     Text(url).font(.caption2.monospaced()).foregroundStyle(.tertiary)
                 }
                 Text("Licence: \(p.license)").font(.caption2).foregroundStyle(.tertiary)
-                if recipe.image != nil {
-                    Divider().overlay(Tone.hairline).padding(.vertical, 3)
-                    Text("Photo for illustration — check the ingredients, not the picture.")
-                        .scaledFont(Type.micro)
-                        .foregroundStyle(Tone.text3)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
             }
             .padding(17)
             .frame(maxWidth: .infinity, alignment: .leading)

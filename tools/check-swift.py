@@ -1023,7 +1023,8 @@ def await_dans_autoclosure():
     for path in swift_files():
         for i, ligne in enumerate(open(path, encoding="utf-8").read().split("\n"), 1):
             code = re.sub(r"//.*", "", ligne)
-            if re.search(r"\?\?[^\n]*\bawait\b", code) or re.search(r"\b(assert|precondition)\([^\n]*\bawait\b", code):
+            # Only when an await actually sits to the RIGHT of the ??.
+            if re.search(r"\?\?[^\n]*\bawait\s", code) or re.search(r"\b(assert|precondition)\([^\n]*\bawait\s", code):
                 out.append(f"{os.path.basename(path)}:{i}: await inside an autoclosure — ?? and assert cannot await; spell the fallback out")
     return out
 

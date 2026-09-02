@@ -29,6 +29,13 @@ struct RecipeVisual: View {
     }
 
     /// True when the picture is of the dish BEFORE the swaps.
+    /// What the load depends on: the file, or the id when there is none.
+    private var photoKey: String {
+        if let t = recipe.thumb { return t }
+        if let i = recipe.image { return i }
+        return recipe.id
+    }
+
     private var photoDuPlatOriginal: Bool {
         photoPertinente && result.status != .asIs
     }
@@ -48,7 +55,9 @@ struct RecipeVisual: View {
                             result: result, category: recipe.category)
             }
         }
-        .task(id: recipe.id) { await load() }
+        /* Keyed on the photo: a card arrives without one and gains one at the
+         * next sync. Keyed on the id, the view never looked again. */
+        .task(id: photoKey) { await load() }
         .animation(.soft(0.2), value: photo != nil)
     }
 
@@ -82,7 +91,10 @@ struct RecipeVisual: View {
     }
 
     private func load() async {
-        guard photoPertinente, photo == nil, let full = recipe.image else { return }
+        /* No `photo == nil` guard: the task runs again when the file name
+         * changes, and the old picture has to give way to the new one. */
+        guard photoPertinente, let full = recipe.image else { return }
+        echec = false
         /* Under 160pt the list only needs the 480px twin; 3 MB for a 60pt
          * thumbnail is what made the first sync cost 45 MB on cellular. */
         let file = (compact && recipe.thumb != nil) ? recipe.thumb! : full
