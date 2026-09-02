@@ -127,7 +127,7 @@
   {
     "id": "soft-apricot-granola",
     "name": "Soft apricot granola",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "8 portions",
     "minAgeMonths": 12,
     "timeMinutes": 30,
@@ -469,7 +469,7 @@
   {
     "id": "banana-oat-pancakes",
     "name": "Banana oat pancakes",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "8 portions",
     "minAgeMonths": 6,
     "timeMinutes": 20,

@@ -22,10 +22,12 @@ enum Resources {
         return try Data(contentsOf: u)
     }
 
-    /// The free batches shipped inside the app.
-    static func bundledBatches() -> [URL] {
-        let folder = Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Bundled/batches")
-        return folder ?? []
+    /// The catalogue shipped inside the app, and the free bodies with it.
+    static func bundledCatalogue() -> URL? {
+        Bundle.main.url(forResource: "catalogue", withExtension: "json", subdirectory: "Bundled")
+    }
+    static func bundledBodies() -> [URL] {
+        Bundle.main.urls(forResourcesWithExtension: "json", subdirectory: "Bundled/recipes") ?? []
     }
 }
 
@@ -83,17 +85,17 @@ final class LocalStore {
 
     /* Ticked items, per week. A shopping list without memory is useless in an
      * aisle — you put the phone away to pick something up and lose your place.
-     * Keyed by batch so a new week starts clean on its own. */
+     * Keyed by week index so a new week starts clean on its own. */
     /// The week plan, per batch. Moving a recipe to another day has to
     /// survive a relaunch — it is a decision the parent made.
-    func saveWeekPlan(_ plan: WeekPlan, batch: String) {
+    func saveWeekPlan(_ plan: WeekPlan, week: Int) {
         let paires = plan.days.map { ["day": $0.key, "ids": $0.value] as [String: Any] }
         guard let d = try? JSONSerialization.data(withJSONObject: paires) else { return }
-        try? d.write(to: folder.appendingPathComponent("plan-\(batch).json"), options: .atomic)
+        try? d.write(to: folder.appendingPathComponent("plan-w\(week).json"), options: .atomic)
     }
 
-    func loadWeekPlan(batch: String) -> WeekPlan? {
-        guard let d = try? Data(contentsOf: folder.appendingPathComponent("plan-\(batch).json")),
+    func loadWeekPlan(week: Int) -> WeekPlan? {
+        guard let d = try? Data(contentsOf: folder.appendingPathComponent("plan-w\(week).json")),
               let rawText = try? JSONSerialization.jsonObject(with: d) as? [[String: Any]]
         else { return nil }
         var days: [Int: [String]] = [:]
@@ -153,7 +155,6 @@ final class LocalStore {
 
     private var profilesFile: URL { folder.appendingPathComponent("profiles.json") }
     private var recipesFile: URL { folder.appendingPathComponent("recipes.json") }
-    private var batchesFile: URL { folder.appendingPathComponent("batches.json") }
 
     // Profiles — never sent anywhere.
 
@@ -195,17 +196,41 @@ final class LocalStore {
         try? d.write(to: recipesFile, options: .atomic)
     }
 
-    func readBatches() -> [Batch]? {
-        guard let d = try? Data(contentsOf: batchesFile) else { return nil }
-        return try? JSONDecoder().decode([Batch].self, from: d)
+    // The sequence: a seed and an epoch, made once; the days already shown.
+
+    /// The seed, drawn on first use. Not a secret: it makes this device's
+    /// sequence its own, nothing more.
+    func sequenceSeed() -> UInt64 {
+        if let s = UserDefaults.standard.string(forKey: "sequenceSeed"), let v = UInt64(s) { return v }
+        let v = UInt64.random(in: 1...UInt64.max)
+        UserDefaults.standard.set(String(v), forKey: "sequenceSeed")
+        return v
     }
 
-    func writeBatches(_ batches: [Batch]) {
-        guard let d = try? JSONEncoder().encode(batches) else { return }
-        try? d.write(to: batchesFile, options: .atomic)
+    /// Day zero: the Monday of the week of first use.
+    func sequenceEpoch() -> Date {
+        if let t = UserDefaults.standard.object(forKey: "sequenceEpoch") as? Double { return Date(timeIntervalSince1970: t) }
+        let cal = Calendar.current
+        let monday = cal.date(byAdding: .day, value: -WeekDay.today, to: cal.startOfDay(for: Date())) ?? Date()
+        UserDefaults.standard.set(monday.timeIntervalSince1970, forKey: "sequenceEpoch")
+        return monday
     }
 
-    var hasContent: Bool { fm.fileExists(atPath: recipesFile.path) }
+    private var historyFile: URL { folder.appendingPathComponent("sequence-history.json") }
+
+    func readHistory() -> [Int: DayPick] {
+        guard let d = try? Data(contentsOf: historyFile),
+              let raw = try? JSONDecoder().decode([String: DayPick].self, from: d) else { return [:] }
+        var out: [Int: DayPick] = [:]
+        for (k, v) in raw { if let i = Int(k) { out[i] = v } }
+        return out
+    }
+
+    func writeHistory(_ h: [Int: DayPick]) {
+        let raw = Dictionary(uniqueKeysWithValues: h.map { (String($0.key), $0.value) })
+        guard let d = try? JSONEncoder().encode(raw) else { return }
+        try? d.write(to: historyFile, options: .atomic)
+    }
 }
 
 // MARK: - Serveur
@@ -245,10 +270,17 @@ actor RemoteStore {
         try await execute(ManifestResponse.self, request("api/manifest", token: token))
     }
 
-    /// The server returns only the batches the account is entitled to. The
-    /// client filters nothing: a wall on the client is not a wall.
-    func recipes(token: String?) async throws -> RecipesResponse {
-        try await execute(RecipesResponse.self, request("api/recipes", token: token))
+    /// The public catalogue: every card, no body.
+    func catalogue() async throws -> CatalogueResponse {
+        try await execute(CatalogueResponse.self, request("api/catalogue", token: nil))
+    }
+
+    /// Bodies by id. The server hands over only what the account is entitled
+    /// to and answers 402 otherwise; the client filters nothing.
+    func recipes(ids: [String], token: String?) async throws -> RecipesResponse {
+        try await execute(RecipesResponse.self,
+            request("api/recipes", token: token,
+                    items: [URLQueryItem(name: "ids", value: ids.joined(separator: ","))]))
     }
 
     func ratings(ids: [String], token: String?) async throws -> [String: RatingSummary] {

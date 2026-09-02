@@ -48,6 +48,8 @@ function valider(r, commande, data, idsExistants) {
   const fuite = presents.filter(function (x) { return evite.indexOf(x) !== -1; });
   if (fuite.length) e.push("contient un allergène que la commande exclut : " + fuite.join(", "));
 
+  if (r.category !== "Meal" && r.category !== "Snack")
+    e.push("category must be Meal or Snack, not \"" + r.category + "\"");
   if (commande && commande.categories && commande.categories.indexOf(r.category) === -1)
     a.push("catégorie « " + r.category + " » différente de la commande (" + commande.categories.join("/") + ")");
   if (commande && r.minAgeMonths > commande.ageMois)

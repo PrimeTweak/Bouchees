@@ -11,7 +11,7 @@ const REQUIRED = [
   "data/ingredients.json", "data/substitutions.json", "data/base.json", "data/label-lexicon.json", "tools/preflight.js", "PHOTOS.command", "tools/check-prompts.js", "docs/PROMPT-CONVENTION.md",
   "data/recipes.json", "data/publishing.json",
   "data/imported/imported-recipes.json", "data/generated/generated-recipes.json",
-  "tools/gaps.js", "tools/publish.js", "tools/weeks.js", "tools/cycle.js",
+  "tools/gaps.js", "tools/publish.js", "tools/cycle.js",
   "tools/manual-import.js", "tools/check-swift.py", "tools/check-repo.js", "tools/check-decoding.js", "BUILD.json", "tools/check-agreement.js", "tools/image-sizes.js", "tools/probe-drawthings.js", "tools/check-bundle-names.js", "tools/build-product-pack.js", "tools/check-pack.js", "PAQUET.command", "docs/DATA-SOURCES.md", "ios/App/App/PrivacyInfo.xcprivacy", "ios/App/App/Services/WeeklyReminder.swift", "PHOTOS-REDUIRE.command", "ios/App/App/Localization/en.lproj/InfoPlist.strings", "ios/App/App/Localization/fr.lproj/InfoPlist.strings",
   "server/server.js", "server/ratings.js", "server/apple.js", "server/stripe.js",
   "server/legal-pages.js",

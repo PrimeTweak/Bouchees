@@ -1,11 +1,15 @@
 {
-  "build": 126,
-  "date": "2026-09-01",
+  "build": 127,
+  "date": "2026-09-02",
   "carries": [
-    "cumulative: 123, 124, 125 and this",
-    "the Everyone control on the scanner wears the pill's own glass at the pill's own height, tinted brand when active; it was a flat 30pt capsule beside a 46pt glass one",
-    "fifty-nine more comment blocks realigned to the code they precede",
-    "the launch screen waits only for local work; the sync runs after it",
-    "a sync message is a chip beside the child pill; the banner and its view are gone"
+    "cumulative: 123 to 126 and the pool",
+    "one pool of recipes, each a meal or a snack; breakfasts and desserts are snacks; no batches, no window",
+    "publishing writes a public catalogue with each recipe's allergens and an adaptability matrix from the engine, and one body file per recipe",
+    "the server serves the catalogue to everyone and a body only when free or subscribed; a refused request sends nothing, tested on a live instance",
+    "each device follows its own sequence: a seed, a day zero, a meal and a snack per day, a sixteen-week rotation with a whole-pool fallback while the pool is small, the first two weeks from the free recipes, past days frozen",
+    "the hero is today's meal; every week shows its days, a locked recipe with its name and a verdict from the matrix",
+    "search runs its four cuts over what the account can open: the free tier and its two weeks, or the whole pool for a subscriber, whose sync fetches every body",
+    "the cycle, the manual import and the gaps report feed and measure the pool against 112 meals and 112 snacks",
+    "a JavaScript twin of the sequence proves its four properties in the suite"
   ]
 }

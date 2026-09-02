@@ -145,12 +145,9 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     let servings: String?
     let minAgeMonths: Int
     let timeMinutes: Int?
+    /// The body. Empty on a catalogue card until the server hands it over.
     let ingredients: [RecipeIngredient]
     let steps: [String]
-    /* The published field is `batch`. This property was called `lot` and so
-     * decoded to nil on every recipe, silently — which is why filtering a
-     * week by it always came back empty. */
-    let batch: String?
     let source: RecipeSource?
 
     /// Filename of a reviewed photo, set by publishing. Absent until a photo
@@ -159,10 +156,62 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
     /// A 480px version for thumbnails, when the pipeline made one.
     let thumb: String?
 
+    /// Card fields from the catalogue: served to everyone, no body needed.
+    let free: Bool?
+    let allergens: [String]?
+    /// Per allergen family: as_is, adapted or not_adaptable, from the engine.
+    let adaptability: [String: String]?
+
     /// Rating summary, present only in the Top rated response.
     let votes: Int?
     let average: Double?
     let myRating: Int?
+
+    /// True once the ingredients and steps are here.
+    var hasBody: Bool { !steps.isEmpty }
+    var isMeal: Bool { category == "Meal" }
+    var isSnack: Bool { category == "Snack" }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, category, servings, minAgeMonths, timeMinutes, ingredients, steps,
+             source, image, thumb, free, allergens, adaptability, votes, average, myRating
+    }
+
+    /// A card decodes without a body: the two lists default to empty.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        category = try c.decode(String.self, forKey: .category)
+        servings = try c.decodeIfPresent(String.self, forKey: .servings)
+        minAgeMonths = try c.decode(Int.self, forKey: .minAgeMonths)
+        timeMinutes = try c.decodeIfPresent(Int.self, forKey: .timeMinutes)
+        ingredients = try c.decodeIfPresent([RecipeIngredient].self, forKey: .ingredients) ?? []
+        steps = try c.decodeIfPresent([String].self, forKey: .steps) ?? []
+        source = try c.decodeIfPresent(RecipeSource.self, forKey: .source)
+        image = try c.decodeIfPresent(String.self, forKey: .image)
+        thumb = try c.decodeIfPresent(String.self, forKey: .thumb)
+        free = try c.decodeIfPresent(Bool.self, forKey: .free)
+        allergens = try c.decodeIfPresent([String].self, forKey: .allergens)
+        adaptability = try c.decodeIfPresent([String: String].self, forKey: .adaptability)
+        votes = try c.decodeIfPresent(Int.self, forKey: .votes)
+        average = try c.decodeIfPresent(Double.self, forKey: .average)
+        myRating = try c.decodeIfPresent(Int.self, forKey: .myRating)
+    }
+
+    /// The card, with a body merged in.
+    func with(body: Recipe) -> Recipe {
+        Recipe(card: self, ingredients: body.ingredients, steps: body.steps)
+    }
+
+    init(card: Recipe, ingredients: [RecipeIngredient], steps: [String]) {
+        id = card.id; name = card.name; category = card.category; servings = card.servings
+        minAgeMonths = card.minAgeMonths; timeMinutes = card.timeMinutes
+        self.ingredients = ingredients; self.steps = steps
+        source = card.source; image = card.image; thumb = card.thumb
+        free = card.free; allergens = card.allergens; adaptability = card.adaptability
+        votes = card.votes; average = card.average; myRating = card.myRating
+    }
 
     var subtitle: String {
         var bouts = [category]
@@ -304,29 +353,17 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
     }
 }
 
-// MARK: - Lots et subscription
-
-struct Batch: Codable, Hashable, Identifiable, Sendable {
-    let id: String
-    let title: String
-    let date: String?
-    let access: String
-    let note: String?
-    let count: Int
-    var unlocked: Bool
-    var weekly: Bool?
-    var inWindow: Bool?
-
-    var isFree: Bool { access == "libre" }
-    var isWeekly: Bool { weekly ?? false }
-}
+// MARK: - Catalogue and subscription
 
 struct ManifestResponse: Codable, Sendable {
     let version: String?
     let subscribed: Bool?
-    let currentWeek: String?
-    let windowSize: Int?
-    let batches: [Batch]
+    let rotationWeeks: Int?
+    let catalogueChecksum: String?
+}
+
+struct CatalogueResponse: Codable, Sendable {
+    let catalogue: [Recipe]
 }
 
 /// Summary returned by /api/ratings — the public total, plus my own rating.
@@ -343,8 +380,8 @@ struct TopRatedResponse: Codable, Sendable {
 
 struct RecipesResponse: Codable, Sendable {
     let subscribed: Bool?
-    let batches: [String]?
     let recipes: [Recipe]
+    let unknown: [String]?
 }
 
 // MARK: - Substitution table, for display
@@ -456,8 +493,6 @@ struct WeekPlan: Codable, Equatable {
 struct WeekSlot: Identifiable, Hashable {
     /// -1 past, 0 current, +1 next. The id, since only three exist.
     let offset: Int
-    /// The batch this week draws from, when there is one.
-    let batchID: String?
     /// How many recipes it holds — shown even when the week is locked.
     let count: Int
     /// False when the parent has to subscribe to open it.

@@ -2,7 +2,7 @@
   {
     "id": "coconut-rice-pudding-with-mango",
     "name": "Coconut rice pudding with mango",
-    "category": "Dessert",
+    "category": "Snack",
     "servings": "4 servings",
     "minAgeMonths": 6,
     "timeMinutes": 35,
@@ -53,7 +53,7 @@
   {
     "id": "apple-and-date-cinnamon-sauce",
     "name": "Apple and date cinnamon sauce",
-    "category": "Dessert",
+    "category": "Snack",
     "servings": "4 servings",
     "minAgeMonths": 6,
     "timeMinutes": 25,
@@ -296,7 +296,7 @@
   {
     "id": "creamy-mango-oatmeal",
     "name": "Creamy mango oatmeal",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "4 servings",
     "minAgeMonths": 6,
     "timeMinutes": 15,
@@ -347,7 +347,7 @@
   {
     "id": "tender-rice-flour-crepes",
     "name": "Tender rice flour crêpes",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "8 crêpes",
     "minAgeMonths": 6,
     "timeMinutes": 25,

@@ -43,131 +43,121 @@ final class AppState {
         let chosen: Bool
     }
 
-    /// The batches were always weekly; nothing in the UI ever showed it.
-    /// `currentWeek` already holds the batch id, straight from the manifest.
+    /// The parent's overrides on the sequence, per week index.
     var plan: WeekPlan = .empty
 
     /// The day the strip is showing. Starts on today.
-    ///
-    /// Kept for the drag-and-drop and for Shopping, which still groups by day.
     var selectedDay: Int = WeekDay.today
 
     /// Which week the rail is showing: -1 past, 0 current, +1 next.
     var selectedWeek: Int = 0
 
-    /// The three weeks the rail offers: built from the manifest rather than
-    /// guessed: the batch ids carry the ISO week, and `unlocked` is what the
-    /// server already decided.
-    var weekSlots: [WeekSlot] {
-        let ouvertes = batches.filter { $0.unlocked }.map(\.id)
-        let courante = currentBatchID
-        let index = courante.flatMap { id in batches.firstIndex { $0.id == id } }
+    /// The sequence this device follows, and the days it has already shown.
+    private(set) var sequence = RecipeSequence(seed: 1, epoch: Date(), rotationWeeks: 16)
+    private(set) var history: [Int: DayPick] = [:]
 
-        return [-1, 0, 1].map { decalage -> WeekSlot in
-            guard let i = index else {
-                return WeekSlot(offset: decalage, batchID: nil, count: 0,
-                                unlocked: decalage == 0)
-            }
-            let j = i + decalage
-            guard j >= 0, j < batches.count else {
-                return WeekSlot(offset: decalage, batchID: nil, count: 0,
-                                unlocked: false)
-            }
-            let lot = batches[j]
-            let n = recipes.filter { $0.batch == lot.id }.count
-            return WeekSlot(offset: decalage, batchID: lot.id,
-                            count: n > 0 ? n : lot.count,
-                            unlocked: ouvertes.contains(lot.id))
+    /// The day index of today in the sequence.
+    var todayIndex: Int { sequence.dayIndex(of: Date()) }
+
+    /// The Monday index of the week the rail shows.
+    private func weekStart(_ offset: Int) -> Int { todayIndex - WeekDay.today + offset * 7 }
+
+    /// The two ids the sequence puts on a day of a week; overrides applied
+    /// on the current week only.
+    func picks(week offset: Int) -> [Int: DayPick] {
+        let start = weekStart(offset)
+        let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)"
+        if let hit = picksCache[key] { return hit }
+        let out = sequence.picks(from: start, to: start + 6, pool: recipes, history: history)
+        if picksCache.count > 12 { picksCache.removeAll() }
+        picksCache[key] = out
+        return out
+    }
+    /// The weeks already computed; the key moves with the pool and the history.
+    @ObservationIgnored private var picksCache: [String: [Int: DayPick]] = [:]
+
+    /// The three weeks the rail offers. A week is unlocked when every body
+    /// it needs is here; a locked week still shows its names.
+    var weekSlots: [WeekSlot] {
+        [-1, 0, 1].map { offset in
+            let ids = picks(week: offset).values.flatMap { [$0.meal, $0.snack] }.compactMap { $0 }
+            let known = ids.compactMap { id in recipes.first { $0.id == id } }
+            return WeekSlot(offset: offset, count: known.count,
+                            unlocked: !known.isEmpty && known.allSatisfy { $0.hasBody })
         }
     }
 
-    /// The slot the rail has selected.
     var currentSlot: WeekSlot {
-        weekSlots.first { $0.offset == selectedWeek }
-            ?? WeekSlot(offset: 0, batchID: currentBatchID, count: 0, unlocked: true)
+        weekSlots.first { $0.offset == selectedWeek } ?? WeekSlot(offset: 0, count: 0, unlocked: true)
     }
 
-    /// The recipes of the week the rail is showing: a locked week still
-    /// returns its recipes: the list shows names, times and verdicts, and
-    /// hides the rest.
-    var selectedWeekRecipes: [Recipe] {
-        guard selectedWeek != 0 else { return weekRecipes }
-        guard let id = currentSlot.batchID else { return [] }
-        return recipes.filter { $0.batch == id }
-    }
-
-    /// Which recipes fall on a day of the SELECTED week: the plan is stored
-    /// for the current week only — a parent does not rearrange a week they
-    /// cannot open.
+    /// One day of the selected week: the meal first, then the snack. On the
+    /// current week the parent's moves apply.
     func recipesOfSelectedWeek(on day: Int) -> [Recipe] {
         if selectedWeek == 0 { return recipes(on: day) }
-        let dishes = selectedWeekRecipes
-        guard !dishes.isEmpty else { return [] }
-        /* Weeknights first, the same shape the plan uses: five days carry a
-         * recipe, two are left open on purpose. */
-        return dishes.enumerated().compactMap { i, r in
-            WeekPlan.defaultDay(forIndex: i) == day ? r : nil
-        }
+        guard let p = picks(week: selectedWeek)[weekStart(selectedWeek) + day] else { return [] }
+        return [p.meal, p.snack].compactMap { id in id.flatMap { recipeByID($0) } }
     }
 
-    /// The recipes assigned to one day, in the order the parent put them.
+    /// The current week, with the plan's moves.
     func recipes(on day: Int) -> [Recipe] {
-        let ids = plan.recipes(on: day)
-        return ids.compactMap { id in weekRecipes.first { $0.id == id } }
+        plan.recipes(on: day).compactMap { recipeByID($0) }
+    }
+
+    func recipeByID(_ id: String) -> Recipe? { recipes.first { $0.id == id } }
+
+    /// Today's meal: what the hero shows.
+    var tonight: Recipe? {
+        recipes(on: WeekDay.today).first { $0.isMeal } ?? recipes(on: WeekDay.today).first
     }
 
     /// Moves a recipe to another day and writes it down straight away.
     func move(_ recipe: Recipe, to day: Int) {
         plan.move(recipe.id, to: day)
-        if let id = currentBatchID { local.saveWeekPlan(plan, batch: id) }
+        local.saveWeekPlan(plan, week: weekStart(0))
     }
 
     /// Swaps two whole days.
     func swapDays(_ a: Int, _ b: Int) {
         plan.swap(a, b)
-        if let id = currentBatchID { local.saveWeekPlan(plan, batch: id) }
+        local.saveWeekPlan(plan, week: weekStart(0))
     }
 
-    /// Rebuilds the plan when the batch changes, keeping any day the parent
-    /// already chose for a recipe that is still in the week.
+    /// Rebuilds the current week's plan from the sequence, keeping the days
+    /// the parent already chose, and freezes today and the days before it.
     func refreshPlan() {
-        guard let id = currentBatchID else { plan = .empty; return }
-        let weekPairs = weekRecipes
-        let connus = Set(weekPairs.map(\.id))
+        let start = weekStart(0)
+        let week = picks(week: 0)
+        /* Freeze every day up to today, so a recipe joining the pool changes
+         * only the days to come. */
+        var frozen = history
+        for d in (start...(start + 6)) where d <= todayIndex { if let p = week[d] { frozen[d] = p } }
+        if frozen != history { history = frozen; local.writeHistory(history) }
 
-        var courant = local.loadWeekPlan(batch: id) ?? WeekPlan.initial(for: weekPairs)
-        /* Drop anything no longer in the week, then place anything new. */
-        for day in courant.days.keys {
-            courant.days[day]?.removeAll { !connus.contains($0) }
-            if courant.days[day]?.isEmpty == true { courant.days[day] = nil }
-        }
-        let places = Set(courant.days.values.flatMap { $0 })
-        let neuves = weekPairs.filter { !places.contains($0.id) }
-        if !neuves.isEmpty {
-            let depart = WeekPlan.initial(for: neuves)
-            for (day, ids) in depart.days {
-                courant.days[day, default: []].append(contentsOf: ids)
+        var base = WeekPlan.empty
+        for day in 0..<7 {
+            if let p = week[start + day] {
+                base.days[day] = [p.meal, p.snack].compactMap { $0 }
             }
         }
-        plan = courant
-        local.saveWeekPlan(plan, batch: id)
+        let ids = Set(base.days.values.flatMap { $0 })
+        var current = local.loadWeekPlan(week: start) ?? base
+        /* Drop what the sequence no longer holds, add what it now does. */
+        for day in current.days.keys {
+            current.days[day]?.removeAll { !ids.contains($0) }
+            if current.days[day]?.isEmpty == true { current.days[day] = nil }
+        }
+        let placed = Set(current.days.values.flatMap { $0 })
+        for (day, list) in base.days {
+            for id in list where !placed.contains(id) { current.days[day, default: []].append(id) }
+        }
+        plan = current
+        local.saveWeekPlan(plan, week: start)
     }
 
-    /// The manifest's `currentWeek` names the week being PUBLISHED, which can
-    /// be ahead of anything this reader can open — it says 2026-S35 while the
-    /// newest unlocked batch is S34.
-    var currentBatchID: String? {
-        let mine = batches.filter { $0.unlocked }
-        return mine.first(where: { $0.id == currentWeek })?.id ?? mine.last?.id
-    }
-
+    /// The fourteen recipes of the current week.
     var weekRecipes: [Recipe] {
-        guard let id = currentBatchID else { return recipes }
-        /* One word, three symptoms: "This week · 15 recipes" instead of 7,
-         * an empty shopping list, and meal groups drawn from the whole
-         * corpus. The model called this `lot`; the JSON calls it `batch`. */
-        let week = recipes.filter { $0.batch == id }
-        return week.isEmpty ? recipes : week
+        (0..<7).flatMap { recipes(on: $0) }
     }
 
     /// The list for one day only. The week's shopping list, already adapted
@@ -198,20 +188,20 @@ final class AppState {
     }
 
     var checkedItems: Set<String> {
-        local.loadChecked(week: currentWeek ?? "")
+        local.loadChecked(week: "w\(weekStart(0))")
     }
 
     func saveCheckedItems(_ ids: Set<String>) {
-        local.saveChecked(ids, week: currentWeek ?? "")
+        local.saveChecked(ids, week: "w\(weekStart(0))")
     }
 
     /// Recipes cooked this week, by id. Set by the end of cooking mode.
     var cooked: Set<String> {
-        local.loadCooked(week: currentWeek ?? "")
+        local.loadCooked(week: "w\(weekStart(0))")
     }
 
     func markCooked(_ id: String) {
-        local.markCooked(id, week: currentWeek ?? "")
+        local.markCooked(id, week: "w\(weekStart(0))")
     }
 
     /// Every option the table holds for an ingredient: `chosenName` is the
@@ -268,7 +258,6 @@ final class AppState {
         }
         return t
     }
-    private(set) var batches: [Batch] = []
 
     private(set) var isLoading = true
     private(set) var isOffline = false
@@ -294,7 +283,6 @@ final class AppState {
     private(set) var ratings: [String: RatingSummary] = [:]
     private(set) var topRated: [Recipe] = []
     private(set) var ratingThreshold = 5
-    private(set) var currentWeek: String?
 
     // MARK: - ChildProfile courant
 
@@ -366,38 +354,50 @@ final class AppState {
 
     /// Downloaded corpus if there is one, otherwise the batches shipped in the app.
     private func chargerCorpusLocal() {
-        if let sauvegarde = local.readRecipes(), !sauvegarde.isEmpty {
-            recipes = sauvegarde
+        sequence = RecipeSequence(seed: local.sequenceSeed(), epoch: local.sequenceEpoch(), rotationWeeks: 16)
+        history = local.readHistory()
+        if let saved = local.readRecipes(), !saved.isEmpty {
+            recipes = saved
         } else {
-            var embarquees: [Recipe] = []
-            for url in Resources.bundledBatches() {
-                if let d = try? Data(contentsOf: url),
-                   let r = try? JSONDecoder().decode([Recipe].self, from: d) {
-                    embarquees.append(contentsOf: r)
-                }
-            }
-            recipes = embarquees.sorted { $0.name < $1.name }
+            recipes = bundledCatalogue()
         }
-        if let l = local.readBatches() { batches = l }
+    }
+
+    /// The catalogue shipped in the app, with the free bodies merged in.
+    private func bundledCatalogue() -> [Recipe] {
+        guard let url = Resources.bundledCatalogue(),
+              let d = try? Data(contentsOf: url),
+              var cards = try? JSONDecoder().decode([Recipe].self, from: d) else { return [] }
+        var bodies: [String: Recipe] = [:]
+        for u in Resources.bundledBodies() {
+            if let bd = try? Data(contentsOf: u), let b = try? JSONDecoder().decode(Recipe.self, from: bd) {
+                bodies[b.id] = b
+            }
+        }
+        cards = cards.map { c in bodies[c.id].map { c.with(body: $0) } ?? c }
+        return cards.sorted { $0.name < $1.name }
     }
 
     // MARK: - Synchronisation
 
+    /// The catalogue first, then the bodies the three weeks need. A body the
+    /// account is not entitled to stays a card, and the day shows locked.
     func sync() async {
         guard fatalError == nil else { return }
         let token = subscription.serverToken
         do {
             let manif = try await serveur.manifest(token: token)
-            batches = manif.batches
-            currentWeek = manif.currentWeek
-            local.writeBatches(manif.batches)
             if let a = manif.subscribed { subscribed = a }
-
-            let rep = try await serveur.recipes(token: token)
-            if !rep.recipes.isEmpty {
-                recipes = rep.recipes
-                local.writeRecipes(rep.recipes)
+            if let r = manif.rotationWeeks, r != sequence.rotationWeeks {
+                sequence = RecipeSequence(seed: sequence.seed, epoch: sequence.epoch, rotationWeeks: r)
             }
+            let cat = try await serveur.catalogue().catalogue
+            /* Keep every body already here; take the card's fields fresh. */
+            let bodies = Dictionary(uniqueKeysWithValues: recipes.filter { $0.hasBody }.map { ($0.id, $0) })
+            recipes = cat.map { c in bodies[c.id].map { c.with(body: $0) } ?? c }.sorted { $0.name < $1.name }
+
+            await fetchMissingBodies(token: token)
+            local.writeRecipes(recipes)
             isOffline = false
             syncMessage = nil
             lastSync = Date()
@@ -413,6 +413,31 @@ final class AppState {
         refreshPlan()
     }
 
+    /// Bodies for the three weeks on the rail, asked for together; on a
+    /// refusal, the free ones are asked for alone.
+    private func fetchMissingBodies(token: String?) async {
+        /* A subscriber gets the whole pool, so search reaches all of it;
+         * anyone else gets the three weeks on the rail. */
+        let needed: [String] = subscribed
+            ? recipes.map(\.id)
+            : [-1, 0, 1].flatMap { picks(week: $0).values.flatMap { [$0.meal, $0.snack] } }.compactMap { $0 }
+        let missing = Array(Set(needed)).filter { id in recipeByID(id)?.hasBody == false }
+        guard !missing.isEmpty else { return }
+        func merge(_ got: [Recipe]) {
+            let byId = Dictionary(uniqueKeysWithValues: got.map { ($0.id, $0) })
+            recipes = recipes.map { c in byId[c.id].map { c.with(body: $0) } ?? c }
+        }
+        do {
+            for chunk in stride(from: 0, to: missing.count, by: 100) {
+                let ids = Array(missing[chunk..<min(chunk + 100, missing.count)])
+                merge(try await serveur.recipes(ids: ids, token: token).recipes)
+            }
+        } catch RepositoryError.subscriptionRequired {
+            let free = missing.filter { recipeByID($0)?.free == true }
+            if !free.isEmpty, let r = try? await serveur.recipes(ids: free, token: token) { merge(r.recipes) }
+        } catch {}
+    }
+
     // MARK: - Adaptation
 
     func recompute() {
@@ -421,7 +446,7 @@ final class AppState {
             return
         }
         do {
-            adapted = try engine.adapt(recipes, for: activeProfile)
+            adapted = try engine.adapt(recipes.filter { $0.hasBody }, for: activeProfile)
         } catch {
             adapted = []
             syncMessage = String(localized: "The engine could not adapt the recipes: \(error.localizedDescription)")
@@ -527,11 +552,57 @@ final class AppState {
         }
     }
 
-    /// Adapts a recipe outside the current batch — a saved one past the
-    /// window, or an entry of the ranking.
+    /// The four cuts of Search, over every recipe this account can open. A
+    /// free account opens its two weeks and the free ones; a subscriber, the
+    /// pool. That is the limit, by construction.
+    func searchGroups() -> [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] {
+        let open = recipes.filter { $0.hasBody }.compactMap { r in
+            resultFor(r).map { (recipe: r, result: $0) }
+        }
+        var out: [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] = []
+        var seen = Set<String>()
+        func add(_ heading: String, _ dishes: [(recipe: Recipe, result: AdaptedRecipe)]) {
+            let fresh = dishes.filter { !seen.contains($0.recipe.id) }
+            guard !fresh.isEmpty else { return }
+            out.append((heading, fresh))
+            seen.formUnion(fresh.map(\.recipe.id))
+        }
+        let todayIDs = Set(recipes(on: WeekDay.today).map(\.id))
+        add(String(localized: "Tonight"), open.filter { todayIDs.contains($0.recipe.id) })
+        add(String(format: String(localized: "Ready for %@"), activeProfile.name),
+            open.filter { $0.result.status == .asIs })
+        add(String(localized: "Under 20 minutes"), open.filter { ($0.recipe.timeMinutes ?? 99) <= 20 })
+        /* Recipes whose ingredients are mostly already checked off the list. */
+        let bought = checkedItems
+        if !bought.isEmpty {
+            add(String(localized: "With what's on your list"), open.filter { p in
+                let names = p.result.ingredients.map { $0.name.lowercased() }
+                guard names.count >= 2 else { return false }
+                return names.filter { bought.contains($0) }.count * 2 >= names.count
+            })
+        }
+        return out
+    }
+
+    /// The verdict for any recipe: adapted when the body is here, from the
+    /// catalogue's matrix when it is not.
     func resultFor(_ recipe: Recipe) -> AdaptedRecipe? {
         if let existing = adapted.first(where: { $0.id == recipe.id }) { return existing }
+        guard recipe.hasBody else { return liteResult(for: recipe) }
         return try? engine?.adapt(recipe, for: activeProfile)
+    }
+
+    /// A verdict for a card without a body, from the catalogue's matrix: the
+    /// worst answer among the child's allergens. Locked days stay honest.
+    func liteResult(for card: Recipe) -> AdaptedRecipe? {
+        guard let matrix = card.adaptability, let engine = engine,
+              let stage = try? engine.stage(for: activeProfile.ageMonths) else { return nil }
+        let answers = activeProfile.allergens.compactMap { matrix[$0] }
+        let status: RecipeStatus = answers.contains("not_adaptable") ? .notAdaptable
+            : answers.contains("adapted") ? .adapted : .asIs
+        return AdaptedRecipe(id: card.id, name: card.name, status: status, swapCount: 0,
+                             ingredients: [], alerts: [], texture: stage, steps: [],
+                             stepsOriginal: nil, remainingAllergens: [])
     }
 
     func pairFor(for id: String) -> (recipe: Recipe, result: AdaptedRecipe)? {
@@ -587,7 +658,6 @@ final class AppState {
 
     // MARK: - Lots
 
-    var lockedBatches: [Batch] { batches.filter { !$0.unlocked } }
 
 }
 

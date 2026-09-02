@@ -1,88 +1,25 @@
 {
-  "_doc": "Weekly batches. A subscriber sees the current week and the two before it. Free batches never rotate out. Recipes that leave the window come back through the Top rated tab (5 ratings or more) or through saved recipes kept on the device.",
-  "batches": [
-    {
-      "id": "2026-06",
-      "date": "2026-06-01",
-      "note": "The foundation: a full week of eating, whatever the profile.",
-      "access": "free",
-      "title": "The basics"
-    },
-    {
-      "id": "2026-07",
-      "date": "2026-07-01",
-      "note": "For starting solids — purées, coarse mash, first finger foods.",
-      "access": "free",
-      "title": "First textures"
-    },
-    {
-      "id": "2026-S31",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "access": "subscriber",
-      "weekly": true,
-      "title": "Week of 2026-S31"
-    },
-    {
-      "id": "2026-S32",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "access": "subscriber",
-      "weekly": true,
-      "title": "Week of 2026-S32"
-    },
-    {
-      "id": "2026-S33",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "access": "subscriber",
-      "weekly": true,
-      "title": "Week of 2026-S33"
-    },
-    {
-      "id": "2026-S34",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "access": "subscriber",
-      "weekly": true,
-      "title": "Week of 2026-S34"
-    }
+  "_doc": "One pool. Every recipe is a meal or a snack. `free` lists the recipes served to everyone: a device's first two weeks are drawn from them, later weeks from the whole pool, whose bodies the server hands only to subscribers. Target for the free list as the pool grows: 14 meals and 14 snacks.",
+  "free": [
+    "apple-cinnamon-oatmeal",
+    "baked-fish-nuggets",
+    "banana-bread",
+    "banana-oat-muffins",
+    "date-energy-bites",
+    "fluffy-pancakes",
+    "lentil-and-carrot-patties",
+    "mac-and-cheese-with-hidden-squash",
+    "mini-vegetable-frittatas",
+    "oatmeal-raisin-cookies",
+    "pasta-in-rose-sauce-with-chicken",
+    "silky-hummus",
+    "squash-and-coconut-soup",
+    "sweet-potato-and-chicken-puree",
+    "turkey-and-apple-meatballs"
   ],
-  "assignment": {
-    "banana-oat-muffins": "2026-06",
-    "fluffy-pancakes": "2026-06",
-    "lentil-and-carrot-patties": "2026-06",
-    "sweet-potato-and-chicken-puree": "2026-06",
-    "apple-cinnamon-oatmeal": "2026-06",
-    "date-energy-bites": "2026-06",
-    "pasta-in-rose-sauce-with-chicken": "2026-06",
-    "baked-fish-nuggets": "2026-06",
-    "silky-hummus": "2026-07",
-    "banana-bread": "2026-07",
-    "oatmeal-raisin-cookies": "2026-07",
-    "mini-vegetable-frittatas": "2026-07",
-    "squash-and-coconut-soup": "2026-07",
-    "mac-and-cheese-with-hidden-squash": "2026-07",
-    "turkey-and-apple-meatballs": "2026-07",
-    "vanilla-rice-pudding": "2026-S31",
-    "mango-banana-smoothie": "2026-S31",
-    "chewy-granola-bars": "2026-S31",
-    "vanilla-chia-pudding": "2026-S31",
-    "yogurt-dip-with-vegetable-sticks": "2026-S31",
-    "chicken-couscous": "2026-S31",
-    "creamy-shrimp-and-pea-risotto": "2026-S31",
-    "soft-apricot-granola": "2026-S32",
-    "mild-chicken-quesadillas": "2026-S32",
-    "tomato-alphabet-soup": "2026-S32",
-    "crispy-tofu-with-sweet-maple-sauce": "2026-S32",
-    "carrot-and-maple-muffins": "2026-S32",
-    "creamy-salmon-pasta": "2026-S32",
-    "banana-oat-pancakes": "2026-S32",
-    "vegetable-fried-rice": "2026-S33",
-    "coconut-rice-pudding-with-mango": "2026-S33",
-    "apple-and-date-cinnamon-sauce": "2026-S33",
-    "lentil-squash-and-carrot-puree": "2026-S33",
-    "chicken-sweet-potato-and-green-peas": "2026-S33",
-    "roasted-sweet-potato-sticks": "2026-S33",
-    "soft-banana-oat-patties": "2026-S33",
-    "creamy-mango-oatmeal": "2026-S34",
-    "tender-rice-flour-crepes": "2026-S34"
-  },
-  "window": 3
+  "rotationWeeks": 16,
+  "target": {
+    "Meal": 112,
+    "Snack": 112
+  }
 }

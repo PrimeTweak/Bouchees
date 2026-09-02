@@ -1,13 +1,33 @@
-/* From here the app loads versioned batches, and the server hands over ONLY
- * the batches the account is entitled to. */
-"use strict";
+/* Publishes the pool: a public catalogue, one body file per recipe, and the
+ * safety tables. The server hands bodies only to the entitled. */
+
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const racine = path.join(__dirname, "..");
 const read = (p) => JSON.parse(fs.readFileSync(path.join(racine, p), "utf8"));
 const checksum = (o) => crypto.createHash("sha1").update(JSON.stringify(o)).digest("hex").slice(0, 12);
-const Semaines = require("./weeks.js");
+const Engine = require("../engine/engine.js");
+
+const FAMILIES = ["milk", "egg", "peanut", "tree_nut", "wheat", "soy", "sesame",
+                  "fish", "shellfish", "mustard", "sulphites"];
+
+/* The public half of a recipe: everything but the ingredients and the steps. */
+const PUBLIC = ["id", "name", "category", "servings", "minAgeMonths", "timeMinutes",
+                "image", "thumb", "source"];
+
+/* What the engine says for each allergen family on its own: as_is, adapted or
+ * blocked. Computed here so a locked recipe can still show a true verdict. */
+function matrix(recipe, data) {
+  const out = {};
+  FAMILIES.forEach(function (f) {
+    try {
+      const r = Engine.adapterRecette(recipe, { allergens: [f], ageMois: recipe.minAgeMonths || 6 }, data);
+      out[f] = r.status;
+    } catch (e) { out[f] = "not_adaptable"; }
+  });
+  return out;
+}
 
 function publier(options) {
   options = options || {};
@@ -16,95 +36,80 @@ function publier(options) {
   if (!corpus) {
     corpus = read("data/recipes.json");
     try { corpus = corpus.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
-    /* Generated recipes count like any other — leaving them out here made them
-     * invisible to the manifest even though they were properly published. */
     try { corpus = corpus.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
   }
   let manifesteImages = options.images || {};
   if (!options.images) { try { manifesteImages = read("generation/images/manifest.json"); } catch (e) {} }
 
-  const parLot = {};
-  const orphans = [];
-  pub.batches.forEach(function (l) { parLot[l.id] = []; });
-
-  corpus.forEach(function (r) {
-    const lot = pub.assignment[r.id];
-    if (!lot || !parLot[lot]) { orphans.push(r.id); return; }
-    const copie = JSON.parse(JSON.stringify(r));
-    copie.batch = lot;
-    const img = manifesteImages[r.id];
-    /* A photo is published only when reviewed AND present on disk; otherwise
-     * the app would request a missing file and silently fall back to the drawing. */
-    if (img && img.revisePar && img.fichier &&
-        fs.existsSync(path.join(racine, img.fichier))) {
-      copie.image = img.fichier;
-      /* A 480px twin for the list, when PHOTOS-REDUIRE.command made one. */
-      const vignette = img.fichier.replace(/^images\//, "images/thumbs/");
-      if (fs.existsSync(path.join(racine, vignette))) copie.thumb = vignette;
-    }
-    parLot[lot].push(copie);
-  });
-
-  /* The safety tables travel with EVERY response, free or not. */
   const securite = {
     ingredients: read("data/ingredients.json"),
     substitutions: read("data/substitutions.json"),
     base: read("data/base.json"),
-    /* The scanner's label vocabulary. Ships beside the safety tables, never
-     * behind the paywall: reading a label is the free promise. */
     lexicon: read("data/label-lexicon.json")
   };
+  const data = { catalogue: securite.ingredients, substitutions: securite.substitutions, base: securite.base };
 
-  /* The rolling window: a subscriber sees the current week and the two before
-   * it. Free batches never rotate — that is the floor a
-   * parent doit garder sans payer. */
-  const f = Semaines.fenetreCourante(pub.batches, Date.now());
-  const visible = new Set(f.free.concat(f.window));
+  const free = new Set(pub.free || []);
+  const catalogue = [];
+  const bodies = {};
+  const unknownCategory = [];
 
-  const batches = pub.batches.map(function (l) {
-    const recettes = parLot[l.id];
-    return {
-      id: l.id, title: l.title, date: l.date, access: l.access, note: l.note,
-      count: recettes.length, checksum: checksum(recettes),
-      weekly: !!l.weekly,
-      inWindow: visible.has(l.id)
-    };
+  corpus.forEach(function (r) {
+    if (r.category !== "Meal" && r.category !== "Snack") unknownCategory.push(r.id);
+    const copie = JSON.parse(JSON.stringify(r));
+    const img = manifesteImages[r.id];
+    /* A photo is published only when reviewed AND present on disk. */
+    if (img && img.revisePar && img.fichier && fs.existsSync(path.join(racine, img.fichier))) {
+      copie.image = img.fichier;
+      const vignette = img.fichier.replace(/^images\//, "images/thumbs/");
+      if (fs.existsSync(path.join(racine, vignette))) copie.thumb = vignette;
+    }
+    const card = {};
+    PUBLIC.forEach(function (k) { if (copie[k] !== undefined) card[k] = copie[k]; });
+    card.free = free.has(r.id);
+    card.allergens = Engine.allergenesDe(r.ingredients, data.catalogue);
+    card.adaptability = matrix(r, data);
+    catalogue.push(card);
+    bodies[r.id] = { id: r.id, ingredients: copie.ingredients, steps: copie.steps };
   });
+
+  const counts = { Meal: 0, Snack: 0 };
+  catalogue.forEach(function (c) { if (counts[c.category] !== undefined) counts[c.category]++; });
 
   return {
     manifest: {
       version: new Date().toISOString().slice(0, 10),
       safetyChecksum: checksum(securite),
-      batches: batches,
-      /* The client learns which batches exist and which are locked, without
-       * ever receiving their content. */
-      free: batches.filter(function (l) { return l.access === "free"; }).map(function (l) { return l.id; }),
-      window: f.window,
-      currentWeek: Semaines.identifiantSemaine(new Date()),
-      windowSize: Semaines.FENETRE
+      catalogueChecksum: checksum(catalogue),
+      rotationWeeks: pub.rotationWeeks || 16,
+      counts: counts,
+      target: pub.target || { Meal: 112, Snack: 112 },
+      free: Array.from(free)
     },
     securite: securite,
-    content: parLot,
-    visible: Array.from(visible),
-    orphans: orphans
+    catalogue: catalogue,
+    bodies: bodies,
+    unknownCategory: unknownCategory
   };
 }
 
 if (require.main === module) {
   const r = publier();
   const dist = path.join(racine, "dist");
-  fs.mkdirSync(path.join(dist, "batches"), { recursive: true });
+  fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
+  fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
   fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
   fs.writeFileSync(path.join(dist, "safety.json"), JSON.stringify(r.securite) + "\n");
-  Object.keys(r.content).forEach(function (lot) {
-    fs.writeFileSync(path.join(dist, "batches", lot + ".json"), JSON.stringify(r.content[lot]) + "\n");
+  fs.writeFileSync(path.join(dist, "catalogue.json"), JSON.stringify(r.catalogue) + "\n");
+  Object.keys(r.bodies).forEach(function (id) {
+    fs.writeFileSync(path.join(dist, "recipes", id + ".json"), JSON.stringify(r.bodies[id]) + "\n");
   });
   console.log("Published — version " + r.manifest.version);
-  r.manifest.batches.forEach(function (l) {
-    console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
-      String(l.count).padStart(2) + " recipes  " + l.title);
-  });
-  if (r.orphans.length) console.log("  WARNING — no batch assigned: " + r.orphans.join(", "));
+  console.log("  pool       " + r.manifest.counts.Meal + " meals, " + r.manifest.counts.Snack +
+              " snacks   (target " + r.manifest.target.Meal + " + " + r.manifest.target.Snack + ")");
+  console.log("  free       " + r.manifest.free.length + " recipes");
+  console.log("  rotation   " + r.manifest.rotationWeeks + " weeks");
+  if (r.unknownCategory.length) console.log("  WARNING — neither Meal nor Snack: " + r.unknownCategory.join(", "));
 }
 
-module.exports = { publier: publier };
+module.exports = { publier: publier, FAMILIES: FAMILIES };

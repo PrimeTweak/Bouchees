@@ -23,7 +23,7 @@ const PROFILS = data.base.allergens.map((a) => [a.id]).concat([
   ["poisson", "crustaces_mollusques"]
 ]);
 const STADES = [6, 9, 12, 24, 48];
-const CATEGORIES = ["Breakfast", "Meal", "Snack", "Dessert"];
+const CATEGORIES = ["Meal", "Snack"];
 
 /* Seuil : en dessous, un parent n'a pas de quoi faire une semaine. */
 const SEUIL_SEMAINE = 12;
@@ -198,19 +198,42 @@ function markdown(classement, blockers, cmd, nCorpus) {
   return l.join("\n");
 }
 
-function report(corpus) {
+/* The two pools against their targets: how many meals and snacks are still
+ * missing before a recipe can wait the full rotation before returning. */
+function poolStatus(corpus, pub) {
+  const target = (pub && pub.target) || { Meal: 112, Snack: 112 };
+  const have = { Meal: 0, Snack: 0 };
+  corpus.forEach(function (r) { if (have[r.category] !== undefined) have[r.category]++; });
+  const weeks = (pub && pub.rotationWeeks) || 16;
+  return {
+    Meal: { have: have.Meal, target: target.Meal, missing: Math.max(0, target.Meal - have.Meal),
+            rotationDays: have.Meal },
+    Snack: { have: have.Snack, target: target.Snack, missing: Math.max(0, target.Snack - have.Snack),
+             rotationDays: have.Snack },
+    rotationWeeks: weeks
+  };
+}
+
+function report(corpus, pub) {
   const cases = analyser(corpus);
   const classement = classer(cases);
   const blockers = bloquantsGlobaux(cases);
   const cmd = commande(classement);
-  return { cases: cases, classement: classement, blockers: blockers, commande: cmd };
+  return { cases: cases, classement: classement, blockers: blockers, commande: cmd,
+           pool: poolStatus(corpus, pub) };
 }
 
 if (require.main === module) {
   let corpus = read("data/recipes.json");
   try { corpus = corpus.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
   try { corpus = corpus.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
-  const r = report(corpus);
+  let pub = null;
+  try { pub = read("data/publishing.json"); } catch (e) {}
+  const r = report(corpus, pub);
+  console.log("Pool: " + r.pool.Meal.have + "/" + r.pool.Meal.target + " meals, " +
+              r.pool.Snack.have + "/" + r.pool.Snack.target + " snacks — a meal returns after ~" +
+              r.pool.Meal.rotationDays + " days, a snack after ~" + r.pool.Snack.rotationDays +
+              " (target " + r.pool.rotationWeeks * 7 + ")");
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.md"),
     markdown(r.classement, r.blockers, r.commande, corpus.length) + "\n");
   fs.writeFileSync(path.join(racine, "tools", "rapport-trous.json"),
@@ -223,4 +246,4 @@ if (require.main === module) {
   console.log("Suggested commission: " + r.commande.reduce((s, c) => s + c.n, 0) + " recipes");
 }
 
-module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };
+module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, poolStatus: poolStatus, analyser: analyser, classer: classer, commande: commande, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };

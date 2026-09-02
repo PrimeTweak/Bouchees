@@ -265,39 +265,31 @@ struct RecipesScreen: View {
     /// shows nothing, which is honest — the week is over.
     private func days(for slot: WeekSlot) -> [Int] {
         guard slot.offset == 0 else { return Array(0..<7) }
-        let tomorrow = WeekDay.today + 1
-        return tomorrow < 7 ? Array(tomorrow..<7) : []
+        return Array(WeekDay.today..<7)
     }
 
-    @ViewBuilder
+    /// Every week shows its days; a locked recipe shows its name and its
+    /// verdict from the catalogue, and opens the paywall.
     private var list: some View {
         let slot = app.currentSlot
-        if slot.unlocked {
-            LazyVStack(spacing: 0) {
-                /* The list starts tomorrow on the current week: today is the
-                 * hero's line; the list carries the days that follow. */
-                ForEach(days(for: slot), id: \.self) { dayIndex in
-                    daySection(dayIndex, slot: slot)
-                }
-                if days(for: slot).isEmpty {
-                    weekDone
-                }
+        return LazyVStack(spacing: 0) {
+            ForEach(days(for: slot), id: \.self) { dayIndex in
+                daySection(dayIndex, slot: slot)
             }
-        } else {
-            /* The server answers 402 for a week that has not been paid for
-             * and sends nothing at all, so every day fell through to the
-             * "Nothing planned" placeholder. */
-            lockedPanel(slot)
+            if days(for: slot).isEmpty {
+                weekDone
+            }
         }
     }
 
     /// Today is marked as a block, not as a word: the wash is INK, not brand.
     @ViewBuilder
     private func daySection(_ dayIndex: Int, slot: WeekSlot) -> some View {
-        let dishes = app.recipesOfSelectedWeek(on: dayIndex).compactMap { r in
-            app.resultFor(r).map { (recipe: r, result: $0) }
-        }
         let isToday = slot.offset == 0 && dayIndex == WeekDay.today
+        /* Today's meal is the hero above; its row would say it twice. */
+        let dishes = app.recipesOfSelectedWeek(on: dayIndex)
+            .filter { !(isToday && $0.id == app.tonight?.id) }
+            .compactMap { r in app.resultFor(r).map { (recipe: r, result: $0) } }
 
         if isToday {
             HStack(alignment: .top, spacing: 0) {
@@ -368,7 +360,7 @@ struct RecipesScreen: View {
     @ViewBuilder
     private func row(_ pair: (recipe: Recipe, result: AdaptedRecipe),
                      slot: WeekSlot) -> some View {
-        if slot.unlocked {
+        if pair.recipe.hasBody {
             Button { navigate(.recipe(pair.recipe.id)) } label: {
                 RecipeRow(recipe: pair.recipe, result: pair.result,
                           cooked: app.cooked.contains(pair.recipe.id))
@@ -400,61 +392,6 @@ struct RecipesScreen: View {
         f.setLocalizedDateFormatFromTemplate(premierDuMois || dayIndex == 0 ? "dMMM" : "d")
         return nom + " " + f.string(from: d)
     }
-
-    /// What a locked week offers, in place of its list: this says only what
-    /// the manifest actually knows — how many, when, and for whom.
-    private func lockedPanel(_ slot: WeekSlot) -> some View {
-        VStack(spacing: 0) {
-            Image(systemName: "lock.fill")
-                .scaledFont(15, weight: .medium)
-                .foregroundStyle(Tone.brand)
-                .frame(width: 34, height: 34)
-                .background(Tone.brand.opacity(0.12), in: Circle())
-
-            Text(String(format: String(localized: "%lld recipes waiting"), slot.count))
-                .scaledFont(19, weight: .semibold)
-                .foregroundStyle(Tone.upsellText)
-                .padding(.top, 12)
-
-            Text(String(format: String(localized: "%@, already adapted to %@"),
-                        slot.span(), app.activeProfile.name))
-                .scaledFont(12.5)
-                .foregroundStyle(Tone.upsellText2)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 5)
-
-            Button { showPaywall = true } label: {
-                Text("Try 7 days free")
-                    .scaledFont(14, weight: .semibold)
-                    .padding(.horizontal, 26)
-                    .frame(height: Layout.tapTarget)
-            }
-            .buttonStyle(PrimaryButton())
-            .padding(.top, 17)
-
-            /* The same literal the subscription card uses, so the two never
-             * quote different prices on the same product. */
-            Text("Then $4.99/month. Cancel any time.")
-                .scaledFont(11)
-                .foregroundStyle(Tone.upsellText2)
-                .padding(.top, 9)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 26)
-        .padding(.horizontal, 20)
-        .background {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Tone.upsellField)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .strokeBorder(Tone.brand.opacity(0.18), lineWidth: 1)
-                }
-        }
-        .padding(.horizontal, Layout.gutter)
-        .padding(.top, 18)
-    }
-
 
 // (EmptyDay follows the screen, at file scope)
 }
@@ -493,12 +430,13 @@ extension RecipesScreen {
 
     private var week: [Recipe] { app.weekRecipes }
 
+    /// Today's meal, from the sequence. Falls back on the week when today
+    /// holds none.
     private var heroPair: (recipe: Recipe, result: AdaptedRecipe)? {
+        if let t = app.tonight, let r = app.resultFor(t) { return (t, r) }
         let inWeek = pairs.filter { p in week.contains { $0.id == p.recipe.id } }
         let pool = inWeek.isEmpty ? pairs : inWeek
-        return pool.first { $0.result.status == .asIs && ($0.recipe.timeMinutes ?? 99) <= 40 }
-            ?? pool.first { $0.result.status == .asIs }
-            ?? pool.first
+        return pool.first { $0.recipe.isMeal } ?? pool.first
     }
 
     private var groups: [(meal: String, items: [(recipe: Recipe, result: AdaptedRecipe)])] {
@@ -519,19 +457,18 @@ extension RecipesScreen {
      * week, as the only DARK block on a light page, so the eye lands on it. */
     @ViewBuilder
     private var upsell: some View {
-        let batches = app.lockedBatches
-        if !batches.isEmpty && !app.subscribed {
+        let locked = app.recipes.filter { !$0.hasBody }.count
+        if locked > 0 && !app.subscribed {
             Button { showPaywall = true } label: {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Weeks ahead").eyebrow(Tone.brand)
 
-                    Text(String(format: String(localized: "%lld more recipes"),
-                                batches.reduce(0) { $0 + $1.count }))
+                    Text(String(format: String(localized: "%lld more recipes"), locked))
                         .scaledFont(19, weight: .bold)
                         .foregroundStyle(Tone.upsellText)
                         .padding(.top, 7)
 
-                    Text(String(format: String(localized: "7 new ones every week, adapted to %@"),
+                    Text(String(format: String(localized: "A meal and a snack every day, adapted to %@"),
                                 profile.firstName))
                         .scaledFont(12)
                         .foregroundStyle(Tone.upsellText2)

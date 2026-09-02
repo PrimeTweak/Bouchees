@@ -23,6 +23,9 @@ function walk(dir) {
       const src = fs.readFileSync(p, "utf8");
       for (const m of src.matchAll(/Resources\.(?:url|data)\("([^"]+)",\s*"([^"]+)"\)/g))
         asked.add(m[1] + "." + m[2]);
+      /* The catalogue is asked for by name through the bundle directly. */
+      for (const m of src.matchAll(/forResource:\s*"([^"]+)",\s*withExtension:\s*"([^"]+)"/g))
+        asked.add(m[1] + "." + m[2]);
             /* "Any for-in over string literals is a script list" was too broad: the
        * scanner iterates over label phrases — "nutrition facts", "valeur
        * nutritive" — and each became a demand for a file named after it. */

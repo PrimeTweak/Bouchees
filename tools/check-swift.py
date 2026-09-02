@@ -136,13 +136,13 @@ def check():
             for i, l in enumerate(lignes):
                 if not re.search(r"(?<![\w.?!])" + nom + r"\.\w", l):
                     continue
-                if re.search(r"(?:guard|if)\s+let\s+" + nom + r"\b", l):
+                if re.search(r"(?:guard|if)\b[^\n]*\blet\s+" + nom + r"\b", l):
                     continue
                 if re.search(r"\b" + nom + r"[?!]\.", l):
                     continue
                 # a guard in the surrounding lines counts
                 contexte = "\n".join(lignes[max(0, i - 12):i + 1])
-                if re.search(r"(?:guard|if)\s+let\s+" + nom + r"\b", contexte):
+                if re.search(r"(?:guard|if)\b[^\n]*\blet\s+" + nom + r"\b", contexte):
                     continue
                 if re.search(r"\bself\." + nom + r"\s*=", contexte):
                     continue

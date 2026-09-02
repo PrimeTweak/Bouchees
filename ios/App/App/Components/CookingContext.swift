@@ -406,43 +406,9 @@ struct SearchSheet: View {
         }
     }
 
-    /// The cuts worth one tap, each carrying its recipes: swiftUI keeps the
-    /// first and drops the second, which is why a heading could show a count
-    /// with no rows under it.
+    /// The cuts, shared by the sheet and the tab.
     private var groups: [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] {
-        let weekPairs = app.weekRecipes.compactMap { r in
-            app.resultFor(r).map { (recipe: r, result: $0) }
-        }
-        var out: [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] = []
-        var seen = Set<String>()
-
-        func add(_ heading: String, _ dishes: [(recipe: Recipe, result: AdaptedRecipe)]) {
-            let fresh = dishes.filter { !seen.contains($0.recipe.id) }
-            guard !fresh.isEmpty else { return }
-            out.append((heading, fresh))
-            seen.formUnion(fresh.map(\.recipe.id))
-        }
-
-        /* What is planned for today, which is the question at five o'clock. */
-        let todayIDs = Set(app.recipes(on: WeekDay.today).map(\.id))
-        add(String(localized: "Tonight"),
-               weekPairs.filter { todayIDs.contains($0.recipe.id) })
-
-        /* Named for the child, because the verdict belongs to one profile. */
-        add(String(format: String(localized: "Ready for %@"), app.activeProfile.name),
-               weekPairs.filter { $0.result.status == .asIs })
-
-        add(String(localized: "Under 20 minutes"),
-               weekPairs.filter { ($0.recipe.timeMinutes ?? 99) <= 20 })
-
-        /* Top rated reaches outside the window on purpose — it is the one cut
-         * here that can surface a recipe this week does not carry. */
-        add(String(localized: "Top rated"),
-               app.topRated.compactMap { r in
-                   app.resultFor(r).map { (recipe: r, result: $0) }
-               })
-
-        return out
+        app.searchGroups()
     }
 
 
@@ -450,9 +416,11 @@ struct SearchSheet: View {
     private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
         let q = query.lowercased().trimmingCharacters(in: .whitespaces)
         guard q.count > 1 else { return [] }
+        /* Only what this account can open: a locked card has no body to
+         * search, and a name alone would advertise what it cannot show. */
         return app.recipes.filter { r in
-            r.name.lowercased().contains(q)
-                || r.ingredients.contains { $0.id.lowercased().contains(q) }
+            r.hasBody && (r.name.lowercased().contains(q)
+                || r.ingredients.contains { $0.id.lowercased().contains(q) })
         }
         .prefix(20)
         .compactMap { r in app.resultFor(r).map { (recipe: r, result: $0) } }
@@ -806,51 +774,19 @@ struct SearchScreen: View {
         }
     }
 
-    /// The cuts worth one tap, each carrying its recipes: swiftUI keeps the
-    /// first and drops the second, which is why a heading could show a count
-    /// with no rows under it.
+    /// The cuts, shared by the sheet and the tab.
     private var groups: [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] {
-        let weekPairs = app.weekRecipes.compactMap { r in
-            app.resultFor(r).map { (recipe: r, result: $0) }
-        }
-        var out: [(heading: String, dishes: [(recipe: Recipe, result: AdaptedRecipe)])] = []
-        var seen = Set<String>()
-
-        func add(_ heading: String, _ dishes: [(recipe: Recipe, result: AdaptedRecipe)]) {
-            let fresh = dishes.filter { !seen.contains($0.recipe.id) }
-            guard !fresh.isEmpty else { return }
-            out.append((heading, fresh))
-            seen.formUnion(fresh.map(\.recipe.id))
-        }
-
-        /* What is planned for today, which is the question at five o'clock. */
-        let todayIDs = Set(app.recipes(on: WeekDay.today).map(\.id))
-        add(String(localized: "Tonight"),
-               weekPairs.filter { todayIDs.contains($0.recipe.id) })
-
-        /* Named for the child, because the verdict belongs to one profile. */
-        add(String(format: String(localized: "Ready for %@"), app.activeProfile.name),
-               weekPairs.filter { $0.result.status == .asIs })
-
-        add(String(localized: "Under 20 minutes"),
-               weekPairs.filter { ($0.recipe.timeMinutes ?? 99) <= 20 })
-
-        /* Top rated reaches outside the window on purpose — it is the one cut
-         * here that can surface a recipe this week does not carry. */
-        add(String(localized: "Top rated"),
-               app.topRated.compactMap { r in
-                   app.resultFor(r).map { (recipe: r, result: $0) }
-               })
-
-        return out
+        app.searchGroups()
     }
 
     private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
         let q = query.lowercased().trimmingCharacters(in: .whitespaces)
         guard q.count > 1 else { return [] }
+        /* Only what this account can open: a locked card has no body to
+         * search, and a name alone would advertise what it cannot show. */
         return app.recipes.filter { r in
-            r.name.lowercased().contains(q)
-                || r.ingredients.contains { $0.id.lowercased().contains(q) }
+            r.hasBody && (r.name.lowercased().contains(q)
+                || r.ingredients.contains { $0.id.lowercased().contains(q) })
         }
         .prefix(20)
         .compactMap { r in app.resultFor(r).map { (recipe: r, result: $0) } }

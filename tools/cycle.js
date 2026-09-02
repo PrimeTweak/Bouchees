@@ -21,14 +21,9 @@ const args = process.argv.slice(2);
 const a = (n) => args.indexOf(n) !== -1;
 const val = (n, d) => { const x = args.find((v) => v.startsWith(n + "=")); return x ? x.split("=")[1] : d; };
 
-const Semaines = require("./weeks.js");
 
 /* Batches are weekly since the rolling window: the cycle publishes into
  * the current week, not into a month. */
-function currentWeek() {
-  return Semaines.identifiantSemaine(new Date());
-}
-
 function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
 
 function chargerDonnees() {
@@ -98,33 +93,24 @@ async function cycleRecettes(data, options) {
   journal.acceptees = gardees.length;
   journal.nouvelles = gardees.map((g) => g.id);
 
-  title("5 · Publication dans un lot");
+  title("5 · Into the pool");
   if (!gardees.length) { console.log("  nothing to publish"); return journal; }
-  const lot = options.lot || currentWeek();
-  if (options.sec) { console.log("  [dry run] " + gardees.length + " recipe(s) would go into " + lot); return journal; }
+  if (options.sec) { console.log("  [dry run] " + gardees.length + " recipe(s) would join the pool"); return journal; }
 
   let generees = [];
   try { generees = read("data/generated/generated-recipes.json"); } catch (e) {}
   generees = generees.concat(gardees.map(function (g) {
     const copie = JSON.parse(JSON.stringify(g));
-    copie.source = { source: "génération assistée", moteur: moteur.name,
-                         le: new Date().toISOString().slice(0, 10),
-                         license: "content original — rédigé pour Bouchées",
-                         cuisineParUnHumain: false };
+    copie.source = { source: "assisted generation", engine: moteur.name,
+                     on: new Date().toISOString().slice(0, 10),
+                     license: "original content, written for Bouchees",
+                     cookedByAHuman: false };
     return copie;
   }));
   fs.mkdirSync(path.join(racine, "data", "generated"), { recursive: true });
   write("data/generated/generated-recipes.json", generees);
-
-  const pub = read("data/publishing.json");
-  if (!pub.batches.some((l) => l.id === lot)) {
-    pub.batches.push({ id: lot, title: "Semaine du " + lot, access: "subscriber",
-                    weekly: true,
-                    note: "Seven recipes aimed at the least-served profiles." });
-  }
-  gardees.forEach(function (g) { pub.assignment[g.id] = lot; });
-  write("data/publishing.json", pub);
-  console.log("  " + gardees.length + " recette(s) publiée(s) dans " + lot);
+  /* No batch to declare: a recipe in the corpus is in the pool. */
+  console.log("  " + gardees.length + " recipe(s) joined the pool");
   return journal;
 }
 
@@ -305,7 +291,7 @@ async function cycleImages(data, options) {
 
 async function principal() {
   const data = chargerDonnees();
-  const options = { sec: a("--sec"), lot: val("--lot", null) };
+  const options = { sec: a("--sec") };
   console.log("═".repeat(64));
   console.log("  Bouchees cycle — " + new Date().toISOString().slice(0, 10) + (options.sec ? "   [DRY RUN]" : ""));
   console.log("═".repeat(64));
@@ -317,16 +303,16 @@ async function principal() {
   if (!options.sec) {
     title("8 · Republishing");
     const r = Publier.publier();
-    fs.mkdirSync(path.join(racine, "dist", "batches"), { recursive: true });
-    fs.writeFileSync(path.join(racine, "dist", "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
-    fs.writeFileSync(path.join(racine, "dist", "safety.json"), JSON.stringify(r.securite) + "\n");
-    Object.keys(r.content).forEach(function (lot) {
-      fs.writeFileSync(path.join(racine, "dist", "batches", lot + ".json"), JSON.stringify(r.content[lot]) + "\n");
+    const dist = path.join(racine, "dist");
+    fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
+    fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
+    fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
+    fs.writeFileSync(path.join(dist, "safety.json"), JSON.stringify(r.securite) + "\n");
+    fs.writeFileSync(path.join(dist, "catalogue.json"), JSON.stringify(r.catalogue) + "\n");
+    Object.keys(r.bodies).forEach(function (id) {
+      fs.writeFileSync(path.join(dist, "recipes", id + ".json"), JSON.stringify(r.bodies[id]) + "\n");
     });
-    r.manifest.batches.forEach(function (l) {
-      console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
-        String(l.count).padStart(2) + " recipes");
-    });
+    console.log("  pool  " + r.manifest.counts.Meal + " meals, " + r.manifest.counts.Snack + " snacks");
   }
 
   title("Summary");
@@ -407,4 +393,4 @@ if (require.main === module) {
   principal().catch(function (e) { console.error("Cycle interrompu : " + e.message); process.exit(1); });
 }
 
-module.exports = { cycleRecettes: cycleRecettes, cycleImages: cycleImages, currentWeek: currentWeek };
+module.exports = { cycleRecettes: cycleRecettes, cycleImages: cycleImages };

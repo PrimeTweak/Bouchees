@@ -1,6 +1,6 @@
 /* There are two entry gates, and they are not alike: Manual import of
  * generated recipes node tools/manual-import.js <fichier.json>
- * [--lot=2026-09] [--sec] */
+ * [--sec] */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -15,11 +15,8 @@ const Publier = require("./publish.js");
 const args = process.argv.slice(2);
 const fichier = args.find((a) => !a.startsWith("--"));
 const sec = args.includes("--sec");
-const lotDemande = (args.find((a) => a.startsWith("--lot=")) || "").split("=")[1];
 
-const Semaines = require("./weeks.js");
 
-function currentWeek() { return Semaines.identifiantSemaine(new Date()); }
 
 function corpusExistant() {
   let c = read("data/recipes.json");
@@ -32,7 +29,7 @@ function corpusExistant() {
 
 function principal() {
   if (!fichier) {
-    console.error("Usage : node tools/manual-import.js <fichier.json> [--lot=2026-09] [--sec]");
+    console.error("Usage: node tools/manual-import.js <file.json> [--sec]");
     console.error("Example: node tools/manual-import.js ingest/sources/recipes-of-the-month.json");
     process.exit(1);
   }
@@ -118,14 +115,13 @@ function principal() {
     return;
   }
 
-  /* --- 3. Publication --- */
-  const lot = lotDemande || currentWeek();
-  console.log("\nPublication dans le lot " + lot);
-  console.log("─".repeat(42));
+  /* --- 3. Into the pool --- */
+  console.log("\nInto the pool");
+  console.log("\u2500".repeat(42));
 
   if (sec) {
     gardees.forEach(function (r) { console.log("  [dry run] " + r.name); });
-    console.log("\n" + gardees.length + " recette(s) seraient publiées. Rien n'a été écrit.");
+    console.log("\n" + gardees.length + " recipe(s) would join the pool. Nothing written.");
     return;
   }
 
@@ -136,10 +132,10 @@ function principal() {
     if (dejaLa.has(r.id)) return;
     const copie = JSON.parse(JSON.stringify(r));
     copie.source = {
-      source: "génération assistée, import manuel",
-      le: new Date().toISOString().slice(0, 10),
-      license: "content original — rédigé pour Bouchées",
-      cuisineParUnHumain: false
+      source: "assisted generation, manual import",
+      on: new Date().toISOString().slice(0, 10),
+      license: "original content, written for Bouchees",
+      cookedByAHuman: false
     };
     generees.push(copie);
     console.log("  + " + r.name);
@@ -147,31 +143,21 @@ function principal() {
   fs.mkdirSync(path.join(racine, "data", "generated"), { recursive: true });
   write("data/generated/generated-recipes.json", generees);
 
-  const pub = read("data/publishing.json");
-  if (!pub.batches.some((l) => l.id === lot)) {
-    pub.batches.push({ id: lot, title: "Semaine du " + lot, access: "subscriber",
-                    weekly: true,
-                    note: "Seven recipes aimed at the least-served profiles." });
-    console.log("  batch " + lot + " created");
-  }
-  gardees.forEach(function (r) { pub.assignment[r.id] = lot; });
-  write("data/publishing.json", pub);
-
   const r = Publier.publier();
-  fs.mkdirSync(path.join(racine, "dist", "batches"), { recursive: true });
-  fs.writeFileSync(path.join(racine, "dist", "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
-  fs.writeFileSync(path.join(racine, "dist", "safety.json"), JSON.stringify(r.securite) + "\n");
-  Object.keys(r.content).forEach(function (l) {
-    fs.writeFileSync(path.join(racine, "dist", "batches", l + ".json"), JSON.stringify(r.content[l]) + "\n");
+  const dist = path.join(racine, "dist");
+  fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
+  fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
+  fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
+  fs.writeFileSync(path.join(dist, "safety.json"), JSON.stringify(r.securite) + "\n");
+  fs.writeFileSync(path.join(dist, "catalogue.json"), JSON.stringify(r.catalogue) + "\n");
+  Object.keys(r.bodies).forEach(function (id) {
+    fs.writeFileSync(path.join(dist, "recipes", id + ".json"), JSON.stringify(r.bodies[id]) + "\n");
   });
 
-  console.log("\nBilan");
-  console.log("─".repeat(42));
-  console.log("  published: " + gardees.length + " · rejected: " + rejetees.length);
-  r.manifest.batches.forEach(function (l) {
-    console.log("  " + l.id + "  " + (l.access === "free" ? "free      " : "subscriber") + "  " +
-      String(l.count).padStart(2) + " recipes");
-  });
+  console.log("\nSummary");
+  console.log("\u2500".repeat(42));
+  console.log("  published: " + gardees.length + " \u00b7 rejected: " + rejetees.length);
+  console.log("  pool: " + r.manifest.counts.Meal + " meals, " + r.manifest.counts.Snack + " snacks");
   console.log("\n  What is NOT checked: taste, rise, real texture.");
   console.log("  A recipe that was never cooked can be bad — never unsafe.\n");
 }

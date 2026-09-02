@@ -127,33 +127,32 @@ function subscriptionActive(account) {
   if (!account) return false;
   return activeFrom(account.subscription) || activeFrom(account.abonnementApple);
 }
-/* The week before the current one is open to everyone. It has no market
- * value left and gives a free account a real week of content one week late,
- * which is the free tier. */
-function previousWeekBatch(manifeste) {
-  const weekly = (manifeste.window || []).slice().sort(function (a, b) {
-    return /^(\d{4})-S(\d+)$/.test(a) && /^(\d{4})-S(\d+)$/.test(b)
-      ? (Number(b.slice(0, 4)) * 100 + Number(b.split("-S")[1])) -
-        (Number(a.slice(0, 4)) * 100 + Number(a.split("-S")[1]))
-      : 0;
-  });
-  return weekly.length > 1 ? weekly[1] : null;
-}
-
-function allowedBatches(manifeste, account) {
-  const active = subscriptionActive(account);
-  const ouverte = previousWeekBatch(manifeste);
-  return manifeste.batches
-    .filter(function (l) { return l.access === "free" || active || l.id === ouverte; })
-    .map(function (l) { return l.id; });
+/* Entitlement in the pool model: a free recipe goes to everyone, any other
+ * body goes to a subscriber only. The catalogue itself is public. */
+function canReadBody(card, account) {
+  return !!(card && (card.free || subscriptionActive(account)));
 }
 
 /* ---------- reading the published content ---------- */
 function loadManifest() {
   return JSON.parse(fs.readFileSync(path.join(dist, "manifest.json"), "utf8"));
 }
-function loadBatch(id) {
-  return JSON.parse(fs.readFileSync(path.join(dist, "batches", id + ".json"), "utf8"));
+let catalogueCache = null;
+function loadCatalogue() {
+  const p = path.join(dist, "catalogue.json");
+  const stat = fs.statSync(p);
+  if (!catalogueCache || catalogueCache.mtime !== stat.mtimeMs) {
+    const list = JSON.parse(fs.readFileSync(p, "utf8"));
+    const byId = {};
+    list.forEach(function (c) { byId[c.id] = c; });
+    catalogueCache = { mtime: stat.mtimeMs, list: list, byId: byId };
+  }
+  return catalogueCache;
+}
+function loadBody(id) {
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) return null;
+  try { return JSON.parse(fs.readFileSync(path.join(dist, "recipes", id + ".json"), "utf8")); }
+  catch (e) { return null; }
 }
 
 /* ---------- HTTP ---------- */
@@ -217,26 +216,21 @@ function compteDeLaRequete(req, db) {
 }
 
 const routes = {
-  /* Public knowledge: which batches exist and which are locked. The
-   * content itself never goes out here. */
+  /* Public: the pool's catalogue — every card, no body. */
   "GET /api/manifest": function (req, res, ctx) {
     const m = loadManifest();
-    const allowed = allowedBatches(m, ctx.account);
     json(res, 200, {
       version: m.version,
       subscribed: subscriptionActive(ctx.account),
-      currentWeek: m.currentWeek || null,
-      windowSize: m.windowSize || null,
-      batches: m.batches.map(function (l) {
-        return { id: l.id, title: l.title, date: l.date, access: l.access, note: l.note,
-                 count: l.count, weekly: !!l.weekly,
-                 inWindow: !!l.inWindow,
-                 /* "unlocked" = the account is entitled to it AND it is in
-                  * the window. A batch from two months ago stays locked even
-                  * for a subscriber: it comes back through Top rated. */
-                 unlocked: allowed.indexOf(l.id) !== -1 && (l.access === "free" || !!l.inWindow) };
-      })
+      rotationWeeks: m.rotationWeeks || 16,
+      counts: m.counts || null,
+      catalogueChecksum: m.catalogueChecksum || null
     });
+  },
+
+  "GET /api/catalogue": function (req, res) {
+    const c = loadCatalogue();
+    json(res, 200, { catalogue: c.list });
   },
 
   /* Legal pages. Apple requires public, working URLs:
@@ -260,22 +254,26 @@ const routes = {
     res.end(s);
   },
 
-    /* The content, filtered by entitlement AND by the rolling window. A
-   * subscriber gets the free batches plus the last three weeks. */
+  /* Bodies, by id. A free recipe goes to anyone; the rest to subscribers.
+   * An id the caller is not entitled to answers 402 with the list, and no
+   * other body leaves with it. */
   "GET /api/recipes": function (req, res, ctx) {
-    const m = loadManifest();
-    const allowed = allowedBatches(m, ctx.account);
-    const requested = ctx.url.searchParams.get("batch");
-    const inWindow = new Set(m.batches.filter(function (l) { return l.inWindow; })
-                                      .map(function (l) { return l.id; }));
-    const targets = requested ? [requested] : allowed.filter(function (id) { return inWindow.has(id); });
-    const refuses = targets.filter(function (id) { return allowed.indexOf(id) === -1; });
-    if (refuses.length) return json(res, 402, { error: "subscription required", batches: refuses });
-    let out = [];
-    targets.forEach(function (id) {
-      try { out = out.concat(loadBatch(id)); } catch (e) {}
+    const c = loadCatalogue();
+    const ids = String(ctx.url.searchParams.get("ids") || "").split(",")
+      .map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 200);
+    if (!ids.length) return json(res, 400, { error: "ids required" });
+    const known = ids.filter(function (id) { return !!c.byId[id]; });
+    const unknown = ids.filter(function (id) { return !c.byId[id]; });
+    if (!known.length) return json(res, 404, { error: "no such recipe", recipes: unknown });
+    const refused = known.filter(function (id) { return !canReadBody(c.byId[id], ctx.account); });
+    if (refused.length) return json(res, 402, { error: "subscription required", recipes: refused });
+    /* Only a catalogue id ever reaches the file system. */
+    const out = [];
+    known.forEach(function (id) {
+      const body = loadBody(id);
+      if (body) out.push(Object.assign({}, c.byId[id], body));
     });
-    json(res, 200, { subscribed: subscriptionActive(ctx.account), batches: targets, recipes: out });
+    json(res, 200, { subscribed: subscriptionActive(ctx.account), recipes: out, unknown: unknown });
   },
 
     /* A rating, 1 to 5: an account is required — otherwise nothing stops one
@@ -316,24 +314,21 @@ const routes = {
       return json(res, 200, { threshold: Ratings.MIN_VOTES, recipes: [],
         progress: Ratings.progress() });
     }
-    const m = loadManifest();
-    const allowed = new Set(allowedBatches(m, ctx.account));
-    const parId = {};
-    m.batches.forEach(function (l) {
-      if (!allowed.has(l.id)) return;
-      try {
-        loadBatch(l.id).forEach(function (r) { parId[r.id] = r; });
-      } catch (e) {}
-    });
-
+    const c = loadCatalogue();
     const out = [];
-    ranked.forEach(function (c) {
-      const r = parId[c.recipeId];
-      if (!r) return;   /* batch not allowed: nothing leaks through */
-      const copie = JSON.parse(JSON.stringify(r));
-      copie.votes = c.votes;
-      copie.average = c.average;
-      if (ctx.account) copie.myRating = Ratings.ratingBy(c.recipeId, ctx.account.email);
+    ranked.forEach(function (r) {
+      const card = c.byId[r.recipeId];
+      if (!card) return;
+      /* The card always; the body only where entitled. A ranked recipe a
+       * free account cannot open still shows, locked, with its name. */
+      const copie = JSON.parse(JSON.stringify(card));
+      if (canReadBody(card, ctx.account)) {
+        const body = loadBody(r.recipeId);
+        if (body) Object.assign(copie, body);
+      }
+      copie.votes = r.votes;
+      copie.average = r.average;
+      if (ctx.account) copie.myRating = Ratings.ratingBy(r.recipeId, ctx.account.email);
       out.push(copie);
     });
     json(res, 200, { threshold: Ratings.MIN_VOTES, recipes: out, progress: Ratings.progress() });
@@ -691,8 +686,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createServer: createServer, allowedBatches: allowedBatches,
-                   previousWeekBatch: previousWeekBatch,
+module.exports = { createServer: createServer, canReadBody: canReadBody,
                    subscriptionActive: subscriptionActive, routes: routes,
                    /* Exposed for the tests only. */
                    _ProductCache: ProductCache, _OffBudget: OffBudget,

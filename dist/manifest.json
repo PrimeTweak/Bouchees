@@ -1,79 +1,31 @@
 {
-  "version": "2026-08-31",
+  "version": "2026-09-02",
   "safetyChecksum": "357c0e4176e1",
-  "batches": [
-    {
-      "id": "2026-06",
-      "title": "The basics",
-      "date": "2026-06-01",
-      "access": "free",
-      "note": "The foundation: a full week of eating, whatever the profile.",
-      "count": 8,
-      "checksum": "748d042ccd56",
-      "weekly": false,
-      "inWindow": true
-    },
-    {
-      "id": "2026-07",
-      "title": "First textures",
-      "date": "2026-07-01",
-      "access": "free",
-      "note": "For starting solids — purées, coarse mash, first finger foods.",
-      "count": 7,
-      "checksum": "75c002af5b22",
-      "weekly": false,
-      "inWindow": true
-    },
-    {
-      "id": "2026-S31",
-      "title": "Week of 2026-S31",
-      "access": "subscriber",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "count": 7,
-      "checksum": "bc03e81670b7",
-      "weekly": true,
-      "inWindow": false
-    },
-    {
-      "id": "2026-S32",
-      "title": "Week of 2026-S32",
-      "access": "subscriber",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "count": 7,
-      "checksum": "4912b7581e01",
-      "weekly": true,
-      "inWindow": true
-    },
-    {
-      "id": "2026-S33",
-      "title": "Week of 2026-S33",
-      "access": "subscriber",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "count": 7,
-      "checksum": "cbe0238beda0",
-      "weekly": true,
-      "inWindow": true
-    },
-    {
-      "id": "2026-S34",
-      "title": "Week of 2026-S34",
-      "access": "subscriber",
-      "note": "Seven recipes aimed at the least-served profiles.",
-      "count": 2,
-      "checksum": "d2d0ce6eefc3",
-      "weekly": true,
-      "inWindow": true
-    }
-  ],
+  "catalogueChecksum": "08a1202fc43a",
+  "rotationWeeks": 16,
+  "counts": {
+    "Meal": 16,
+    "Snack": 22
+  },
+  "target": {
+    "Meal": 112,
+    "Snack": 112
+  },
   "free": [
-    "2026-06",
-    "2026-07"
-  ],
-  "window": [
-    "2026-S34",
-    "2026-S33",
-    "2026-S32"
-  ],
-  "currentWeek": "2026-S36",
-  "windowSize": 3
+    "apple-cinnamon-oatmeal",
+    "baked-fish-nuggets",
+    "banana-bread",
+    "banana-oat-muffins",
+    "date-energy-bites",
+    "fluffy-pancakes",
+    "lentil-and-carrot-patties",
+    "mac-and-cheese-with-hidden-squash",
+    "mini-vegetable-frittatas",
+    "oatmeal-raisin-cookies",
+    "pasta-in-rose-sauce-with-chicken",
+    "silky-hummus",
+    "squash-and-coconut-soup",
+    "sweet-potato-and-chicken-puree",
+    "turkey-and-apple-meatballs"
+  ]
 }

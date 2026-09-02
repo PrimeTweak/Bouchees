@@ -10,18 +10,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -33,18 +30,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -56,18 +50,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -79,18 +70,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -102,18 +90,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -125,18 +110,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -148,18 +130,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -171,18 +150,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -194,18 +170,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -217,18 +190,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -240,18 +210,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -264,18 +231,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -288,18 +252,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -312,18 +273,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -336,18 +294,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -360,18 +315,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -385,18 +337,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -410,18 +359,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -436,18 +382,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -460,18 +403,15 @@
       "not_adaptable": 0,
       "outOfAge": 16,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 5,
-        "Snack": 6,
-        "Dessert": 4
+        "Snack": 17
       },
       "blockers": {},
       "usable": 22,
       "missingCategories": {
-        "Meal": 1,
-        "Dessert": 2
+        "Meal": 1
       },
-      "missing": 3
+      "missing": 1
     },
     {
       "profile": [
@@ -483,17 +423,13 @@
       "not_adaptable": 0,
       "outOfAge": 7,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 13,
-        "Snack": 7,
-        "Dessert": 4
+        "Snack": 18
       },
       "blockers": {},
       "usable": 31,
-      "missingCategories": {
-        "Dessert": 2
-      },
-      "missing": 2
+      "missingCategories": {},
+      "missing": 0
     },
     {
       "profile": [
@@ -505,17 +441,13 @@
       "not_adaptable": 0,
       "outOfAge": 7,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 13,
-        "Snack": 7,
-        "Dessert": 4
+        "Snack": 18
       },
       "blockers": {},
       "usable": 31,
-      "missingCategories": {
-        "Dessert": 2
-      },
-      "missing": 2
+      "missingCategories": {},
+      "missing": 0
     },
     {
       "profile": [
@@ -527,17 +459,13 @@
       "not_adaptable": 0,
       "outOfAge": 7,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 13,
-        "Snack": 7,
-        "Dessert": 4
+        "Snack": 18
       },
       "blockers": {},
       "usable": 31,
-      "missingCategories": {
-        "Dessert": 2
-      },
-      "missing": 2
+      "missingCategories": {},
+      "missing": 0
     },
     {
       "profile": [
@@ -549,17 +477,13 @@
       "not_adaptable": 0,
       "outOfAge": 7,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 13,
-        "Snack": 7,
-        "Dessert": 4
+        "Snack": 18
       },
       "blockers": {},
       "usable": 31,
-      "missingCategories": {
-        "Dessert": 2
-      },
-      "missing": 2
+      "missingCategories": {},
+      "missing": 0
     },
     {
       "profile": [
@@ -571,17 +495,13 @@
       "not_adaptable": 0,
       "outOfAge": 7,
       "byCategory": {
-        "Breakfast": 7,
         "Meal": 13,
-        "Snack": 7,
-        "Dessert": 4
+        "Snack": 18
       },
       "blockers": {},
       "usable": 31,
-      "missingCategories": {
-        "Dessert": 2
-      },
-      "missing": 2
+      "missingCategories": {},
+      "missing": 0
     }
   ],
   "blockers": [
@@ -592,36 +512,6 @@
     }
   ],
   "commande": [
-    {
-      "n": 2,
-      "ageMois": 6,
-      "categories": [
-        "Dessert"
-      ],
-      "evite": [
-        "arachide",
-        "ble",
-        "crustaces_mollusques",
-        "egg",
-        "fish",
-        "lait",
-        "milk",
-        "mustard",
-        "noix",
-        "oeuf",
-        "peanut",
-        "poisson",
-        "sesame",
-        "shellfish",
-        "soy",
-        "soya",
-        "sulphites",
-        "tree_nut",
-        "wheat"
-      ],
-      "passePartout": true,
-      "reason": "22 usable recipes at 6-8 months, 16 du corpus visent plus vieux — il missing 2 dessert. This gap exists for EVERY profile: one recipe that works for all of them fills it."
-    },
     {
       "n": 2,
       "ageMois": 6,

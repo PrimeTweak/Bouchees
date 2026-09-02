@@ -2,7 +2,7 @@
   {
     "id": "banana-oat-muffins",
     "name": "Banana oat muffins",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "12 muffins",
     "minAgeMonths": 6,
     "timeMinutes": 35,
@@ -62,7 +62,7 @@
   {
     "id": "fluffy-pancakes",
     "name": "Fluffy pancakes",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "8 crêpes",
     "minAgeMonths": 6,
     "timeMinutes": 20,
@@ -202,7 +202,7 @@
   {
     "id": "apple-cinnamon-oatmeal",
     "name": "Apple cinnamon oatmeal",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "2 servings",
     "minAgeMonths": 6,
     "timeMinutes": 15,
@@ -556,7 +556,7 @@
   {
     "id": "mini-vegetable-frittatas",
     "name": "Mini vegetable frittatas",
-    "category": "Breakfast",
+    "category": "Snack",
     "servings": "8 mini frittatas",
     "minAgeMonths": 6,
     "timeMinutes": 30,
@@ -764,7 +764,7 @@
   {
     "id": "vanilla-rice-pudding",
     "name": "Vanilla rice pudding",
-    "category": "Dessert",
+    "category": "Snack",
     "servings": "4 servings",
     "minAgeMonths": 6,
     "timeMinutes": 40,
@@ -901,7 +901,7 @@
   {
     "id": "vanilla-chia-pudding",
     "name": "Vanilla chia pudding",
-    "category": "Dessert",
+    "category": "Snack",
     "servings": "4 servings",
     "minAgeMonths": 6,
     "timeMinutes": 10,

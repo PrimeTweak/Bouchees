@@ -272,32 +272,7 @@ test("shopping: an ingredient shared by several recipes appears once", () => {
  * the app fell back to the whole corpus. These two assertions fail on the
  * broken build and pass on the fixed one. */
 
-test("week: every published recipe declares its batch", () => {
-  const fs = require("fs");
-  const dir = path.join(__dirname, "..", "dist", "batches");
-  if (!fs.existsSync(dir)) return;
-  fs.readdirSync(dir).filter((f) => f.endsWith(".json")).forEach((f) => {
-    const lot = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
-    const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
-    arr.forEach((r) => {
-      assert.ok(r.batch, f + ": " + r.id + " has no batch field");
-    });
-  });
-});
 
-test("week: a batch holds between 5 and 10 recipes", () => {
-  const fs = require("fs");
-  const dir = path.join(__dirname, "..", "dist", "batches");
-  if (!fs.existsSync(dir)) return;
-  fs.readdirSync(dir).filter((f) => f.endsWith(".json")).forEach((f) => {
-    const lot = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
-    const arr = Array.isArray(lot) ? lot : (lot.recipes || []);
-    /* The newest batch is allowed to be short — it is still being filled. */
-    if (f.includes("S34")) return;
-    assert.ok(arr.length >= 5 && arr.length <= 10,
-      f + " holds " + arr.length + " recipes; a week is 5 to 10");
-  });
-});
 
 test("shopping: a free batch never produces an empty list", () => {
   const fs = require("fs");
@@ -1061,26 +1036,45 @@ test("gaps: a truncated corpus opens a visible gap", () => {
 
 /* --- A : publication --- */
 
-test("publishing: every recipe lands in a batch, none orphaned", () => {
+test("publishing: every recipe has a card and a body, and nothing else", () => {
   const r = Publier.publier();
-  assert.equal(r.orphans.length, 0, "orphans : " + r.orphans);
-  const total = Object.values(r.content).reduce((s, l) => s + l.length, 0);
-  assert.equal(total, corpusComplet.length);
+  assert.equal(r.catalogue.length, corpusComplet.length, "one card per recipe");
+  assert.equal(Object.keys(r.bodies).length, corpusComplet.length, "one body per recipe");
+  assert.equal(r.unknownCategory.length, 0, "neither Meal nor Snack: " + r.unknownCategory);
 });
 
-test("publishing: the manifest holds NO ingredient, only counts", () => {
+test("publishing: the catalogue holds NO ingredient and NO step, only what is public", () => {
   const r = Publier.publier();
-  const txt = JSON.stringify(r.manifest);
-  assert(!/ingredients|steps/.test(txt), "le manifeste laisse fuir du content");
-  assert(r.manifest.batches.every((l) => typeof l.count === "number"));
+  const txt = JSON.stringify(r.catalogue);
+  assert(!/"ingredients"|"steps"/.test(txt), "the catalogue leaks a body");
+  r.catalogue.forEach((c) => {
+    assert(["Meal", "Snack"].indexOf(c.category) !== -1, c.id + ": " + c.category);
+    assert(typeof c.free === "boolean", c.id + " has no free flag");
+    assert(Array.isArray(c.allergens), c.id + " has no allergen list");
+    assert.equal(Object.keys(c.adaptability).length, Publier.FAMILIES.length, c.id + " matrix incomplete");
+  });
 });
 
-test("publishing: the safety tables sit outside the batches", () => {
+test("publishing: the adaptability matrix says as_is only where the allergen is absent", () => {
+  const r = Publier.publier();
+  r.catalogue.forEach((c) => {
+    c.allergens.forEach((a) => {
+      assert.notEqual(c.adaptability[a], "as_is", c.id + " contains " + a + " yet says as_is");
+    });
+  });
+});
+
+test("publishing: the safety tables sit outside the bodies", () => {
   const r = Publier.publier();
   assert(r.securite.substitutions.length > 0 && r.securite.base.allergens.length === 11);
-  Object.values(r.content).forEach((lot) => lot.forEach((rec) => {
-    assert(!rec.substitutions && !rec.allergenesTable, rec.id);
-  }));
+  Object.values(r.bodies).forEach((b) => { assert(!b.substitutions && !b.allergenesTable, b.id); });
+});
+
+test("publishing: the free list only names recipes that exist", () => {
+  const r = Publier.publier();
+  const ids = new Set(r.catalogue.map((c) => c.id));
+  r.manifest.free.forEach((id) => assert(ids.has(id), "free names a ghost: " + id));
+  assert(r.manifest.free.length >= 10, "the free list is the free tier; it cannot be empty");
 });
 
 /* --- C : prompt et validateur --- */
@@ -1113,12 +1107,12 @@ test("validator: rejects a recipe holding the excluded allergen", () => {
 });
 
 test("validator: accepts a compliant recipe and flags the ambiguous role", () => {
-  const bonne = { id: "test-conforme", name: "Compote de pommes et banane", category: "Dessert",
+  const bonne = { id: "test-conforme", name: "Compote de pommes et banane", category: "Snack",
     servings: "4 portions", minAgeMonths: 6, timeMinutes: 10,
     ingredients: [{ id: "applesauce", qty: 250, unit: "ml", role: "binder" },
                   { id: "banana", qty: 1, unit: "unit" }, { id: "cinnamon", qty: 1, unit: "ml" }],
     steps: ["Crush la banane at la fourchette.", "Mélanger à la compote et à la cannelle."] };
-  const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Dessert"] }, data);
+  const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Snack"] }, data);
   assert.equal(v.ok, true, v.erreurs.join(" / "));
 });
 
@@ -1232,29 +1226,7 @@ test("images: a manifest outliving its file publishes nothing", () => {
 
 /* --- F : droits et Stripe --- */
 
-test("entitlement: without a subscription, the free batches and last week open", () => {
-  const m = Publier.publier().manifest;
-  const free = Server.allowedBatches(m, null);
-  const derniere = Server.previousWeekBatch(m);
-  /* The free tier runs one week behind: the batch before the current one is
-   * open to everyone. Everything newer stays behind the subscription. */
-  assert.deepEqual(free.filter((id) => m.free.indexOf(id) !== -1), m.free, "every free batch opens");
-  if (derniere) {
-    assert(free.indexOf(derniere) !== -1, "last week opens to everyone");
-    assert.equal(free.length, m.free.length + 1, "and nothing else does");
-  } else {
-    assert.deepEqual(free, m.free);
-  }
-  const tous = Server.allowedBatches(m, { subscription: { status: "actif" } });
-  assert.equal(tous.length, m.batches.length);
-});
 
-test("entitlement: last week is the second newest of the window, never the newest", () => {
-  const m = { window: ["2026-S32", "2026-S34", "2026-S33"], batches: [] };
-  assert.equal(Server.previousWeekBatch(m), "2026-S33");
-  assert.equal(Server.previousWeekBatch({ window: ["2026-S34"], batches: [] }), null, "one week alone has no previous");
-  assert.equal(Server.previousWeekBatch({ window: [], batches: [] }), null);
-});
 
 test("entitlement: a late payment keeps access briefly, then loses it", () => {
   const hier = new Date(Date.now() - 864e5).toISOString();
@@ -1513,55 +1485,12 @@ test("iOS: the template hands subscription to StoreKit, no web checkout", () => 
 
 /* ---------- weeks glissantes, notes, classement (v1.0) ---------- */
 
-const Semaines = require(path.join(__dirname, "..", "tools", "weeks.js"));
 const Ratings = require(path.join(__dirname, "..", "server", "ratings.js"));
 
-test("weeks: the ISO identifier computes and compares correctly", () => {
-  const id = Semaines.identifiantSemaine(new Date("2026-08-19T12:00:00Z"));
-  assert(/^\d{4}-S\d{2}$/.test(id), "format inattendu : " + id);
-  assert(Semaines.rang("2026-S02") < Semaines.rang("2026-S34"));
-  assert(Semaines.rang("2025-S52") < Semaines.rang("2026-S01"), "le passage d'année must be ordonné");
-});
 
-test("weeks: stepping backwards crosses the year boundary", () => {
-  const s = Semaines.semainesPrecedentes(new Date("2026-01-08T12:00:00Z"), 4);
-  assert.equal(s.length, 4);
-  assert(s.some((x) => x.startsWith("2025-")), "on doit retomber sur 2025 : " + s.join(", "));
-  for (let i = 1; i < s.length; i++) {
-    assert(Semaines.rang(s[i]) < Semaines.rang(s[i - 1]), "ordre décroissant attendu");
-  }
-});
 
-test("window: free batches never rotate, weekly ones do", () => {
-  const batches = [
-    { id: "2026-06", access: "free" },
-    { id: "2026-S30", access: "subscriber" }, { id: "2026-S31", access: "subscriber" },
-    { id: "2026-S32", access: "subscriber" }, { id: "2026-S33", access: "subscriber" }
-  ];
-  const f = Semaines.fenetreCourante(batches, Date.now());
-  assert.deepEqual(f.free, ["2026-06"]);
-  assert.equal(f.window.length, Semaines.FENETRE);
-  assert.deepEqual(f.window, ["2026-S33", "2026-S32", "2026-S31"]);
-  assert.deepEqual(f.horsFenetre, ["2026-S30"], "la plus vieille sort de vue");
-});
 
-test("window: fewer batches than the window breaks nothing", () => {
-  const f = Semaines.fenetreCourante([{ id: "2026-S33", access: "subscriber" }], Date.now());
-  assert.equal(f.window.length, 1);
-  assert.equal(f.horsFenetre.length, 0);
-});
 
-test("publishing: the manifest marks what is inside the window", () => {
-  const r = Publier.publier();
-  const hebdo = r.manifest.batches.filter((l) => l.weekly);
-  assert(hebdo.length > 0, "il doit exister des batches hebdomadaires");
-  assert(r.manifest.batches.filter((l) => l.inWindow).length > 0);
-  assert(Array.isArray(r.manifest.window));
-  assert(r.manifest.window.length <= Semaines.FENETRE);
-  // Les batches free restent always visible
-  r.manifest.batches.filter((l) => l.access === "free")
-    .forEach((l) => assert(l.inWindow, l.id + " libre doit rester visible"));
-});
 
 test("notes : bornes, remplacement et retrait", () => {
   assert.equal(Ratings.rate("r1", "a@x.ca", 6).ok, false);
@@ -1881,5 +1810,94 @@ test("server: a full miss spends one unit per request made, and nothing before t
   }
   t.close();
 });
+
+/* ---------- the wall, on a live instance ---------- */
+
+test("wall: the catalogue is public and carries no body", async () => {
+  const t = await serveurDeTest();
+  const r = await t.call("GET", "/api/catalogue");
+  assert.equal(r.status, 200);
+  assert(r.json.catalogue.length > 10);
+  assert(!JSON.stringify(r.json).includes('"steps"'), "a body leaked through the catalogue");
+  t.close();
+});
+
+test("wall: a free body goes to anyone, a paid body never leaves without a subscription", async () => {
+  const t = await serveurDeTest();
+  const cat = (await t.call("GET", "/api/catalogue")).json.catalogue;
+  const free = cat.find((c) => c.free), paid = cat.find((c) => !c.free);
+  assert(free && paid, "the pool needs both kinds for this test");
+  const ok = await t.call("GET", "/api/recipes?ids=" + free.id);
+  assert.equal(ok.status, 200); assert(ok.json.recipes[0].steps.length > 0, "the free body has its steps");
+  const no = await t.call("GET", "/api/recipes?ids=" + paid.id);
+  assert.equal(no.status, 402); assert(!JSON.stringify(no.json).includes('"steps"'), "a paid body leaked");
+  /* Mixed request: the refusal names the paid one and sends NOTHING, not even the free one. */
+  const mix = await t.call("GET", "/api/recipes?ids=" + free.id + "," + paid.id);
+  assert.equal(mix.status, 402); assert.deepEqual(mix.json.recipes, [paid.id]);
+  assert(!JSON.stringify(mix.json).includes('"steps"'));
+  t.close();
+});
+
+test("wall: a subscriber reads every body", async () => {
+  const t = await serveurDeTest({
+    accounts: { "s@b.co": { email: "s@b.co", subscription: { status: "actif" } } },
+    tokens: { tok: { email: "s@b.co", cree: Date.now() } }
+  });
+  const cat = (await t.call("GET", "/api/catalogue")).json.catalogue;
+  const paid = cat.find((c) => !c.free);
+  const r = await t.call("GET", "/api/recipes?ids=" + paid.id, null, { authorization: "Bearer tok" });
+  assert.equal(r.status, 200); assert(r.json.recipes[0].steps.length > 0);
+  t.close();
+});
+
+test("wall: a malformed id never reaches the file system", async () => {
+  const t = await serveurDeTest();
+  const r = await t.call("GET", "/api/recipes?ids=" + encodeURIComponent("../manifest"));
+  assert.equal(r.status, 404, "an id outside the catalogue is not looked up");
+  t.close();
+});
+
+/* ---------- the sequence: a JavaScript twin of Sequence.swift ---------- */
+/* Same hash, same choice, same fallback. If the Swift drifts from this, the
+ * app's rotation drifts from what these tests promise. */
+(function () {
+  const cat = Publier.publier().catalogue;
+function mix(h,v){h=BigInt.asUintN(64,(h^v)*0xBF58476D1CE4E5B9n);h=BigInt.asUintN(64,(h^(h>>31n))*0x94D049BB133111EBn);return h^(h>>29n);}
+function score(seed,day,id){let h=seed^0x9E3779B97F4A7C15n;h=mix(h,BigInt.asUintN(64,BigInt(day)));for(const b of Buffer.from(id))h=mix(h,BigInt(b));return h;}
+function choose(seed,day,cands,hist,isMeal,gap){if(!cands.length)return null;const last={};for(const [d,p] of Object.entries(hist)){const dd=+d;if(dd>=day)continue;const id=isMeal?p.meal:p.snack;if(id&&(last[id]??-1e9)<dd)last[id]=dd;}
+ let rested=cands.filter(c=>(last[c.id]??-1e9)<=day-gap);let field=rested;
+ if(!rested.length){const oldest=Math.min(...cands.map(c=>last[c.id]??-1e9));field=cands.filter(c=>(last[c.id]??-1e9)===oldest);}
+ return field.reduce((m,c)=>score(seed,day,c.id)<score(seed,day,m.id)?c:m).id;}
+function pick(seed,day,pool,hist,gap){if(hist[day])return hist[day];const free=day<14;const m=pool.filter(r=>r.category==='Meal'&&(!free||r.free));const s=pool.filter(r=>r.category==='Snack'&&(!free||r.free));return{meal:choose(seed,day,m,hist,true,gap),snack:choose(seed,day,s,hist,false,gap)};}
+function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,cat,h,gap);return h;}
+
+  test("sequence: two seeds give two different sequences", () => {
+    const A = run(12345n, 120, 112), B = run(99999n, 120, 112);
+    const same = Object.keys(A).filter((d) => A[d].meal === B[d].meal).length;
+    assert(same < 30, "two devices share " + same + " of 120 days");
+  });
+
+  test("sequence: the first fourteen days draw from the free recipes only", () => {
+    const A = run(12345n, 14, 112);
+    const free = new Set(cat.filter((c) => c.free).map((c) => c.id));
+    Object.values(A).forEach((p) => { assert(free.has(p.meal) && free.has(p.snack)); });
+  });
+
+  test("sequence: past the free window, a recipe waits the whole pool before returning", () => {
+    const A = run(12345n, 200, 112); const meals = Object.values(A).map((p) => p.meal);
+    const nMeals = cat.filter((c) => c.category === "Meal").length;
+    const seen = {}; let minGap = 1e9;
+    meals.forEach((m, i) => { if (i >= 14 && seen[m] !== undefined && seen[m] >= 14) minGap = Math.min(minGap, i - seen[m]); seen[m] = i; });
+    assert.equal(minGap, nMeals, "a meal came back after " + minGap + " days with a pool of " + nMeals);
+  });
+
+  test("sequence: a recipe joining the pool changes the days to come, never the days shown", () => {
+    const A = run(12345n, 30, 112);
+    const bigger = cat.concat([{ id: "zz-new-meal", category: "Meal", free: false }]);
+    const h = {};
+    for (let d = 0; d < 30; d++) h[d] = d < 20 ? A[d] : pick(12345n, d, bigger, h, 112);
+    for (let d = 0; d < 20; d++) assert.equal(h[d].meal, A[d].meal, "day " + d + " changed");
+  });
+})();
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

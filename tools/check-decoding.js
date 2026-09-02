@@ -29,7 +29,9 @@ function fieldsOf(structName) {
     if (!f) return;
     const rest = f[2].trim();
     const suivante = (lines[idx + 1] || "").trim();
-    if (rest.endsWith("{") || suivante.startsWith("{")) return;   /* computed */
+    /* A type annotation never holds a brace: one on the line, or opening
+     * the next, means a computed property. */
+    if (rest.includes("{") || suivante.startsWith("{")) return;
     if (rest.includes("=")) return;                                /* has a default */
     out.push({ name: f[1], optional: rest.replace(/\s*\{.*$/, "").trim().endsWith("?") });
   });
@@ -41,6 +43,12 @@ const base = read("data/base.json");
 const catalogue = read("data/ingredients.json");
 const corpus = read("data/recipes.json");
 const firstIngredientKey = Object.keys(catalogue)[0];
+/* A card from the published catalogue, or the corpus recipe without its
+ * body when nothing has been published yet. */
+function catalogueCard() {
+  try { return read("dist/catalogue.json")[0]; }
+  catch (e) { const c = Object.assign({}, corpus[0]); delete c.ingredients; delete c.steps; return c; }
+}
 
 const CASES = [
   { struct: "ReferenceTables", sample: base, label: "base.json" },
@@ -49,6 +57,7 @@ const CASES = [
   { struct: "TextureStage", sample: base.stages[base.stages.length - 1], label: "stage, no note" },
   { struct: "IngredientDefinition", sample: catalogue[firstIngredientKey], label: "ingredient" },
   { struct: "Recipe", sample: corpus[0], label: "recipe" },
+  { struct: "Recipe", sample: catalogueCard(), label: "catalogue card", defaulted: ["ingredients", "steps"] },
   { struct: "RecipeIngredient", sample: corpus[0].ingredients[0], label: "recipe ingredient" }
 ];
 
@@ -57,6 +66,7 @@ CASES.forEach(function (c) {
   const fields = fieldsOf(c.struct);
   if (!fields) { problems.push("struct " + c.struct + " not found in Models.swift"); return; }
   fields.forEach(function (f) {
+    if ((c.defaulted || []).indexOf(f.name) !== -1) return;   /* decodes with a default */
     if (!f.optional && !(f.name in c.sample)) {
       const near = Object.keys(c.sample).find(function (k) {
         return k.toLowerCase().startsWith(f.name.slice(0, 4).toLowerCase());
@@ -184,7 +194,10 @@ if (!blocStatut) {
   }
 
   scan(path.join(__dirname, "..", "data/recipes.json"));
-  var dir = path.join(__dirname, "..", "dist/batches");
+  /* The published shapes: the catalogue's cards, and the bodies. */
+  const cat = path.join(__dirname, "..", "dist/catalogue.json");
+  if (fs.existsSync(cat)) scan(cat);
+  var dir = path.join(__dirname, "..", "dist/recipes");
   if (fs.existsSync(dir)) {
     fs.readdirSync(dir).forEach(function (f) {
       if (f.slice(-5) === ".json") scan(path.join(dir, f));
