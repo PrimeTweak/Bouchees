@@ -1,10 +1,10 @@
 {
-  "build": 132,
+  "build": 134,
   "date": "2026-09-02",
   "carries": [
-    "cumulative from 128: 129, 130, 131 and this",
-    "eight generated recipes carried a source keyed name instead of source; the Swift decoder failed on them and, the catalogue being one array, dropped all thirty-eight: no hero, seven empty days, an empty list, 0 today, and the Offline chip, since the server's catalogue failed the same way",
-    "the data key is corrected; a malformed source is now a lost credit, never a lost recipe; every recipe array decodes lossily, so one bad card never takes the others down; check-decoding compares RecipeSource against every source shape in the corpus, which it never did",
-    "the duplicate-type rule counts top-level declarations only; a CodingKeys nested in each Codable struct is the language's own pattern"
+    "recipe rows use Apple's Headline and Subheadline: 17 semibold and 15",
+    "cooking mode plays a small drawing of the step's verb instead of the recipe photo on every step: twenty-one drawings as data in one renderer, one per verb family",
+    "the verb table lives in data/step-verbs.json and ships in the app; a verb in no family shows the photo instead, never a wrong gesture",
+    "under Reduce Motion the drawing stands still"
   ]
 }

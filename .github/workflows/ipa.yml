@@ -73,7 +73,7 @@ jobs:
           rm -rf "$R"; mkdir -p "$R/recipes"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
-          cp data/label-lexicon.json "$R/"
+          cp data/label-lexicon.json data/step-verbs.json "$R/"
           cp dist/catalogue.json "$R/"
           python3 - <<'PY'
           import json, shutil, pathlib

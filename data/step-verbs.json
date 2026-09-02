@@ -1,0 +1,154 @@
+{
+  "_doc": "Which animation a cooking step plays, by the verb it opens with. A verb belongs to a family; a family has one animation. A verb in no family plays nothing. Edit freely: no build needed, the app reads this table.",
+  "pour": [
+    "pour",
+    "add",
+    "drizzle",
+    "dip",
+    "sprinkle",
+    "top",
+    "put",
+    "place"
+  ],
+  "bake": [
+    "preheat",
+    "bake",
+    "roast",
+    "broil",
+    "grill"
+  ],
+  "stir": [
+    "stir",
+    "mix",
+    "combine",
+    "toss",
+    "make",
+    "work"
+  ],
+  "pan": [
+    "heat",
+    "cook",
+    "sauté",
+    "saute",
+    "brown",
+    "warm",
+    "sear",
+    "fry",
+    "caramelise",
+    "caramelize",
+    "melt"
+  ],
+  "serve": [
+    "serve",
+    "spoon",
+    "divide",
+    "plate"
+  ],
+  "rest": [
+    "rest",
+    "cool",
+    "chill",
+    "let",
+    "set",
+    "leave",
+    "wait"
+  ],
+  "peel": [
+    "peel",
+    "core",
+    "trim",
+    "halve",
+    "seed"
+  ],
+  "store": [
+    "store",
+    "freeze",
+    "keep",
+    "keeps",
+    "refrigerate"
+  ],
+  "chop": [
+    "chop",
+    "dice",
+    "mince",
+    "cut",
+    "slice",
+    "quarter",
+    "break"
+  ],
+  "blend": [
+    "blend",
+    "purée",
+    "puree",
+    "pulse",
+    "process",
+    "run"
+  ],
+  "fold": [
+    "fold"
+  ],
+  "spread": [
+    "spread",
+    "line",
+    "brush",
+    "oil",
+    "grease",
+    "arrange",
+    "space"
+  ],
+  "simmer": [
+    "simmer",
+    "boil",
+    "bring",
+    "steam",
+    "poach",
+    "reduce"
+  ],
+  "drain": [
+    "drain",
+    "rinse",
+    "pat",
+    "squeeze",
+    "strain"
+  ],
+  "mash": [
+    "mash",
+    "crush",
+    "soften",
+    "press"
+  ],
+  "whisk": [
+    "whisk",
+    "beat",
+    "cream"
+  ],
+  "roll": [
+    "shape",
+    "roll",
+    "wet",
+    "form",
+    "scoop",
+    "drop"
+  ],
+  "check": [
+    "check",
+    "taste",
+    "test",
+    "look"
+  ],
+  "grate": [
+    "grate",
+    "shred",
+    "zest"
+  ],
+  "flip": [
+    "flip",
+    "turn"
+  ],
+  "cover": [
+    "cover",
+    "uncover",
+    "remove",
+    "lift"
+  ]
+}

@@ -79,7 +79,7 @@ struct CookingMode: View {
 
     private var stepText: some View {
         Text(steps.indices.contains(step) ? steps[step] : "")
-            .scaledFont(Type.display, weight: .semibold)
+            .scaledFont(Type.caption)
             .lineSpacing(5)
             .foregroundStyle(Tone.text)
             .fixedSize(horizontal: false, vertical: true)
@@ -88,16 +88,25 @@ struct CookingMode: View {
             .id(step)
     }
 
-    /// The dish, small, so you can see what it should look like while you make
-    /// it. It is a recipe app: the picture belongs on every screen where the
-    /// parent is deciding whether they got it right.
+    /// The verb's drawing, in place of the photo that repeated on every
+    /// step. A step whose verb is in no family shows the photo instead.
+    @ViewBuilder
     private var stepPhoto: some View {
-        RecipeVisual(recipe: recipe, result: result)
-            .frame(height: 130)
-            .frame(maxWidth: .infinity)
-            .clipped()
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .padding(.top, 24)
+        if StepVerbs.family(for: steps[step]) != nil {
+            StepVerbView(step: steps[step])
+                .frame(width: 96, height: 96)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 20)
+                .id(step)
+                .transition(.opacity)
+        } else {
+            RecipeVisual(recipe: recipe, result: result)
+                .frame(height: 130)
+                .frame(maxWidth: .infinity)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .padding(.top, 24)
+        }
     }
 
     /// The swaps that matter for THIS step, with their ratios. Without the

@@ -8,6 +8,8 @@ struct RecipesScreen: View {
     @Environment(AppState.self) private var app
 
     @State private var meal: String?
+    /// The day a dragged recipe is hovering over, for the highlight.
+    @State private var targetedDay: Int?
     /* The stack lives at the root now; a screen pushes a Route rather than
      * owning a destination. */
     @Environment(\.navigate) private var navigate
@@ -117,13 +119,13 @@ struct RecipesScreen: View {
                             .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.7), radius: 10)
                         Text(h.recipe.name)
-                            .scaledFont(Type.display, weight: .bold)
+                            .scaledFont(Type.heading)
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.leading)
                             .shadow(color: .black.opacity(0.62), radius: 22)
                             .padding(.top, 9)
                         Text(h.recipe.subtitle)
-                            .scaledFont(Type.secondary)
+                            .scaledFont(Type.caption)
                             .foregroundStyle(.white.opacity(0.74))
                             .padding(.top, 9)
                         VerdictPill(result: h.result, firstName: profile.firstName)
@@ -310,9 +312,21 @@ struct RecipesScreen: View {
              * read as a block instead of a heavier line. */
             .padding(.horizontal, 8)
             .padding(.top, 10)
+            .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
+                                targeted: $targetedDay) { id in
+                if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
+            })
         } else {
-            dayHeader(dayIndex, slot: slot, count: dishes.count, today: false)
-            dayBody(dayIndex, dishes: dishes, slot: slot)
+            VStack(alignment: .leading, spacing: 0) {
+                dayHeader(dayIndex, slot: slot, count: dishes.count, today: false)
+                dayBody(dayIndex, dishes: dishes, slot: slot)
+            }
+            .background(targetedDay == dayIndex ? Tone.brand.opacity(0.06) : .clear,
+                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
+                                targeted: $targetedDay) { id in
+                if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
+            })
         }
     }
 
@@ -558,8 +572,31 @@ struct VerdictPill: View {
     }
 }
 
-/// A row, not a card. 62pt thumbnail, name, meta, verdict: draggable only on
-/// the week the parent can rearrange.
+/// A day of the current week receives a dragged recipe; other weeks do not.
+private struct DropDayIf: ViewModifier {
+    let active: Bool
+    let day: Int
+    @Binding var targeted: Int?
+    let receive: (String) -> Void
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if active {
+            content.dropDestination(for: String.self) { ids, _ in
+                guard let id = ids.first else { return false }
+                withAnimation(.soft(0.25)) { receive(id) }
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                return true
+            } isTargeted: { over in
+                targeted = over ? day : (targeted == day ? nil : targeted)
+            }
+        } else {
+            content
+        }
+    }
+}
+
+/// A row, not a card: draggable only on the week the parent can rearrange.
 private struct DraggableIf: ViewModifier {
     let active: Bool
     let recipe: Recipe
@@ -619,12 +656,12 @@ struct RecipeRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(recipe.name)
-                    .scaledFont(Type.title)
+                    .scaledFont(Type.heading)
                     .foregroundStyle(Tone.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 Text(recipe.subtitle)
-                    .scaledFont(Type.caption)
+                    .scaledFont(Type.body)
                     .foregroundStyle(Tone.text2)
                     .lineLimit(1)
             }
