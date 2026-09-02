@@ -29,7 +29,7 @@ final class SavedRecipes {
 
     private func load() {
         guard let d = try? Data(contentsOf: file),
-              let r = try? JSONDecoder().decode([Recipe].self, from: d) else { return }
+              let r = (try? JSONDecoder().decode(LossyArray<Recipe>.self, from: d))?.items else { return }
         recipes = r
     }
 

@@ -374,7 +374,7 @@ final class AppState {
     private func bundledCatalogue() -> [Recipe] {
         guard let url = Resources.bundledCatalogue(),
               let d = try? Data(contentsOf: url),
-              var cards = try? JSONDecoder().decode([Recipe].self, from: d) else { return [] }
+              var cards = (try? JSONDecoder().decode(LossyArray<Recipe>.self, from: d))?.items else { return [] }
         var bodies: [String: Recipe] = [:]
         for u in Resources.bundledBodies() {
             if let bd = try? Data(contentsOf: u), let b = try? JSONDecoder().decode(Recipe.self, from: bd) {

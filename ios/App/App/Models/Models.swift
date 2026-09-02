@@ -188,7 +188,8 @@ struct Recipe: Codable, Hashable, Identifiable, Sendable {
         timeMinutes = try c.decodeIfPresent(Int.self, forKey: .timeMinutes)
         ingredients = try c.decodeIfPresent([RecipeIngredient].self, forKey: .ingredients) ?? []
         steps = try c.decodeIfPresent([String].self, forKey: .steps) ?? []
-        source = try c.decodeIfPresent(RecipeSource.self, forKey: .source)
+        /* A malformed source is a lost credit, not a lost recipe. */
+        source = (try? c.decodeIfPresent(RecipeSource.self, forKey: .source)) ?? nil
         image = try c.decodeIfPresent(String.self, forKey: .image)
         thumb = try c.decodeIfPresent(String.self, forKey: .thumb)
         free = try c.decodeIfPresent(Bool.self, forKey: .free)
@@ -362,8 +363,30 @@ struct ManifestResponse: Codable, Sendable {
     let catalogueChecksum: String?
 }
 
-struct CatalogueResponse: Codable, Sendable {
+/// An array that keeps what decodes and drops what does not. Eight cards
+/// with one bad key once emptied the whole catalogue: one element must
+/// never take the others down with it.
+struct LossyArray<Element: Decodable & Sendable>: Decodable, Sendable {
+    let items: [Element]
+    private struct Skip: Decodable {}
+    init(from decoder: Decoder) throws {
+        var c = try decoder.unkeyedContainer()
+        var out: [Element] = []
+        while !c.isAtEnd {
+            if let v = try? c.decode(Element.self) { out.append(v) }
+            else { _ = try? c.decode(Skip.self) }
+        }
+        items = out
+    }
+}
+
+struct CatalogueResponse: Decodable, Sendable {
     let catalogue: [Recipe]
+    enum CodingKeys: String, CodingKey { case catalogue }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        catalogue = try c.decode(LossyArray<Recipe>.self, forKey: .catalogue).items
+    }
 }
 
 /// Summary returned by /api/ratings — the public total, plus my own rating.
@@ -378,10 +401,17 @@ struct TopRatedResponse: Codable, Sendable {
     let recipes: [Recipe]
 }
 
-struct RecipesResponse: Codable, Sendable {
+struct RecipesResponse: Decodable, Sendable {
     let subscribed: Bool?
     let recipes: [Recipe]
     let unknown: [String]?
+    enum CodingKeys: String, CodingKey { case subscribed, recipes, unknown }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        subscribed = try c.decodeIfPresent(Bool.self, forKey: .subscribed)
+        recipes = try c.decode(LossyArray<Recipe>.self, forKey: .recipes).items
+        unknown = try c.decodeIfPresent([String].self, forKey: .unknown)
+    }
 }
 
 // MARK: - Substitution table, for display

@@ -60,9 +60,10 @@ def check():
             if a != b:
                 problems.append(f"{filename}: unbalanced {label} ({a} vs {b})")
 
-        # 2. type declarations
+        # 2. type declarations — top level only: a CodingKeys nested in each
+        #    Codable struct is the language's own pattern, not a duplicate
         for m in re.finditer(
-                r'^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:public |private |internal |fileprivate )?'
+                r'^(?:@\w+(?:\([^)]*\))?\s+)*(?:public |private |internal |fileprivate )?'
                 r'(?:final )?(struct|class|enum|actor|protocol|typealias)\s+(\w+)', code, re.M):
             definitions.setdefault(m.group(2), []).append(filename)
 

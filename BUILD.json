@@ -1,17 +1,10 @@
 {
-  "build": 130,
+  "build": 132,
   "date": "2026-09-02",
   "carries": [
-    "cumulative: 128 (the hidden workflows and the pipeline cleanup), 129 (the empty-day trap) and the approved wave",
-    "the runner keeps Montreal time, so a build's files carry the parent's clock",
-    "the onboarding name field says First name, never an example child",
-    "text3 is one shade darker: 4.6 to 1 on the canvas, so eyebrows and the disclaimer clear AA",
-    "eight named type sizes replace thirty-two; nothing under ten points; the checker refuses a literal outside the scale",
-    "a snack is smaller and warmer than a meal at the thumbnail",
-    "cooking mode opens the ingredient list in a sheet without leaving the step",
-    "the shopping checkbox is 24pt in text2 and ticks in green with a light tap; the whole row was already the target",
-    "pantry staples — salt, oil, baking powder, sixteen in all — are flagged in the catalogue, listed apart under Check the pantry, and no longer counted as something to buy",
-    "a counted ingredient reads as what it is: 2 apples, not 2 unit",
-    "the verdict on the hero and at the top of the recipe, and the swap explained in the onboarding demo, were already there"
+    "cumulative from 128: 129, 130, 131 and this",
+    "eight generated recipes carried a source keyed name instead of source; the Swift decoder failed on them and, the catalogue being one array, dropped all thirty-eight: no hero, seven empty days, an empty list, 0 today, and the Offline chip, since the server's catalogue failed the same way",
+    "the data key is corrected; a malformed source is now a lost credit, never a lost recipe; every recipe array decodes lossily, so one bad card never takes the others down; check-decoding compares RecipeSource against every source shape in the corpus, which it never did",
+    "the duplicate-type rule counts top-level declarations only; a CodingKeys nested in each Codable struct is the language's own pattern"
   ]
 }

@@ -53,17 +53,20 @@
       }
     ],
     "steps": [
-      "Preheat the oven to 180 °C and grease 12 muffin cups.",
-      "Mix the banana, egg, milk and oil.",
-      "Fold in the flour, oats, baking powder and cinnamon without overmixing.",
-      "Divide into the cups and bake for 20 to 22 minutes."
+      "Preheat the oven to 190 °C (375 °F). Line a 12-cup muffin tin with paper liners.",
+      "In a large bowl, whisk the wheat flour, the rolled oats, the baking powder and the cinnamon.",
+      "In another bowl, mix the mashed banana, the egg, the cow's milk and the canola oil until smooth.",
+      "Pour the wet mixture over the dry and fold with a spatula just until no dry flour shows. Lumps are fine.",
+      "Divide between the 12 cups; they should be about three-quarters full.",
+      "Bake 18 to 22 minutes, until golden and a toothpick in the centre comes out clean.",
+      "Cool 5 minutes in the tin, then on a rack. Under 12 months, break into pea-sized pieces. Freezes up to 2 months."
     ]
   },
   {
     "id": "fluffy-pancakes",
     "name": "Fluffy pancakes",
     "category": "Snack",
-    "servings": "8 crêpes",
+    "servings": "8 pancakes · 4 portions",
     "minAgeMonths": 6,
     "timeMinutes": 20,
     "ingredients": [
@@ -98,17 +101,20 @@
       }
     ],
     "steps": [
-      "Whisk the eggs with the milk and oil.",
-      "Fold in the flour and baking powder until smooth.",
-      "Cook over medium heat, about 2 minutes per side.",
-      "Serve in finger-width strips for the youngest children."
+      "In a large bowl, whisk the wheat flour with the baking powder.",
+      "In a jug, beat the eggs with the cow's milk.",
+      "Pour the milk mixture over the flour and whisk just until smooth; a few small lumps are fine. Rest 5 minutes.",
+      "Heat a non-stick pan over medium heat and brush it with a little of the canola oil, about 30 seconds, until it shimmers.",
+      "Pour 60 ml of batter per pancake. Cook 2 minutes, until bubbles form on top and the edges look set.",
+      "Flip and cook 1 to 2 minutes more, until golden underneath. Oil the pan again between batches.",
+      "Cut into strips for a baby, quarters for a toddler. Freeze between sheets of parchment, up to 1 month."
     ]
   },
   {
     "id": "lentil-and-carrot-patties",
     "name": "Lentil and carrot patties",
     "category": "Meal",
-    "servings": "10 patties",
+    "servings": "10 patties · 3 family portions",
     "minAgeMonths": 6,
     "timeMinutes": 30,
     "ingredients": [
@@ -154,17 +160,20 @@
       }
     ],
     "steps": [
-      "Coarsely mash the lentils with a fork.",
-      "Mix with the grated carrot, egg, breadcrumbs and garlic.",
-      "Shape into flat, firmly packed patties.",
-      "Brown for 3 to 4 minutes per side in the oil."
+      "Drain the cooked lentils well and mash them roughly with a fork in a large bowl; leave some texture.",
+      "Grate the cooked carrot and mince the garlic. Add both to the lentils.",
+      "Add the egg, the breadcrumbs and the salt. Mix with a spoon until it holds together when pressed.",
+      "Shape into 10 patties about 6 cm across and 1 cm thick. Chill 10 minutes so they firm up.",
+      "Heat the olive oil in a large non-stick pan over medium heat, about 1 minute, until it shimmers.",
+      "Cook the patties 4 to 5 minutes per side, until golden and crisp at the edges. Do not crowd the pan.",
+      "Drain on paper towel. Under 12 months, break a patty into pea-sized pieces. Keeps 3 days in the fridge."
     ]
   },
   {
     "id": "sweet-potato-and-chicken-puree",
     "name": "Sweet potato and chicken purée",
     "category": "Meal",
-    "servings": "4 servings",
+    "servings": "4 baby portions",
     "minAgeMonths": 6,
     "timeMinutes": 25,
     "ingredients": [
@@ -194,16 +203,20 @@
       }
     ],
     "steps": [
-      "Cook the sweet potato and chicken in the broth until tender.",
-      "Purée with the cooking liquid and the oil.",
-      "Adjust the texture to the child's age: smooth, mashed or in pieces."
+      "Peel the sweet potato and cut it into 2 cm cubes.",
+      "Cut the chicken into 1 cm pieces, trimming any fat.",
+      "Warm the olive oil in a small pot over medium heat, about 30 seconds, until it shimmers.",
+      "Add the chicken and cook 3 to 4 minutes, stirring, until no pink remains.",
+      "Add the sweet potato and the chicken broth. Cover and simmer 12 to 15 minutes, until the sweet potato mashes easily with a fork.",
+      "Blend smooth for 6 months, or mash with a fork from 9 months. Loosen with a spoon of broth if too thick.",
+      "Cool to lukewarm before serving. Keeps 2 days in the fridge, or freeze in an ice-cube tray."
     ]
   },
   {
     "id": "apple-cinnamon-oatmeal",
     "name": "Apple cinnamon oatmeal",
     "category": "Snack",
-    "servings": "2 servings",
+    "servings": "2 portions",
     "minAgeMonths": 6,
     "timeMinutes": 15,
     "ingredients": [
@@ -231,16 +244,19 @@
       }
     ],
     "steps": [
-      "Bring the milk to a simmer with the grated apple.",
-      "Add the oats and cook for 5 minutes, stirring.",
-      "Let cool slightly — the texture thickens as it cools."
+      "Peel, core and grate the apple on the large holes of a box grater.",
+      "Pour the cow's milk into a small pot with the rolled oats and the cinnamon. Stir once.",
+      "Bring to a simmer over medium heat, about 3 minutes, stirring, until small bubbles break the surface.",
+      "Add the grated apple and cook 5 to 6 minutes more, stirring often, until the oats are soft and the oatmeal is thick.",
+      "Take off the heat and let it stand 2 minutes; it thickens as it cools.",
+      "Serve lukewarm. Under 12 months, blend or thin with a spoon of milk. Keeps 2 days in the fridge."
     ]
   },
   {
     "id": "date-energy-bites",
     "name": "Date energy bites",
     "category": "Snack",
-    "servings": "15 bites",
+    "servings": "15 bites · 5 snack portions",
     "minAgeMonths": 18,
     "timeMinutes": 15,
     "ingredients": [
@@ -272,16 +288,19 @@
       }
     ],
     "steps": [
-      "Blend the dates into a paste in a food processor.",
-      "Add the peanut butter, oats, chia and vanilla, then pulse.",
-      "Roll into small balls and refrigerate for 30 minutes."
+      "Check the pitted dates for stones and chop them roughly.",
+      "Put the dates, the natural peanut butter and the vanilla extract in a food processor. Pulse 30 seconds, until it forms a sticky paste.",
+      "Add the rolled oats and the chia seeds. Pulse 20 seconds more, until the mixture holds together when pressed.",
+      "Wet your hands and roll into 15 balls the size of a walnut.",
+      "Chill 30 minutes on a plate, until firm.",
+      "Store in a sealed container: 1 week in the fridge, 2 months in the freezer. Not for under 12 months; halve for toddlers."
     ]
   },
   {
     "id": "pasta-in-rose-sauce-with-chicken",
     "name": "Pasta in rosé sauce with chicken",
     "category": "Meal",
-    "servings": "4 servings",
+    "servings": "4 portions",
     "minAgeMonths": 9,
     "timeMinutes": 30,
     "ingredients": [
@@ -331,17 +350,22 @@
       }
     ],
     "steps": [
-      "Soften the onion and garlic in the oil, then add the diced chicken.",
-      "Add the tomatoes and simmer for 15 minutes.",
-      "Stir in the cream off the heat.",
-      "Toss with the cooked pasta, cut short for young children."
+      "Dice the onion, mince the garlic and cut the chicken into 1 cm pieces.",
+      "Bring a large pot of water to a boil, about 8 minutes, until it bubbles hard.",
+      "Cook the wheat pasta in the boiling water 1 minute less than the package says, until just tender. Drain, keeping 125 ml of the water.",
+      "While the pasta cooks, heat the olive oil in a large pan over medium heat, about 1 minute, until it shimmers.",
+      "Add the onion and cook 4 minutes, stirring, until soft and translucent. Add the garlic and cook 30 seconds, until fragrant.",
+      "Add the chicken and cook 5 to 6 minutes, stirring, until no pink remains.",
+      "Pour in the crushed tomatoes and the salt. Simmer 8 minutes, until the sauce thickens slightly.",
+      "Stir in the heavy cream and the drained pasta; add pasta water a spoon at a time until the sauce coats every piece.",
+      "Cool to lukewarm. Under 12 months, chop the pasta and chicken small. Keeps 3 days in the fridge."
     ]
   },
   {
     "id": "baked-fish-nuggets",
     "name": "Baked fish nuggets",
     "category": "Meal",
-    "servings": "12 nuggets",
+    "servings": "12 nuggets · 3 family portions",
     "minAgeMonths": 9,
     "timeMinutes": 35,
     "ingredients": [
@@ -381,17 +405,21 @@
       }
     ],
     "steps": [
-      "Finely chop the raw fish and the onion.",
-      "Mix with the egg and half the breadcrumbs.",
-      "Shape into nuggets and roll them in the remaining breadcrumbs.",
-      "Bake at 200 °C for 15 minutes, turning halfway through."
+      "Preheat the oven to 220 °C (425 °F). Line a baking sheet with parchment and brush it with half the canola oil.",
+      "Pat the white fish dry with paper towel and cut it into 12 fingers about 2 cm wide. Check for bones with your fingertips.",
+      "Grate the onion finely into a shallow bowl, add the egg and the salt, and beat with a fork.",
+      "Spread the breadcrumbs on a plate.",
+      "Dip each finger in the egg, let it drip, then roll it in the breadcrumbs, pressing so they stick. Set on the sheet.",
+      "Drizzle the remaining canola oil over the nuggets.",
+      "Bake 12 to 15 minutes, until golden and the fish flakes easily with a fork.",
+      "Cool 5 minutes. Under 12 months, flake a nugget into small pieces; toddlers eat them whole. Best the same day."
     ]
   },
   {
     "id": "silky-hummus",
     "name": "Silky hummus",
     "category": "Snack",
-    "servings": "500 ml",
+    "servings": "500 ml · 8 snack portions",
     "minAgeMonths": 6,
     "timeMinutes": 10,
     "ingredients": [
@@ -430,9 +458,12 @@
       }
     ],
     "steps": [
-      "Rinse the chickpeas in warm water.",
-      "Blend all the ingredients until very smooth.",
-      "Loosen with water as needed — smoother for younger children."
+      "Drain and rinse the cooked chickpeas.",
+      "Peel the garlic clove. Put the tahini, the lemon juice and the garlic in a food processor and run 30 seconds, until pale and creamy.",
+      "Add the chickpeas and half the water. Run 1 minute, scraping down the sides once.",
+      "With the motor running, pour in the olive oil and the remaining water. Blend 1 minute more, until smooth and silky.",
+      "Taste; add a spoon of water if it is thicker than you like.",
+      "Spread thin on toast fingers under 12 months, or serve with soft cooked vegetable sticks. Keeps 4 days in the fridge."
     ]
   },
   {
@@ -709,7 +740,7 @@
     "id": "turkey-and-apple-meatballs",
     "name": "Turkey and apple meatballs",
     "category": "Meal",
-    "servings": "20 meatballs",
+    "servings": "20 meatballs · 4 family portions",
     "minAgeMonths": 9,
     "timeMinutes": 35,
     "ingredients": [
@@ -755,10 +786,13 @@
       }
     ],
     "steps": [
-      "Mix all the ingredients without overworking the meat.",
-      "Shape into meatballs the size of a ping-pong ball.",
-      "Bake at 200 °C for 18 to 20 minutes.",
-      "Mash or quarter them for younger children."
+      "Preheat the oven to 200 °C (400 °F). Line a baking sheet with parchment.",
+      "Peel and grate the apple on the large holes of a box grater, then squeeze out the juice with your hands.",
+      "Mince the garlic. In a large bowl, beat the egg with the Dijon mustard and the salt.",
+      "Add the ground turkey, grated apple, garlic and breadcrumbs. Mix with your fingertips just until combined.",
+      "Wet your hands and roll into 20 balls the size of a ping-pong ball. Space them out on the sheet.",
+      "Bake 18 to 20 minutes, until browned on top and no pink remains in the centre (74 °C inside).",
+      "Rest 3 minutes. Under 12 months, mash one with a fork; for toddlers, quarter them. Freezes cooked, up to 2 months."
     ]
   },
   {

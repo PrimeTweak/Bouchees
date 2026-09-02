@@ -55,6 +55,9 @@ function valider(r, brief, data, idsExistants) {
   if (brief && r.minAgeMonths > brief.ageMois)
     a.push("âge minimal " + r.minAgeMonths + " mois alors que la commande visait " + brief.ageMois + " mois");
 
+  /* --- the recipe standard (docs/RECIPE-STANDARD.md), the checkable part --- */
+  standard(r, catalogue).forEach(function (x) { e.push(x); });
+
   /* --- age guidance: it has to be workable at the target age --- */
   r.ingredients.forEach(function (u) {
     const interdit = Engine.interditPour(u.id, r.minAgeMonths, data.base);
@@ -99,4 +102,60 @@ function validerLot(recettes, brief, data, idsExistants) {
   return { acceptees: acceptees, aRevoir: aRevoir, rejetees: rejetees };
 }
 
-module.exports = { valider: valider, validerLot: validerLot };
+/* The seven rules a program can check. A recipe that fails one is a draft,
+ * not a recipe, whoever wrote it. */
+const CUE = /\buntil\b|\bgolden\b|\btender\b|\bsoft\b|\bset\b|\bthick|\bbubbl|\bcooked through\b|\bfirm\b|\bsmooth\b|\bbrowned\b|\bcrisp|\bno pink\b|\bfork\b|\btoothpick\b|\bpulls away\b|\bfragrant\b|\bwilt|\btranslucent\b|\bopaque\b|\bflakes\b/i;
+const COOKS = /\b(bake|roast|fry|saut[eé]|simmer|boil|cook|grill|steam|poach|broil|sear|reduce|melt|heat)\b/i;
+const DURATION = /\d+\s*(?:to\s*\d+\s*)?(?:min|minute|hour|second|sec)s?\b/i;
+const TEMP_BOTH = /\d{2,3}\s*°\s*C\s*\(\s*\d{3}\s*°\s*F\s*\)/;
+const STOP = ["fresh", "ground", "large", "small", "dried", "whole", "plain", "unsweetened", "extract",
+              "powder", "cooked", "natural", "mashed", "pitted", "rolled", "white", "cow", "heavy",
+              "unsalted", "raw", "seeds", "juice", "paste", "flour", "milk", "oil", "sauce", "extra", "virgin"];
+
+function standard(r, catalogue) {
+  const out = [];
+  const steps = Array.isArray(r.steps) ? r.steps : [];
+  const text = steps.join(" ").toLowerCase();
+
+  if (steps.length < 6 || steps.length > 10)
+    out.push("standard 6: " + steps.length + " steps; a recipe has six to ten, one action each");
+  steps.forEach(function (st, i) {
+    if (st.split(/\s+/).length > 26) out.push("standard 6: step " + (i + 1) + " runs past twenty words");
+  });
+  if (/all (?:the|of the) ingredients/.test(text))
+    out.push("standard 1: \"all the ingredients\" names nothing; each ingredient is named with its preparation");
+
+  /* Every ingredient named: at least one significant word of its catalogue
+   * name appears in the steps. */
+  (r.ingredients || []).forEach(function (u) {
+    const def = catalogue[u.id];
+    const name = ((def && def.name) || u.id).toLowerCase().replace(/\(.*?\)/g, "");
+    const words = name.split(/[^a-z']+/).filter(function (w) { return w.length > 2 && STOP.indexOf(w) === -1; });
+    const key = words.length ? words : name.split(/[^a-z']+/).filter(Boolean);
+    const hit = key.some(function (w) { return text.indexOf(w.slice(0, Math.max(4, w.length - 1))) !== -1; });
+    if (!hit) out.push("standard 1: " + name.trim() + " is never named in a step");
+  });
+
+  /* Every cooking step: a duration and a cue. */
+  steps.forEach(function (st, i) {
+    if (!COOKS.test(st)) return;
+    if (!DURATION.test(st)) out.push("standard 5: step " + (i + 1) + " cooks without a duration");
+    if (!CUE.test(st)) out.push("standard 5: step " + (i + 1) + " cooks without a doneness cue");
+  });
+
+  /* An oven recipe: both units, and the oven on before it is used. */
+  if (/\b(oven|bake|roast)\b/i.test(text)) {
+    if (!TEMP_BOTH.test(steps.join(" "))) out.push("standard 4: an oven temperature is written as 200 \u00b0C (400 \u00b0F)");
+    const preheat = steps.findIndex(function (s) { return /preheat/i.test(s); });
+    const bake = steps.findIndex(function (s) { return /\b(bake|roast)\b/i.test(s) && !/preheat/i.test(s); });
+    if (preheat === -1 || (bake !== -1 && preheat > bake)) out.push("standard 2: the oven is preheated before anything bakes");
+  }
+
+  /* Yield in what a family eats. */
+  if (r.servings && /\b(loaf|glass|verre|ml)\b/i.test(r.servings) && !/portion|serving/i.test(r.servings))
+    out.push("standard 7: yield \"" + r.servings + "\" says nothing about portions");
+
+  return out;
+}
+
+module.exports = { valider: valider, standard: standard, validerLot: validerLot };

@@ -50,6 +50,21 @@ function catalogueCard() {
   catch (e) { const c = Object.assign({}, corpus[0]); delete c.ingredients; delete c.steps; return c; }
 }
 
+/* Every distinct shape a `source` object takes across the corpus: one bad
+ * key in one of them once emptied the whole catalogue on the phone. */
+function sourceShapes() {
+  const seen = {}; const out = [];
+  let all = corpus.slice();
+  try { all = all.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
+  try { all = all.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
+  all.forEach(function (r) {
+    if (!r.source || typeof r.source !== "object") return;
+    const k = Object.keys(r.source).sort().join(",");
+    if (!seen[k]) { seen[k] = true; out.push({ struct: "RecipeSource", sample: r.source, label: "source of " + r.id }); }
+  });
+  return out;
+}
+
 const CASES = [
   { struct: "ReferenceTables", sample: base, label: "base.json" },
   { struct: "Allergen", sample: base.allergens[0], label: "allergen" },
@@ -59,7 +74,7 @@ const CASES = [
   { struct: "Recipe", sample: corpus[0], label: "recipe" },
   { struct: "Recipe", sample: catalogueCard(), label: "catalogue card", defaulted: ["ingredients", "steps"] },
   { struct: "RecipeIngredient", sample: corpus[0].ingredients[0], label: "recipe ingredient" }
-];
+].concat(sourceShapes());
 
 const problems = [];
 CASES.forEach(function (c) {

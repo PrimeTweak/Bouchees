@@ -44,10 +44,9 @@
       "Serve warm. Before 9 months, blend everything for a perfectly smooth texture."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -94,10 +93,9 @@
       "Serve warm or cold. Before 9 months, pass the sauce through a sieve."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -145,10 +143,9 @@
       "Adjust the texture to the child's age: smooth at 6 months, mashed around 9 months."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -196,10 +193,9 @@
       "Purée or mash with a fork, depending on the child's age."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -235,10 +231,9 @@
       "Let cool slightly before serving. A stick should give under light pressure."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -287,10 +282,9 @@
       "Let cool slightly. Cut into strips for a child aged 6 to 8 months."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -338,10 +332,9 @@
       "Blend before 9 months for a smooth texture."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   },
   {
@@ -391,10 +384,9 @@
       "Serve in finger-width strips."
     ],
     "source": {
-      "name": "génération assistée, import manuel",
-      "url": null,
       "license": "contenu original — rédigé pour Bouchées",
-      "cookedByAHuman": false
+      "cookedByAHuman": false,
+      "source": "génération assistée, import manuel"
     }
   }
 ]

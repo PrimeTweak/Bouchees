@@ -188,7 +188,7 @@ final class LocalStore {
 
     func readRecipes() -> [Recipe]? {
         guard let d = try? Data(contentsOf: recipesFile) else { return nil }
-        return try? JSONDecoder().decode([Recipe].self, from: d)
+        return (try? JSONDecoder().decode(LossyArray<Recipe>.self, from: d))?.items
     }
 
     func writeRecipes(_ recipes: [Recipe]) {

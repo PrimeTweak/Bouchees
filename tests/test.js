@@ -149,7 +149,8 @@ test("meatballs without mustard: the mustard is dropped, the recipe still works"
 test("steps: the replacement name appears in the step text", () => {
   const res = Engine.adapterRecette(parId["banana-oat-muffins"],
     { allergens: ["milk", "egg"], ageMois: 24 }, data);
-  const step = res.steps[1].toLowerCase();
+  /* The wet-mixture step, wherever it sits: the standard moved it. */
+  const step = res.steps.map((x) => x.toLowerCase()).find((x) => x.includes("applesauce")) || "";
   assert.ok(step.includes("applesauce"), "the replacement is named");
   assert.ok(step.includes("soy beverage"), "the second one too");
   assert.ok(!/\begg\b/.test(step), "the removed ingredient is gone");
@@ -158,7 +159,7 @@ test("steps: the replacement name appears in the step text", () => {
 test("steps: the original text stays available", () => {
   const res = Engine.adapterRecette(parId["banana-oat-muffins"],
     { allergens: ["milk", "egg"], ageMois: 24 }, data);
-  assert.ok(/\begg\b/i.test(res.stepsOriginal[1]), "stepsOriginal untouched");
+  assert.ok(res.stepsOriginal.some((x) => /\begg\b/i.test(x)), "stepsOriginal untouched");
 });
 
 test("steps: a leading allergen word is consumed with the noun", () => {
@@ -1111,7 +1112,12 @@ test("validator: accepts a compliant recipe and flags the ambiguous role", () =>
     servings: "4 portions", minAgeMonths: 6, timeMinutes: 10,
     ingredients: [{ id: "applesauce", qty: 250, unit: "ml", role: "binder" },
                   { id: "banana", qty: 1, unit: "unit" }, { id: "cinnamon", qty: 1, unit: "ml" }],
-    steps: ["Crush la banane at la fourchette.", "Mélanger à la compote et à la cannelle."] };
+    steps: ["Peel the banana and crush it with a fork in a bowl.",
+            "Stir in the applesauce until the mixture is smooth.",
+            "Add the cinnamon and stir 10 seconds, until evenly coloured.",
+            "Spoon into 4 small bowls.",
+            "Chill 20 minutes, until cold and slightly set.",
+            "Serve at 6 months as is; keeps 2 days in the fridge."] };
   const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Snack"] }, data);
   assert.equal(v.ok, true, v.erreurs.join(" / "));
 });
@@ -1922,6 +1928,43 @@ test("shopping: butter, garlic and nut butters are bought, never staples", () =>
   const cat = data.catalogue;
   ["butter", "garlic", "peanut_butter", "almond_butter", "mashed_avocado", "lemon_juice"].forEach((id) => {
     if (cat[id]) assert(!cat[id].staple, id + " is marked a staple");
+  });
+});
+
+/* ---------- the recipe standard ---------- */
+
+test("standard: a draft that says mix all the ingredients is refused, with every ingredient it hides", () => {
+  const draft = { id: "draft", name: "Draft", category: "Meal", servings: "4", minAgeMonths: 9, timeMinutes: 20,
+    ingredients: [{ id: "ground_turkey", qty: 450, unit: "g" }, { id: "apple", qty: 1, unit: "unit" }],
+    steps: ["Mix all the ingredients.", "Shape into balls.", "Bake at 200 \u00b0C for 18 minutes.", "Serve."] };
+  const e = Valideur.standard(draft, data.catalogue);
+  assert(e.some((x) => x.startsWith("standard 6")), "too few steps");
+  assert(e.some((x) => /all the ingredients/.test(x)));
+  assert(e.some((x) => /turkey is never named/.test(x)));
+  assert(e.some((x) => x.startsWith("standard 5")), "a bake without a cue");
+  assert(e.some((x) => x.startsWith("standard 4")), "one unit only");
+});
+
+test("standard: the rewritten free recipes all pass it", () => {
+  const free = read("publishing.json").free;
+  const rewritten = ["turkey-and-apple-meatballs", "baked-fish-nuggets", "lentil-and-carrot-patties",
+    "sweet-potato-and-chicken-puree", "apple-cinnamon-oatmeal", "date-energy-bites", "silky-hummus",
+    "banana-oat-muffins", "fluffy-pancakes", "pasta-in-rose-sauce-with-chicken"];
+  rewritten.forEach((id) => {
+    assert(free.indexOf(id) !== -1, id + " is meant to be free");
+    const e = Valideur.standard(parId[id], data.catalogue);
+    assert.equal(e.length, 0, id + ": " + e.join(" / "));
+  });
+});
+
+test("publishing: every source on a card decodes — source, license, an optional url", () => {
+  const r = Publier.publier();
+  r.catalogue.forEach((c) => {
+    if (!c.source) return;
+    assert.equal(typeof c.source.source, "string", c.id + ": source without a source key — the phone drops the card");
+    assert.equal(typeof c.source.license, "string", c.id + ": source without a license");
+    /* null is fine: decodeIfPresent reads it as absent. */
+    if (c.source.url !== undefined && c.source.url !== null) assert.equal(typeof c.source.url, "string", c.id + ": url is not a string");
   });
 });
 
