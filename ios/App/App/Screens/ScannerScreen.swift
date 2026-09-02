@@ -354,7 +354,7 @@ struct ProductSheet: View {
                 /* VoiceOver reads the verdict first, as one announcement:
                  * the product, the answer, and the child it is for. */
                 Text(headline(v))
-                    .scaledFont(32, weight: .bold)
+                    .scaledFont(Type.display, weight: .bold)
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
@@ -368,7 +368,7 @@ struct ProductSheet: View {
 
                 /* What the verdict is made of, in one line. */
                 Text("From the printed ingredient list. Always check the package.")
-                    .scaledFont(11)
+                    .scaledFont(Type.label)
                     .foregroundStyle(.white.opacity(0.62))
                     .padding(.top, 5)
 
@@ -383,7 +383,7 @@ struct ProductSheet: View {
 
                 if let attribution = p.attribution {
                     Text(attribution)
-                        .scaledFont(10)
+                        .scaledFont(Type.micro)
                         .foregroundStyle(.white.opacity(0.55))
                         .padding(.top, 12)
                 }
@@ -508,7 +508,7 @@ private struct FlowTags: View {
     private func tag(_ name: String) -> some View {
         let flagged = highlighted.contains { $0.caseInsensitiveCompare(name) == .orderedSame }
         return Text(name)
-            .scaledFont(11.5, weight: flagged ? .bold : .regular)
+            .scaledFont(Type.label, weight: flagged ? .bold : .regular)
             .foregroundStyle(flagged ? Color.black.opacity(0.82) : Color.white)
             .lineLimit(1)
             .padding(.horizontal, 12)
@@ -642,23 +642,23 @@ struct ProductDetailSheet: View {
             PackageThumb()
             VStack(alignment: .leading, spacing: 3) {
                 Text(product.name ?? String(localized: "Unnamed product"))
-                    .scaledFont(17, weight: .bold)
+                    .scaledFont(Type.heading, weight: .bold)
                     .kerning(-0.35)
                     .foregroundStyle(Tone.text)
                     .fixedSize(horizontal: false, vertical: true)
                 if let brand = product.marque {
                     Text(brand)
-                        .scaledFont(11.5)
+                        .scaledFont(Type.label)
                         .foregroundStyle(Tone.text2)
                 }
                 Text(product.code)
-                    .scaledFont(10, design: .monospaced)
+                    .scaledFont(Type.micro, weight: .regular, design: .monospaced)
                     .foregroundStyle(Tone.text3)
 
                 VerdictBadge(status: verdict.status, firstName: profile.firstName)
                     .padding(.top, 8)
                 Text("From the printed ingredient list. Always check the package.")
-                    .scaledFont(10.5)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text3)
                     .padding(.top, 6)
             }
@@ -674,18 +674,18 @@ struct ProductDetailSheet: View {
         if !bloquants.isEmpty {
             VStack(alignment: .leading, spacing: 5) {
                 Text("The reason")
-                    .scaledFont(8.5, weight: .bold, design: .monospaced)
+                    .scaledFont(Type.micro, weight: .bold, design: .monospaced)
                     .kerning(1.6)
                     .foregroundStyle(Tone.no)
 
                 Text(String(format: String(localized: "Contains %@"),
                             app.allergenNames(bloquants).joined(separator: ", ")))
-                    .scaledFont(16, weight: .bold)
+                    .scaledFont(Type.body, weight: .bold)
                     .kerning(-0.3)
                     .foregroundStyle(Tone.text)
 
                 Text("Read from the ingredient list, not from a database tag.")
-                    .scaledFont(11.5)
+                    .scaledFont(Type.label)
                     .foregroundStyle(Tone.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -710,14 +710,14 @@ struct ProductDetailSheet: View {
         if !sains.isEmpty {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark")
-                    .scaledFont(10, weight: .bold)
+                    .scaledFont(Type.micro, weight: .bold)
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
                     .background(Tone.yes, in: Circle())
 
                 Text(String(format: String(localized: "%@ — none present, no trace warning."),
                             app.allergenNames(sains).joined(separator: ", ")))
-                    .scaledFont(11.5)
+                    .scaledFont(Type.label)
                     .foregroundStyle(Tone.text)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
@@ -743,15 +743,15 @@ struct ProductDetailSheet: View {
             } label: {
                 HStack(spacing: 11) {
                     Text("Full ingredient list")
-                        .scaledFont(11.5, weight: .semibold)
+                        .scaledFont(Type.label, weight: .semibold)
                         .foregroundStyle(Tone.text)
                     Spacer(minLength: 0)
                     Text(String(format: String(localized: "%lld read · %lld recognised"),
                                 readCount, max(0, readCount - verdict.unknownIngredients.count)))
-                        .scaledFont(9.5)
+                        .scaledFont(Type.micro)
                         .foregroundStyle(Tone.text3)
                     Image(systemName: showFullList ? "chevron.up" : "chevron.down")
-                        .scaledFont(10, weight: .semibold)
+                        .scaledFont(Type.micro, weight: .semibold)
                         .foregroundStyle(Tone.text3)
                 }
                 .padding(.horizontal, 14)
@@ -763,7 +763,7 @@ struct ProductDetailSheet: View {
 
             if showFullList, let texte = product.ingredientsText {
                 marked(texte)
-                    .scaledFont(10)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text2)
                     .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -836,14 +836,14 @@ struct ProductDetailSheet: View {
 
     private var attribution: some View {
         VStack(alignment: .leading, spacing: 8) {
-            /* The disclaimer where the risk is: a parent reading "Good for
-             * Livia" in green, standing in an aisle, never sees Settings. */
+            /* The disclaimer where the risk is: a parent reading a green
+             * verdict in an aisle never sees Settings. */
             Text(Settings.medicalDisclaimer)
-                .scaledFont(10)
+                .scaledFont(Type.micro)
                 .foregroundStyle(Tone.text3)
                 .fixedSize(horizontal: false, vertical: true)
             Text("From Open Food Facts, ODbL. Bouchées re-derives every allergen from the ingredient list rather than trusting the database tags.")
-                .scaledFont(10)
+                .scaledFont(Type.micro)
                 .foregroundStyle(Tone.text3)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -903,9 +903,9 @@ private struct ScannerTopBar: View {
                 } label: {
                     HStack(spacing: 7) {
                         Image(systemName: app.familyMode ? "person.fill" : "person.2.fill")
-                            .scaledFont(12, weight: .semibold)
+                            .scaledFont(Type.caption, weight: .semibold)
                         Text(app.familyMode ? "One child" : "Everyone")
-                            .scaledFont(13, weight: .semibold)
+                            .scaledFont(Type.secondary, weight: .semibold)
                             .lineLimit(1)
                     }
                     .foregroundStyle(app.familyMode ? Tone.brand : Tone.text)
@@ -934,9 +934,9 @@ private struct VerdictBadge: View {
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: symbol)
-                .scaledFont(10, weight: .bold)
+                .scaledFont(Type.micro, weight: .bold)
             Text(phrase)
-                .scaledFont(11.5, weight: .bold)
+                .scaledFont(Type.label, weight: .bold)
         }
         .foregroundStyle(tint)
         .padding(.horizontal, 11)

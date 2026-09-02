@@ -49,7 +49,7 @@ struct RecipeDetailScreen: View {
                             .shadow(color: .black.opacity(0.6), radius: 8)
 
                         Text(recipe.name)
-                            .scaledFont(Type.displayTight)
+                            .scaledFont(Type.display)
                             .foregroundStyle(.white)
                             .shadow(color: .black.opacity(0.55), radius: 20)
                             .padding(.top, 8)
@@ -68,7 +68,7 @@ struct RecipeDetailScreen: View {
                     RatingBlock(recipe: recipe)
                     blocProvenance
                     Text(Settings.medicalDisclaimer)
-                        .scaledFont(11.5)
+                        .scaledFont(Type.label)
                         .foregroundStyle(Tone.text3)
                         .lineSpacing(2)
                         .padding(.top, 28)
@@ -92,7 +92,7 @@ struct RecipeDetailScreen: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .scaledFont(17, weight: .semibold)
+                        .scaledFont(Type.heading, weight: .semibold)
                 }
                 .accessibilityLabel("Back")
             }
@@ -128,7 +128,7 @@ struct RecipeDetailScreen: View {
                 Spacer(minLength: 0)
                 Text(String(format: String(localized: "%lld items"),
                             result.ingredients.count))
-                    .scaledFont(10)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.top, 22)
@@ -147,7 +147,7 @@ struct RecipeDetailScreen: View {
     private var startButton: some View {
         Button { cooking = true } label: {
             Text("Start cooking")
-                .scaledFont(16.5, weight: .semibold)
+                .scaledFont(Type.body, weight: .semibold)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 58)
@@ -216,7 +216,7 @@ struct RecipeDetailScreen: View {
                 Text("Preparation").eyebrow()
                 Spacer(minLength: 0)
                 Text(String(format: String(localized: "%lld steps"), result.steps.count))
-                    .scaledFont(10)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.top, 26)
@@ -225,7 +225,7 @@ struct RecipeDetailScreen: View {
             ForEach(Array(result.steps.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: 13) {
                     Text("\(index + 1)")
-                        .scaledFont(21, weight: .bold, design: .default)
+                        .scaledFont(Type.title, weight: .bold, design: .default)
                         .kerning(-0.6)
                         .monospacedDigit()
                         .foregroundStyle(Tone.text.opacity(0.14))
@@ -233,7 +233,7 @@ struct RecipeDetailScreen: View {
 
                     VStack(alignment: .leading, spacing: 5) {
                         Text(step)
-                            .scaledFont(14)
+                            .scaledFont(Type.secondary)
                             .foregroundStyle(Tone.text)
                             .fixedSize(horizontal: false, vertical: true)
 
@@ -241,7 +241,7 @@ struct RecipeDetailScreen: View {
                          * thing an eye hunts for with hands in the batter. */
                         if let minutes = Self.duree(dans: step) {
                             Label(minutes, systemImage: "timer")
-                                .scaledFont(10, weight: .semibold, design: .monospaced)
+                                .scaledFont(Type.micro, weight: .semibold, design: .monospaced)
                                 .foregroundStyle(Tone.swap)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
@@ -423,23 +423,23 @@ struct IngredientLine: View {
                  * faintest ink, which is meant for counts and captions, not
                  * for a number someone measures with. */
                 Text(quantity)
-                    .scaledFont(12.5, design: .monospaced)
+                    .scaledFont(Type.caption, weight: .regular, design: .monospaced)
                     .foregroundStyle(Tone.text2)
                     .frame(width: 66, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.toName ?? item.name)
-                        .scaledFont(15.5)
+                        .scaledFont(Type.body)
                         .foregroundStyle(swapped ? Tone.swap : Tone.text)
                         .multilineTextAlignment(.leading)
                     if let ratio = item.ratio, swapped {
                         Text(ratio)
-                            .scaledFont(11.5)
+                            .scaledFont(Type.label)
                             .foregroundStyle(Tone.text3)
                     }
                     if let prep = item.prep {
                         Text(prep)
-                            .scaledFont(11.5)
+                            .scaledFont(Type.label)
                             .foregroundStyle(Tone.swap.opacity(0.85))
                     }
                 }
@@ -449,7 +449,7 @@ struct IngredientLine: View {
                 if swapped {
                     Text(String(format: String(localized: "REPLACES %@"),
                                 item.name.uppercased()))
-                        .scaledFont(9, weight: .bold, design: .monospaced)
+                        .scaledFont(Type.micro, weight: .bold, design: .monospaced)
                         .kerning(0.6)
                         .foregroundStyle(Tone.swap)
                         .padding(.horizontal, 7)
@@ -463,7 +463,7 @@ struct IngredientLine: View {
                      * button, disabled unless the ingredient was swapped, and
                      * nothing on it said so. */
                     Image(systemName: "chevron.right")
-                        .scaledFont(10, weight: .semibold)
+                        .scaledFont(Type.micro, weight: .semibold)
                         .foregroundStyle(Tone.swap.opacity(0.6))
                         .padding(.top, 4)
                 }
@@ -476,7 +476,7 @@ struct IngredientLine: View {
     }
 
     private var quantity: String {
-        let v = item.qty.affichage
+        let v = item.qty.display
         return v.isEmpty ? item.unit : "\(v) \(item.unit)".trimmingCharacters(in: .whitespaces)
     }
 }
@@ -499,14 +499,14 @@ struct SubstitutionRuleSheet: View {
                  * way it goes. */
                 Text("Taken out").eyebrow()
                 Text(item.name)
-                    .scaledFont(17)
+                    .scaledFont(Type.heading)
                     .foregroundStyle(Tone.text2)
                     .strikethrough(true, color: Tone.text3)
                     .padding(.top, 3)
 
                 Text("Put in").eyebrow().padding(.top, 13)
                 Text(item.toName ?? "")
-                    .scaledFont(21, weight: .semibold)
+                    .scaledFont(Type.title, weight: .semibold)
                     .foregroundStyle(Tone.swap)
                     .padding(.top, 3)
 
@@ -514,7 +514,7 @@ struct SubstitutionRuleSheet: View {
                  * titled block and a rule of its own for three characters. */
                 if let ratio = item.ratio {
                     Text(ratio)
-                        .scaledFont(11.5, design: .monospaced)
+                        .scaledFont(Type.label, weight: .regular, design: .monospaced)
                         .foregroundStyle(Tone.text2)
                         .padding(.top, 4)
                 }
@@ -525,7 +525,7 @@ struct SubstitutionRuleSheet: View {
                                 app.activeProfile.name))
                         .eyebrow()
                     Text(reason)
-                        .scaledFont(14.5)
+                        .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.text)
                         .padding(.top, 6)
                 }
@@ -540,15 +540,15 @@ struct SubstitutionRuleSheet: View {
                                                  chosen: item.toName), id: \.name) { opt in
                     HStack(alignment: .firstTextBaseline, spacing: 9) {
                         Image(systemName: "checkmark")
-                            .scaledFont(10, weight: .bold)
+                            .scaledFont(Type.micro, weight: .bold)
                             .foregroundStyle(opt.chosen ? Tone.swap : .clear)
                             .frame(width: 12, alignment: .leading)
                         Text(opt.name)
-                            .scaledFont(13.5, weight: opt.chosen ? .semibold : .regular)
+                            .scaledFont(Type.secondary, weight: opt.chosen ? .semibold : .regular)
                             .foregroundStyle(opt.chosen ? Tone.swap : Tone.text)
                         Spacer(minLength: 8)
                         Text(opt.detail)
-                            .scaledFont(11)
+                            .scaledFont(Type.label)
                             .foregroundStyle(Tone.text2)
                             .multilineTextAlignment(.trailing)
                     }
@@ -557,7 +557,7 @@ struct SubstitutionRuleSheet: View {
                 }
 
                 Text("These tables ship with the app and work offline. They are free for everyone, subscribed or not.")
-                    .scaledFont(11.5)
+                    .scaledFont(Type.label)
                     .foregroundStyle(Tone.text3)
                     .lineSpacing(2)
                     .padding(.top, 22)

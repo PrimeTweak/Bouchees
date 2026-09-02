@@ -63,7 +63,7 @@ struct RecipeVisual: View {
                  * never reaches, and the field raised to the 62 per cent the
                  * thumbnail mark already uses. */
                 Text("Original recipe")
-                    .scaledFont(9, weight: .semibold)
+                    .scaledFont(Type.micro, weight: .semibold)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 5)
@@ -71,7 +71,7 @@ struct RecipeVisual: View {
                     .padding(11)
             } else {
                 Image(systemName: "arrow.uturn.backward")
-                    .scaledFont(8.5, weight: .bold)
+                    .scaledFont(Type.micro, weight: .bold)
                     .foregroundStyle(Tone.swap)
                     .frame(width: 17, height: 17)
                     .background(.black.opacity(0.62), in: Circle())
@@ -201,7 +201,7 @@ struct RatingBadge: View {
     var body: some View {
         if votes > 0, let m = average {
             HStack(spacing: 3) {
-                Image(systemName: "star.fill").scaledFont(compact ? 9 : 11)
+                Image(systemName: "star.fill").scaledFont(compact ? Type.micro : Type.label)
                 Text(String(format: "%.1f", m).replacingOccurrences(of: ".", with: ","))
                     .font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
                 if !compact {

@@ -1,10 +1,17 @@
 {
-  "build": 128,
+  "build": 130,
   "date": "2026-09-02",
   "carries": [
-    "the cycle counted published photos in dist/batches, which no longer exists; it reads the catalogue",
-    "variable-only French identifiers renamed in the pipeline tools; the words that double as data keys stay as the data has them",
-    "the probe's usage header fits the three-line rule",
-    "the two workflow files and the weeks.js removal that the Finder hid on the last apply"
+    "cumulative: 128 (the hidden workflows and the pipeline cleanup), 129 (the empty-day trap) and the approved wave",
+    "the runner keeps Montreal time, so a build's files carry the parent's clock",
+    "the onboarding name field says First name, never an example child",
+    "text3 is one shade darker: 4.6 to 1 on the canvas, so eyebrows and the disclaimer clear AA",
+    "eight named type sizes replace thirty-two; nothing under ten points; the checker refuses a literal outside the scale",
+    "a snack is smaller and warmer than a meal at the thumbnail",
+    "cooking mode opens the ingredient list in a sheet without leaving the step",
+    "the shopping checkbox is 24pt in text2 and ticks in green with a light tap; the whole row was already the target",
+    "pantry staples — salt, oil, baking powder, sixteen in all — are flagged in the catalogue, listed apart under Check the pantry, and no longer counted as something to buy",
+    "a counted ingredient reads as what it is: 2 apples, not 2 unit",
+    "the verdict on the hero and at the top of the recipe, and the swap explained in the onboarding demo, were already there"
   ]
 }

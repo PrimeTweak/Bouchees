@@ -25,6 +25,10 @@ on:
         required: false
         default: ""
 
+# The runner lives in UTC; the files it makes should carry Montreal time.
+env:
+  TZ: America/Toronto
+
 jobs:
   construire:
     # macos-15 ships Xcode 16.4 — SDK iOS 18.5, no glassEffect. The newer

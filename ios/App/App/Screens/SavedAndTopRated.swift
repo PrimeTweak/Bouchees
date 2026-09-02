@@ -144,7 +144,7 @@ struct RankRow: View {
     var body: some View {
         HStack(spacing: 13) {
             Text("\(rank)")
-                .scaledFont(19, weight: .heavy, design: .rounded)
+                .scaledFont(Type.heading, weight: .heavy, design: .rounded)
                 .monospacedDigit()
                 .foregroundStyle(rankColor)
                 .frame(width: 28)

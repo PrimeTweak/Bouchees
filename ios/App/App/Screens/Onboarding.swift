@@ -126,7 +126,7 @@ private struct DemoCard: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(recipe.name)
-                    .scaledFont(17, weight: .semibold)
+                    .scaledFont(Type.heading, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 swaps
                 readyMark
@@ -150,7 +150,7 @@ private struct DemoCard: View {
             HStack(spacing: 8) {
                 VerdictMark(status: .asIs)
                 Text("Nothing to change")
-                    .scaledFont(13, weight: .semibold)
+                    .scaledFont(Type.secondary, weight: .semibold)
                     .foregroundStyle(Tone.yes)
             }
             .padding(.top, 13)
@@ -172,19 +172,19 @@ private struct SwapRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 11) {
             Text("→")
-                .scaledFont(14, weight: .bold)
+                .scaledFont(Type.secondary, weight: .bold)
                 .foregroundStyle(Tone.swap)
             VStack(alignment: .leading, spacing: 2) {
                 Text(from)
-                    .scaledFont(13.5)
+                    .scaledFont(Type.secondary)
                     .strikethrough()
                     .foregroundStyle(Tone.text3)
                 Text(to)
-                    .scaledFont(15.5, weight: .semibold)
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 if let why {
                     Text(why)
-                        .scaledFont(Type.small)
+                        .scaledFont(Type.caption)
                         .foregroundStyle(Tone.text2)
                 }
             }
@@ -256,7 +256,7 @@ private struct AllergenTile: View {
                                value: isOn)
 
                 Text(allergen.name)
-                    .scaledFont(9, weight: .semibold)
+                    .scaledFont(Type.micro, weight: .semibold)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
                     .foregroundStyle(isOn ? Color.white : Tone.text2)
@@ -280,7 +280,7 @@ private struct AllergenTile: View {
             .overlay(alignment: .topTrailing) {
                 if isOn {
                     Image(systemName: "checkmark")
-                        .scaledFont(8, weight: .bold)
+                        .scaledFont(Type.micro, weight: .bold)
                         .foregroundStyle(.white)
                         .frame(width: 14, height: 14)
                         .background(Color.white.opacity(0.26), in: Circle())
@@ -337,8 +337,8 @@ private struct WhoStep: View {
                         .foregroundStyle(Tone.textTertiary)
                         .textCase(.uppercase)
                         .kerning(1.2)
-                    TextField("Livia", text: $name)
-                        .scaledFont(21, weight: .semibold)
+                    TextField("First name", text: $name)
+                        .scaledFont(Type.title, weight: .semibold)
                         .foregroundStyle(Tone.text)
                         .focused($focused)
                         .submitLabel(.next)
@@ -538,7 +538,7 @@ private struct GrowthBars: View {
             HStack(spacing: 7) {
                 ForEach(Array(points.enumerated()), id: \.offset) { _, p in
                     Text(p.label)
-                        .scaledFont(10, weight: .medium)
+                        .scaledFont(Type.micro, weight: .medium)
                         .foregroundStyle(Tone.textTertiary)
                         .frame(maxWidth: .infinity)
                 }
@@ -580,7 +580,7 @@ private struct Perk: View {
     var body: some View {
         HStack(alignment: .top, spacing: 11) {
             Image(systemName: "plus")
-                .scaledFont(13, weight: .bold)
+                .scaledFont(Type.secondary, weight: .bold)
                 .foregroundStyle(Tone.brand)
                 .frame(width: 19)
             VStack(alignment: .leading, spacing: 2) {

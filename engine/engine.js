@@ -121,9 +121,13 @@
         var key = name.toLowerCase();
 
         if (!lines[key]) {
+          var def = catalogue && catalogue[ing.to || ing.id];
           lines[key] = {
             name: name,
             aisle: rayonPour(ing, catalogue),
+            /* A pantry staple: salt, oil, baking powder. Listed apart, and not
+             * counted as something to buy. */
+            staple: !!(def && def.staple),
             quantities: [],
             recipes: [],
             replaces: ing.status === "swapped" ? ing.name : null

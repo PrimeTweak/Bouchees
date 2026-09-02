@@ -44,7 +44,9 @@ enum Tone {
     /* 2.9:1 — under the body threshold ON PURPOSE. Reserved for quantities
      * beside a name that carries the meaning, never for a word standing
      * alone. */
-    static let text3 = dyn(light: 0xA69C92, dark: 0x615A52)
+    /* One shade darker than the comp: 4.6:1 on the canvas, so the smallest
+     * text — eyebrows, the disclaimer — clears AA. */
+    static let text3 = dyn(light: 0x7A7167, dark: 0x8E867D)
 
     // ---- verdicts ----
     // One meaning each. Nothing else touches them.
@@ -139,17 +141,17 @@ struct TypeSpec {
     func weight(_ w: Font.Weight) -> TypeSpec { TypeSpec(size, w, design) }
 }
 
-/// The sizes from the comp, at the default text size; each one scales.
+/// Eight sizes, by name. Every text in the app uses one of them; the weight
+/// is the call site's. Nothing under ten points.
 enum Type {
-    static let display = TypeSpec(34, .bold)
-    static let displayTight = TypeSpec(31, .bold)
-    static let figure = TypeSpec(29, .bold)
-    static let title = TypeSpec(16.5, .semibold)
-    static let body = TypeSpec(17)
-    static let secondary = TypeSpec(15)
-    static let caption = TypeSpec(13)
-    static let small = TypeSpec(12)
+    static let display = TypeSpec(32, .bold)
+    static let title = TypeSpec(22, .bold)
+    static let heading = TypeSpec(17, .semibold)
+    static let body = TypeSpec(15)
+    static let secondary = TypeSpec(13)
+    static let caption = TypeSpec(12)
     static let label = TypeSpec(11, .bold)
+    static let micro = TypeSpec(10)
 }
 
 /// Scales a point size with Dynamic Type. Reads the environment so the view
@@ -188,6 +190,9 @@ extension View {
     }
     func scaledFont(_ spec: TypeSpec) -> some View {
         modifier(ScaledFont(spec: spec))
+    }
+    func scaledFont(_ spec: TypeSpec, weight: Font.Weight, design: Font.Design = .default) -> some View {
+        modifier(ScaledFont(spec: TypeSpec(spec.size, weight, design)))
     }
 }
 
@@ -383,7 +388,7 @@ extension RecipeStatus {
 struct PrimaryButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaledFont(16.5, weight: .semibold)
+            .scaledFont(Type.body, weight: .semibold)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 54)

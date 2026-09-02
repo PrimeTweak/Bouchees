@@ -52,7 +52,8 @@
     "allergens": [],
     "roles": [
       "binder"
-    ]
+    ],
+    "staple": true
   },
   "rolled_oats": {
     "name": "Rolled oats",
@@ -297,7 +298,8 @@
     "allergens": [],
     "roles": [
       "fat"
-    ]
+    ],
+    "staple": true
   },
   "canola_oil": {
     "name": "Canola oil",
@@ -305,7 +307,8 @@
     "allergens": [],
     "roles": [
       "fat"
-    ]
+    ],
+    "staple": true
   },
   "mashed_avocado": {
     "name": "Mashed avocado",
@@ -434,7 +437,8 @@
     "allergens": [],
     "roles": [
       "sweetener"
-    ]
+    ],
+    "staple": true
   },
   "maple_syrup": {
     "name": "Maple syrup",
@@ -442,7 +446,8 @@
     "allergens": [],
     "roles": [
       "sweetener"
-    ]
+    ],
+    "staple": true
   },
   "sugar": {
     "name": "Sugar",
@@ -450,7 +455,8 @@
     "allergens": [],
     "roles": [
       "sweetener"
-    ]
+    ],
+    "staple": true
   },
   "dates": {
     "name": "Pitted dates",
@@ -597,7 +603,8 @@
     ],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "salt": {
     "name": "Salt",
@@ -605,7 +612,8 @@
     "allergens": [],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "cinnamon": {
     "name": "Cinnamon",
@@ -613,7 +621,8 @@
     "allergens": [],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "vanilla": {
     "name": "Vanilla extract",
@@ -621,7 +630,8 @@
     "allergens": [],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "baking_powder": {
     "name": "Baking powder",
@@ -629,7 +639,8 @@
     "allergens": [],
     "roles": [
       "leavening"
-    ]
+    ],
+    "staple": true
   },
   "baking_soda": {
     "name": "Baking soda",
@@ -637,7 +648,8 @@
     "allergens": [],
     "roles": [
       "leavening"
-    ]
+    ],
+    "staple": true
   },
   "unsalted_broth": {
     "name": "Unsalted chicken broth",
@@ -693,7 +705,8 @@
     ],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "soy_sauce": {
     "name": "Soy sauce",
@@ -705,7 +718,8 @@
     "roles": [
       "seasoning"
     ],
-    "note": "Regular soy sauce contains wheat"
+    "note": "Regular soy sauce contains wheat",
+    "staple": true
   },
   "tamari": {
     "name": "Tamari sauce",
@@ -716,7 +730,8 @@
     "roles": [
       "seasoning"
     ],
-    "note": "Soy without wheat — check for a gluten-free statement"
+    "note": "Soy without wheat — check for a gluten-free statement",
+    "staple": true
   },
   "coconut_aminos": {
     "name": "Coconut aminos",
@@ -724,7 +739,8 @@
     "allergens": [],
     "roles": [
       "seasoning"
-    ]
+    ],
+    "staple": true
   },
   "dried_apricots": {
     "name": "Dried apricots",

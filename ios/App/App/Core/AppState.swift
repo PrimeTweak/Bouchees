@@ -130,8 +130,12 @@ final class AppState {
         let week = picks(week: 0)
         /* Freeze every day up to today, so a recipe joining the pool changes
          * only the days to come. */
-        var frozen = history
-        for d in (start...(start + 6)) where d <= todayIndex { if let p = week[d] { frozen[d] = p } }
+        /* Never freeze an empty day: an old cache or a sync not yet answered
+         * would lock today at nothing. Repair any such entry from before. */
+        var frozen = history.filter { $0.value.meal != nil || $0.value.snack != nil }
+        for d in (start...(start + 6)) where d <= todayIndex {
+            if let p = week[d], p.meal != nil || p.snack != nil { frozen[d] = p }
+        }
         if frozen != history { history = frozen; local.writeHistory(history) }
 
         var base = WeekPlan.empty
@@ -356,7 +360,10 @@ final class AppState {
     private func chargerCorpusLocal() {
         sequence = RecipeSequence(seed: local.sequenceSeed(), epoch: local.sequenceEpoch(), rotationWeeks: 16)
         history = local.readHistory()
-        if let saved = local.readRecipes(), !saved.isEmpty {
+        /* A cache from before the pool has no catalogue fields: it cannot
+         * feed the sequence and is dropped for the bundled catalogue. */
+        if let saved = local.readRecipes(), !saved.isEmpty,
+           saved.contains(where: { $0.adaptability != nil }) {
             recipes = saved
         } else {
             recipes = bundledCatalogue()

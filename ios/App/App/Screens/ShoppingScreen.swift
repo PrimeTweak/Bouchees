@@ -24,8 +24,10 @@ struct ShoppingScreen: View {
     /// exception you ask for.
     @State private var dayFilter = false
 
+    /// The staples — salt, oil, baking powder — sit in their own group at
+    /// the end, "Check the pantry", rather than among the things to buy.
     private var byAisle: [(aisle: String, items: [ShoppingItem])] {
-        let groups = Dictionary(grouping: items, by: \.aisle)
+        let groups = Dictionary(grouping: items) { $0.staple == true ? "staples" : $0.aisle }
         return Self.aisleOrder.compactMap { a in
             guard let list = groups[a], !list.isEmpty else { return nil }
             return (a, list)
@@ -33,7 +35,10 @@ struct ShoppingScreen: View {
     }
 
     private static let aisleOrder = ["produce", "protein", "refrigerated",
-                                     "pantry", "frozen", "other"]
+                                     "pantry", "frozen", "other", "staples"]
+
+    /// What is actually bought: everything but the staples.
+    private var toBuy: [ShoppingItem] { items.filter { $0.staple != true } }
 
     var body: some View {
         ScrollView {
@@ -66,7 +71,7 @@ struct ShoppingScreen: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: Self.aisleSymbol(group.aisle))
-                                .scaledFont(10, weight: .medium)
+                                .scaledFont(Type.micro, weight: .medium)
                                 .foregroundStyle(Tone.text2)
                                 .frame(width: 20, height: 20)
                                 .background(Tone.text.opacity(0.055),
@@ -74,10 +79,10 @@ struct ShoppingScreen: View {
                             Text(Self.aisleLabel(group.aisle)).eyebrow()
                             Spacer(minLength: 0)
                             Text("\(group.items.filter { checked.contains($0.id) }.count)/\(group.items.count)")
-                                .scaledFont(9.5, weight: .semibold)
+                                .scaledFont(Type.micro, weight: .semibold)
                                 .foregroundStyle(Tone.text3)
                             Image(systemName: "chevron.right")
-                                .scaledFont(9, weight: .semibold)
+                                .scaledFont(Type.micro, weight: .semibold)
                                 .foregroundStyle(Tone.text3)
                                 .rotationEffect(.degrees(open ? 90 : 0))
                         }
@@ -137,7 +142,7 @@ struct ShoppingScreen: View {
                 .scaledFont(Type.display)
                 .foregroundStyle(Tone.text)
             Text(subtitle)
-                .scaledFont(11)
+                .scaledFont(Type.label)
                 .foregroundStyle(Tone.text2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -150,7 +155,7 @@ struct ShoppingScreen: View {
         String(format: String(localized: "%lld recipes · %lld items"),
                dayFilter ? app.recipes(on: app.selectedDay).count
                          : app.weekRecipes.count,
-               items.count)
+               toBuy.count)
     }
 
     /// Touching a day narrows the list to what that day needs.
@@ -178,7 +183,7 @@ struct ShoppingScreen: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
                     Text(byDay ? "By day" : "Whole week")
-                        .scaledFont(13, weight: .semibold)
+                        .scaledFont(Type.secondary, weight: .semibold)
                         .foregroundStyle(dayFilter == byDay ? Tone.canvas : Tone.text2)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget)
@@ -200,17 +205,18 @@ struct ShoppingScreen: View {
     private var progress: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 7) {
-                Text("\(items.count - checked.count)")
-                    .scaledFont(22, weight: .bold)
+                Text("\(toBuy.filter { !checked.contains($0.id) }.count)")
+                    .scaledFont(Type.title, weight: .bold)
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
                     .contentTransition(.numericText())
                 Text("left to buy")
-                    .scaledFont(12, weight: .semibold)
+                    .scaledFont(Type.caption, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 Spacer(minLength: 0)
-                Text(String(format: String(localized: "%lld in the cart"), checked.count))
-                    .scaledFont(10.5)
+                Text(String(format: String(localized: "%lld in the cart"),
+                            toBuy.filter { checked.contains($0.id) }.count))
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text2)
                     .contentTransition(.numericText())
             }
@@ -241,7 +247,7 @@ struct ShoppingScreen: View {
     }
 
     private var ratio: CGFloat {
-        items.isEmpty ? 0 : CGFloat(checked.count) / CGFloat(items.count)
+        toBuy.isEmpty ? 0 : CGFloat(toBuy.filter { checked.contains($0.id) }.count) / CGFloat(toBuy.count)
     }
 
     /// Whether an aisle shows its rows: a hand-set answer wins, in both
@@ -267,6 +273,7 @@ struct ShoppingScreen: View {
         case "protein": return "fish.fill"
         case "refrigerated": return "thermometer.snowflake"
         case "pantry": return "cabinet.fill"
+        case "staples": return "checkmark.seal"
         case "frozen": return "snowflake"
         default: return "bag.fill"
         }
@@ -278,6 +285,7 @@ struct ShoppingScreen: View {
         case "protein": return "Meat and fish"
         case "refrigerated": return "Refrigerated"
         case "pantry": return "Pantry"
+        case "staples": return "Check the pantry"
         case "frozen": return "Frozen"
         default: return "Other"
         }
@@ -292,20 +300,24 @@ private struct ShoppingRow: View {
     let tap: () -> Void
 
     var body: some View {
-        Button(action: tap) {
+        Button {
+            /* Confirms without looking: the light tap the scanner uses. */
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            tap()
+        } label: {
             HStack(alignment: .top, spacing: 13) {
                 checkbox
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.name)
-                        .scaledFont(15.5)
+                        .scaledFont(Type.body)
                         .foregroundStyle(done ? Tone.text3 : Tone.text)
                         .strikethrough(done, color: Tone.text3)
                         .multilineTextAlignment(.leading)
 
                     if !item.quantityLabel.isEmpty {
                         Text(item.quantityLabel)
-                            .scaledFont(12, design: .monospaced)
+                            .scaledFont(Type.caption, weight: .regular, design: .monospaced)
                             .foregroundStyle(Tone.text2)
                     }
 
@@ -314,9 +326,9 @@ private struct ShoppingRow: View {
                     if let replaces = item.replaces {
                         HStack(spacing: 5) {
                             Image(systemName: "arrow.triangle.swap")
-                                .scaledFont(9, weight: .bold)
+                                .scaledFont(Type.micro, weight: .bold)
                             Text(String(format: String(localized: "replaces %@"), replaces))
-                                .scaledFont(10.5, weight: .semibold)
+                                .scaledFont(Type.micro, weight: .semibold)
                         }
                         .foregroundStyle(Tone.swap)
                         .padding(.horizontal, 9)
@@ -329,7 +341,7 @@ private struct ShoppingRow: View {
                      * skipping it. */
                     if item.recipes.count > 1 {
                         Text(item.recipes.joined(separator: " · "))
-                            .scaledFont(11)
+                            .scaledFont(Type.label)
                             .foregroundStyle(Tone.text3)
                             .lineLimit(1)
                     }
@@ -345,19 +357,21 @@ private struct ShoppingRow: View {
         .accessibilityAddTraits(done ? [.isSelected] : [])
     }
 
+    /// 24pt, drawn in text2 so the outline clears AA; the whole row is the
+    /// target, and a tick fills in the verdict green.
     private var checkbox: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .strokeBorder(done ? .clear : Tone.text.opacity(0.22), lineWidth: 1.8)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(done ? .clear : Tone.text2, lineWidth: 1.8)
             if done {
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(Tone.text)
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Tone.yes)
                 Image(systemName: "checkmark")
-                    .scaledFont(11, weight: .bold)
-                    .foregroundStyle(Tone.canvas)
+                    .scaledFont(Type.caption, weight: .bold)
+                    .foregroundStyle(.white)
             }
         }
-        .frame(width: 22, height: 22)
-        .padding(.top, 1)
+        .frame(width: 24, height: 24)
+        .animation(.soft(0.18), value: done)
     }
 }

@@ -1023,6 +1023,10 @@ def tailles_fixes():
                 continue
             if re.search(r"\.font\(\.system\(size:", code) or re.search(r"Font\.system\(size:", code):
                 out.append(f"{os.path.basename(path)}:{i}: a fixed font size — use scaledFont so the text follows Dynamic Type")
+            # A literal size outside the scale. Sizes derived from a drawing
+            # dimension (an avatar, a glyph) may stay numeric.
+            if re.search(r"\.scaledFont\([0-9]", code):
+                out.append(f"{os.path.basename(path)}:{i}: a font size outside the scale — use Type.display … Type.micro")
     return out
 
 

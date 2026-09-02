@@ -197,7 +197,7 @@ struct FatalErrorScreen: View {
     var body: some View {
         VStack(spacing: 14) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .scaledFont(44)
+                .scaledFont(Type.display)
                 .foregroundStyle(Tone.no)
             Text("Bouchées can’t start")
                 .font(.title2.weight(.bold))
@@ -277,7 +277,7 @@ struct AgePicker: View {
 
                 VStack(spacing: 0) {
                     Text("\(ageMonths)")
-                        .scaledFont(26, weight: .bold, design: .rounded)
+                        .scaledFont(Type.title, weight: .bold, design: .rounded)
                         .monospacedDigit()
                     Text("months exactly").font(.caption2).foregroundStyle(.secondary)
                 }

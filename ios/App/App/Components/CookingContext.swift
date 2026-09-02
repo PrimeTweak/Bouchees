@@ -39,20 +39,20 @@ struct CookingContextHeader: View {
                               familyMode: app.familyMode, size: 30)
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
-                        .scaledFont(compact ? 12.5 : 14.5, weight: .semibold)
+                        .scaledFont(compact ? Type.caption : Type.secondary, weight: .semibold)
                         .foregroundStyle(.primary)
                     /* The age and the allergies are the point of this pill —
                      * but only where it owns the line. Beside a title they
                      * would wrap it to two rows. */
                     if !compact {
                         Text(subtitle)
-                            .scaledFont(11)
+                            .scaledFont(Type.label)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
                 }
                 Image(systemName: "chevron.down")
-                    .scaledFont(11, weight: .semibold)
+                    .scaledFont(Type.label, weight: .semibold)
                     .foregroundStyle(.tertiary)
             }
             .padding(.horizontal, ownGlass ? 13 : 4)
@@ -194,10 +194,10 @@ private struct PickerRow: View {
             ProfileAvatar(profile: profile)
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.firstName)
-                    .scaledFont(16, weight: .semibold)
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 Text(subtitle)
-                    .scaledFont(Type.small)
+                    .scaledFont(Type.caption)
                     .foregroundStyle(Tone.text2)
                     .lineLimit(2)
                 TallyLine(tally: tally)
@@ -205,7 +205,7 @@ private struct PickerRow: View {
             Spacer(minLength: 6)
             if isOn {
                 Image(systemName: "checkmark")
-                    .scaledFont(16, weight: .semibold)
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.brand)
             }
         }
@@ -234,21 +234,21 @@ private struct FamilyRow: View {
                              Color(red: 0.23, green: 0.37, blue: 0.66)],
                     startPoint: .topLeading, endPoint: .bottomTrailing))
                 Image(systemName: "person.2.fill")
-                    .scaledFont(17, weight: .semibold)
+                    .scaledFont(Type.heading, weight: .semibold)
                     .foregroundStyle(.white)
             }
             .frame(width: 44, height: 44)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Family mode")
-                    .scaledFont(16, weight: .semibold)
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.text)
                 /* Named and explained: the youngest age and the union of every
                  * allergen. The hard case in a real family, strict by
                  * construction. */
                 Text(String(format: String(localized: "The youngest age (%@) and everything any of them avoids"),
                             Format.age(age)))
-                    .scaledFont(Type.small)
+                    .scaledFont(Type.caption)
                     .foregroundStyle(Tone.text2)
                     .lineLimit(2)
                 TallyLine(tally: tally)
@@ -256,7 +256,7 @@ private struct FamilyRow: View {
             Spacer(minLength: 6)
             if isOn {
                 Image(systemName: "checkmark")
-                    .scaledFont(16, weight: .semibold)
+                    .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.brand)
             }
         }
@@ -275,8 +275,8 @@ struct TallyLine: View {
              * to know when picking a child is how many recipes that profile
              * opens up. */
             HStack(spacing: 4) {
-                Text("\(tally.total)").scaledFont(11.5, weight: .bold)
-                Text("recipes").scaledFont(11.5)
+                Text("\(tally.total)").scaledFont(Type.label, weight: .bold)
+                Text("recipes").scaledFont(Type.label)
             }
             .foregroundStyle(Tone.yes)
             .padding(.top, 3)
@@ -346,10 +346,10 @@ struct SearchSheet: View {
     private var field: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .scaledFont(12, weight: .medium)
+                .scaledFont(Type.caption, weight: .medium)
                 .foregroundStyle(Tone.text3)
             TextField("Recipes and ingredients", text: $query)
-                .scaledFont(14)
+                .scaledFont(Type.secondary)
                 .foregroundStyle(Tone.text)
                 .focused($focused)
                 .submitLabel(.search)
@@ -357,13 +357,13 @@ struct SearchSheet: View {
             if !query.isEmpty {
                 Button { query = "" } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .scaledFont(13)
+                        .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.text3)
                 }
                 .buttonStyle(.plain)
             }
             Button("Cancel") { dismiss() }
-                .scaledFont(13, weight: .semibold)
+                .scaledFont(Type.secondary, weight: .semibold)
                 .foregroundStyle(Tone.brand)
         }
         .padding(.horizontal, 14)
@@ -388,7 +388,7 @@ struct SearchSheet: View {
                 Text(groupe.heading).eyebrow()
                 Spacer(minLength: 0)
                 Text("\(groupe.dishes.count)")
-                    .scaledFont(10)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.horizontal, Layout.gutter)
@@ -445,10 +445,10 @@ struct SearchSheet: View {
     private var noResults: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(String(format: String(localized: "Nothing for “%@” this week"), query))
-                .scaledFont(14, weight: .semibold)
+                .scaledFont(Type.secondary, weight: .semibold)
                 .foregroundStyle(Tone.text)
             Text("It may arrive in a later week. Meanwhile, these are close.")
-                .scaledFont(12)
+                .scaledFont(Type.caption)
                 .foregroundStyle(Tone.text2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -509,7 +509,7 @@ struct ChildTopBar: View {
                         HStack(spacing: 5) {
                             Circle().fill(Tone.swap).frame(width: 6, height: 6)
                             Text(app.isOffline ? "Offline" : "Notice")
-                                .scaledFont(11, weight: .semibold)
+                                .scaledFont(Type.label, weight: .semibold)
                                 .foregroundStyle(Tone.swap)
                         }
                         .padding(.horizontal, 10)
@@ -525,7 +525,7 @@ struct ChildTopBar: View {
             }
             if expanded, let message = app.syncMessage {
                 Text(message)
-                    .scaledFont(11)
+                    .scaledFont(Type.label)
                     .foregroundStyle(Tone.swap)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 12)
@@ -572,14 +572,14 @@ private struct DayTile: View {
     var body: some View {
         VStack(spacing: 0) {
             Text(WeekDay.short[day])
-                .scaledFont(8, weight: .bold, design: .monospaced)
+                .scaledFont(Type.micro, weight: .bold, design: .monospaced)
                 .kerning(0.8)
                 .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
 
             /* The day of the MONTH, not the index in the plan. "Mon 1" on a
              * Monday the 31st looked like a date and was not one. */
             Text("\(WeekDay.dayNumber(for: day))")
-                .scaledFont(13.5, weight: .bold)
+                .scaledFont(Type.secondary, weight: .bold)
                 .kerning(-0.3)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text)
                 .padding(.top, 2)
@@ -647,13 +647,13 @@ private struct WeekTile: View {
     var body: some View {
         VStack(spacing: 2) {
             Text(title)
-                .scaledFont(7.5, weight: .bold, design: .monospaced)
+                .scaledFont(Type.micro, weight: .bold, design: .monospaced)
                 .kerning(0.7)
                 .textCase(.uppercase)
                 .foregroundStyle(selected ? Tone.canvas.opacity(0.6) : Tone.text2)
 
             Text(slot.span())
-                .scaledFont(12, weight: .bold)
+                .scaledFont(Type.caption, weight: .bold)
                 .kerning(-0.2)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text)
                 .lineLimit(1)
@@ -661,13 +661,13 @@ private struct WeekTile: View {
 
             if slot.unlocked {
                 Text(String(format: String(localized: "%lld recipes"), slot.count))
-                    .scaledFont(8)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(selected ? Tone.canvas.opacity(0.5) : Tone.text3)
                     .lineLimit(1)
             } else {
                 HStack(spacing: 3) {
-                    Image(systemName: "lock.fill").scaledFont(7)
-                    Text("\(slot.count)").scaledFont(8, weight: .semibold)
+                    Image(systemName: "lock.fill").scaledFont(Type.micro)
+                    Text("\(slot.count)").scaledFont(Type.micro, weight: .semibold)
                 }
                 .foregroundStyle(selected ? Tone.canvas.opacity(0.62) : Tone.text3)
             }
@@ -759,7 +759,7 @@ struct SearchScreen: View {
                 Text(groupe.heading).eyebrow()
                 Spacer(minLength: 0)
                 Text("\(groupe.dishes.count)")
-                    .scaledFont(10)
+                    .scaledFont(Type.micro)
                     .foregroundStyle(Tone.text3)
             }
             .padding(.horizontal, Layout.gutter)
@@ -796,10 +796,10 @@ struct SearchScreen: View {
     private var noResults: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(String(format: String(localized: "Nothing for “%@” this week"), query))
-                .scaledFont(14, weight: .semibold)
+                .scaledFont(Type.secondary, weight: .semibold)
                 .foregroundStyle(Tone.text)
             Text("It may arrive in a later week. Meanwhile, these are close.")
-                .scaledFont(12)
+                .scaledFont(Type.caption)
                 .foregroundStyle(Tone.text2)
                 .fixedSize(horizontal: false, vertical: true)
         }

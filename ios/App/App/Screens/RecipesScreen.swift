@@ -117,13 +117,13 @@ struct RecipesScreen: View {
                             .eyebrow(Tone.heroAccent)
                             .shadow(color: .black.opacity(0.7), radius: 10)
                         Text(h.recipe.name)
-                            .scaledFont(34, weight: .bold)
+                            .scaledFont(Type.display, weight: .bold)
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.leading)
                             .shadow(color: .black.opacity(0.62), radius: 22)
                             .padding(.top, 9)
                         Text(h.recipe.subtitle)
-                            .scaledFont(13)
+                            .scaledFont(Type.secondary)
                             .foregroundStyle(.white.opacity(0.74))
                             .padding(.top, 9)
                         VerdictPill(result: h.result, firstName: profile.firstName)
@@ -148,11 +148,11 @@ struct RecipesScreen: View {
         return HStack(alignment: .firstTextBaseline) {
             Text(slot.offset == 0 ? "This week"
                  : slot.offset < 0 ? "Last week" : "Next week")
-                .scaledFont(19, weight: .bold)
+                .scaledFont(Type.heading, weight: .bold)
                 .foregroundStyle(Tone.text)
             Spacer(minLength: 8)
             Text(String(format: String(localized: "%lld recipes"), slot.count))
-                .scaledFont(12)
+                .scaledFont(Type.caption)
                 .foregroundStyle(Tone.text2)
         }
         .padding(.horizontal, Layout.gutter)
@@ -198,18 +198,18 @@ struct RecipesScreen: View {
         Button { navigate(route) } label: {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .scaledFont(11, weight: .medium)
+                    .scaledFont(Type.label, weight: .medium)
                     .foregroundStyle(.white)
                     .frame(width: 26, height: 26)
                     .background(Tone.brandGradient,
                                 in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
-                        .scaledFont(12, weight: .semibold)
+                        .scaledFont(Type.caption, weight: .semibold)
                         .foregroundStyle(Tone.text)
                         .lineLimit(1)
                     Text(detail)
-                        .scaledFont(9.5)
+                        .scaledFont(Type.micro)
                         .foregroundStyle(Tone.text2)
                         .lineLimit(1)
                 }
@@ -249,10 +249,10 @@ struct RecipesScreen: View {
     private var weekDone: some View {
         VStack(spacing: 6) {
             Text("This week is done.")
-                .scaledFont(15, weight: .semibold)
+                .scaledFont(Type.body, weight: .semibold)
                 .foregroundStyle(Tone.text)
             Text("Next week opens Monday.")
-                .scaledFont(12.5)
+                .scaledFont(Type.caption)
                 .foregroundStyle(Tone.text2)
         }
         .frame(maxWidth: .infinity)
@@ -330,7 +330,7 @@ struct RecipesScreen: View {
                 .eyebrow(today ? Tone.text : Tone.text3)
             Spacer(minLength: 0)
             Text("\(count)")
-                .scaledFont(9, weight: .semibold)
+                .scaledFont(Type.micro, weight: .semibold)
                 .foregroundStyle(Tone.text3)
         }
         .padding(.horizontal, today ? 13 : Layout.gutter)
@@ -404,10 +404,10 @@ private struct EmptyDay: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Nothing planned")
-                .scaledFont(15, weight: .semibold)
+                .scaledFont(Type.body, weight: .semibold)
                 .foregroundStyle(Tone.text)
             Text("Drag a recipe here from another day, or cook something you already know.")
-                .scaledFont(12.5)
+                .scaledFont(Type.caption)
                 .foregroundStyle(Tone.text2)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -464,18 +464,18 @@ extension RecipesScreen {
                     Text("Weeks ahead").eyebrow(Tone.brand)
 
                     Text(String(format: String(localized: "%lld more recipes"), locked))
-                        .scaledFont(19, weight: .bold)
+                        .scaledFont(Type.heading, weight: .bold)
                         .foregroundStyle(Tone.upsellText)
                         .padding(.top, 7)
 
                     Text(String(format: String(localized: "A meal and a snack every day, adapted to %@"),
                                 profile.firstName))
-                        .scaledFont(12)
+                        .scaledFont(Type.caption)
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
                     Text("7 days free, then $4.99/month")
-                        .scaledFont(12)
+                        .scaledFont(Type.caption)
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 2)
 
@@ -483,7 +483,7 @@ extension RecipesScreen {
                      * button was right; on this one the reverse reads
                      * better. */
                     Text("Try 7 days free")
-                        .scaledFont(12.5, weight: .semibold)
+                        .scaledFont(Type.caption, weight: .semibold)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 8)
@@ -513,7 +513,7 @@ extension RecipesScreen {
 
     private var disclaimer: some View {
         Text(Settings.medicalDisclaimer)
-            .scaledFont(11.5)
+            .scaledFont(Type.label)
             .foregroundStyle(Tone.text3)
             .lineSpacing(2)
             .padding(.horizontal, Layout.gutter)
@@ -532,7 +532,7 @@ struct VerdictPill: View {
         HStack(spacing: 8) {
             VerdictMark(status: result.status)
             Text(phrase)
-                .scaledFont(13.5, weight: .semibold)
+                .scaledFont(Type.secondary, weight: .semibold)
                 /* The system picks the vibrant tone. The verdict DOT keeps
                  * its own colour just below — that one is semantic and must
                  * not adapt. */
@@ -598,7 +598,7 @@ struct RecipeRow: View {
                         .fill(Tone.text.opacity(0.05))
                         .overlay {
                             Image(systemName: "lock.fill")
-                                .scaledFont(15, weight: .medium)
+                                .scaledFont(Type.body, weight: .medium)
                                 .foregroundStyle(Tone.text3)
                         }
                 } else {
@@ -607,8 +607,14 @@ struct RecipeRow: View {
                                                     style: .continuous))
                 }
             }
+            /* A snack is smaller and warmer than a meal, so the two read apart
+             * at the thumbnail, before the subtitle says which is which. */
+            .frame(width: recipe.isSnack ? Layout.thumb - 12 : Layout.thumb,
+                   height: recipe.isSnack ? Layout.thumb - 12 : Layout.thumb)
+            .background(recipe.isSnack ? Tone.swap.opacity(0.10) : .clear,
+                        in: RoundedRectangle(cornerRadius: Layout.thumbRadius, style: .continuous))
             .frame(width: Layout.thumb, height: Layout.thumb)
-                .shadow(color: .black.opacity(0.4), radius: 7, y: 4)
+                .shadow(color: .black.opacity(recipe.isSnack ? 0.18 : 0.4), radius: 7, y: 4)
                 .saturation(result.status == .notAdaptable ? 0.3 : 1)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -618,7 +624,7 @@ struct RecipeRow: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 Text(recipe.subtitle)
-                    .scaledFont(Type.small)
+                    .scaledFont(Type.caption)
                     .foregroundStyle(Tone.text2)
                     .lineLimit(1)
             }
@@ -630,13 +636,13 @@ struct RecipeRow: View {
                  * what was made without anyone keeping one. */
                 if cooked {
                     Image(systemName: "checkmark.circle.fill")
-                        .scaledFont(12)
+                        .scaledFont(Type.caption)
                         .foregroundStyle(Tone.yes)
                         .accessibilityLabel(Text("Cooked"))
                 }
                 VerdictMark(status: result.status)
                 Text(short)
-                    .scaledFont(13, weight: .semibold)
+                    .scaledFont(Type.secondary, weight: .semibold)
                     .foregroundStyle(result.status.tone)
             }
         }

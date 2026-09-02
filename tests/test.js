@@ -1868,7 +1868,7 @@ function choose(seed,day,cands,hist,isMeal,gap){if(!cands.length)return null;con
  let rested=cands.filter(c=>(last[c.id]??-1e9)<=day-gap);let field=rested;
  if(!rested.length){const oldest=Math.min(...cands.map(c=>last[c.id]??-1e9));field=cands.filter(c=>(last[c.id]??-1e9)===oldest);}
  return field.reduce((m,c)=>score(seed,day,c.id)<score(seed,day,m.id)?c:m).id;}
-function pick(seed,day,pool,hist,gap){if(hist[day])return hist[day];const free=day<14;const m=pool.filter(r=>r.category==='Meal'&&(!free||r.free));const s=pool.filter(r=>r.category==='Snack'&&(!free||r.free));return{meal:choose(seed,day,m,hist,true,gap),snack:choose(seed,day,s,hist,false,gap)};}
+function pick(seed,day,pool,hist,gap){if(hist[day])return hist[day];const free=day<14&&pool.some(c=>c.free===true);const m=pool.filter(r=>r.category==='Meal'&&(!free||r.free));const s=pool.filter(r=>r.category==='Snack'&&(!free||r.free));return{meal:choose(seed,day,m,hist,true,gap),snack:choose(seed,day,s,hist,false,gap)};}
 function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,cat,h,gap);return h;}
 
   test("sequence: two seeds give two different sequences", () => {
@@ -1891,6 +1891,12 @@ function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,c
     assert.equal(minGap, nMeals, "a meal came back after " + minGap + " days with a pool of " + nMeals);
   });
 
+  test("sequence: a pool with no free flag at all draws from everything, never from nothing", () => {
+    const unflagged = cat.map((c) => { const d = Object.assign({}, c); delete d.free; return d; });
+    const p = pick(1n, 1, unflagged, {}, 112);
+    assert(p.meal && p.snack, "an old cache without flags left the day empty");
+  });
+
   test("sequence: a recipe joining the pool changes the days to come, never the days shown", () => {
     const A = run(12345n, 30, 112);
     const bigger = cat.concat([{ id: "zz-new-meal", category: "Meal", free: false }]);
@@ -1899,5 +1905,24 @@ function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,c
     for (let d = 0; d < 20; d++) assert.equal(h[d].meal, A[d].meal, "day " + d + " changed");
   });
 })();
+
+test("shopping: a pantry staple is flagged and counted apart", () => {
+  const l = Engine.listeEpicerie(recettes.slice(0, 10), { allergens: [], ageMois: 18 }, data);
+  const staples = l.filter((i) => i.staple), buys = l.filter((i) => !i.staple);
+  assert(staples.length > 0, "the corpus uses no staple at all?");
+  /* Every staple comes from the catalogue's own flag; the list below is what
+   * the flag is allowed to cover. */
+  const allowed = /^(salt|olive oil|canola oil|baking powder|baking soda|cinnamon|vanilla( extract)?|honey|maple syrup|sugar|cornstarch|soy sauce|tamari|coconut aminos|dijon mustard|fish sauce)$/;
+  assert(staples.every((i) => allowed.test(i.name.toLowerCase())),
+    "a staple that is not one: " + staples.map((i) => i.name).join(", "));
+  assert(buys.every((i) => ["butter", "garlic", "apple", "carrot"].indexOf(i.name.toLowerCase()) === -1 || !i.staple));
+});
+
+test("shopping: butter, garlic and nut butters are bought, never staples", () => {
+  const cat = data.catalogue;
+  ["butter", "garlic", "peanut_butter", "almond_butter", "mashed_avocado", "lemon_juice"].forEach((id) => {
+    if (cat[id]) assert(!cat[id].staple, id + " is marked a staple");
+  });
+});
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

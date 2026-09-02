@@ -33,7 +33,7 @@ struct Quantity: Codable, Hashable, Sendable {
     }
 
     /// Decimal comma when the locale calls for it.
-    var affichage: String {
+    var display: String {
         guard let v = value else { return "" }
         if v == v.rounded() && abs(v) < 1_000_000 {
             return String(Int(v))
@@ -244,7 +244,7 @@ struct AdaptedIngredient: Codable, Hashable, Identifiable, Sendable {
     var note: String? { substituteNote ?? ingredientNote }
 
     var displayQuantity: String {
-        let q = qty.affichage
+        let q = qty.display
         var u = unit
         if u == "unit", let v = qty.value, v > 1 { u = String(localized: "units") }
         return q.isEmpty ? u : "\(q) \(u)"
@@ -412,18 +412,34 @@ struct ShoppingItem: Codable, Identifiable, Hashable, Sendable {
     let aisle: String
     let quantities: [ShoppingQuantity]
     let recipes: [String]
+    /// A pantry staple, listed apart and not counted as something to buy.
+    let staple: Bool?
     /// The ingredient this one stands in for, when the engine swapped it.
     let replaces: String?
 
     var id: String { name.lowercased() }
 
     /// "375 ml", or "1 unit + 250 ml" when the units do not add up.
+    /// "2 apples", not "2 unit": a counted ingredient reads as what it is.
     var quantityLabel: String {
         quantities.map { q in
-            q.unit.isEmpty ? Format.number(q.value)
-                           : "\(Format.number(q.value)) \(q.unit)"
+            if q.unit.isEmpty { return Format.number(q.value) }
+            if q.unit == "unit" { return "\(Format.number(q.value)) \(Self.plural(name, q.value))" }
+            return "\(Format.number(q.value)) \(q.unit)"
         }
         .joined(separator: " + ")
+    }
+
+    /// A plain English plural, enough for a produce aisle.
+    static func plural(_ name: String, _ n: Double) -> String {
+        let w = name.lowercased()
+        guard n != 1 else { return w }
+        if w.hasSuffix("s") || w.hasSuffix("x") { return w }
+        if w.hasSuffix("o") { return w + "es" }
+        if w.hasSuffix("y"), let before = w.dropLast().last, !"aeiou".contains(before) {
+            return String(w.dropLast()) + "ies"
+        }
+        return w + "s"
     }
 }
 

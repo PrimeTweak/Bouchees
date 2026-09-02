@@ -72,7 +72,7 @@ struct LaunchView: View {
 
                 /* The product name, the one French word the app keeps. */
                 Text(verbatim: "Bouchées")
-                    .scaledFont(29, weight: .bold)
+                    .scaledFont(Type.display, weight: .bold)
                     .kerning(-0.6)
                     .foregroundStyle(Tone.text)
                     .offset(y: named ? 0 : 7)
@@ -83,7 +83,7 @@ struct LaunchView: View {
                 Spacer(minLength: 0)
                 VStack(spacing: 8) {
                     Text("Getting this week ready")
-                        .scaledFont(12)
+                        .scaledFont(Type.caption)
                         .foregroundStyle(Tone.text2)
                     ProgressDots()
                 }

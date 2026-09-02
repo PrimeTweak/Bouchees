@@ -270,7 +270,7 @@ struct SettingsScreen: View {
             Text("Appearance").eyebrow().padding(.top, 26).padding(.bottom, 9)
             HStack {
                 Text("Theme")
-                    .scaledFont(14.5)
+                    .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.text)
                 Spacer(minLength: 10)
                 ThemeSegments(theme: Binding(get: { app.theme },
@@ -281,7 +281,7 @@ struct SettingsScreen: View {
             .card()
 
             Text("Auto follows your iPhone, including the switch at sunset.")
-                .scaledFont(11.5)
+                .scaledFont(Type.label)
                 .foregroundStyle(Tone.text3)
                 .padding(.horizontal, 5)
                 .padding(.top, 9)
@@ -315,15 +315,15 @@ struct SettingsScreen: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(app.subscribed ? "Active" : "Weeks ahead")
-                            .scaledFont(15)
+                            .scaledFont(Type.body)
                             .foregroundStyle(Tone.text)
                         Text("7 new recipes every week")
-                            .scaledFont(Type.small)
+                            .scaledFont(Type.caption)
                             .foregroundStyle(Tone.text2)
                     }
                     Spacer(minLength: 10)
                     Text(app.subscribed ? "Manage" : "Subscribe")
-                        .scaledFont(14.5, weight: .semibold)
+                        .scaledFont(Type.secondary, weight: .semibold)
                         .foregroundStyle(Tone.brand)
                 }
                 .padding(15)
@@ -370,7 +370,7 @@ struct SettingsScreen: View {
             Text("Your children's profiles stay on this device and are never sent anywhere.")
             Text(Settings.medicalDisclaimer)
         }
-        .scaledFont(11.5)
+        .scaledFont(Type.label)
         .foregroundStyle(Tone.text3)
         .lineSpacing(2)
         .padding(.horizontal, 5)
@@ -397,7 +397,7 @@ struct PaywallScreen: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(app.subscribed ? "Your subscription is active" : "Weeks ahead")
-                            .scaledFont(28, weight: .heavy, design: .rounded)
+                            .scaledFont(Type.display, weight: .heavy, design: .rounded)
                         Text(app.subscribed
                              ? "Every week is open. The next one arrives Monday."
                              : "Seven new recipes every Monday, adapted to your children.")
@@ -503,21 +503,21 @@ struct ComparisonBlock: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title).eyebrow(accent)
             Text(figure)
-                .scaledFont(22, weight: .bold)
+                .scaledFont(Type.title, weight: .bold)
                 .foregroundStyle(Tone.text)
                 .padding(.top, 2)
             Text(figureLabel)
-                .scaledFont(11)
+                .scaledFont(Type.label)
                 .foregroundStyle(Tone.text2)
             VStack(alignment: .leading, spacing: 5) {
                 ForEach(lines, id: \.self) { l in
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "checkmark")
-                            .scaledFont(9, weight: .bold)
+                            .scaledFont(Type.micro, weight: .bold)
                             .foregroundStyle(accent)
                             .padding(.top, 3)
                         Text(l)
-                            .scaledFont(11.5)
+                            .scaledFont(Type.label)
                             .foregroundStyle(Tone.text)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -598,7 +598,7 @@ private struct Segment: View {
     var body: some View {
         Button(action: tap) {
             Text(theme.label)
-                .scaledFont(12.5, weight: .semibold)
+                .scaledFont(Type.caption, weight: .semibold)
                 .foregroundStyle(selected ? Tone.canvas : Tone.text2)
                 .padding(.horizontal, 13)
                 .padding(.vertical, 7)
@@ -623,11 +623,11 @@ struct SettingRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .scaledFont(15)
+                .scaledFont(Type.body)
                 .foregroundStyle(accent ? Tone.brand : Tone.text)
             Spacer(minLength: 10)
             Text(value)
-                .scaledFont(14)
+                .scaledFont(Type.secondary)
                 .foregroundStyle(Tone.text2)
         }
         .padding(15)

@@ -26,6 +26,10 @@ permissions:
   contents: write
   pull-requests: write
 
+# The runner lives in UTC; the files it makes should carry Montreal time.
+env:
+  TZ: America/Toronto
+
 jobs:
   cycle:
     runs-on: ubuntu-latest

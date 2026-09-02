@@ -100,7 +100,7 @@ struct VerdictChip: View {
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: result.status.symbol)
-                .scaledFont(10, weight: .bold)
+                .scaledFont(Type.micro, weight: .bold)
             Text(Verdict.token(result))
                 .font(.caption2.weight(.semibold))
         }
@@ -154,7 +154,7 @@ struct EmptyState: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: symbol)
-                .scaledFont(40)
+                .scaledFont(Type.display)
                 .foregroundStyle(Tint.betterave.opacity(0.7))
             Text(title).font(.title3.weight(.bold))
             Text(message)

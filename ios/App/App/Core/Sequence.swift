@@ -29,7 +29,9 @@ struct RecipeSequence {
     /// shown, frozen; `pool` is the catalogue. Deterministic for a seed.
     func pick(day: Int, pool: [Recipe], history: [Int: DayPick]) -> DayPick {
         if let fixed = history[day] { return fixed }
-        let free = day < Self.freeDays
+        /* The free window applies only when the pool carries free flags;
+         * a pool without any falls back on all of it rather than on nothing. */
+        let free = day < Self.freeDays && pool.contains { $0.free == true }
         let meals = pool.filter { $0.isMeal && (!free || $0.free == true) }
         let snacks = pool.filter { $0.isSnack && (!free || $0.free == true) }
         return DayPick(meal: choose(day: day, from: meals, history: history, isMeal: true),
