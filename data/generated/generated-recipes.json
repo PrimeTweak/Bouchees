@@ -1302,5 +1302,757 @@
       "license": "original content, written for Bouchees",
       "cookedByAHuman": false
     }
+  },
+  {
+    "id": "lentil-sweet-potato-patties",
+    "name": "Lentil and Sweet Potato Patties",
+    "category": "Meal",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "lentils",
+        "qty": 250,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment.",
+      "Peel and cube Sweet potato, then steam for 10 minutes until completely tender.",
+      "Mash the steamed Sweet potato in a large bowl until smooth.",
+      "Mince the Garlic clove finely.",
+      "Add Cooked lentils, Egg, Oat flour, Ground cumin, Turmeric, and minced Garlic to the bowl.",
+      "Stir the mixture until fully combined and shapeable.",
+      "Shape the mixture into 16 patties, each about 1.5 cm thick.",
+      "Brush each patty lightly with Olive oil and place on the prepared sheet.",
+      "Bake for 18 to 20 minutes, until firm and golden on the outside.",
+      "Cool 5 minutes before serving. Refrigerate leftovers up to 3 days, or freeze up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sunflower-banana-oat-bites",
+    "name": "Sunflower Banana Oat Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 180,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "sunflower_seed_butter",
+        "qty": 60,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 30,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "raisins",
+        "qty": 60,
+        "unit": "ml",
+        "role": "fruit"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment.",
+      "Peel and mash 2 ripe bananas thoroughly in a large bowl.",
+      "Add sunflower seed butter and maple syrup to the bowl.",
+      "Stir in cinnamon and vanilla extract until combined.",
+      "Fold in rolled oats and raisins until a soft dough forms.",
+      "Drop tablespoon-sized mounds onto the prepared baking sheet.",
+      "Flatten each mound gently with the back of a spoon.",
+      "Bake 12 to 14 minutes, until set and lightly golden on the edges.",
+      "Cool completely on the sheet before serving. Store in an airtight container up to 3 days, or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-oat-blender-muffins",
+    "name": "Banana & Oat Blender Muffins",
+    "category": "Snack",
+    "servings": "12 muffins · 4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 240,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "applesauce",
+        "qty": 60,
+        "unit": "ml",
+        "role": "binder"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and grease a 12-cup muffin tin.",
+      "Add the Rolled oats to a blender and process for 20 seconds into a coarse flour.",
+      "Add the Mashed banana, Eggs, Canola oil, Unsweetened applesauce, and Vanilla extract.",
+      "Add the Baking powder and Cinnamon to the blender.",
+      "Blend for 30 seconds until smooth and well combined.",
+      "Divide the batter evenly among the 12 muffin cups, filling each two-thirds full.",
+      "Bake for 14 to 16 minutes, until risen and a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a wire rack.",
+      "Serve at room temperature. Refrigerate for up to 3 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-chickpea-yogurt-muffins",
+    "name": "Banana & Chickpea Yogurt Muffins",
+    "category": "Snack",
+    "servings": "12 muffins · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 180,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "plain_yogurt",
+        "qty": 120,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 100,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 80,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and lightly grease a 12-cup muffin tin.",
+      "Mash the banana thoroughly in a large bowl until no lumps remain.",
+      "Whisk the plain yogurt, canola oil, and vanilla extract into the mashed banana.",
+      "Add the chickpea flour, oat flour, baking powder, and cinnamon to the bowl.",
+      "Stir gently until just combined; the batter will be thick.",
+      "Divide the batter evenly among the 12 cups, filling each about three-quarters full.",
+      "Bake 18 to 20 minutes, until a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a wire rack.",
+      "Serve slightly warm or at room temperature. Store in an airtight container for up to 2 days, or freeze individually for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "cucumber-ricotta-pita-rounds",
+    "name": "Cucumber & Ricotta Pita Rounds",
+    "category": "Snack",
+    "servings": "16 rounds · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 10,
+    "ingredients": [
+      {
+        "id": "pita",
+        "qty": 2,
+        "unit": "unit",
+        "role": "flour"
+      },
+      {
+        "id": "ricotta",
+        "qty": 150,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "cucumber",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Slice each pita bread into 8 wedges using a sharp knife.",
+      "Slice the cucumber into thin rounds, about 3 mm thick.",
+      "Finely chop the fresh dill.",
+      "In a small bowl, stir together the ricotta, lemon juice, olive oil, and dill.",
+      "Spread a heaped teaspoon of the ricotta mixture onto each pita wedge.",
+      "Place one cucumber round on top of each spread wedge.",
+      "Arrange on a plate and serve immediately, or refrigerate up to 4 hours before serving."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "turkey-rice-bowl-with-roasted-vegetables",
+    "name": "Turkey and Rice Bowl with Roasted Vegetables",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "brown_rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "water",
+        "qty": 600,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "ground_turkey",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "red_pepper",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "paprika",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "tamari",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 220 °C (425 °F) and line a large baking sheet with parchment.",
+      "Dice Zucchini and Red bell pepper into 2 cm cubes.",
+      "Toss diced vegetables with 15 ml Olive oil, Salt, and Sweet paprika on the baking sheet.",
+      "Roast vegetables 20 minutes, until tender and lightly caramelised at the edges.",
+      "Meanwhile, bring Brown rice and Water to a boil in a medium saucepan, then simmer covered 25 minutes, until water is absorbed.",
+      "Mince Garlic and sauté in remaining 15 ml Olive oil in a large skillet over medium heat, 1 minute, until fragrant.",
+      "Add Ground turkey and cook 8 to 10 minutes, breaking it apart, until no pink remains.",
+      "Stir Ground cumin, Tamari sauce, and Lemon juice into the turkey and cook 1 minute, until combined.",
+      "Divide Brown rice among four bowls; top with roasted vegetables and turkey mixture.",
+      "Yield: 4 family portions. Refrigerate leftovers in an airtight container up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sweet-potato-chickpea-mini-patties",
+    "name": "Sweet Potato & Chickpea Mini Patties",
+    "category": "Snack",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment.",
+      "Peel and cube sweet potato into 2 cm pieces.",
+      "Steam sweet potato 10 minutes, until completely tender when pierced.",
+      "Mash sweet potato and cooked chickpeas together in a large bowl until mostly smooth.",
+      "Add egg, chickpea flour, cumin, and turmeric; stir to a firm dough.",
+      "Shape the dough into 16 small patties, about 4 cm wide and 1 cm thick.",
+      "Place patties on the lined baking sheet and brush tops with olive oil.",
+      "Bake 18 to 20 minutes, until golden and firm to the touch.",
+      "Cool 5 minutes before serving. Refrigerate leftovers up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "blueberry-banana-chickpea-muffins",
+    "name": "Blueberry Banana Chickpea Muffins",
+    "category": "Snack",
+    "servings": "12 muffins · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "plain_yogurt",
+        "qty": 80,
+        "unit": "ml",
+        "role": "dairy"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "blueberries",
+        "qty": 100,
+        "unit": "g",
+        "role": "fruit"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a 12-cup muffin tin with paper liners.",
+      "Whisk mashed banana, eggs, plain yogurt, canola oil, and vanilla in a large bowl.",
+      "Add chickpea flour and baking powder to the bowl.",
+      "Stir gently until just combined; do not overwork the batter.",
+      "Fold in blueberries with a spatula, distributing evenly.",
+      "Divide batter equally among the 12 muffin cups, filling each three-quarters full.",
+      "Bake 20 to 22 minutes, until a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a rack.",
+      "Store in an airtight container at room temperature for 2 days, or refrigerate for 5 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "blueberry-chickpea-flour-muffins",
+    "name": "Blueberry Chickpea Flour Muffins",
+    "category": "Snack",
+    "servings": "12 muffins · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpea_flour",
+        "qty": 180,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 6,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 150,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 45,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "blueberries",
+        "qty": 100,
+        "unit": "g",
+        "role": "fruit"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a 12-cup muffin tin with paper liners.",
+      "Whisk together the chickpea flour, baking powder, and cinnamon in a large bowl.",
+      "In a separate bowl, mash two ripe bananas until smooth.",
+      "Add the eggs, canola oil, and vanilla extract to the mashed banana and whisk well.",
+      "Pour the wet ingredients into the dry ingredients and stir until just combined.",
+      "Fold the blueberries gently into the batter.",
+      "Divide the batter evenly among the 12 muffin cups.",
+      "Bake for 18 to 20 minutes, until a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a wire rack.",
+      "Store in an airtight container for up to 3 days, or freeze individually for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "mini-cheesy-sweet-potato-muffins",
+    "name": "Mini Cheesy Sweet Potato Muffins",
+    "category": "Snack",
+    "servings": "24 mini muffins · 4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "wheat_flour",
+        "qty": 180,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cow_milk",
+        "qty": 80,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 45,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cheddar",
+        "qty": 80,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 190 °C (375 °F) and grease a 24-cup mini muffin tin.",
+      "Peel and grate the sweet potato finely into a large bowl.",
+      "Grate the cheddar and set it aside.",
+      "Add the wheat flour, baking powder, and salt to the bowl with the sweet potato.",
+      "In a small bowl, whisk the eggs, cow's milk, and canola oil together.",
+      "Pour the egg mixture into the flour bowl and stir until just combined.",
+      "Fold in three-quarters of the grated cheddar gently.",
+      "Divide the batter evenly among the 24 muffin cups and top with the remaining cheddar.",
+      "Bake for 16 to 18 minutes, until golden on top and a toothpick comes out clean.",
+      "Cool for 5 minutes in the tin before unmoulding. Store in an airtight container for up to 3 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-02",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]
