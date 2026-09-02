@@ -1012,7 +1012,20 @@ def check():
     problems += commentaires_hors_regle()
     problems += tailles_fixes()
     problems += viewbuilder_avec_return()
+    problems += await_dans_autoclosure()
     return problems, warnings
+
+
+def await_dans_autoclosure():
+    """`await` on the right of ?? or inside assert/precondition: the argument
+    is an autoclosure, which cannot await. The compiler refuses it."""
+    out = []
+    for path in swift_files():
+        for i, ligne in enumerate(open(path, encoding="utf-8").read().split("\n"), 1):
+            code = re.sub(r"//.*", "", ligne)
+            if re.search(r"\?\?[^\n]*\bawait\b", code) or re.search(r"\b(assert|precondition)\([^\n]*\bawait\b", code):
+                out.append(f"{os.path.basename(path)}:{i}: await inside an autoclosure — ?? and assert cannot await; spell the fallback out")
+    return out
 
 
 def viewbuilder_avec_return():

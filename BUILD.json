@@ -1,9 +1,7 @@
 {
-  "build": 142,
+  "build": 143,
   "date": "2026-09-02",
   "carries": [
-    "the week stays whole: all seven days show, and the red rule marks today rather than the list starting there; today's meal is still hidden from its row, since the hero above already names it",
-    "one thumbnail size for every row; a snack is told apart by its warm field and its subtitle, not by being smaller",
-    "the Sunday empty state is gone with the truncation that caused it"
+    "build fix: the Apple receipt fallback used ?? whose right side is an autoclosure, which cannot await; the fallback is spelled out and the checker refuses await inside ?? or assert"
   ]
 }
