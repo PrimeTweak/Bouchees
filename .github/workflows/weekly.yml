@@ -62,8 +62,8 @@ jobs:
         # corpus élargi, pas seulement sur celui d'avant.
         run: node tests/test.js
 
-      - name: Rolling window status
-        run: node tools/weeks.js
+      - name: Pool status
+        run: node tools/gaps.js
 
       - name: Open the pull request
         uses: peter-evans/create-pull-request@v6

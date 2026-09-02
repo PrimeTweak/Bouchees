@@ -60,32 +60,26 @@ jobs:
           node web/build.js
 
       - name: Bundle resources into the iOS app
-        # The JavaScript engine and the safety tables travel with the app, so
-        # everything works offline from the very first launch. Only the FREE
-        # batches are bundled — a file inside an IPA can be read with a text
-        # editor, so that would be no wall at all.
+        # The JavaScript engine, the safety tables and the catalogue travel
+        # with the app, so everything works offline from the first launch.
+        # Only the FREE bodies are bundled: a file inside an IPA can be read
+        # with a text editor, so a paid body there would be no wall at all.
         run: |
           R=ios/App/App/Bundled
-          rm -rf "$R"; mkdir -p "$R/batches"
+          rm -rf "$R"; mkdir -p "$R/recipes"
           cp engine/engine.js engine/native-bridge.js "$R/"
           cp data/ingredients.json data/substitutions.json data/base.json "$R/"
-          # The scanner's label vocabulary. Without it the app falls back to
-          # the 92-ingredient recipe catalogue and every processed product
-          # reads "not sure".
           cp data/label-lexicon.json "$R/"
+          cp dist/catalogue.json "$R/"
           python3 - <<'PY'
           import json, shutil, pathlib
           m = json.load(open('dist/manifest.json'))
-          free = set(m['free'])
-          dest = pathlib.Path('ios/App/App/Bundled/batches')
-          for batch in sorted(free):
-              src = pathlib.Path('dist/batches') / (batch + '.json')
+          dest = pathlib.Path('ios/App/App/Bundled/recipes')
+          for rid in sorted(m['free']):
+              src = pathlib.Path('dist/recipes') / (rid + '.json')
               if src.exists():
                   shutil.copy(src, dest / src.name)
-                  print('bundled:', batch)
-          for b in m['batches']:
-              if b['id'] not in free:
-                  print('left on the server:', b['id'])
+          print('bundled free bodies:', len(list(dest.glob('*.json'))), 'of', len(m['free']))
           PY
           ls -R "$R"
 
