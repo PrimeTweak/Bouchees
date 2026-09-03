@@ -31,8 +31,7 @@ struct RecipeDetailScreen: View {
                     ZStack {
                         Tone.heroField
                         RecipeVisual(recipe: recipe, result: result,
-                                     drawingBackground: false,
-                                     showsOriginLabel: true)
+                                     drawingBackground: false)
                             .frame(height: Layout.detailPhoto)
                             .frame(maxWidth: .infinity)
                     }
@@ -55,8 +54,22 @@ struct RecipeDetailScreen: View {
                             .shadow(color: .black.opacity(0.55), radius: 20)
                             .padding(.top, 8)
 
-                        VerdictPill(result: result, firstName: firstName)
-                            .padding(.top, 14)
+                        /* On the pill's own line: the note used to hang from
+                         * the bottom of the photo while the pill floats over
+                         * the image, so the two could never line up. */
+                        HStack(alignment: .center) {
+                            VerdictPill(result: result, firstName: firstName)
+                            Spacer(minLength: 8)
+                            if result.status != .asIs, recipe.image != nil {
+                                Text("original recipe")
+                                    .scaledFont(Type.micro)
+                                    .foregroundStyle(.white.opacity(0.95))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(.black.opacity(0.38), in: Capsule())
+                            }
+                        }
+                        .padding(.top, 14)
                     }
                     .padding(.horizontal, Layout.gutter)
                     .padding(.bottom, 22)

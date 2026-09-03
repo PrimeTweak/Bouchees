@@ -2,6 +2,7 @@
 // RecipesScreen.swift
 
 import SwiftUI
+import UIKit
 
 struct RecipesScreen: View {
     var tab: Binding<Int>?
@@ -355,6 +356,8 @@ struct RecipesScreen: View {
              * reorder a week they cannot open, and a past week is history. */
             .modifier(DraggableIf(active: slot.offset == 0,
                                   recipe: pair.recipe, result: pair.result))
+            .modifier(CookedSwipe(recipe: pair.recipe,
+                                  cooked: app.cooked.contains(pair.recipe.id)))
         } else {
             Button { showPaywall = true } label: {
                 RecipeRow(recipe: pair.recipe, result: pair.result, locked: true)
@@ -578,6 +581,57 @@ private struct DropDayIf: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+/// Marking a dish cooked without opening it. Drawn by hand: `swipeActions`
+/// only works inside a List, and the week is a LazyVStack.
+private struct CookedSwipe: ViewModifier {
+    @Environment(AppState.self) private var app
+    let recipe: Recipe
+    let cooked: Bool
+
+    @State private var offset: CGFloat = 0
+    private let seuil: CGFloat = 78
+
+    func body(content: Content) -> some View {
+        ZStack(alignment: .trailing) {
+            /* What the release will do, shown while the row travels. */
+            HStack(spacing: 6) {
+                Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
+                Text(cooked ? "Not cooked" : "Cooked")
+            }
+            .scaledFont(Type.micro, weight: .semibold)
+            .foregroundStyle(.white)
+            .frame(width: seuil)
+            .frame(maxHeight: .infinity)
+            .background(cooked ? Tone.text3 : Tone.yes)
+            .opacity(offset < -10 ? 1 : 0)
+
+            content
+                .background(Tone.canvas)
+                .offset(x: offset)
+                .gesture(
+                    DragGesture(minimumDistance: 18, coordinateSpace: .local)
+                        .onChanged { g in
+                            /* Horizontal only: a vertical drag is the list
+                             * scrolling, and a rightward one is nothing. */
+                            guard abs(g.translation.width) > abs(g.translation.height) else { return }
+                            offset = max(-seuil - 24, min(0, g.translation.width))
+                        }
+                        .onEnded { g in
+                            /* Past the threshold the release commits, the way
+                             * a Mail swipe does. The row springs back either
+                             * way: nothing stays open. */
+                            let commit = g.translation.width < -seuil
+                            withAnimation(.soft(0.24)) { offset = 0 }
+                            guard commit else { return }
+                            if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                )
+        }
+        .animation(.soft(0.2), value: cooked)
     }
 }
 

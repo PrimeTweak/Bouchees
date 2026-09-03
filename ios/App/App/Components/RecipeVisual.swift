@@ -13,7 +13,6 @@ struct RecipeVisual: View {
     /// Whether the origin warning is spelled out: true only on the recipe
     /// page, where the photo runs 430pt and the parent is about to cook from
     /// it.
-    var showsOriginLabel = false
 
     /// True in a list row, where the 480px twin is enough.
     var compact = false
@@ -36,10 +35,6 @@ struct RecipeVisual: View {
         return recipe.id
     }
 
-    private var photoDuPlatOriginal: Bool {
-        photoPertinente && result.status != .asIs
-    }
-
     var body: some View {
         ZStack {
             if let photo, photoPertinente {
@@ -50,7 +45,6 @@ struct RecipeVisual: View {
                     /* Bottom trailing, level with the title: the top corner
                      * sits under the status bar and had to be pulled into
                      * view, and the gradient down here carries the text. */
-                    .overlay(alignment: .bottomTrailing) { originWarning }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)
@@ -60,25 +54,6 @@ struct RecipeVisual: View {
          * next sync. Keyed on the id, the view never looked again. */
         .task(id: photoKey) { await load() }
         .animation(.soft(0.2), value: photo != nil)
-    }
-
-    /// The photo shows the dish before the swaps. Said on the hero, where a
-    /// parent looks at it; a thumbnail is too small for a second mark.
-    @ViewBuilder
-    private var originWarning: some View {
-        if photoDuPlatOriginal && showsOriginLabel {
-            /* A pale photo swallowed white text on a shadow alone. A dark
-             * field, barely there, holds it at any exposure. */
-            Text("original recipe")
-                .scaledFont(Type.micro)
-                .foregroundStyle(.white.opacity(0.95))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.black.opacity(0.38), in: Capsule())
-                .padding(.trailing, 15)
-                /* Level with the verdict pill sitting just below the photo. */
-                .padding(.bottom, 13)
-        }
     }
 
     private func load() async {

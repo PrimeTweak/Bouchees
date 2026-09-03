@@ -206,7 +206,18 @@ final class AppState {
 
     func markCooked(_ id: String) {
         local.markCooked(id, week: "w\(weekStart(0))")
+        cookedTick += 1
     }
+
+    /// Undo, for a swipe made by mistake.
+    func unmarkCooked(_ id: String) {
+        local.unmarkCooked(id, week: "w\(weekStart(0))")
+        cookedTick += 1
+    }
+
+    /// `cooked` reads the disk, which Observation cannot watch. Bumping this
+    /// is what tells the week to redraw after a swipe.
+    private(set) var cookedTick = 0
 
     /// Every option the table holds for an ingredient: `chosenName` is the
     /// substitute the engine actually took.

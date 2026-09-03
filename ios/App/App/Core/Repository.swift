@@ -124,6 +124,12 @@ final class LocalStore {
         UserDefaults.standard.set(Array(ids), forKey: "cooked.\(week)")
     }
 
+    func unmarkCooked(_ id: String, week: String) {
+        var ids = loadCooked(week: week)
+        ids.remove(id)
+        UserDefaults.standard.set(Array(ids), forKey: "cooked.\(week)")
+    }
+
     /// One note per recipe, on the device. Synced to the ranking later.
     func writeLocalRating(_ id: String, note: Int?) {
         var all = readLocalRatings()
