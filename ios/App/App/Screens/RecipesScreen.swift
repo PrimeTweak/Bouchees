@@ -347,17 +347,18 @@ struct RecipesScreen: View {
     private func row(_ pair: (recipe: Recipe, result: AdaptedRecipe),
                      slot: WeekSlot) -> some View {
         if pair.recipe.hasBody {
-            Button { navigate(.recipe(pair.recipe.id)) } label: {
-                RecipeRow(recipe: pair.recipe, result: pair.result,
-                          cooked: app.cooked.contains(pair.recipe.id))
+            CookedSwipe(recipe: pair.recipe,
+                        cooked: app.cooked.contains(pair.recipe.id)) {
+                Button { navigate(.recipe(pair.recipe.id)) } label: {
+                    RecipeRow(recipe: pair.recipe, result: pair.result,
+                              cooked: app.cooked.contains(pair.recipe.id))
+                }
+                .buttonStyle(.plain)
+                /* Only the current week can be rearranged. A parent does not
+                 * reorder a week they cannot open, and a past week is history. */
+                .modifier(DraggableIf(active: slot.offset == 0,
+                                      recipe: pair.recipe, result: pair.result))
             }
-            .buttonStyle(.plain)
-            /* Only the current week can be rearranged. A parent does not
-             * reorder a week they cannot open, and a past week is history. */
-            .modifier(DraggableIf(active: slot.offset == 0,
-                                  recipe: pair.recipe, result: pair.result))
-            .modifier(CookedSwipe(recipe: pair.recipe,
-                                  cooked: app.cooked.contains(pair.recipe.id)))
         } else {
             Button { showPaywall = true } label: {
                 RecipeRow(recipe: pair.recipe, result: pair.result, locked: true)
@@ -584,17 +585,19 @@ private struct DropDayIf: ViewModifier {
     }
 }
 
-/// Marking a dish cooked without opening it. Drawn by hand: `swipeActions`
-/// only works inside a List, and the week is a LazyVStack.
-private struct CookedSwipe: ViewModifier {
+/// Marking a dish cooked without opening it. A wrapper rather than a modifier:
+/// the row is a Button, and a Button consumes a drag before a gesture placed
+/// on top of it ever sees the movement.
+private struct CookedSwipe<Content: View>: View {
     @Environment(AppState.self) private var app
     let recipe: Recipe
     let cooked: Bool
+    @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
     private let seuil: CGFloat = 78
 
-    func body(content: Content) -> some View {
+    var body: some View {
         ZStack(alignment: .trailing) {
             /* What the release will do, shown while the row travels. */
             HStack(spacing: 6) {
@@ -611,19 +614,19 @@ private struct CookedSwipe: ViewModifier {
             content
                 .background(Tone.canvas)
                 .offset(x: offset)
-                .gesture(
-                    DragGesture(minimumDistance: 18, coordinateSpace: .local)
+                /* Simultaneous: the Button keeps its tap, this keeps the drag.
+                 * A high minimum distance leaves the vertical scroll alone. */
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 24, coordinateSpace: .local)
                         .onChanged { g in
-                            /* Horizontal only: a vertical drag is the list
-                             * scrolling, and a rightward one is nothing. */
-                            guard abs(g.translation.width) > abs(g.translation.height) else { return }
+                            guard abs(g.translation.width) > abs(g.translation.height) * 1.5 else { return }
                             offset = max(-seuil - 24, min(0, g.translation.width))
                         }
                         .onEnded { g in
                             /* Past the threshold the release commits, the way
-                             * a Mail swipe does. The row springs back either
-                             * way: nothing stays open. */
+                             * a Mail swipe does; the row springs back either way. */
                             let commit = g.translation.width < -seuil
+                                && abs(g.translation.width) > abs(g.translation.height) * 1.5
                             withAnimation(.soft(0.24)) { offset = 0 }
                             guard commit else { return }
                             if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }

@@ -57,16 +57,19 @@ struct RecipeDetailScreen: View {
                         /* On the pill's own line: the note used to hang from
                          * the bottom of the photo while the pill floats over
                          * the image, so the two could never line up. */
-                        HStack(alignment: .center) {
+                        /* Bottoms aligned, and the same glass as the verdict
+                         * pill rather than a black field: the two read as one
+                         * pair. The vertical padding matches VerdictPill's. */
+                        HStack(alignment: .bottom) {
                             VerdictPill(result: result, firstName: firstName)
                             Spacer(minLength: 8)
                             if result.status != .asIs, recipe.image != nil {
                                 Text("original recipe")
                                     .scaledFont(Type.micro)
-                                    .foregroundStyle(.white.opacity(0.95))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(.black.opacity(0.38), in: Capsule())
+                                    .foregroundStyle(Tone.text2)
+                                    .padding(.horizontal, 13)
+                                    .padding(.vertical, 9)
+                                    .glass(Capsule())
                             }
                         }
                         .padding(.top, 14)

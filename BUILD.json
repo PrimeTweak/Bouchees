@@ -1,9 +1,9 @@
 {
-  "build": 155,
+  "build": 156,
   "date": "2026-09-03",
   "carries": [
-    "the origin note moves onto the verdict pill's own line: it hung from the bottom of the photo while the pill floats over the image, so the two could never line up",
-    "a swipe left on a week row marks the dish cooked, and marks it back; the release commits past the threshold, the way a Mail swipe does, and the row springs back either way",
-    "swipeActions needs a List and the week is a LazyVStack, so the gesture is written by hand; it ignores a drag that is more vertical than horizontal, which is the list scrolling"
+    "the swipe did nothing: the row is a Button, and a Button consumes a drag before a gesture placed on top of it sees the movement; the gesture now wraps the row and runs simultaneously with the tap",
+    "the origin note wears the same glass as the verdict pill instead of a black field, with matching padding, and the two sit on one baseline",
+    "a drag has to be half again more horizontal than vertical to count, so the list still scrolls"
   ]
 }
