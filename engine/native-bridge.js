@@ -89,8 +89,14 @@ var PONT = (function () {
       .split(/[,;()\[\]\u2022\u00b7\n]+/)
       .map(function (t) {
         return t.replace(/\d+([.,]\d+)?\s*%/g, " ")
+                /* The heading itself is not a food: "Ingredients: flour" was
+                 * read as an unknown ingredient, which turned a clear label
+                 * into "uncertain" and hid the traces warning behind it. */
+                .replace(/^\s*(ingr[eé]dients?|ingr[eé]dient|composition|liste\s+des\s+ingr[eé]dients)\s*:?\s*/i, "")
                 .replace(/^\s*(and|or|et|ou|dont|contains?|contient|including)\s*:?\s+/i, "")
-                .replace(/^\s*:\s*/, "").trim();
+                .replace(/^\s*:\s*/, "")
+                /* Trailing punctuation: "sel." never matched "sel". */
+                .replace(/[.;:!?]+\s*$/, "").trim();
       })
       .filter(function (t) { return t.length > 1; });
   }
@@ -182,6 +188,16 @@ var PONT = (function () {
         /* The order of the four states, and why: avoid the allergen is declared
      * present. */
     var status, message;
+    /* Nothing to read is not a clean label. An empty or near-empty text used
+     * to answer "safe", which is the worst possible verdict in an allergy
+     * app: a green light on no information. */
+    if (fragments(segments.ingredients).length < 2 && !liste.length) {
+      return JSON.stringify({
+        status: "unreadable",
+        allergensFound: [], mayContain: [], unknownIngredients: [],
+        message: "No ingredient list could be read. Read the label on the package."
+      });
+    }
     if (liste.length) {
       status = "avoid";
       message = "Avoid \u2014 the label declares: " + joinEn(liste) + ".";

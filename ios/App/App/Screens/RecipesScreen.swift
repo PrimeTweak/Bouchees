@@ -438,9 +438,21 @@ extension RecipesScreen {
 
     // MARK: - Tail
 
+    /// The App Store's own price, in the user's currency. Falls back to the
+    /// trial wording alone when StoreKit has not answered — never to a
+    /// number we invented.
+    private var priceLine: String {
+        guard let price = app.subscription.displayPrice else {
+            return String(localized: "7 days free")
+        }
+        let period = app.subscription.displayPeriod ?? String(localized: "month")
+        return String(format: String(localized: "7 days free, then %@/%@"), price, period)
+    }
+
     /* The subscription is the point of the app: it now comes right under the
      * week, as the only DARK block on a light page, so the eye lands on it. */
     @ViewBuilder
+
     private var upsell: some View {
         let locked = app.recipes.filter { !$0.hasBody }.count
         if locked > 0 && !app.subscribed {
@@ -459,7 +471,7 @@ extension RecipesScreen {
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
-                    Text("7 days free, then $4.99/month")
+                    Text(priceLine)
                         .scaledFont(Type.caption)
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 2)
@@ -640,11 +652,12 @@ struct RecipeRow: View {
 
             Spacer(minLength: 8)
 
-            /* Set by "Done" in cooking mode: the only mark left on a row. */
+            /* Set by "Done" in cooking mode. Ink, not verdict green: the row
+             * carries no verdict any more, and a green mark read as one. */
             if cooked {
-                Image(systemName: "checkmark.circle.fill")
-                    .scaledFont(Type.caption)
-                    .foregroundStyle(Tone.yes)
+                Image(systemName: "checkmark")
+                    .scaledFont(Type.micro, weight: .semibold)
+                    .foregroundStyle(Tone.text3)
                     .accessibilityLabel(Text("Cooked"))
             }
         }

@@ -200,7 +200,12 @@ jobs:
           mkdir -p sortie/Payload
           cp -R "$APP" sortie/Payload/
           cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
+          # A zip stores times WITHOUT a zone; the Finder reads the number as
+          # local. upload-artifact rewraps the file and does not read TZ, so
+          # the stamp has to be set here, shifted so the Finder shows Montreal.
+          touch -t "$(TZ=America/Toronto date +%Y%m%d%H%M.%S | cut -d. -f1)" sortie/Bouchees-unsigned.ipa
           ls -lh sortie/Bouchees-unsigned.ipa
+          echo "horodatage pose : $(TZ=America/Toronto date '+%Y-%m-%d %H:%M %Z')"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

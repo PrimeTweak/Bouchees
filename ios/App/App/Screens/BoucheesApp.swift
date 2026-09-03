@@ -1,10 +1,12 @@
 // BoucheesApp.swift Entry point and navigation.
 
 import SwiftUI
+import UIKit
 
 @main
 @MainActor
 struct BoucheesApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var app = AppState()
 
     var body: some Scene {
@@ -19,6 +21,16 @@ struct BoucheesApp: App {
                 .appTheme(app.theme)
                 .tint(Tone.brand)
                 .task { await app.start() }
+                /* Midnight and the return from background: the day marker and
+                 * the hero were the ones from the last launch until the app
+                 * was killed. A meal app has to follow the calendar. */
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active { app.refreshPlan() }
+                }
+                .onReceive(NotificationCenter.default.publisher(
+                    for: UIApplication.significantTimeChangeNotification)) { _ in
+                    app.refreshPlan()
+                }
         }
     }
 }

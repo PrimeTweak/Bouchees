@@ -299,7 +299,10 @@ struct ProductVerdict: Codable, Sendable {
         /* `caution` is a declared factory warning: the ingredient list itself
          * came back clean, and the label says the product may have met the
          * allergen elsewhere. */
-        case safe, avoid, uncertain, caution
+        /* `unreadable` is not the same as `uncertain`: there was nothing to
+         * read at all, and a green verdict on no information is the worst
+         * answer this app can give. */
+        case safe, avoid, uncertain, caution, unreadable
         init(from decoder: Decoder) throws {
             let rawText = try decoder.singleValueContainer().decode(String.self)
             /* An unknown state falls to `uncertain`, never to `safe`. */

@@ -14,6 +14,23 @@ typealias PurchaseTransaction = StoreKit.Transaction
 final class Subscription {
 
     private(set) var products: [Product] = []
+
+    /// The price as the App Store gives it, in the user's currency and store.
+    /// A hard-coded "$4.99" is wrong the moment a price differs by country,
+    /// a promotion runs, or the price changes — and Apple refuses that.
+    var displayPrice: String? { products.first?.displayPrice }
+
+    /// The renewal period, spelled by StoreKit rather than by us.
+    var displayPeriod: String? {
+        guard let unit = products.first?.subscription?.subscriptionPeriod.unit else { return nil }
+        switch unit {
+        case .day: return String(localized: "day")
+        case .week: return String(localized: "week")
+        case .month: return String(localized: "month")
+        case .year: return String(localized: "year")
+        @unknown default: return nil
+        }
+    }
     private(set) var activeOnDevice = false
     var message: String?
 

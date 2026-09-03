@@ -1,11 +1,14 @@
 {
-  "build": 152,
-  "date": "2026-09-02",
+  "build": 153,
+  "date": "2026-09-03",
   "carries": [
-    "the sequence draws from what this child can actually eat: a card the engine cannot adapt for their allergens, or one under their age, is never picked; a category the filter would empty falls back on the whole pool rather than on an empty day",
-    "a twin test walks twenty-five profile and age combinations over sixty days and asserts the week never holds a dish that cannot be adapted",
-    "the week list carries no verdict at all — no dot, no count, no per-day total; the only mark left is the green tick for what was cooked",
-    "VoiceOver still reads the verdict as a hint on the row",
-    "the origin note on the hero is the words alone; the pill below carries the colour"
+    "QA wave. The scanner: an empty or unreadable label answered safe — a green verdict on no information; it now has its own unreadable state. The word Ingredients: was read as an unknown food, which pushed a clear label to uncertain and buried the may-contain warning behind it; headings and trailing punctuation are no longer foods, so a trace warning surfaces as caution, which informs rather than blocks",
+    "the engine refuses to call a recipe safe when it holds an ingredient the catalogue does not know; the validator already blocked these upstream, this is the second line",
+    "the subscription price comes from StoreKit in the user's currency and store, with the renewal period spelled by StoreKit; a hard-coded 4.99 was wrong the moment a price differs by country",
+    "midnight and the return from background refresh the plan; the day marker and the hero stayed on the previous day until the app was killed",
+    "the artifact carries Montreal time: TZ moves the job's clock but upload-artifact rewraps the file without reading it, so the stamp is set explicitly",
+    "Info.plist pointed at 0.6.0 while project.yml built 1.0.0; it now points at the real source, and declares the standard HTTPS encryption exemption",
+    "labels for the icon-only buttons in cooking mode; the exclusion phrases in the photo prompt fit under the 500-character limit again",
+    "the cooked tick is ink rather than verdict green, now that the row carries no verdict; the origin note gets a faint dark field so it reads on a pale photo, level with the pill below"
   ]
 }

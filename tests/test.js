@@ -2100,4 +2100,40 @@ test("wall: a forged or unsigned receipt as bearer entitles nothing", async () =
   t.close();
 });
 
+test("label: nothing to read is never safe", () => {
+  /* A green verdict on no information is the worst answer an allergy app can
+   * give. Empty, blank and unreadable text all have to say so. */
+  ["", "   ", "###@@@", "sucre"].forEach((t) => {
+    const r = evaluerEtiquette(t, ["milk"]);
+    assert.notEqual(r.status, "safe", JSON.stringify(t) + " came back safe");
+  });
+});
+
+test("label: a may-contain warning is surfaced as caution, never hidden", () => {
+  /* A trace warning is information the parent decides on — it must not be
+   * swallowed by the unknown-ingredient branch, which is what the heading
+   * word "Ingredients:" used to trigger. */
+  const cas = ["ingredients: sucre, sel. Peut contenir des traces de lait.",
+               "ingredients: sugar, salt. May contain traces of milk.",
+               "sucre, sel. Peut contenir des traces de lait."];
+  cas.forEach((t) => {
+    const r = evaluerEtiquette(t, ["milk"]);
+    assert.equal(r.status, "caution", t.slice(0, 40) + " -> " + r.status);
+    assert.deepEqual(r.mayContain, ["milk"]);
+  });
+});
+
+test("label: a heading word is not an ingredient", () => {
+  const r = evaluerEtiquette("ingredients: farine de ble, sucre, sel", ["milk"]);
+  assert.equal(r.status, "safe");
+  assert.equal(r.unknownIngredients.length, 0, JSON.stringify(r.unknownIngredients));
+});
+
+test("engine: an ingredient the catalogue does not know is never called safe", () => {
+  const r = { id: "x", name: "X", category: "Meal", minAgeMonths: 6, steps: ["Mix."],
+              ingredients: [{ id: "creme_inconnue", qty: 100, unit: "ml", role: "dairy" }] };
+  const a = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, data);
+  assert.equal(a.status, "not_adaptable");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

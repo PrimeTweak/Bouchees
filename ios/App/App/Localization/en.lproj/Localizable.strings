@@ -465,3 +465,11 @@
 "Unknown ingredient" = "Unknown ingredient";
 "%lld swaps made" = "%lld swaps made";
 "%lld swap made" = "%lld swap made";
+"Nothing to read" = "Nothing to read";
+"No ingredient list came back for this product. Read the label on the package." = "No ingredient list came back for this product. Read the label on the package.";
+"7 days free" = "7 days free";
+"7 days free, then %@/%@" = "7 days free, then %@/%@";
+"day" = "day";
+"week" = "week";
+"month" = "month";
+"year" = "year";

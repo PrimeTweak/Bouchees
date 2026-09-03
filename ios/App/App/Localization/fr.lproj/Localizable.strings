@@ -464,3 +464,11 @@
 "Unknown ingredient" = "Ingrédient inconnu";
 "%lld swaps made" = "%lld substitutions faites";
 "%lld swap made" = "%lld substitution faite";
+"Nothing to read" = "Rien à lire";
+"No ingredient list came back for this product. Read the label on the package." = "Aucune liste d'ingrédients n'est revenue pour ce produit. Lis l'étiquette sur l'emballage.";
+"7 days free" = "7 jours gratuits";
+"7 days free, then %@/%@" = "7 jours gratuits, puis %@/%@";
+"day" = "jour";
+"week" = "semaine";
+"month" = "mois";
+"year" = "an";

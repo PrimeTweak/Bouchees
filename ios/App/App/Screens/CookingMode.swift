@@ -195,6 +195,7 @@ struct CookingMode: View {
                     .foregroundStyle(Tone.text2)
                     .frame(width: 74, height: 58)
                     .background(Tone.text.opacity(0.055),
+                    .accessibilityLabel(Text("Back"))
                                 in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
             .buttonStyle(.plain)

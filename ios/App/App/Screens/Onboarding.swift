@@ -449,6 +449,17 @@ private struct OfferStep: View {
     let draft: ChildProfile
     let finish: () -> Void
 
+    /// The App Store's own price, in the user's currency. Falls back to the
+    /// trial wording alone when StoreKit has not answered — never to a
+    /// number we invented.
+    private var priceLine: String {
+        guard let price = app.subscription.displayPrice else {
+            return String(localized: "7 days free")
+        }
+        let period = app.subscription.displayPeriod ?? String(localized: "month")
+        return String(format: String(localized: "7 days free, then %@/%@"), price, period)
+    }
+
     private var tally: AppState.ProfileTally { app.tally(for: draft) }
 
     var body: some View {
@@ -505,7 +516,7 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                Text("Then $4.99/month. Cancel any time.")
+                Text(priceLine)
                     .scaledFont(Type.secondary)
                     .foregroundStyle(Tone.textTertiary)
             }

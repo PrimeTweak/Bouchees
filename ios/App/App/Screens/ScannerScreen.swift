@@ -457,7 +457,7 @@ struct ProductSheet: View {
         /* Caution shares the swap amber with uncertain, and is separated by
          * its words rather than its colour. Both mean "stop and read"; a
          * fourth colour in a viewfinder is a fourth thing to learn. */
-        case .uncertain, .caution: return Tone.swap
+        case .uncertain, .caution, .unreadable: return Tone.swap
         case nil: return Tone.brand
         }
     }
@@ -468,6 +468,7 @@ struct ProductSheet: View {
         case .safe: return String(format: String(localized: "Good for %@"), who)
         case .avoid: return String(format: String(localized: "Not for %@"), who)
         case .uncertain: return String(localized: "I am not sure")
+        case .unreadable: return String(localized: "Nothing to read")
         case .caution: return String(localized: "Made near it")
         }
     }
@@ -482,6 +483,8 @@ struct ProductSheet: View {
             return label + " — " + String(format: String(localized: "contains %@"), allergenNames)
         case .uncertain:
             return String(localized: "Something on the label was not recognised. Check the package.")
+        case .unreadable:
+            return String(localized: "No ingredient list came back for this product. Read the label on the package.")
         case .caution:
             /* The distinction this state exists for: the list is clean, the
              * factory is not. A parent decides this one, not the app. */
@@ -949,6 +952,7 @@ private struct VerdictBadge: View {
         case .safe: return "checkmark"
         case .avoid: return "exclamationmark.triangle.fill"
         case .uncertain: return "questionmark"
+        case .unreadable: return "text.viewfinder"
         case .caution: return "exclamationmark.triangle"
         }
     }
@@ -957,7 +961,7 @@ private struct VerdictBadge: View {
         switch status {
         case .safe: return Tone.yes
         case .avoid: return Tone.no
-        case .uncertain, .caution: return Tone.swap
+        case .uncertain, .caution, .unreadable: return Tone.swap
         }
     }
 
@@ -966,6 +970,7 @@ private struct VerdictBadge: View {
         case .safe: return String(format: String(localized: "Good for %@"), firstName)
         case .avoid: return String(format: String(localized: "Not for %@"), firstName)
         case .uncertain: return String(localized: "I am not sure")
+        case .unreadable: return String(localized: "Nothing to read")
         case .caution: return String(localized: "Made near it")
         }
     }

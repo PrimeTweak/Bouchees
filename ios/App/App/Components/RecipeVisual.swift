@@ -67,16 +67,17 @@ struct RecipeVisual: View {
     @ViewBuilder
     private var originWarning: some View {
         if photoDuPlatOriginal && showsOriginLabel {
-            /* No dot: the pill just below already carries the colour, and a
-             * dot on a pale photo made the words harder to read. */
+            /* A pale photo swallowed white text on a shadow alone. A dark
+             * field, barely there, holds it at any exposure. */
             Text("original recipe")
                 .scaledFont(Type.micro)
-                .foregroundStyle(.white.opacity(0.85))
-            /* No capsule: a shadow keeps it readable on a pale photo without
-             * cutting a rectangle out of the picture. */
-            .shadow(color: .black.opacity(0.6), radius: 3, y: 1)
-            .padding(.trailing, 15)
-            .padding(.bottom, 15)
+                .foregroundStyle(.white.opacity(0.95))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(.black.opacity(0.38), in: Capsule())
+                .padding(.trailing, 15)
+                /* Level with the verdict pill sitting just below the photo. */
+                .padding(.bottom, 13)
         }
     }
 

@@ -174,15 +174,15 @@ function presentationPour(recipe) {
  * the catalogue says milk, wheat, so no exclusion ever matched: the model
  * breaded four wheat-free patties by reflex. */
 const EXCLUSIONS = {
-  milk: "no visible cheese, cream or butter, no white sauce",
-  egg: "no visible egg, no egg wash or glossy glaze",
+  milk: "no cheese, cream or white sauce",
+  egg: "no visible egg, no glossy glaze",
   peanut: "no visible peanuts",
   tree_nut: "no visible tree nuts, whole or chopped",
-  wheat: "no breadcrumbs or breaded coating, no visible bread or wheat pasta",
+  wheat: "no breadcrumbs, no breaded coating",
   soy: "no visible soy sauce",
   sesame: "no visible sesame seeds",
   fish: "no visible fish",
-  shellfish: "no visible shellfish, no shrimp or crab",
+  shellfish: "no shrimp or crab",
   mustard: "no visible mustard",
   sulphites: "no bright orange dried fruit"
 };

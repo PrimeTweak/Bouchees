@@ -265,6 +265,22 @@
       });
     }
 
+    /* An ingredient the catalogue does not know carries unknown allergens, so
+     * the recipe cannot be called safe. The validator refuses these upstream;
+     * this is the second line, for a corrupt file or a future import. */
+    var inconnus = (recipe.ingredients || []).filter(function (u) {
+      return !catalogue[u.to || u.id];
+    });
+    if (inconnus.length) {
+      result.status = "not_adaptable";
+      result.alerts.push({
+        level: "blocking",
+        message: "This recipe uses an ingredient the safety tables do not know: " +
+                 inconnus.map(function (u) { return u.to || u.id; }).join(", ") + "."
+      });
+      return result;
+    }
+
     recipe.ingredients.forEach(function (usage) {
       var def = catalogue[usage.id];
       var role = roleDe(usage, def);

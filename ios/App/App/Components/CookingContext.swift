@@ -359,6 +359,7 @@ struct SearchSheet: View {
                     Image(systemName: "xmark.circle.fill")
                         .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.text3)
+                        .accessibilityLabel(Text("Clear"))
                 }
                 .buttonStyle(.plain)
             }
