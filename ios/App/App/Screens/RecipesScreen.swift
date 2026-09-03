@@ -605,19 +605,20 @@ private struct CookedSwipe<Content: View>: View {
             /* The field lives BEHIND the row and only exists while it travels;
              * drawn in a ZStack it was covered by the row's own opaque
              * background. */
+            /* Built once and revealed by opacity: rebuilding it at every
+             * pixel of the drag, with a frame driven by the offset, is what
+             * made the travel stutter. */
             .background(alignment: .trailing) {
-                if offset < -4 {
-                    HStack(spacing: 6) {
-                        Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
-                        Text(cooked ? "Not cooked" : "Cooked")
-                    }
-                    .scaledFont(Type.micro, weight: .semibold)
-                    .foregroundStyle(.white)
-                    .frame(width: -offset)
-                    .frame(maxHeight: .infinity)
-                    .background(cooked ? Tone.text3 : Tone.yes)
-                    .clipped()
+                HStack(spacing: 6) {
+                    Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
+                    Text(cooked ? "Not cooked" : "Cooked")
                 }
+                .scaledFont(Type.micro, weight: .semibold)
+                .foregroundStyle(.white)
+                .frame(width: seuil + 24)
+                .frame(maxHeight: .infinity)
+                .background(cooked ? Tone.text3 : Tone.yes)
+                .opacity(offset < -4 ? 1 : 0)
             }
             /* A high-priority gesture: `simultaneousGesture` let the Button
              * fire its tap on release, so every swipe opened the recipe. This
@@ -629,6 +630,8 @@ private struct CookedSwipe<Content: View>: View {
                             guard abs(g.translation.width) > abs(g.translation.height) * 1.5 else { return }
                             glisse = true
                         }
+                        /* No animation while the finger moves: the value IS
+                         * the finger. Animating it added a lag to every pixel. */
                         offset = max(-seuil - 24, min(0, g.translation.width))
                     }
                     .onEnded { g in

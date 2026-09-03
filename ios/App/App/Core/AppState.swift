@@ -126,6 +126,9 @@ final class AppState {
     /// Rebuilds the current week's plan from the sequence, keeping the days
     /// the parent already chose, and freezes today and the days before it.
     func refreshPlan() {
+        /* The week may have rolled over since the last read: the cooked set
+         * is keyed on the week, so it is reloaded with the plan. */
+        loadCooked()
         let start = weekStart(0)
         let week = picks(week: 0)
         /* Freeze every day up to today, so a recipe joining the pool changes
@@ -199,25 +202,26 @@ final class AppState {
         local.saveChecked(ids, week: "w\(weekStart(0))")
     }
 
-    /// Recipes cooked this week, by id. Set by the end of cooking mode.
-    var cooked: Set<String> {
-        local.loadCooked(week: "w\(weekStart(0))")
-    }
+    /// Recipes cooked this week, by id. In memory and observed: as a computed
+    /// property it read UserDefaults twice per row per frame, and no write
+    /// told SwiftUI to redraw.
+    private(set) var cooked: Set<String> = []
 
     func markCooked(_ id: String) {
+        cooked.insert(id)
         local.markCooked(id, week: "w\(weekStart(0))")
-        cookedTick += 1
     }
 
     /// Undo, for a swipe made by mistake.
     func unmarkCooked(_ id: String) {
+        cooked.remove(id)
         local.unmarkCooked(id, week: "w\(weekStart(0))")
-        cookedTick += 1
     }
 
-    /// `cooked` reads the disk, which Observation cannot watch. Bumping this
-    /// is what tells the week to redraw after a swipe.
-    private(set) var cookedTick = 0
+    /// Read once at launch, and whenever the week changes under us.
+    func loadCooked() {
+        cooked = local.loadCooked(week: "w\(weekStart(0))")
+    }
 
     /// Every option the table holds for an ingredient: `chosenName` is the
     /// substitute the engine actually took.

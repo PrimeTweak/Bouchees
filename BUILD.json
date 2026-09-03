@@ -1,9 +1,8 @@
 {
-  "build": 157,
+  "build": 158,
   "date": "2026-09-03",
   "carries": [
-    "the swipe moved the row but did nothing and opened the recipe: simultaneousGesture lets the Button fire its tap on release, so the drag now takes priority and the Button keeps only the tap",
-    "the green field was drawn in a ZStack behind the row, which carries its own opaque background and covered it; it is drawn as the row's own background, revealed by the travel",
-    "the origin note wears the verdict pill's glass, same padding, and the two sit on one baseline"
+    "cooked was a computed property that read UserDefaults twice per row per frame — about seventeen hundred reads a second while scrolling, which is the freeze — and no write told SwiftUI to redraw, which is why a tick needed a restart; it is held in memory, observed, and reloaded with the plan so a week rollover still refreshes it",
+    "the swipe field was rebuilt at every pixel with a frame driven by the offset; it is built once and revealed, and the offset itself is never animated because the value is the finger"
   ]
 }
