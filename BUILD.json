@@ -1,9 +1,9 @@
 {
-  "build": 156,
+  "build": 157,
   "date": "2026-09-03",
   "carries": [
-    "the swipe did nothing: the row is a Button, and a Button consumes a drag before a gesture placed on top of it sees the movement; the gesture now wraps the row and runs simultaneously with the tap",
-    "the origin note wears the same glass as the verdict pill instead of a black field, with matching padding, and the two sit on one baseline",
-    "a drag has to be half again more horizontal than vertical to count, so the list still scrolls"
+    "the swipe moved the row but did nothing and opened the recipe: simultaneousGesture lets the Button fire its tap on release, so the drag now takes priority and the Button keeps only the tap",
+    "the green field was drawn in a ZStack behind the row, which carries its own opaque background and covered it; it is drawn as the row's own background, revealed by the travel",
+    "the origin note wears the verdict pill's glass, same padding, and the two sit on one baseline"
   ]
 }

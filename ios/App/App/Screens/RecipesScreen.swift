@@ -595,46 +595,52 @@ private struct CookedSwipe<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
+    @State private var glisse = false
     private let seuil: CGFloat = 78
 
     var body: some View {
-        ZStack(alignment: .trailing) {
-            /* What the release will do, shown while the row travels. */
-            HStack(spacing: 6) {
-                Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
-                Text(cooked ? "Not cooked" : "Cooked")
+        content
+            .background(Tone.canvas)
+            .offset(x: offset)
+            /* The field lives BEHIND the row and only exists while it travels;
+             * drawn in a ZStack it was covered by the row's own opaque
+             * background. */
+            .background(alignment: .trailing) {
+                if offset < -4 {
+                    HStack(spacing: 6) {
+                        Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
+                        Text(cooked ? "Not cooked" : "Cooked")
+                    }
+                    .scaledFont(Type.micro, weight: .semibold)
+                    .foregroundStyle(.white)
+                    .frame(width: -offset)
+                    .frame(maxHeight: .infinity)
+                    .background(cooked ? Tone.text3 : Tone.yes)
+                    .clipped()
+                }
             }
-            .scaledFont(Type.micro, weight: .semibold)
-            .foregroundStyle(.white)
-            .frame(width: seuil)
-            .frame(maxHeight: .infinity)
-            .background(cooked ? Tone.text3 : Tone.yes)
-            .opacity(offset < -10 ? 1 : 0)
-
-            content
-                .background(Tone.canvas)
-                .offset(x: offset)
-                /* Simultaneous: the Button keeps its tap, this keeps the drag.
-                 * A high minimum distance leaves the vertical scroll alone. */
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 24, coordinateSpace: .local)
-                        .onChanged { g in
+            /* A high-priority gesture: `simultaneousGesture` let the Button
+             * fire its tap on release, so every swipe opened the recipe. This
+             * one takes the drag away from the Button, which keeps the tap. */
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 20, coordinateSpace: .local)
+                    .onChanged { g in
+                        if !glisse {
                             guard abs(g.translation.width) > abs(g.translation.height) * 1.5 else { return }
-                            offset = max(-seuil - 24, min(0, g.translation.width))
+                            glisse = true
                         }
-                        .onEnded { g in
-                            /* Past the threshold the release commits, the way
-                             * a Mail swipe does; the row springs back either way. */
-                            let commit = g.translation.width < -seuil
-                                && abs(g.translation.width) > abs(g.translation.height) * 1.5
-                            withAnimation(.soft(0.24)) { offset = 0 }
-                            guard commit else { return }
-                            if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        }
-                )
-        }
-        .animation(.soft(0.2), value: cooked)
+                        offset = max(-seuil - 24, min(0, g.translation.width))
+                    }
+                    .onEnded { g in
+                        let commit = glisse && g.translation.width < -seuil
+                        glisse = false
+                        withAnimation(.soft(0.24)) { offset = 0 }
+                        guard commit else { return }
+                        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
+            )
+            .animation(.soft(0.2), value: cooked)
     }
 }
 
