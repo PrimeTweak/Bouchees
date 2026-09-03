@@ -57,10 +57,7 @@
 "Licence: %@" = "Licence : %@";
 "we leave it out" = "on l’enlève";
 "no safe replacement" = "aucun remplacement sûr";
-"Yes, as is" = "Oui, telle quelle";
 "No ingredient to change for %@." = "Aucun ingrédient à changer pour %@.";
-"Yes — with %lld swap" = "Oui — avec %lld échange";
-"Yes — with %lld swaps" = "Oui — avec %lld échanges";
 "What we replace, with what, and why — it’s all detailed below." = "Ce qu’on remplace, par quoi et pourquoi : tout est détaillé plus bas.";
 "Not this time for %@" = "Pas cette fois pour %@";
 "One ingredient has no safe replacement." = "Un ingrédient n’a pas de remplacement sûr.";
@@ -265,8 +262,6 @@
 "Dark" = "Sombre";
 "Match iPhone follows your system setting, including the automatic switch at sunset." = "Suivre l’iPhone reprend votre réglage système, y compris le basculement automatique au coucher du soleil.";
 "Tonight" = "Ce soir";
-"Yes — %lld swap" = "Oui — %lld échange";
-"Yes — %lld swaps" = "Oui — %lld échanges";
 "Not this one for %@" = "Pas celle-ci pour %@";
 "Yes" = "Oui";
 "No" = "Non";
@@ -467,3 +462,5 @@
 "Adapted, %lld swaps" = "Adaptée, %lld substitutions";
 "Not adaptable" = "Pas adaptable";
 "Unknown ingredient" = "Ingrédient inconnu";
+"%lld swaps made" = "%lld substitutions faites";
+"%lld swap made" = "%lld substitution faite";

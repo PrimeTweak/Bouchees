@@ -90,6 +90,9 @@ struct RecipeDetailScreen: View {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
                         .scaledFont(Type.heading, weight: .semibold)
+                        /* Ink, like the bookmark beside it: brand red is for
+                         * what the parent acts on, not for going back. */
+                        .foregroundStyle(Tone.text)
                 }
                 .accessibilityLabel("Back")
             }

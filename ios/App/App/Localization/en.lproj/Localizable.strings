@@ -59,10 +59,7 @@
 "Licence: %@" = "Licence: %@";
 "we leave it out" = "we leave it out";
 "no safe replacement" = "no safe replacement";
-"Yes, as is" = "Yes, as is";
 "No ingredient to change for %@." = "No ingredient to change for %@.";
-"Yes — with %lld swap" = "Yes — with %lld swap";
-"Yes — with %lld swaps" = "Yes — with %lld swaps";
 "What we replace, with what, and why — it’s all detailed below." = "What we replace, with what, and why — it’s all detailed below.";
 "Not this time for %@" = "Not this time for %@";
 "One ingredient has no safe replacement." = "One ingredient has no safe replacement.";
@@ -267,8 +264,6 @@
 "Dark" = "Dark";
 "Match iPhone follows your system setting, including the automatic switch at sunset." = "Match iPhone follows your system setting, including the automatic switch at sunset.";
 "Tonight" = "Tonight";
-"Yes — %lld swap" = "Yes — %lld swap";
-"Yes — %lld swaps" = "Yes — %lld swaps";
 "Not this one for %@" = "Not this one for %@";
 "Yes" = "Yes";
 "No" = "No";
@@ -468,3 +463,5 @@
 "Adapted, %lld swaps" = "Adapted, %lld swaps";
 "Not adaptable" = "Not adaptable";
 "Unknown ingredient" = "Unknown ingredient";
+"%lld swaps made" = "%lld swaps made";
+"%lld swap made" = "%lld swap made";

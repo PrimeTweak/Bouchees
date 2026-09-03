@@ -56,13 +56,14 @@ struct Verdict {
         symbol = result.status.symbol
         switch result.status {
         case .asIs:
-            title = String(localized: "Yes, as is")
+            title = String(localized: "Ready as is")
             detail = String(format: String(localized: "No ingredient to change for %@."), firstName)
         case .adapted:
+            /* Past tense, as in the list: the swap is already made. */
             let n = result.swapCount
             let modele = n > 1
-                ? String(localized: "Yes — with %lld swaps")
-                : String(localized: "Yes — with %lld swap")
+                ? String(localized: "%lld swaps made")
+                : String(localized: "%lld swap made")
             title = String(format: modele, n)
             detail = String(localized: "What we replace, with what, and why — it’s all detailed below.")
         case .notAdaptable:

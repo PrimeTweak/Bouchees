@@ -47,8 +47,10 @@ struct RecipeVisual: View {
                     .resizable()
                     .scaledToFill()
                     .transition(.opacity)
-                    /* SAY WHEN THE PICTURE IS OF THE ORIGINAL. */
-                    .overlay(alignment: .topTrailing) { originWarning }
+                    /* Bottom trailing, level with the title: the top corner
+                     * sits under the status bar and had to be pulled into
+                     * view, and the gradient down here carries the text. */
+                    .overlay(alignment: .bottomTrailing) { originWarning }
             } else {
                 DishArtwork(showsBackground: drawingBackground,
                             result: result, category: recipe.category)
@@ -77,7 +79,8 @@ struct RecipeVisual: View {
             /* No capsule: a shadow keeps it readable on a pale photo without
              * cutting a rectangle out of the picture. */
             .shadow(color: .black.opacity(0.6), radius: 3, y: 1)
-            .padding(12)
+            .padding(.trailing, 15)
+            .padding(.bottom, 15)
         }
     }
 

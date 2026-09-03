@@ -536,9 +536,11 @@ struct VerdictPill: View {
         switch result.status {
         case .asIs: return String(localized: "Ready as is")
         case .adapted:
+            /* Past tense: the swap is already made, and it is named two lines
+             * below. "Yes" answered a question the screen never asked. */
             let n = result.swapCount
-            return String(format: n > 1 ? String(localized: "Yes — %lld swaps")
-                                        : String(localized: "Yes — %lld swap"), n)
+            return String(format: n > 1 ? String(localized: "%lld swaps made")
+                                        : String(localized: "%lld swap made"), n)
         case .notAdaptable:
             return String(format: String(localized: "Not this one for %@"), firstName)
         case .unknown: return String(localized: "Needs checking")
