@@ -275,7 +275,7 @@ struct RecipesScreen: View {
                     .padding(.vertical, 9)
                     .padding(.leading, 6)
                 VStack(alignment: .leading, spacing: 0) {
-                    dayHeader(dayIndex, slot: slot, count: dishes.count, today: true)
+                    dayHeader(dayIndex, slot: slot, today: true)
                     dayBody(dayIndex, dishes: dishes, slot: slot)
                 }
             }
@@ -292,7 +292,7 @@ struct RecipesScreen: View {
             })
         } else {
             VStack(alignment: .leading, spacing: 0) {
-                dayHeader(dayIndex, slot: slot, count: dishes.count, today: false)
+                dayHeader(dayIndex, slot: slot, today: false)
                 dayBody(dayIndex, dishes: dishes, slot: slot)
             }
             .background(targetedDay == dayIndex ? Tone.brand.opacity(0.06) : .clear,
@@ -306,8 +306,7 @@ struct RecipesScreen: View {
 
     /// The date line. Inside the block it loses the outer gutter, since the
     /// block supplies its own.
-    private func dayHeader(_ dayIndex: Int, slot: WeekSlot,
-                           count: Int, today: Bool) -> some View {
+    private func dayHeader(_ dayIndex: Int, slot: WeekSlot, today: Bool) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             /* One string rather than two Texts: the eyebrow kerns what it is
              * given, and a separator living outside the run it separates
@@ -316,10 +315,8 @@ struct RecipesScreen: View {
                  ? dayTitle(dayIndex, slot: slot) + " \u{00B7} " + String(localized: "today")
                  : dayTitle(dayIndex, slot: slot))
                 .eyebrow(today ? Tone.text : Tone.text3)
+            /* No count: it numbered the rows sitting right below it. */
             Spacer(minLength: 0)
-            Text("\(count)")
-                .scaledFont(Type.micro, weight: .semibold)
-                .foregroundStyle(Tone.text3)
         }
         .padding(.horizontal, today ? 13 : Layout.gutter)
         .padding(.top, today ? 11 : 19)
@@ -643,34 +640,20 @@ struct RecipeRow: View {
 
             Spacer(minLength: 8)
 
-            HStack(spacing: 7) {
-                /* Set by "Done" in cooking mode. The week becomes a record of
-                 * what was made without anyone keeping one. */
-                if cooked {
-                    Image(systemName: "checkmark.circle.fill")
-                        .scaledFont(Type.caption)
-                        .foregroundStyle(Tone.yes)
-                        .accessibilityLabel(Text("Cooked"))
-                }
-                /* A dot, and a number only when there are swaps. The word and
-                 * the glyph are on the recipe page, where the verdict is
-                 * spelled out; a list of dishes stays a list of dishes. */
-                Circle()
-                    .fill(result.status.tone)
-                    .frame(width: 9, height: 9)
-                if result.status == .adapted {
-                    Text("\(result.swapCount)")
-                        .scaledFont(Type.secondary, weight: .semibold)
-                        .foregroundStyle(result.status.tone)
-                        .monospacedDigit()
-                }
+            /* Set by "Done" in cooking mode: the only mark left on a row. */
+            if cooked {
+                Image(systemName: "checkmark.circle.fill")
+                    .scaledFont(Type.caption)
+                    .foregroundStyle(Tone.yes)
+                    .accessibilityLabel(Text("Cooked"))
             }
-            .accessibilityLabel(Text(spoken))
         }
         .padding(.horizontal, Layout.gutter)
         .padding(.vertical, 13)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+        /* The row shows no verdict; VoiceOver still says it. */
+        .accessibilityHint(Text(spoken))
     }
 
     /// What VoiceOver reads: the dot carries no word, so the label does.

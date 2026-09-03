@@ -67,15 +67,11 @@ struct RecipeVisual: View {
     @ViewBuilder
     private var originWarning: some View {
         if photoDuPlatOriginal && showsOriginLabel {
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(Tone.swap)
-                    .frame(width: 7, height: 7)
-                    .overlay { Circle().strokeBorder(.black.opacity(0.25), lineWidth: 2) }
-                Text("original recipe")
-                    .scaledFont(Type.micro)
-                    .foregroundStyle(.white.opacity(0.9))
-            }
+            /* No dot: the pill just below already carries the colour, and a
+             * dot on a pale photo made the words harder to read. */
+            Text("original recipe")
+                .scaledFont(Type.micro)
+                .foregroundStyle(.white.opacity(0.85))
             /* No capsule: a shadow keeps it readable on a pale photo without
              * cutting a rectangle out of the picture. */
             .shadow(color: .black.opacity(0.6), radius: 3, y: 1)

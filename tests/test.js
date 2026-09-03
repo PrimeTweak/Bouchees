@@ -1974,6 +1974,37 @@ function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,c
     assert(p.meal && p.snack, "an old cache without flags left the day empty");
   });
 
+  test("sequence: never proposes a dish the engine cannot adapt for the child", () => {
+    /* The whole point of the app. The pool is filtered before the sequence
+     * picks, so a week can hold nothing a family cannot eat. */
+    const cat = Publier.publier().catalogue;
+    const profiles = [["milk", "egg", "peanut", "tree_nut"], ["milk", "egg", "wheat"],
+                      ["peanut", "tree_nut", "sesame"], ["fish", "shellfish"], ["milk"]];
+    const ages = [6, 9, 12, 24, 48];
+    profiles.forEach((allergens) => ages.forEach((age) => {
+      const servable = cat.filter((c) => {
+        if (c.minAgeMonths > age) return false;
+        if (!c.adaptability) return true;
+        return !allergens.some((a) => c.adaptability[a] === "not_adaptable");
+      });
+      const meals = servable.filter((c) => c.category === "Meal");
+      const snacks = servable.filter((c) => c.category === "Snack");
+      if (!meals.length || !snacks.length) return;      /* falls back, tested apart */
+      for (let d = 0; d < 60; d++) {
+        const p = pick(7n, d, servable, {}, 112);
+        [p.meal, p.snack].forEach((id) => {
+          if (!id) return;
+          const card = cat.find((c) => c.id === id);
+          assert(card.minAgeMonths <= age, id + " is under age " + age);
+          allergens.forEach((a) => {
+            assert.notEqual(card.adaptability && card.adaptability[a], "not_adaptable",
+              id + " cannot be adapted without " + a + " and was served anyway");
+          });
+        });
+      }
+    }));
+  });
+
   test("sequence: a recipe joining the pool changes the days to come, never the days shown", () => {
     const A = run(12345n, 30, 112);
     const bigger = cat.concat([{ id: "zz-new-meal", category: "Meal", free: false }]);

@@ -66,9 +66,9 @@ final class AppState {
     /// on the current week only.
     func picks(week offset: Int) -> [Int: DayPick] {
         let start = weekStart(offset)
-        let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)"
+        let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)/\(activeProfile.id)"
         if let hit = picksCache[key] { return hit }
-        let out = sequence.picks(from: start, to: start + 6, pool: recipes, history: history)
+        let out = sequence.picks(from: start, to: start + 6, pool: servablePool, history: history)
         if picksCache.count > 12 { picksCache.removeAll() }
         picksCache[key] = out
         return out
@@ -601,6 +601,19 @@ final class AppState {
         if let existing = adapted.first(where: { $0.id == recipe.id }) { return existing }
         guard recipe.hasBody else { return liteResult(for: recipe) }
         return try? engine?.adapt(recipe, for: activeProfile)
+    }
+
+    /// What the sequence may serve: nothing the engine cannot adapt for this
+    /// child, nothing under their age. A category the filter would empty
+    /// falls back on the whole pool rather than on an empty day.
+    var servablePool: [Recipe] {
+        let ok = recipes.filter { card in
+            guard card.minAgeMonths <= activeProfile.ageMonths else { return false }
+            guard let matrix = card.adaptability else { return true }
+            return !activeProfile.allergens.contains { matrix[$0] == "not_adaptable" }
+        }
+        let meals = ok.filter(\.isMeal), snacks = ok.filter(\.isSnack)
+        return meals.isEmpty || snacks.isEmpty ? recipes : ok
     }
 
     /// A verdict for a card without a body, from the catalogue's matrix: the
