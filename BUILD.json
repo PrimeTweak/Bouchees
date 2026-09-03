@@ -1,5 +1,5 @@
 {
-  "build": 153,
+  "build": 154,
   "date": "2026-09-03",
   "carries": [
     "QA wave. The scanner: an empty or unreadable label answered safe — a green verdict on no information; it now has its own unreadable state. The word Ingredients: was read as an unknown food, which pushed a clear label to uncertain and buried the may-contain warning behind it; headings and trailing punctuation are no longer foods, so a trace warning surfaces as caution, which informs rather than blocks",
@@ -9,6 +9,7 @@
     "the artifact carries Montreal time: TZ moves the job's clock but upload-artifact rewraps the file without reading it, so the stamp is set explicitly",
     "Info.plist pointed at 0.6.0 while project.yml built 1.0.0; it now points at the real source, and declares the standard HTTPS encryption exemption",
     "labels for the icon-only buttons in cooking mode; the exclusion phrases in the photo prompt fit under the 500-character limit again",
-    "the cooked tick is ink rather than verdict green, now that the row carries no verdict; the origin note gets a faint dark field so it reads on a pale photo, level with the pill below"
+    "the cooked tick is ink rather than verdict green, now that the row carries no verdict; the origin note gets a faint dark field so it reads on a pale photo, level with the pill below",
+    "build fix: the accessibility label was inserted between an argument and its continuation, which the compiler reports as a missing comma"
   ]
 }
