@@ -1,9 +1,10 @@
 {
-  "build": 160,
+  "build": 161,
   "date": "2026-09-03",
   "carries": [
-    "the scroll needed two or three tries after a swipe: highPriorityGesture claimed every drag on all fourteen rows ahead of the ScrollView, so a scroll had to fail the horizontal test before the list ever saw it; the gesture is ordinary now and only takes movement that is twice as horizontal as vertical",
-    "the row's Button is silenced while the row is off its rest position, which is what kept a swipe from firing a tap without the gesture needing priority",
-    "recipeByID and resultFor are indexed, and the swipe field is drawn only while a row travels"
+    "Apple's own swipeActions works outside a List since iOS 27, through swipeActionsContainer() on the scroll view: one row open at a time, scrolling closes it, a tap elsewhere closes it. The app uses it when it is there",
+    "below iOS 27 the hand-drawn swipe stays, with the fault that broke it fixed: disabling the row to stop its Button from firing also disabled the gesture sitting on it, so the Button now reads an environment flag instead",
+    "the gesture no longer claims priority over the scroll view, which is what made a scroll take two or three tries",
+    "recipeByID and resultFor are indexed, cooked is held in memory, and the swipe field is drawn only while a row travels"
   ]
 }

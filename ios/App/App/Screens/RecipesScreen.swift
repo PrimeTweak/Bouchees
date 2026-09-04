@@ -39,6 +39,9 @@ struct RecipesScreen: View {
             }
             .padding(.bottom, 16)
         }
+        /* What makes Apple's own swipeActions work outside a List: one row
+         * open at a time, scrolling closes it, a tap elsewhere closes it. */
+        .modifier(SwipeContainerIfAvailable())
         .background(Tone.canvas.ignoresSafeArea())
         /* No `ignoresSafeArea` here any more: this ensures legibility of
          * overlapping content in the bars." That is the scroll edge effect,
@@ -349,11 +352,10 @@ struct RecipesScreen: View {
         if pair.recipe.hasBody {
             CookedSwipe(recipe: pair.recipe,
                         cooked: app.cooked.contains(pair.recipe.id)) {
-                Button { navigate(.recipe(pair.recipe.id)) } label: {
-                    RecipeRow(recipe: pair.recipe, result: pair.result,
-                              cooked: app.cooked.contains(pair.recipe.id))
+                RowButton(recipe: pair.recipe, result: pair.result,
+                          cooked: app.cooked.contains(pair.recipe.id)) {
+                    navigate(.recipe(pair.recipe.id))
                 }
-                .buttonStyle(.plain)
                 /* Only the current week can be rearranged. A parent does not
                  * reorder a week they cannot open, and a past week is history. */
                 .modifier(DraggableIf(active: slot.offset == 0,
@@ -585,13 +587,41 @@ private struct DropDayIf: ViewModifier {
     }
 }
 
-/// Marking a dish cooked without opening it. A wrapper rather than a modifier:
-/// the row is a Button, and a Button consumes a drag before a gesture placed
-/// on top of it ever sees the movement.
+/// Marking a dish cooked without opening it. iOS 27 added
+/// `swipeActionsContainer()`, which makes Apple's own `swipeActions` work
+/// outside a List; below that the gesture is drawn by hand.
 private struct CookedSwipe<Content: View>: View {
     @Environment(AppState.self) private var app
     let recipe: Recipe
     let cooked: Bool
+    @ViewBuilder let content: Content
+
+    @ViewBuilder
+    var body: some View {
+        if #available(iOS 27, *) {
+            content.swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                Button(action: basculer) {
+                    Label(cooked ? "Not cooked" : "Cooked",
+                          systemImage: cooked ? "arrow.uturn.backward" : "checkmark")
+                }
+                .tint(cooked ? Tone.text3 : Tone.yes)
+            }
+        } else {
+            ManualSwipe(cooked: cooked, action: basculer) { content }
+        }
+    }
+
+    private func basculer() {
+        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+}
+
+/// The fallback below iOS 27. The Button is silenced through the environment:
+/// disabling the view the gesture sits on stopped the gesture too.
+private struct ManualSwipe<Content: View>: View {
+    let cooked: Bool
+    let action: () -> Void
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
@@ -599,14 +629,9 @@ private struct CookedSwipe<Content: View>: View {
 
     var body: some View {
         content
+            .environment(\.rowSwiping, offset != 0)
             .background(Tone.canvas)
             .offset(x: offset)
-            /* The field lives BEHIND the row and only exists while it travels;
-             * drawn in a ZStack it was covered by the row's own opaque
-             * background. */
-            /* Nothing behind a row at rest: built for all fourteen rows on
-             * every frame, this was work done to be invisible. The glyph
-             * alone — a label wrapped inside the travelling width. */
             .background(alignment: .trailing) {
                 if offset < -4 {
                     Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
@@ -618,29 +643,55 @@ private struct CookedSwipe<Content: View>: View {
                         .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
             }
-            /* Claims horizontal movement only. highPriority took every drag
-             * ahead of the ScrollView, which is why a scroll needed two or
-             * three tries. */
-            /* A plain Button reads a drag ending on it as a tap; silenced
-             * while the row is off its rest position. */
-            .disabled(offset != 0)
             .gesture(
                 DragGesture(minimumDistance: 12, coordinateSpace: .local)
                     .onChanged { g in
                         guard abs(g.translation.width) > abs(g.translation.height) * 2 else { return }
-                        /* No animation while the finger moves: the value IS
-                         * the finger. Animating it added a lag to every pixel. */
                         offset = max(-seuil - 24, min(0, g.translation.width))
                     }
                     .onEnded { g in
                         let commit = offset < 0 && g.translation.width < -seuil
                         withAnimation(.soft(0.24)) { offset = 0 }
-                        guard commit else { return }
-                        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        if commit { action() }
                     }
             )
-            .animation(.soft(0.2), value: cooked)
+    }
+}
+
+/// True while a row is travelling under a swipe: its Button reads a drag that
+/// ends on it as a tap, and checks this before navigating.
+private struct RowSwipingKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    var rowSwiping: Bool {
+        get { self[RowSwipingKey.self] }
+        set { self[RowSwipingKey.self] = newValue }
+    }
+}
+
+/// `swipeActionsContainer()` is iOS 27; below that the manual swipe carries
+/// its own coordination.
+private struct SwipeContainerIfAvailable: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 27, *) { content.swipeActionsContainer() } else { content }
+    }
+}
+
+/// The row's tap target. It reads `rowSwiping` so a drag that ends on it is
+/// not taken for a tap.
+private struct RowButton: View {
+    @Environment(\.rowSwiping) private var swiping
+    let recipe: Recipe
+    let result: AdaptedRecipe
+    let cooked: Bool
+    let open: () -> Void
+
+    var body: some View {
+        Button { if !swiping { open() } } label: {
+            RecipeRow(recipe: recipe, result: result, cooked: cooked)
+        }
+        .buttonStyle(.plain)
     }
 }
 
