@@ -1,8 +1,9 @@
 {
-  "build": 158,
+  "build": 159,
   "date": "2026-09-03",
   "carries": [
-    "cooked was a computed property that read UserDefaults twice per row per frame — about seventeen hundred reads a second while scrolling, which is the freeze — and no write told SwiftUI to redraw, which is why a tick needed a restart; it is held in memory, observed, and reloaded with the plan so a week rollover still refreshes it",
-    "the swipe field was rebuilt at every pixel with a frame driven by the offset; it is built once and revealed, and the offset itself is never animated because the value is the finger"
+    "recipeByID and resultFor scanned the pool on every access, twice a day for seven days on every frame: about fifty-five thousand comparisons a second while the week scrolled, and four hundred thousand at five hundred recipes; both are indexed now, and the indexes follow the arrays on their own",
+    "the swipe field was built for all fourteen rows on every frame only to stay invisible; nothing is drawn behind a row at rest",
+    "the field carries its glyph alone rather than a label cramped into the travelling width, with the word kept for VoiceOver"
   ]
 }

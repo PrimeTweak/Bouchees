@@ -605,20 +605,19 @@ private struct CookedSwipe<Content: View>: View {
             /* The field lives BEHIND the row and only exists while it travels;
              * drawn in a ZStack it was covered by the row's own opaque
              * background. */
-            /* Built once and revealed by opacity: rebuilding it at every
-             * pixel of the drag, with a frame driven by the offset, is what
-             * made the travel stutter. */
+            /* Nothing behind a row at rest: built for all fourteen rows on
+             * every frame, this was work done to be invisible. The glyph
+             * alone — a label wrapped inside the travelling width. */
             .background(alignment: .trailing) {
-                HStack(spacing: 6) {
+                if offset < -4 {
                     Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
-                    Text(cooked ? "Not cooked" : "Cooked")
+                        .scaledFont(Type.body, weight: .semibold)
+                        .foregroundStyle(.white)
+                        .frame(width: seuil + 24)
+                        .frame(maxHeight: .infinity)
+                        .background(cooked ? Tone.text3 : Tone.yes)
+                        .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
-                .scaledFont(Type.micro, weight: .semibold)
-                .foregroundStyle(.white)
-                .frame(width: seuil + 24)
-                .frame(maxHeight: .infinity)
-                .background(cooked ? Tone.text3 : Tone.yes)
-                .opacity(offset < -4 ? 1 : 0)
             }
             /* A high-priority gesture: `simultaneousGesture` let the Button
              * fire its tap on release, so every swipe opened the recipe. This

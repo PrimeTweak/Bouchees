@@ -21,8 +21,11 @@ final class AppState {
         didSet { local.writeTheme(theme) }
     }
 
-    private(set) var recipes: [Recipe] = []
-    private(set) var adapted: [AdaptedRecipe] = []
+    /* The indexes follow the arrays on their own: reindexing by hand at the
+     * six places that assign them is one forgotten call away from a stale
+     * lookup. */
+    private(set) var recipes: [Recipe] = [] { didSet { reindex() } }
+    private(set) var adapted: [AdaptedRecipe] = [] { didSet { reindex() } }
 
     /// How many recipes come out as is, adapted, or blocked for a given child.
     /// This is the question a parent actually has — "what can they eat" — and
@@ -104,7 +107,19 @@ final class AppState {
         plan.recipes(on: day).compactMap { recipeByID($0) }
     }
 
-    func recipeByID(_ id: String) -> Recipe? { recipes.first { $0.id == id } }
+    /// Indexed rather than scanned: this is called twice a day for seven days
+    /// on every frame, and a linear scan of the pool was tens of thousands of
+    /// comparisons a second while the week scrolled.
+    func recipeByID(_ id: String) -> Recipe? { indexRecipes[id] }
+
+    private var indexRecipes: [String: Recipe] = [:]
+    private var indexAdapted: [String: AdaptedRecipe] = [:]
+
+    /// Rebuilt whenever the pool or the adaptations change.
+    private func reindex() {
+        indexRecipes = Dictionary(recipes.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+        indexAdapted = Dictionary(adapted.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })
+    }
 
     /// Today's meal: what the hero shows.
     var tonight: Recipe? {
@@ -613,7 +628,7 @@ final class AppState {
     /// The verdict for any recipe: adapted when the body is here, from the
     /// catalogue's matrix when it is not.
     func resultFor(_ recipe: Recipe) -> AdaptedRecipe? {
-        if let existing = adapted.first(where: { $0.id == recipe.id }) { return existing }
+        if let existing = indexAdapted[recipe.id] { return existing }
         guard recipe.hasBody else { return liteResult(for: recipe) }
         return try? engine?.adapt(recipe, for: activeProfile)
     }
