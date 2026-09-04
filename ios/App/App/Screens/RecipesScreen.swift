@@ -612,18 +612,20 @@ private struct CookedSwipe<Content: View>: View {
                 }
             }
             .contentShape(.rect)
-            /* Siblings, not parent and child: a tap needs no movement, the
-             * drag needs twelve points, and SwiftUI tells them apart without
-             * either one claiming priority over the scroll view. */
+            /* The drag wakes at twenty-eight points, well past the scroll
+             * view's own threshold, so a scroll is claimed before this
+             * gesture can contend for it. */
             .onTapGesture { open() }
             .gesture(
-                DragGesture(minimumDistance: 12, coordinateSpace: .local)
+                DragGesture(minimumDistance: 28, coordinateSpace: .local)
                     .onChanged { g in
                         guard abs(g.translation.width) > abs(g.translation.height) * 2 else { return }
-                        offset = max(-seuil - 24, min(0, g.translation.width))
+                        /* Measured from where it woke: no jump on frame one. */
+                        let depart = g.translation.width < 0 ? 28.0 : -28.0
+                        offset = max(-seuil - 24, min(0, g.translation.width + depart))
                     }
                     .onEnded { g in
-                        let commit = offset < 0 && g.translation.width < -seuil
+                        let commit = offset < 0 && g.translation.width < -(seuil + 28)
                         withAnimation(.soft(0.24)) { offset = 0 }
                         guard commit else { return }
                         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
