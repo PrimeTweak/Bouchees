@@ -1,7 +1,9 @@
 {
-  "build": 164,
+  "build": 165,
   "date": "2026-09-03",
   "carries": [
-    "the scroll needed three or four tries after a swipe because the drag woke at twelve points and the scroll view wakes at about ten: the two contended for every movement. Apple's own forums give the remedy — the drag's minimum must sit clear of the scroll's — so it wakes at twenty-eight, and the row's travel is measured from there so it does not jump on the first frame"
+    "the scroll froze because a SwiftUI DragGesture cannot decline a touch: it can only lose a fight it has already started, and every row was starting one. The swipe is now a UIKit pan through UIGestureRecognizerRepresentable, whose delegate refuses to begin unless the finger is moving more horizontally than vertically — so a scroll is never contended in the first place",
+    "below iOS 18 the row carries no swipe at all: a frozen list is worse than a missing shortcut",
+    "the row follows the finger directly, resists past the threshold, and springs back on release; a quick flick counts even when it is short"
   ]
 }

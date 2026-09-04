@@ -583,9 +583,48 @@ private struct DropDayIf: ViewModifier {
     }
 }
 
+/// A horizontal pan that declines to begin on a vertical touch, so the scroll
+/// view is never contended. A SwiftUI DragGesture cannot decline: it can only
+/// lose a fight it already started, which is what froze the list.
+@available(iOS 18, *)
+private struct HorizontalPan: UIGestureRecognizerRepresentable {
+    let onChange: (CGFloat) -> Void
+    let onEnd: (CGFloat, CGFloat) -> Void
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        /* Declining here is the whole point: the recogniser never starts on a
+         * vertical touch, so the scroll view keeps every one of them. */
+        @objc func gestureRecognizerShouldBegin(_ g: UIGestureRecognizer) -> Bool {
+            guard let pan = g as? UIPanGestureRecognizer else { return false }
+            let v = pan.velocity(in: pan.view)
+            return abs(v.x) > abs(v.y)
+        }
+
+        @objc func gestureRecognizer(_ g: UIGestureRecognizer,
+                                     shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+            true
+        }
+    }
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator { Coordinator() }
+
+    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
+        let pan = UIPanGestureRecognizer()
+        pan.delegate = context.coordinator
+        return pan
+    }
+
+    func handleUIGestureRecognizerAction(_ pan: UIPanGestureRecognizer, context: Context) {
+        let x = pan.translation(in: pan.view).x
+        switch pan.state {
+        case .changed: onChange(x)
+        case .ended, .cancelled, .failed: onEnd(x, pan.velocity(in: pan.view).x)
+        default: break
+        }
+    }
+}
+
 /// The week row: opening the recipe, and marking it cooked with a swipe.
-/// Both live on the SAME view, because in SwiftUI a child's gesture beats a
-/// parent's — a Button child won every touch.
 private struct CookedSwipe<Content: View>: View {
     @Environment(AppState.self) private var app
     let recipe: Recipe
@@ -597,6 +636,25 @@ private struct CookedSwipe<Content: View>: View {
     private let seuil: CGFloat = 78
 
     var body: some View {
+        rangee
+            .contentShape(.rect)
+            .onTapGesture { if offset == 0 { open() } else { fermer() } }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+    }
+
+    @ViewBuilder
+    private var rangee: some View {
+        if #available(iOS 18, *) {
+            corps.gesture(HorizontalPan(onChange: suivre, onEnd: relacher))
+        } else {
+            /* No swipe below iOS 18: a SwiftUI DragGesture here blocks the
+             * scroll, and a frozen list is worse than a missing shortcut. */
+            corps
+        }
+    }
+
+    private var corps: some View {
         content
             .background(Tone.canvas)
             .offset(x: offset)
@@ -611,29 +669,25 @@ private struct CookedSwipe<Content: View>: View {
                         .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
             }
-            .contentShape(.rect)
-            /* The drag wakes at twenty-eight points, well past the scroll
-             * view's own threshold, so a scroll is claimed before this
-             * gesture can contend for it. */
-            .onTapGesture { open() }
-            .gesture(
-                DragGesture(minimumDistance: 28, coordinateSpace: .local)
-                    .onChanged { g in
-                        guard abs(g.translation.width) > abs(g.translation.height) * 2 else { return }
-                        /* Measured from where it woke: no jump on frame one. */
-                        let depart = g.translation.width < 0 ? 28.0 : -28.0
-                        offset = max(-seuil - 24, min(0, g.translation.width + depart))
-                    }
-                    .onEnded { g in
-                        let commit = offset < 0 && g.translation.width < -(seuil + 28)
-                        withAnimation(.soft(0.24)) { offset = 0 }
-                        guard commit else { return }
-                        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    }
-            )
-            .accessibilityElement(children: .combine)
-            .accessibilityAddTraits(.isButton)
+    }
+
+    /// The row follows the finger with a little resistance past the threshold.
+    private func suivre(_ x: CGFloat) {
+        guard x < 0 else { offset = 0; return }
+        offset = x < -seuil ? -seuil + (x + seuil) / 3 : x
+    }
+
+    /// A spring on release, and a flick counts even when it is short.
+    private func relacher(_ x: CGFloat, _ vitesse: CGFloat) {
+        let commit = x < -seuil || vitesse < -600
+        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { offset = 0 }
+        guard commit else { return }
+        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func fermer() {
+        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { offset = 0 }
     }
 }
 
