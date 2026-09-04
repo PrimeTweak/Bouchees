@@ -1,9 +1,9 @@
 {
-  "build": 159,
+  "build": 160,
   "date": "2026-09-03",
   "carries": [
-    "recipeByID and resultFor scanned the pool on every access, twice a day for seven days on every frame: about fifty-five thousand comparisons a second while the week scrolled, and four hundred thousand at five hundred recipes; both are indexed now, and the indexes follow the arrays on their own",
-    "the swipe field was built for all fourteen rows on every frame only to stay invisible; nothing is drawn behind a row at rest",
-    "the field carries its glyph alone rather than a label cramped into the travelling width, with the word kept for VoiceOver"
+    "the scroll needed two or three tries after a swipe: highPriorityGesture claimed every drag on all fourteen rows ahead of the ScrollView, so a scroll had to fail the horizontal test before the list ever saw it; the gesture is ordinary now and only takes movement that is twice as horizontal as vertical",
+    "the row's Button is silenced while the row is off its rest position, which is what kept a swipe from firing a tap without the gesture needing priority",
+    "recipeByID and resultFor are indexed, and the swipe field is drawn only while a row travels"
   ]
 }

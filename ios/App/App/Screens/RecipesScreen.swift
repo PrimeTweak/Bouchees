@@ -595,7 +595,6 @@ private struct CookedSwipe<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
-    @State private var glisse = false
     private let seuil: CGFloat = 78
 
     var body: some View {
@@ -619,23 +618,22 @@ private struct CookedSwipe<Content: View>: View {
                         .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
             }
-            /* A high-priority gesture: `simultaneousGesture` let the Button
-             * fire its tap on release, so every swipe opened the recipe. This
-             * one takes the drag away from the Button, which keeps the tap. */
-            .highPriorityGesture(
-                DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            /* Claims horizontal movement only. highPriority took every drag
+             * ahead of the ScrollView, which is why a scroll needed two or
+             * three tries. */
+            /* A plain Button reads a drag ending on it as a tap; silenced
+             * while the row is off its rest position. */
+            .disabled(offset != 0)
+            .gesture(
+                DragGesture(minimumDistance: 12, coordinateSpace: .local)
                     .onChanged { g in
-                        if !glisse {
-                            guard abs(g.translation.width) > abs(g.translation.height) * 1.5 else { return }
-                            glisse = true
-                        }
+                        guard abs(g.translation.width) > abs(g.translation.height) * 2 else { return }
                         /* No animation while the finger moves: the value IS
                          * the finger. Animating it added a lag to every pixel. */
                         offset = max(-seuil - 24, min(0, g.translation.width))
                     }
                     .onEnded { g in
-                        let commit = glisse && g.translation.width < -seuil
-                        glisse = false
+                        let commit = offset < 0 && g.translation.width < -seuil
                         withAnimation(.soft(0.24)) { offset = 0 }
                         guard commit else { return }
                         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
