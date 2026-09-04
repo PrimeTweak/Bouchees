@@ -1014,7 +1014,22 @@ def check():
     problems += viewbuilder_avec_return()
     problems += await_dans_autoclosure()
     problems += double_view_builder()
+    problems += api_hors_sdk()
     return problems, warnings
+
+
+def api_hors_sdk():
+    """`#available` guards the RUNTIME, not the SDK: a symbol newer than the
+    SDK the project builds against does not exist at compile time. The
+    workflow pins Xcode, so anything past that version cannot be referenced."""
+    plafond = 26
+    out = []
+    for path in swift_files():
+        for i, ligne in enumerate(open(path, encoding="utf-8").read().split("\n"), 1):
+            m = re.search(r"#available\(iOS (\d+)", re.sub(r"//.*", "", ligne))
+            if m and int(m.group(1)) > plafond:
+                out.append(f"{os.path.basename(path)}:{i}: #available(iOS {m.group(1)}) — the SDK is {plafond}, so that symbol does not exist at compile time")
+    return out
 
 
 def double_view_builder():

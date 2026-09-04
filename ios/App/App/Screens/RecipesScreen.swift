@@ -39,9 +39,6 @@ struct RecipesScreen: View {
             }
             .padding(.bottom, 16)
         }
-        /* What makes Apple's own swipeActions work outside a List: one row
-         * open at a time, scrolling closes it, a tap elsewhere closes it. */
-        .modifier(SwipeContainerIfAvailable())
         .background(Tone.canvas.ignoresSafeArea())
         /* No `ignoresSafeArea` here any more: this ensures legibility of
          * overlapping content in the bars." That is the scroll edge effect,
@@ -587,41 +584,13 @@ private struct DropDayIf: ViewModifier {
     }
 }
 
-/// Marking a dish cooked without opening it. iOS 27 added
-/// `swipeActionsContainer()`, which makes Apple's own `swipeActions` work
-/// outside a List; below that the gesture is drawn by hand.
+/// Marking a dish cooked without opening it. Apple's `swipeActions` needs a
+/// List, and `swipeActionsContainer()` ships with the iOS 27 SDK this target
+/// does not build against; the gesture is drawn by hand.
 private struct CookedSwipe<Content: View>: View {
     @Environment(AppState.self) private var app
     let recipe: Recipe
     let cooked: Bool
-    @ViewBuilder let content: Content
-
-    @ViewBuilder
-    var body: some View {
-        if #available(iOS 27, *) {
-            content.swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                Button(action: basculer) {
-                    Label(cooked ? "Not cooked" : "Cooked",
-                          systemImage: cooked ? "arrow.uturn.backward" : "checkmark")
-                }
-                .tint(cooked ? Tone.text3 : Tone.yes)
-            }
-        } else {
-            ManualSwipe(cooked: cooked, action: basculer) { content }
-        }
-    }
-
-    private func basculer() {
-        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    }
-}
-
-/// The fallback below iOS 27. The Button is silenced through the environment:
-/// disabling the view the gesture sits on stopped the gesture too.
-private struct ManualSwipe<Content: View>: View {
-    let cooked: Bool
-    let action: () -> Void
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
@@ -629,6 +598,9 @@ private struct ManualSwipe<Content: View>: View {
 
     var body: some View {
         content
+            /* The Button reads a drag that ends on it as a tap. It checks this
+             * flag instead of being disabled: disabling the view also disables
+             * the gesture attached to it, which is what broke the swipe. */
             .environment(\.rowSwiping, offset != 0)
             .background(Tone.canvas)
             .offset(x: offset)
@@ -643,6 +615,9 @@ private struct ManualSwipe<Content: View>: View {
                         .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
             }
+            /* An ordinary gesture: claiming priority made every scroll fail
+             * this test first, which is why the list needed two or three
+             * tries to move. */
             .gesture(
                 DragGesture(minimumDistance: 12, coordinateSpace: .local)
                     .onChanged { g in
@@ -652,7 +627,9 @@ private struct ManualSwipe<Content: View>: View {
                     .onEnded { g in
                         let commit = offset < 0 && g.translation.width < -seuil
                         withAnimation(.soft(0.24)) { offset = 0 }
-                        if commit { action() }
+                        guard commit else { return }
+                        if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     }
             )
     }
@@ -666,15 +643,6 @@ extension EnvironmentValues {
     var rowSwiping: Bool {
         get { self[RowSwipingKey.self] }
         set { self[RowSwipingKey.self] = newValue }
-    }
-}
-
-/// `swipeActionsContainer()` is iOS 27; below that the manual swipe carries
-/// its own coordination.
-private struct SwipeContainerIfAvailable: ViewModifier {
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 27, *) { content.swipeActionsContainer() } else { content }
     }
 }
 
