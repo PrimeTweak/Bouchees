@@ -1,9 +1,10 @@
 {
-  "build": 162,
+  "build": 163,
   "date": "2026-09-03",
   "carries": [
-    "swipeActionsContainer() ships with the iOS 27 SDK and this target builds against 26.5: #available guards the runtime, not the compiler, so the symbol did not exist at all; every reference to it is gone and the checker refuses an #available past the SDK",
-    "the hand-drawn swipe stays, with the two faults that broke it fixed: disabling the row to stop its Button also disabled the gesture on it, so the Button reads an environment flag instead; and the gesture no longer claims priority over the scroll view",
+    "the swipe never fired because of a SwiftUI rule I kept working around instead of reading: a child's gesture beats a parent's, and the row's Button was the child. simultaneousGesture let the Button fire its tap on release, highPriorityGesture stole the scroll, disabling the row killed the gesture with it — three attempts, three horns of the same problem",
+    "the Button is gone: the tap and the drag are siblings on one view, a tap needing no movement and the drag needing twelve points, so SwiftUI tells them apart with no priority claimed over the scroll view",
+    "the row keeps its button trait for VoiceOver",
     "recipeByID and resultFor are indexed, cooked is held in memory, and the swipe field is drawn only while a row travels"
   ]
 }

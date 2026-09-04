@@ -348,15 +348,14 @@ struct RecipesScreen: View {
                      slot: WeekSlot) -> some View {
         if pair.recipe.hasBody {
             CookedSwipe(recipe: pair.recipe,
-                        cooked: app.cooked.contains(pair.recipe.id)) {
-                RowButton(recipe: pair.recipe, result: pair.result,
-                          cooked: app.cooked.contains(pair.recipe.id)) {
-                    navigate(.recipe(pair.recipe.id))
-                }
-                /* Only the current week can be rearranged. A parent does not
-                 * reorder a week they cannot open, and a past week is history. */
-                .modifier(DraggableIf(active: slot.offset == 0,
-                                      recipe: pair.recipe, result: pair.result))
+                        cooked: app.cooked.contains(pair.recipe.id),
+                        open: { navigate(.recipe(pair.recipe.id)) }) {
+                RecipeRow(recipe: pair.recipe, result: pair.result,
+                          cooked: app.cooked.contains(pair.recipe.id))
+                    /* Only the current week can be rearranged. A parent does
+                     * not reorder a week they cannot open. */
+                    .modifier(DraggableIf(active: slot.offset == 0,
+                                          recipe: pair.recipe, result: pair.result))
             }
         } else {
             Button { showPaywall = true } label: {
@@ -584,13 +583,14 @@ private struct DropDayIf: ViewModifier {
     }
 }
 
-/// Marking a dish cooked without opening it. Apple's `swipeActions` needs a
-/// List, and `swipeActionsContainer()` ships with the iOS 27 SDK this target
-/// does not build against; the gesture is drawn by hand.
+/// The week row: opening the recipe, and marking it cooked with a swipe.
+/// Both live on the SAME view, because in SwiftUI a child's gesture beats a
+/// parent's — a Button child won every touch.
 private struct CookedSwipe<Content: View>: View {
     @Environment(AppState.self) private var app
     let recipe: Recipe
     let cooked: Bool
+    let open: () -> Void
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
@@ -598,10 +598,6 @@ private struct CookedSwipe<Content: View>: View {
 
     var body: some View {
         content
-            /* The Button reads a drag that ends on it as a tap. It checks this
-             * flag instead of being disabled: disabling the view also disables
-             * the gesture attached to it, which is what broke the swipe. */
-            .environment(\.rowSwiping, offset != 0)
             .background(Tone.canvas)
             .offset(x: offset)
             .background(alignment: .trailing) {
@@ -615,9 +611,11 @@ private struct CookedSwipe<Content: View>: View {
                         .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
                 }
             }
-            /* An ordinary gesture: claiming priority made every scroll fail
-             * this test first, which is why the list needed two or three
-             * tries to move. */
+            .contentShape(.rect)
+            /* Siblings, not parent and child: a tap needs no movement, the
+             * drag needs twelve points, and SwiftUI tells them apart without
+             * either one claiming priority over the scroll view. */
+            .onTapGesture { open() }
             .gesture(
                 DragGesture(minimumDistance: 12, coordinateSpace: .local)
                     .onChanged { g in
@@ -632,34 +630,8 @@ private struct CookedSwipe<Content: View>: View {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     }
             )
-    }
-}
-
-/// True while a row is travelling under a swipe: its Button reads a drag that
-/// ends on it as a tap, and checks this before navigating.
-private struct RowSwipingKey: EnvironmentKey { static let defaultValue = false }
-
-extension EnvironmentValues {
-    var rowSwiping: Bool {
-        get { self[RowSwipingKey.self] }
-        set { self[RowSwipingKey.self] = newValue }
-    }
-}
-
-/// The row's tap target. It reads `rowSwiping` so a drag that ends on it is
-/// not taken for a tap.
-private struct RowButton: View {
-    @Environment(\.rowSwiping) private var swiping
-    let recipe: Recipe
-    let result: AdaptedRecipe
-    let cooked: Bool
-    let open: () -> Void
-
-    var body: some View {
-        Button { if !swiping { open() } } label: {
-            RecipeRow(recipe: recipe, result: result, cooked: cooked)
-        }
-        .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -672,12 +644,16 @@ private struct DraggableIf: ViewModifier {
     @ViewBuilder
     func body(content: Content) -> some View {
         if active {
-            content.draggable(recipe.id) {
-                RecipeRow(recipe: recipe, result: result)
-                    .frame(width: 260)
-                    .background(Tone.cardTop,
-                                in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            }
+            /* Behind a long press: `draggable` claims the touch on contact and
+             * wins against any DragGesture above it, which is what swallowed
+             * the swipe on the current week. */
+            content
+                .draggable(recipe.id) {
+                    RecipeRow(recipe: recipe, result: result)
+                        .frame(width: 260)
+                        .background(Tone.cardTop,
+                                    in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
         } else {
             content
         }
