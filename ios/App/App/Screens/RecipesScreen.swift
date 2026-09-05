@@ -22,6 +22,7 @@ struct RecipesScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
+                sondePanneau
                 /* The photo runs to the top of the screen, so the pill
                  * floats over it. Everything after it is ordinary content
                  * and must clear the status bar on its own. */
@@ -287,7 +288,11 @@ struct RecipesScreen: View {
              * reached ten points into the day above. */
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
                                 targeted: $targetedDay) { id in
-                if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
+                app.sonde("drop AUJOURD'HUI jour \(dayIndex) · id \(id.prefix(18))")
+                guard let r = app.recipeByID(id) else {
+                    app.sonde("  ✕ id INTROUVABLE dans le bassin"); return
+                }
+                app.move(r, to: dayIndex)
             })
             /* Eight rather than the gutter's fifteen: the block reaches
              * further out than the days around it. */
@@ -301,7 +306,11 @@ struct RecipesScreen: View {
             .overlay { surlignage(dayIndex) }
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
                                 targeted: $targetedDay) { id in
-                if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
+                app.sonde("drop jour \(dayIndex) · id \(id.prefix(18))")
+                guard let r = app.recipeByID(id) else {
+                    app.sonde("  ✕ id INTROUVABLE dans le bassin"); return
+                }
+                app.move(r, to: dayIndex)
             })
             /* The gap between days sits OUTSIDE both zones. Inside the header
              * it belonged to the day below while the eye read it as the end
@@ -327,6 +336,24 @@ struct RecipesScreen: View {
         .padding(.horizontal, today ? 13 : Layout.gutter)
         .padding(.top, today ? 11 : 6)
         .padding(.bottom, 2)
+    }
+
+    /// PROBE, build 170 only. Remove with the sonde calls.
+    @ViewBuilder
+    private var sondePanneau: some View {
+        if !app.traces.isEmpty {
+            VStack(alignment: .leading, spacing: 2) {
+                ForEach(Array(app.traces.enumerated()), id: \.offset) { _, l in
+                    Text(l).scaledFont(Type.micro).foregroundStyle(Tone.text2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(8)
+            .background(Tone.brand.opacity(0.07),
+                        in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 8)
+        }
     }
 
     /// Drawn OVER the day: every row paints an opaque canvas to hide its
@@ -577,6 +604,7 @@ struct VerdictPill: View {
 
 /// A day of the current week receives a dragged recipe; other weeks do not.
 private struct DropDayIf: ViewModifier {
+    @Environment(AppState.self) private var app
     let active: Bool
     let day: Int
     @Binding var targeted: Int?
@@ -586,11 +614,15 @@ private struct DropDayIf: ViewModifier {
     func body(content: Content) -> some View {
         if active {
             content.dropDestination(for: String.self) { ids, _ in
-                guard let id = ids.first else { return false }
+                app.sonde("dropDestination jour \(day) · \(ids.count) item(s)")
+                guard let id = ids.first else {
+                    app.sonde("  ✕ AUCUN item recu"); return false
+                }
                 withAnimation(.soft(0.25)) { receive(id) }
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 return true
             } isTargeted: { over in
+                if over { app.sonde("survol jour \(day)") }
                 targeted = over ? day : (targeted == day ? nil : targeted)
             }
         } else {
@@ -718,6 +750,7 @@ private struct CookedSwipe<Content: View>: View {
 
 /// A row, not a card: draggable only on the week the parent can rearrange.
 private struct DraggableIf: ViewModifier {
+    @Environment(AppState.self) private var app
     let active: Bool
     let recipe: Recipe
     let result: AdaptedRecipe
@@ -734,6 +767,7 @@ private struct DraggableIf: ViewModifier {
                         .frame(width: 260)
                         .background(Tone.cardTop,
                                     in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .onAppear { app.sonde("lift \(recipe.id.prefix(18))") }
                 }
         } else {
             content

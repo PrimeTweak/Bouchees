@@ -1,8 +1,8 @@
 {
-  "build": 169,
+  "build": 170,
   "date": "2026-09-03",
   "carries": [
-    "the day highlight was drawn BEHIND the rows, and since build 165 every row paints an opaque canvas to hide its swipe field: only the header strip showed through, which is the band that looked like an underline and the reason a target seemed not to answer. It is drawn over the day now, across its whole height",
-    "with 168: the thirteen points between days belong to no day, so each zone matches what the eye calls that day"
+    "PROBE BUILD. Seven fixes were reasoned from the code because SwiftUI cannot be run here; this one measures instead. Every step of a drop writes a line on screen: the lift, each hover, what dropDestination receives, whether the id resolves, and the plan's day counts before and after the move",
+    "the probe panel and every sonde call come out in the next build"
   ]
 }
