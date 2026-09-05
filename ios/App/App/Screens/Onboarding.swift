@@ -18,9 +18,9 @@ struct OnboardingFlow: View {
 
             switch step {
             case 0: LiveDemoStep(draft: $draft, next: { step = 1 })
-            case 1: WhoStep(draft: $draft, name: $name, next: { step = 2 })
-            case 2: WeekStep(draft: draft, name: name, next: { step = 3 })
-            default: OfferStep(draft: draft, finish: finish)
+            case 1: WhoStep(draft: $draft, name: $name, back: { step = 0 }, next: { step = 2 })
+            case 2: WeekStep(draft: draft, name: name, back: { step = 1 }, next: { step = 3 })
+            default: OfferStep(draft: draft, back: { step = 2 }, finish: finish)
             }
         }
         .animation(.soft(0.28), value: step)
@@ -46,7 +46,7 @@ struct ReplayDemo: View {
             Tone.canvas.ignoresSafeArea()
             switch step {
             case 0: LiveDemoStep(draft: $draft, next: { step = 1 })
-            default: WeekStep(draft: draft, name: draft.firstName, next: done)
+            default: WeekStep(draft: draft, name: draft.firstName, back: { step = 0 }, next: done)
             }
         }
         .animation(.soft(0.28), value: step)
@@ -127,7 +127,7 @@ private struct LiveDemoStep: View {
 
                 if let r = demoRecipe, let res = result {
                     DemoCard(recipe: r, result: res)
-                        .padding(.top, 20)
+                        .padding(.top, 14)
                 } else {
                     /* Never nothing: the engine is still loading, or no body
                      * is here yet. Say so instead of leaving a hole. */
@@ -145,7 +145,7 @@ private struct LiveDemoStep: View {
                 }
 
                 AllergenPad(selected: $draft.allergens, families: app.knownAllergens)
-                    .padding(.top, 16)
+                    .padding(.top, 12)
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 16)
@@ -180,24 +180,32 @@ private struct DemoCard: View {
     /* One body holding the photo, the title, three swap rows and a verdict
      * defeats the type checker — the error it gives, "unable to type-check in
      * reasonable time", names the body and not the part that is heavy. */
+    /* A thumbnail, not a hero: this screen sells the engine, not the dish.
+     * At hero size the card pushed the allergen pad below the fold, and a
+     * tap's answer landed off screen. */
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            RecipeVisual(recipe: recipe, result: result)
-                .aspectRatio(2.1, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .clipped()
-
-            VStack(alignment: .leading, spacing: 0) {
-                Text(recipe.name)
-                    .scaledFont(Type.heading, weight: .semibold)
-                    .foregroundStyle(Tone.text)
-                swaps
-                readyMark
+            HStack(spacing: 12) {
+                RecipeVisual(recipe: recipe, result: result, compact: true)
+                    .frame(width: 56, height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(recipe.name)
+                        .scaledFont(Type.heading, weight: .semibold)
+                        .foregroundStyle(Tone.text)
+                        .lineLimit(1)
+                    verdict
+                }
+                Spacer(minLength: 0)
             }
-            .padding(16)
+            if !swapped.isEmpty {
+                Divider().overlay(Tone.hairline).padding(.top, 11)
+                swaps
+            }
         }
-        .card(24)
-        .shadow(color: .black.opacity(0.35), radius: 20, y: 10)
+        .padding(13)
+        .card(20)
+        .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
         .animation(.soft(0.3), value: result.swapCount)
     }
 
@@ -207,16 +215,14 @@ private struct DemoCard: View {
         }
     }
 
-    @ViewBuilder
-    private var readyMark: some View {
-        if result.status == .asIs {
-            HStack(spacing: 8) {
-                VerdictMark(status: .asIs)
-                Text("Nothing to change")
-                    .scaledFont(Type.secondary, weight: .semibold)
-                    .foregroundStyle(Tone.yes)
-            }
-            .padding(.top, 13)
+    private var verdict: some View {
+        HStack(spacing: 6) {
+            Circle().fill(result.status == .asIs ? Tone.yes : Tone.swap).frame(width: 8, height: 8)
+            Text(result.status == .asIs ? String(localized: "Nothing to change")
+                 : result.swapCount > 1 ? String(format: String(localized: "%lld swaps made"), result.swapCount)
+                                        : String(format: String(localized: "%lld swap made"), result.swapCount))
+                .scaledFont(Type.caption, weight: .semibold)
+                .foregroundStyle(result.status == .asIs ? Tone.yes : Tone.swap)
         }
     }
 
@@ -238,29 +244,33 @@ private struct SwapRow: View {
                 .scaledFont(Type.secondary, weight: .bold)
                 .foregroundStyle(Tone.swap)
             VStack(alignment: .leading, spacing: 2) {
-                Text(from)
-                    .scaledFont(Type.secondary)
-                    .strikethrough()
-                    .foregroundStyle(Tone.text3)
+                /* The reason stays on the struck-out original. Under the
+                 * substitute it read as "the substitute contains wheat". */
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(from)
+                        .scaledFont(Type.secondary)
+                        .strikethrough()
+                        .foregroundStyle(Tone.text3)
+                    if let why {
+                        Text(why.lowercased())
+                            .scaledFont(Type.label, weight: .regular)
+                            .foregroundStyle(Tone.text3)
+                    }
+                }
                 Text(to)
                     .scaledFont(Type.body, weight: .semibold)
                     .foregroundStyle(Tone.text)
-                if let why {
-                    Text(why)
-                        .scaledFont(Type.caption)
-                        .foregroundStyle(Tone.text2)
-                }
             }
             Spacer(minLength: 0)
         }
-        .padding(.top, 13)
+        .padding(.top, 9)
         .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
 
-/// All eleven families visible at once, no dropdown. The glyphs are the ones
-/// already drawn for the app.
-private struct AllergenPad: View {
+/// All eleven families at once, no dropdown. Shared by the onboarding and
+/// the child editor so they cannot drift apart.
+struct AllergenPad: View {
     @Binding var selected: [String]
     let families: [Allergen]
 
@@ -377,17 +387,14 @@ private struct PressedTile: ButtonStyle {
 private struct WhoStep: View {
     @Binding var draft: ChildProfile
     @Binding var name: String
+    let back: () -> Void
     let next: () -> Void
     @FocusState private var focused: Bool
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Step 2 of 4")
-                    .scaledFont(Type.label)
-                    .foregroundStyle(Tone.brand)
-                    .textCase(.uppercase)
-                    .kerning(1.4)
+                StepHeader(label: "Step 2 of 4", back: back)
 
                 Text("Who am I cooking for?")
                     .scaledFont(Type.display)
@@ -513,6 +520,7 @@ private struct WeekStep: View {
     @Environment(AppState.self) private var app
     let draft: ChildProfile
     let name: String
+    let back: () -> Void
     let next: () -> Void
 
     private var prenom: String {
@@ -523,11 +531,7 @@ private struct WeekStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Step 3 of 4")
-                    .scaledFont(Type.label)
-                    .foregroundStyle(Tone.brand)
-                    .textCase(.uppercase)
-                    .kerning(1.4)
+                StepHeader(label: "Step 3 of 4", back: back)
 
                 Text(String(format: String(localized: "%@'s week is ready."), prenom))
                     .scaledFont(Type.display)
@@ -636,6 +640,7 @@ private struct WeekStep: View {
 private struct OfferStep: View {
     @Environment(AppState.self) private var app
     let draft: ChildProfile
+    let back: () -> Void
     let finish: () -> Void
 
     /// The App Store's own price, in the user's currency. Falls back to the
@@ -654,11 +659,7 @@ private struct OfferStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("For \(draft.firstName)")
-                    .scaledFont(Type.label)
-                    .foregroundStyle(Tone.brand)
-                    .textCase(.uppercase)
-                    .kerning(1.4)
+                StepHeader(label: "For \(draft.firstName)", back: back)
 
                 Text("\(tally.total) today.\n7 more every week.")
                     .scaledFont(Type.display)

@@ -803,9 +803,12 @@ def check():
             if nom[0].isupper() or len(nom) < 4:
                 continue
             # Swift keywords that take a parenthesis and are not helpers.
+            # `return (a, b)` and `guard (…)` are keywords before a tuple or a
+            # parenthesised expression, not calls.
             if nom in ("init", "self", "super", "some", "type", "deinit",
                        "subscript", "throws", "rethrows", "await", "async",
-                       "repeat", "defer", "catch", "where", "case"):
+                       "repeat", "defer", "catch", "where", "case", "return",
+                       "guard", "if", "while", "switch", "for", "in", "try"):
                 continue
             # Free functions the frameworks provide. A name declared nowhere
             # in the file is normal for these; the rule is about OUR helpers.

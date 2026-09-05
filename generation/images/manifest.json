@@ -1098,5 +1098,72 @@
         "la vision hésite sur : type of flour used (all-purpose, whole wheat, oat), possible sugar topping on surface"
       ]
     }
+  },
+  "blueberry-chickpea-flour-muffins": {
+    "fichier": "images/blueberry-chickpea-flour-muffins-3cc22c2458e4.png",
+    "empreinte": "3cc22c2458e4",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T14:11:08.977Z",
+      "detectes": [
+        "blueberry",
+        "muffin"
+      ],
+      "reconnus": 0,
+      "attendus": 8,
+      "avertissements": [
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "la vision hésite sur : sugar topping possibly present on muffin tops"
+      ]
+    }
+  },
+  "mini-cheesy-sweet-potato-muffins": {
+    "fichier": "images/mini-cheesy-sweet-potato-muffins-ec8746e58d8e.png",
+    "empreinte": "ec8746e58d8e",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T14:17:37.138Z",
+      "detectes": [
+        "carrot",
+        "flour",
+        "spice"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "only one ingredient recognised out of 8 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : exact spices used (cinnamon, nutmeg, ginger), presence of banana or pumpkin contributing to orange color"
+      ]
+    }
+  },
+  "mini-sweet-potato-oat-muffins": {
+    "fichier": "images/mini-sweet-potato-oat-muffins-6c589c028645.png",
+    "empreinte": "6c589c028645",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T16:58:05.336Z",
+      "detectes": [
+        "oat",
+        "carrot",
+        "sweet potato"
+      ],
+      "reconnus": 2,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : carrot or sweet potato (orange chunks visible — could be either or both)"
+      ]
+    }
   }
 }

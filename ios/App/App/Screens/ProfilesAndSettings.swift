@@ -14,7 +14,6 @@ struct ProfileEditor: View {
     @State var profile: ChildProfile
     /// False for a child not saved yet: there is nothing to remove.
     var canRemove = false
-    @State private var showAllAllergens = false
     @State private var confirmRemove = false
 
     var body: some View {
@@ -39,9 +38,9 @@ struct ProfileEditor: View {
 
                     VStack(alignment: .leading, spacing: 9) {
                         FieldLabel("Allergens avoided")
-                        AllergenGrid(selection: $profile.allergens,
-                                         showAllAllergens: $showAllAllergens,
-                                         allergens: app.knownAllergens)
+                        /* The onboarding's pad, not a second grid: the same
+                         * cells, glyphs and brand selection on both screens. */
+                        AllergenPad(selected: $profile.allergens, families: app.knownAllergens)
                     }
 
                     if canRemove {

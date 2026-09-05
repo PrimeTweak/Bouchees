@@ -243,111 +243,71 @@ struct AgePicker: View {
         (48, "4 years and up", "Any texture")
     ]
 
-    private func borneSuivante(_ index: Int) -> Int {
-        index + 1 < Self.stages.count ? Self.stages[index + 1].min : 999
+    /// The stage this age falls in, for the line under the counter.
+    private var stade: (name: String, texte: String) {
+        let i = Self.stages.lastIndex { ageMonths >= $0.min } ?? 0
+        let s = Self.stages[i]
+        return (name: s.name, texte: s.texte)
     }
 
+    /* One control for one value: the counter sets the months, the stage is
+     * read off it. */
     var body: some View {
-        VStack(spacing: 9) {
-            ForEach(Array(Self.stages.enumerated()), id: \.offset) { index, stage in
-                let isOn = ageMonths >= stage.min && ageMonths < borneSuivante(index)
-                Button {
-                    ageMonths = stage.min
-                } label: {
-                    HStack(spacing: 14) {
-                        Text(LocalizedStringKey(stage.name))
-                            .font(.headline)
-                            .frame(width: 82, alignment: .leading)
-                        Text(LocalizedStringKey(stage.texte))
-                            .font(.footnote)
-                            .foregroundStyle(isOn ? Tone.brand : Color.secondary)
-                            .multilineTextAlignment(.leading)
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 13)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(isOn ? Tone.brand.opacity(0.1) : Tone.surface,
-                                in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(isOn ? Tone.brand : Color.primary.opacity(0.1),
-                                          lineWidth: isOn ? 2 : 1.5)
-                    )
+        VStack(spacing: 0) {
+            HStack {
+                Button { ageMonths = max(6, ageMonths - 1) } label: {
+                    Image(systemName: "minus")
+                        .scaledFont(Type.heading, weight: .semibold)
+                        .foregroundStyle(Tone.brand)
+                        .frame(width: 40, height: 40)
+                        .background(Tone.brand.opacity(0.10), in: Circle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityAddTraits(isOn ? [.isSelected] : [])
-            }
-
-            HStack(spacing: 14) {
-                Button { ageMonths = max(6, ageMonths - 1) } label: {
-                    Image(systemName: "minus").frame(width: 40, height: 40)
-                }
                 .accessibilityLabel("One month younger")
 
+                Spacer(minLength: 0)
                 VStack(spacing: 0) {
                     Text("\(ageMonths)")
                         .scaledFont(Type.title, weight: .bold, design: .rounded)
+                        .foregroundStyle(Tone.text)
                         .monospacedDigit()
-                    Text("months exactly").font(.caption2).foregroundStyle(.secondary)
+                        .contentTransition(.numericText())
+                    Text("months").scaledFont(Type.micro).foregroundStyle(Tone.text3)
                 }
-                .frame(minWidth: 110)
+                Spacer(minLength: 0)
 
                 Button { ageMonths = min(72, ageMonths + 1) } label: {
-                    Image(systemName: "plus").frame(width: 40, height: 40)
+                    Image(systemName: "plus")
+                        .scaledFont(Type.heading, weight: .semibold)
+                        .foregroundStyle(Tone.brand)
+                        .frame(width: 40, height: 40)
+                        .background(Tone.brand.opacity(0.10), in: Circle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("One month older")
             }
-            .buttonStyle(.bordered)
-            .padding(.top, 8)
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Exact age: \(ageMonths) months")
+            .animation(.soft(0.2), value: ageMonths)
+
+            Divider().overlay(Tone.hairline).padding(.top, 10)
+
+            (Text(LocalizedStringKey(stade.name)).foregroundStyle(Tone.text).fontWeight(.semibold)
+             + Text(" · ").foregroundStyle(Tone.text3)
+             + Text(LocalizedStringKey(stade.texte)).foregroundStyle(Tone.text2))
+                .scaledFont(Type.caption)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 10)
         }
+        .padding(13)
+        .background(Tone.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1.5)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Age: \(ageMonths) months, \(stade.name)")
     }
 }
 
-// MARK: - Allergen grid
-
-struct AllergenGrid: View {
-    @Binding var selection: [String]
-    @Binding var showAllAllergens: Bool
-    let allergens: [Allergen]
-
-    private static let common = ["lait", "oeuf", "arachide", "noix", "ble", "soya"]
-
-    private var visible: [Allergen] {
-        showAllAllergens ? allergens : allergens.filter { Self.common.contains($0.id) }
-    }
-
-    private var otherCount: Int { max(0, allergens.count - Self.common.count) }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 9)], spacing: 9) {
-                ForEach(visible) { a in
-                    AllergenToggle(allergene: a, isOn: selection.contains(a.id)) {
-                        if let i = selection.firstIndex(of: a.id) {
-                            selection.remove(at: i)
-                        } else {
-                            selection.append(a.id)
-                        }
-                    }
-                }
-            }
-
-            if !showAllAllergens && otherCount > 0 {
-                Button {
-                    showAllAllergens = true
-                } label: {
-                    Label(String(format: String(localized: "See the %lld other allergens"),
-                                 otherCount), systemImage: "plus.circle")
-                        .font(.subheadline.weight(.semibold))
-                }
-                .tint(Tone.brand)
-            }
-        }
-    }
-}
 
 // MARK: - Navigation
 
