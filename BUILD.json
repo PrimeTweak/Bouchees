@@ -1,10 +1,8 @@
 {
-  "build": 166,
+  "build": 167,
   "date": "2026-09-03",
   "carries": [
-    "a UIKit pan has no minimum distance, so the row twitched on the two or three points of movement that come with an ordinary tap and then snapped back: nothing moves under twelve points now, and the travel is measured from there",
-    "the hand-written springs ignored Reduce Motion while the rest of the app honours it through Tone.soft; the row uses the same helper, so the return is silent when the setting is on",
-    "a rightward drag reset the offset with no animation at all, a hard jump; every return goes through one path",
-    "committing is judged on how far the ROW travelled rather than the finger, so the dead zone does not shift the threshold"
+    "today's block was the one drop target with no hover feedback, so a recipe dragged onto it looked refused even when it landed; it highlights like the other six days",
+    "today's drop zone was taken after its top padding, which stretched it ten points into the day above — the day a recipe dragged upward is aiming for; the zone is the block itself now"
   ]
 }

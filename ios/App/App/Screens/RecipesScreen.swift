@@ -280,17 +280,21 @@ struct RecipesScreen: View {
                     dayBody(dayIndex, dishes: dishes, slot: slot)
                 }
             }
-            .background(Tone.text.opacity(0.04),
+            /* Today answers a hover like every other day: it was the one
+             * target that gave no sign it had been reached. */
+            .background(targetedDay == dayIndex ? Tone.brand.opacity(0.10)
+                                                : Tone.text.opacity(0.04),
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            /* Eight rather than the gutter's fifteen: the block reaches
-             * further out than the days around it, which is what makes it
-             * read as a block instead of a heavier line. */
-            .padding(.horizontal, 8)
-            .padding(.top, 10)
+            /* The zone is the block itself: taken after the top padding it
+             * reached ten points into the day above. */
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
                                 targeted: $targetedDay) { id in
                 if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
             })
+            /* Eight rather than the gutter's fifteen: the block reaches
+             * further out than the days around it. */
+            .padding(.horizontal, 8)
+            .padding(.top, 10)
         } else {
             VStack(alignment: .leading, spacing: 0) {
                 dayHeader(dayIndex, slot: slot, today: false)
