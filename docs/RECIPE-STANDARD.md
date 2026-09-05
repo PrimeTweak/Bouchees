@@ -24,7 +24,7 @@ decides the cooking time; leaving it out makes the time a guess.
 
 200 °C (400 °F). Quebec ovens show either.
 
-## 5. Every cooking step has a duration and a doneness cue
+## 5. Every cooking step has a duration, and a doneness cue when one helps
 
 "18 to 20 minutes, until browned on top and no pink remains in the centre."
 The cue is what the parent trusts; the minutes are what the timer offers.

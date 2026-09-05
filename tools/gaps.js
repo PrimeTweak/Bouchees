@@ -156,17 +156,24 @@ function brief(classement, target) {
   /* The pool has a target beyond coverage: when the gaps are filled and the
    * quota is not, ask for variety — meals and snacks in turn, one profile
    * and one age at a time, so no two runs ask for the same thing. */
+  /* Focused, not fair: the youngest ages first, because a six-month-old has
+   * six meals and sees the same one every six days, and only the five major
+   * allergens, because a recipe free of milk, egg, peanut, tree nut and wheat
+   * already serves most families. Mustard and sulphites come after. */
   if (reste > 0 && brief.pool) {
     const deficit = { Meal: brief.pool.Meal.missing, Snack: brief.pool.Snack.missing };
     const tour = brief.pool.seed || 0;
+    const ages = [6, 6, 9, 9, 12, 24];
+    const profils = [["milk", "egg"], ["milk", "egg", "wheat"], ["peanut", "tree_nut"],
+                     ["milk", "egg", "peanut", "tree_nut"], ["wheat"], ["milk"]];
     let i = 0;
     while (reste > 0 && (deficit.Meal > 0 || deficit.Snack > 0)) {
       const cat = (i % 2 === 0 && deficit.Meal > 0) || deficit.Snack <= 0 ? "Meal" : "Snack";
-      const profile = PROFILS[(tour + i) % PROFILS.length];
-      const age = STADES[(tour + i) % STADES.length];
+      const profile = profils[(tour + i) % profils.length];
+      const age = ages[(tour + i) % ages.length];
       const n = Math.min(reste, 2);
       out.push({ n: n, ageMois: age, categories: [cat], evite: profile, passePartout: false,
-                 reason: "pool: " + deficit[cat] + " " + cat.toLowerCase() + "s still missing before a recipe waits the full rotation" });
+                 reason: "pool: " + deficit[cat] + " " + cat.toLowerCase() + "s still missing, youngest ages first" });
       deficit[cat] -= n; reste -= n; i++;
     }
   }

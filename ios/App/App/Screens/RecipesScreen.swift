@@ -677,21 +677,52 @@ private struct CookedSwipe<Content: View>: View {
         }
     }
 
+    /// How far the pill has filled: nothing for the first few points, full
+    /// at the threshold. One number drives the fill, the glyph, the rim and
+    /// the size, so they cannot disagree.
+    private var remplissage: CGFloat {
+        max(0, min(1, (-offset - 8) / (seuil - 8)))
+    }
+
     private var corps: some View {
         content
             .background(Tone.canvas)
             .offset(x: offset)
             .background(alignment: .trailing) {
-                if offset < -4 {
-                    Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
-                        .scaledFont(Type.body, weight: .semibold)
-                        .foregroundStyle(.white)
-                        .frame(width: seuil + 24)
-                        .frame(maxHeight: .infinity)
-                        .background(cooked ? Tone.text3 : Tone.yes)
-                        .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
-                }
+                if offset < -4 { pastille }
             }
+            .onChange(of: remplissage >= 1) { _, pleine in
+                if pleine { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+            }
+    }
+
+    /// The app's own language — glass, and a tint that fills — rather than a
+    /// flat colour block, which the app has nowhere else. Brand for marking:
+    /// "Start cooking" is brand, and this closes the same loop. Ink to undo.
+    private var pastille: some View {
+        let teinte = cooked ? Tone.text : Tone.brand
+        let t = remplissage
+        /* The glyph is drawn last, over the tint: its colour blends from the
+         * tint to the canvas as the fill rises, one layer, no crossfade. */
+        return Circle()
+            .fill(teinte.opacity(t))
+            .frame(width: 38, height: 38)
+            .background { Circle().fill(.clear).glass(Circle()) }
+            .overlay {
+                /* Two stacked tints stand in for Color.mix, which is iOS 18. */
+                Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
+                    .scaledFont(Type.heading, weight: .semibold)
+                    .foregroundStyle(teinte)
+                    .overlay {
+                        Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
+                            .scaledFont(Type.heading, weight: .semibold)
+                            .foregroundStyle(Tone.canvas)
+                            .opacity(t)
+                    }
+            }
+            .scaleEffect(1 + 0.08 * t)
+            .padding(.trailing, 13)
+            .accessibilityLabel(Text(cooked ? "Not cooked" : "Cooked"))
     }
 
     /// A dead zone before the row moves at all: a UIKit pan has no minimum
@@ -707,16 +738,14 @@ private struct CookedSwipe<Content: View>: View {
         offset = d < -seuil ? -seuil + (d + seuil) / 3 : d
     }
 
-    /// Springs back on release; a quick flick counts even when it is short.
+    /// Release commits only once the pill is full — a state the parent can
+    /// see, not a number they have to guess — or on a deliberate flick.
     private func relacher(_ x: CGFloat, _ vitesse: CGFloat) {
-        /* The row has to travel the whole field, or a deliberate flick has to
-         * carry it most of the way. The old shortcut committed on twelve
-         * points at ordinary swipe speed — a brush of the thumb. */
-        let commit = offset <= -seuil || (offset < -seuil * 0.7 && vitesse < -1400)
+        let commit = remplissage >= 1 || (remplissage > 0.7 && vitesse < -1400)
         fermer()
         guard commit else { return }
         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
     /// The same return everywhere, and silent under Reduce Motion like the

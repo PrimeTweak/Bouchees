@@ -105,7 +105,10 @@ function validerLot(recettes, brief, data, idsExistants) {
 /* The seven rules a program can check. A recipe that fails one is a draft,
  * not a recipe, whoever wrote it. */
 const CUE = /\buntil\b|\bgolden\b|\btender\b|\bsoft\b|\bset\b|\bthick|\bbubbl|\bcooked through\b|\bfirm\b|\bsmooth\b|\bbrowned\b|\bcrisp|\bno pink\b|\bfork\b|\btoothpick\b|\bpulls away\b|\bfragrant\b|\bwilt|\btranslucent\b|\bopaque\b|\bflakes\b/i;
-const COOKS = /\b(bake|roast|fry|saut[eé]|simmer|boil|cook|grill|steam|poach|broil|sear|reduce|melt|heat)\b/i;
+/* Verbs that cook. "heat", "melt" and "reduce" are out: "remove from the
+ * heat", "melt the butter" and "reduce the heat" are preparation, and each
+ * false positive here threw away a whole recipe. */
+const COOKS = /\b(bake|roast|fry|saut[eé]|simmer|boil|cook|grill|steam|poach|broil|sear)\b/i;
 const DURATION = /\d+\s*(?:to\s*\d+\s*)?(?:min|minute|hour|second|sec)s?\b/i;
 const TEMP_BOTH = /\d{2,3}\s*°\s*C\s*\(\s*\d{3}\s*°\s*F\s*\)/;
 const STOP = ["fresh", "ground", "large", "small", "dried", "whole", "plain", "unsweetened", "extract",
@@ -120,7 +123,9 @@ function standard(r, catalogue) {
   if (steps.length < 6 || steps.length > 10)
     out.push("standard 6: " + steps.length + " steps; a recipe has six to ten, one action each");
   steps.forEach(function (st, i) {
-    if (st.split(/\s+/).length > 26) out.push("standard 6: step " + (i + 1) + " runs past twenty words");
+    /* Twenty is the target the prompt gives; twenty-six is the ceiling, the
+     * room a temperature in both units or a doneness cue needs. */
+    if (st.split(/\s+/).length > 26) out.push("standard 6: step " + (i + 1) + " runs past the ceiling of twenty-six words");
   });
   if (/all (?:the|of the) ingredients/.test(text))
     out.push("standard 1: \"all the ingredients\" names nothing; each ingredient is named with its preparation");
@@ -139,8 +144,10 @@ function standard(r, catalogue) {
   /* Every cooking step: a duration and a cue. */
   steps.forEach(function (st, i) {
     if (!COOKS.test(st)) return;
-    if (!DURATION.test(st)) out.push("standard 5: step " + (i + 1) + " cooks without a duration");
-    if (!CUE.test(st)) out.push("standard 5: step " + (i + 1) + " cooks without a doneness cue");
+    /* A duration OR a cue. Demanding both threw out "bake for 18 to 20
+     * minutes", which a parent with a baby on one arm can follow. */
+    if (!DURATION.test(st) && !CUE.test(st))
+      out.push("standard 5: step " + (i + 1) + " cooks without a duration or a doneness cue");
   });
 
   /* An oven recipe: both units, and the oven on before it is used. */

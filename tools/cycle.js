@@ -26,6 +26,18 @@ const val = (n, d) => { const x = args.find((v) => v.startsWith(n + "=")); retur
  * the current week, not into a month. */
 function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
 
+/* Every rejected draft is kept with its reasons. A rejection that is only
+ * printed cannot be audited, and the validator cannot be tuned without a
+ * corpus of what it refused. Last two hundred, newest first. */
+const REJETS = path.join(__dirname, "..", "data", "generated", "rejected.json");
+function garderRejet(rec, commande, erreurs) {
+  let liste = [];
+  try { liste = JSON.parse(fs.readFileSync(REJETS, "utf8")); } catch (e) { liste = []; }
+  liste.unshift({ date: new Date().toISOString().slice(0, 10), commande: commande,
+                  erreurs: erreurs, recette: rec });
+  fs.writeFileSync(REJETS, JSON.stringify(liste.slice(0, 200), null, 2) + "\n");
+}
+
 function chargerDonnees() {
   return {
     catalogue: read("data/ingredients.json"),
@@ -87,7 +99,11 @@ async function cycleRecettes(data, options) {
   const survivantes = [];
   drafts.forEach(function (b) {
     const v = Valideur.valider(b.rec, b.commande, data, idsExistants.concat(survivantes.map((s) => s.rec.id)));
-    if (!v.ok) { log.rejetees.push({ id: b.rec.id, erreurs: v.erreurs }); console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return; }
+    if (!v.ok) {
+      log.rejetees.push({ id: b.rec.id, erreurs: v.erreurs });
+      garderRejet(b.rec, b.commande, v.erreurs);
+      console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return;
+    }
     if (v.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: v.avertissements });
     survivantes.push(b);
     console.log("  ok " + b.rec.id);
@@ -97,7 +113,11 @@ async function cycleRecettes(data, options) {
   const kept = [];
   survivantes.forEach(function (b) {
     const c = Coherence.verifier(b.rec, data);
-    if (!c.ok) { log.rejetees.push({ id: b.rec.id, erreurs: c.erreurs }); console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return; }
+    if (!c.ok) {
+      log.rejetees.push({ id: b.rec.id, erreurs: c.erreurs });
+      garderRejet(b.rec, b.commande, c.erreurs);
+      console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return;
+    }
     if (c.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: c.avertissements });
     kept.push(b.rec);
     console.log("  ok " + b.rec.id + (c.avertissements.length ? "  (" + c.avertissements.length + " reservation[s])" : ""));

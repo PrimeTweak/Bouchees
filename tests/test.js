@@ -2038,12 +2038,14 @@ test("shopping: butter, garlic and nut butters are bought, never staples", () =>
 test("standard: a draft that says mix all the ingredients is refused, with every ingredient it hides", () => {
   const draft = { id: "draft", name: "Draft", category: "Meal", servings: "4", minAgeMonths: 9, timeMinutes: 20,
     ingredients: [{ id: "ground_turkey", qty: 450, unit: "g" }, { id: "apple", qty: 1, unit: "unit" }],
-    steps: ["Mix all the ingredients.", "Shape into balls.", "Bake at 200 \u00b0C for 18 minutes.", "Serve."] };
+    /* "Bake at 200 °C" with neither a duration nor a cue: that is what rule 5
+     * refuses now. A duration alone would pass — a parent can follow it. */
+    steps: ["Mix all the ingredients.", "Shape into balls.", "Bake at 200 \u00b0C.", "Serve."] };
   const e = Valideur.standard(draft, data.catalogue);
   assert(e.some((x) => x.startsWith("standard 6")), "too few steps");
   assert(e.some((x) => /all the ingredients/.test(x)));
   assert(e.some((x) => /turkey is never named/.test(x)));
-  assert(e.some((x) => x.startsWith("standard 5")), "a bake without a cue");
+  assert(e.some((x) => x.startsWith("standard 5")), "a bake with neither duration nor cue");
   assert(e.some((x) => x.startsWith("standard 4")), "one unit only");
 });
 
@@ -2158,6 +2160,16 @@ test("plan: exchanging two recipes keeps every day's count", () => {
   assert.deepEqual(plan[0], ["a", "e"]);
   assert.deepEqual(plan[1], ["d", "c"]);
   assert.deepEqual(plan[2], ["b", "f"]);
+});
+
+test("standard: a duration alone satisfies rule 5, and taking off the heat is not cooking", () => {
+  const ok = { id: "ok", name: "Ok", category: "Meal", servings: "4 family portions", minAgeMonths: 9, timeMinutes: 20,
+    ingredients: [{ id: "ground_turkey", qty: 450, unit: "g" }, { id: "apple", qty: 1, unit: "unit" }],
+    steps: ["Heat the oven to 200 \u00b0C (400 \u00b0F).", "Grate the apple.", "Mix the ground turkey with the grated apple.",
+            "Shape into balls.", "Bake for 18 to 20 minutes.", "Remove from the heat and let rest.",
+            "Serve warm. Keeps three days in the fridge."] };
+  const e = Valideur.standard(ok, data.catalogue);
+  assert(!e.some((x) => x.startsWith("standard 5")), "rule 5 refused a bake with a duration: " + JSON.stringify(e));
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
