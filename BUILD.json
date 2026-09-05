@@ -1,8 +1,8 @@
 {
-  "build": 168,
+  "build": 169,
   "date": "2026-09-03",
   "carries": [
-    "each day's header carried nineteen points of top padding INSIDE its drop zone: the eye read that band as the end of the day above, the code counted it as the start of the day below. Dragging down it made a day easier to hit; dragging up it was the band being aimed at, and the recipe landed back where it came from",
-    "the gap between days is now outside every zone — thirteen points that belong to no day — and each highlight hugs what the eye calls that day, which is also the strip that looked like an underline"
+    "the day highlight was drawn BEHIND the rows, and since build 165 every row paints an opaque canvas to hide its swipe field: only the header strip showed through, which is the band that looked like an underline and the reason a target seemed not to answer. It is drawn over the day now, across its whole height",
+    "with 168: the thirteen points between days belong to no day, so each zone matches what the eye calls that day"
   ]
 }

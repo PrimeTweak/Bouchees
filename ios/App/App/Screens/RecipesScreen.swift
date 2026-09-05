@@ -280,11 +280,9 @@ struct RecipesScreen: View {
                     dayBody(dayIndex, dishes: dishes, slot: slot)
                 }
             }
-            /* Today answers a hover like every other day: it was the one
-             * target that gave no sign it had been reached. */
-            .background(targetedDay == dayIndex ? Tone.brand.opacity(0.10)
-                                                : Tone.text.opacity(0.04),
+            .background(Tone.text.opacity(0.04),
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay { surlignage(dayIndex) }
             /* The zone is the block itself: taken after the top padding it
              * reached ten points into the day above. */
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
@@ -300,8 +298,7 @@ struct RecipesScreen: View {
                 dayHeader(dayIndex, slot: slot, today: false)
                 dayBody(dayIndex, dishes: dishes, slot: slot)
             }
-            .background(targetedDay == dayIndex ? Tone.brand.opacity(0.06) : .clear,
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay { surlignage(dayIndex) }
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
                                 targeted: $targetedDay) { id in
                 if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
@@ -330,6 +327,17 @@ struct RecipesScreen: View {
         .padding(.horizontal, today ? 13 : Layout.gutter)
         .padding(.top, today ? 11 : 6)
         .padding(.bottom, 2)
+    }
+
+    /// Drawn OVER the day: every row paints an opaque canvas to hide its
+    /// swipe field, which masked a highlight sitting behind it.
+    @ViewBuilder
+    private func surlignage(_ dayIndex: Int) -> some View {
+        if targetedDay == dayIndex {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Tone.brand.opacity(0.10))
+                .allowsHitTesting(false)
+        }
     }
 
     @ViewBuilder

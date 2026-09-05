@@ -1,104 +1,10 @@
 {
-  "le": "2026-09-02T22:46:02.953Z",
+  "le": "2026-09-05T00:43:56.434Z",
   "recettes": {
     "commandees": 20,
     "redigees": 20,
-    "acceptees": 3,
+    "acceptees": 2,
     "rejetees": [
-      {
-        "id": "turkey-veggie-rice-bowl",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration",
-          "standard 5: step 4 cooks without a duration",
-          "standard 5: step 4 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "turkey-rice-bowl-with-zucchini",
-        "erreurs": [
-          "standard 6: 11 steps; a recipe has six to ten, one action each",
-          "standard 5: step 2 cooks without a duration",
-          "standard 5: step 2 cooks without a doneness cue",
-          "standard 5: step 6 cooks without a duration",
-          "standard 5: step 6 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-sweet-potato-rice-pasta",
-        "erreurs": [
-          "standard 6: 11 steps; a recipe has six to ten, one action each",
-          "standard 5: step 2 cooks without a duration",
-          "standard 5: step 2 cooks without a doneness cue",
-          "standard 5: step 6 cooks without a duration",
-          "standard 5: step 6 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "banana-chickpea-flour-pancake-bites",
-        "erreurs": [
-          "standard 5: step 3 cooks without a duration",
-          "standard 5: step 3 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "lentil-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : lentil-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "turkey-zucchini-rice-bowl",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration",
-          "standard 5: step 3 cooks without a duration",
-          "standard 5: step 3 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "turkey-veggie-rice-bowl",
-        "erreurs": [
-          "standard 5: step 2 cooks without a duration",
-          "standard 5: step 2 cooks without a doneness cue",
-          "standard 5: step 5 cooks without a duration",
-          "standard 5: step 5 cooks without a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "banana-oat-blueberry-bites",
-        "erreurs": [
-          "standard 6: step 8 runs past twenty words"
-        ]
-      },
       {
         "id": "lentil-sweet-potato-patties",
         "erreurs": [
@@ -111,29 +17,124 @@
           "standard 5: step 1 cooks without a duration",
           "standard 5: step 1 cooks without a doneness cue",
           "standard 5: step 5 cooks without a duration",
-          "standard 5: step 5 cooks without a doneness cue",
-          "standard 5: step 8 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "turkey-veggie-rice-bowl",
+        "erreurs": [
+          "standard 5: step 2 cooks without a duration",
+          "standard 5: step 2 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-sweet-potato-coconut-bowl",
+        "erreurs": [
           "standard 5: step 8 cooks without a doneness cue"
         ]
       },
       {
-        "id": "sweet-potato-chickpea-bites",
+        "id": "sweet-potato-oat-bites",
         "erreurs": [
-          "id déjà utilisé : sweet-potato-chickpea-bites"
+          "id déjà utilisé : sweet-potato-oat-bites"
         ]
       },
       {
-        "id": "banana-oat-muffins",
+        "id": "banana-chickpea-energy-balls",
         "erreurs": [
-          "id déjà utilisé : banana-oat-muffins"
+          "id déjà utilisé : banana-chickpea-energy-balls"
+        ]
+      },
+      {
+        "id": "turkey-rice-bowl-with-vegetables",
+        "erreurs": [
+          "standard 5: step 1 cooks without a duration",
+          "standard 5: step 1 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-sweet-potato-patties",
+        "erreurs": [
+          "id déjà utilisé : salmon-sweet-potato-patties"
+        ]
+      },
+      {
+        "id": "sweet-potato-oat-bites",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-oat-bites"
+        ]
+      },
+      {
+        "id": "banana-chickpea-flour-pancakes",
+        "erreurs": [
+          "standard 6: step 8 runs past twenty words",
+          "standard 5: step 3 cooks without a duration",
+          "standard 5: step 3 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-sweet-potato-patties",
+        "erreurs": [
+          "id déjà utilisé : salmon-sweet-potato-patties"
+        ]
+      },
+      {
+        "id": "turkey-lentil-tomato-bowl",
+        "erreurs": [
+          "standard 5: step 3 cooks without a duration",
+          "standard 5: step 3 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "banana-oat-bites",
+        "erreurs": [
+          "id déjà utilisé : banana-oat-bites"
+        ]
+      },
+      {
+        "id": "sweet-potato-chickpea-patties",
+        "erreurs": [
+          "id déjà utilisé : sweet-potato-chickpea-patties"
+        ]
+      },
+      {
+        "id": "turkey-sweet-potato-rice-bowl",
+        "erreurs": [
+          "standard 5: step 1 cooks without a duration",
+          "standard 5: step 1 cooks without a doneness cue",
+          "standard 5: step 5 cooks without a duration",
+          "standard 5: step 5 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "lentil-tomato-pasta",
+        "erreurs": [
+          "standard 5: step 2 cooks without a duration",
+          "standard 5: step 2 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "cheesy-chickpea-quesadillas",
+        "erreurs": [
+          "standard 5: step 7 cooks without a duration",
+          "standard 5: step 7 cooks without a doneness cue"
+        ]
+      },
+      {
+        "id": "banana-oat-blueberry-muffins",
+        "erreurs": [
+          "id déjà utilisé : banana-oat-blueberry-muffins"
         ]
       }
     ],
     "aRevoir": [],
     "nouvelles": [
-      "blueberry-banana-chickpea-muffins",
-      "blueberry-chickpea-flour-muffins",
-      "mini-cheesy-sweet-potato-muffins"
+      "sweet-potato-oat-patties",
+      "banana-chickpea-bites"
     ]
   },
   "images": null

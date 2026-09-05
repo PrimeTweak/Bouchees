@@ -2054,5 +2054,533 @@
       "license": "original content, written for Bouchees",
       "cookedByAHuman": false
     }
+  },
+  {
+    "id": "oat-banana-blueberry-bites",
+    "name": "Banana Blueberry Oat Bites",
+    "category": "Snack",
+    "servings": "18 bites · 4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "applesauce",
+        "qty": 60,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "blueberries",
+        "qty": 100,
+        "unit": "g"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 15,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+      "In a large bowl, combine Rolled oats, Cinnamon, and Baking powder.",
+      "Add Mashed banana, Unsweetened applesauce, Maple syrup, Vanilla extract, and Canola oil.",
+      "Stir until a thick, uniform dough forms.",
+      "Gently fold in Blueberries without crushing them.",
+      "Scoop 18 rounded tablespoons of dough onto the prepared baking sheet.",
+      "Flatten each portion lightly with the back of a spoon.",
+      "Bake for 14 to 16 minutes, until the edges are golden and the centres are set.",
+      "Cool on the sheet for 5 minutes before transferring to a rack.",
+      "Makes 18 bites · 4 family portions. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-sweet-potato-mini-patties",
+    "name": "Sweet Potato and Chickpea Mini Patties",
+    "category": "Snack",
+    "servings": "12 patties · 4 family portions",
+    "minAgeMonths": 48,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "paprika",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+      "Peel and cube Sweet potato, then microwave for 5 minutes until completely tender.",
+      "Mash the cooked Sweet potato in a large bowl until smooth.",
+      "Add drained Cooked chickpeas and mash roughly, leaving some texture.",
+      "Stir in Chickpea flour, one minced Garlic clove, Ground cumin, Sweet paprika, Salt, and Lemon juice.",
+      "Divide the mixture into 12 equal portions and shape each into a flat round patty.",
+      "Arrange patties on the prepared baking sheet and brush the tops with Olive oil.",
+      "Bake for 18 to 20 minutes, until the edges are crisp and the tops are golden.",
+      "Cool for 3 minutes on the sheet before serving.",
+      "Makes 12 patties · 4 family portions. Refrigerate in an airtight container for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "mini-sweet-potato-oat-muffins",
+    "name": "Mini Sweet Potato and Oat Muffins",
+    "category": "Snack",
+    "servings": "12 mini muffins · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 30,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cow_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and grease a 12-cup mini muffin tin.",
+      "Peel and grate the sweet potato; measure out 150 g of packed grated flesh.",
+      "In a large bowl, whisk together oat flour, rolled oats, baking powder, and cinnamon.",
+      "In a medium bowl, whisk the eggs, maple syrup, canola oil, cow's milk, and vanilla extract.",
+      "Pour the wet mixture into the dry ingredients; stir until just combined.",
+      "Fold in the grated sweet potato evenly throughout the batter.",
+      "Spoon the batter into the muffin tin, filling each cup to the top.",
+      "Bake for 18 to 20 minutes, until a toothpick inserted in the centre comes out clean.",
+      "Cool in the tin for 5 minutes, then transfer to a wire rack to cool completely.",
+      "Store in an airtight container in the refrigerator for up to 4 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-cucumber-yogurt-dip-pita",
+    "name": "Chickpea and Cucumber Yogurt Dip with Pita",
+    "category": "Snack",
+    "servings": "4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "greek_yogurt",
+        "qty": 120,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "cucumber",
+        "qty": 120,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "pita",
+        "qty": 4,
+        "unit": "unit",
+        "role": "flour"
+      }
+    ],
+    "steps": [
+      "Drain and rinse the cooked chickpeas thoroughly in a colander.",
+      "Peel and mince the garlic clove finely.",
+      "Halve and deseed the cucumber, then dice into small 0.5 cm cubes.",
+      "Add chickpeas, plain Greek yogurt, lemon juice, olive oil, garlic, and cumin to a food processor.",
+      "Blend for about 60 seconds until the dip is smooth and creamy.",
+      "Transfer the dip to a medium bowl and stir in the diced cucumber and fresh dill.",
+      "Cut each pita bread into 6 small triangles suitable for toddler hands.",
+      "Serve the dip in the bowl alongside the pita triangles for dipping.",
+      "Store leftover dip covered in the refrigerator for up to 3 days; keep pita separate."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-chickpea-energy-balls",
+    "name": "Banana & Chickpea Energy Balls",
+    "category": "Snack",
+    "servings": "16 balls · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 120,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 200,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sunflower_seed_butter",
+        "qty": 60,
+        "unit": "g",
+        "role": "fat"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 80,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 1,
+        "unit": "g"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 15,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Drain and rinse the chickpeas, then pat them dry with a clean cloth.",
+      "Mash the chickpeas and mashed banana together in a large bowl until mostly smooth.",
+      "Add the sunflower seed butter and maple syrup; stir to combine.",
+      "Stir in the rolled oats and cinnamon until a firm dough forms.",
+      "Refrigerate the dough for 10 minutes so it is easier to shape.",
+      "Scoop the dough into 16 equal portions and roll each into a ball.",
+      "Arrange the balls on a plate in a single layer.",
+      "Serve immediately or refrigerate. Store in an airtight container in the fridge for up to 4 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "sweet-potato-oat-patties",
+    "name": "Sweet Potato & Oat Patties",
+    "category": "Snack",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "ground_flaxseed",
+        "qty": 15,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "water",
+        "qty": 45,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment paper.",
+      "Peel and cube the sweet potato into 3 cm pieces.",
+      "Steam the sweet potato for 12 minutes, until completely tender, then mash smooth.",
+      "Stir ground flaxseed into water in a small bowl; rest 5 minutes until gel forms.",
+      "Combine mashed sweet potato, rolled oats, chickpea flour, cinnamon, and flaxseed gel in a large bowl.",
+      "Shape the mixture into 16 round patties, about 1.5 cm thick each.",
+      "Brush each patty lightly with olive oil on both sides.",
+      "Bake 18 to 20 minutes, flipping once halfway, until golden and firm to the touch.",
+      "Cool on the sheet for 5 minutes before serving. Store refrigerated up to 3 days, or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-chickpea-bites",
+    "name": "Banana & Chickpea Soft Bites",
+    "category": "Snack",
+    "servings": "20 bites · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 80,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g",
+        "role": "leavening"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+      "Drain and rinse the cooked chickpeas, then mash them thoroughly with a fork until mostly smooth.",
+      "Add mashed banana, canola oil, vanilla extract, and cinnamon to the chickpeas; stir well.",
+      "Fold in oat flour and baking powder until a soft, uniform dough forms.",
+      "Scoop rounded tablespoons of dough onto the prepared sheet, spacing 3 cm apart.",
+      "Gently flatten each mound to about 2 cm thick with the back of a spoon.",
+      "Bake 14 to 16 minutes, until the edges are set and the tops feel dry to the touch.",
+      "Cool completely on the sheet before serving. Store in an airtight container up to 3 days, or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]
