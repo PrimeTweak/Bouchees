@@ -709,7 +709,10 @@ private struct CookedSwipe<Content: View>: View {
 
     /// Springs back on release; a quick flick counts even when it is short.
     private func relacher(_ x: CGFloat, _ vitesse: CGFloat) {
-        let commit = offset < -seuil * 0.6 || (offset < -12 && vitesse < -700)
+        /* The row has to travel the whole field, or a deliberate flick has to
+         * carry it most of the way. The old shortcut committed on twelve
+         * points at ordinary swipe speed — a brush of the thumb. */
+        let commit = offset <= -seuil || (offset < -seuil * 0.7 && vitesse < -1400)
         fermer()
         guard commit else { return }
         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
