@@ -1165,5 +1165,28 @@
         "la vision hésite sur : carrot or sweet potato (orange chunks visible — could be either or both)"
       ]
     }
+  },
+  "lentil-sweet-potato-bowl": {
+    "fichier": "images/lentil-sweet-potato-bowl-04163d25f85f.png",
+    "empreinte": "04163d25f85f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T17:54:24.732Z",
+      "detectes": [
+        "lentil",
+        "rice",
+        "butternut squash",
+        "tomato sauce"
+      ],
+      "reconnus": 2,
+      "attendus": 11,
+      "avertissements": [
+        "la vision hésite sur : sweet potato instead of butternut squash, crushed tomato instead of tomato sauce"
+      ]
+    }
   }
 }
