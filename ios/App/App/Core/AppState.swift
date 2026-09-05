@@ -400,10 +400,24 @@ final class AppState {
          * feed the sequence and is dropped for the bundled catalogue. */
         if let saved = local.readRecipes(), !saved.isEmpty,
            saved.contains(where: { $0.adaptability != nil }) {
-            recipes = saved
+            /* The saved catalogue is the server's: cards without bodies. The
+             * bundled free bodies are merged on this path too, or the demo
+             * asks for a recipe by name and gets an empty card. */
+            recipes = avecCorpsEmbarques(saved)
         } else {
             recipes = bundledCatalogue()
         }
+    }
+
+    /// Merges the bundled free bodies into any catalogue that lacks them.
+    private func avecCorpsEmbarques(_ cards: [Recipe]) -> [Recipe] {
+        var bodies: [String: Recipe] = [:]
+        for u in Resources.bundledBodies() {
+            if let d = try? Data(contentsOf: u), let r = try? JSONDecoder().decode(Recipe.self, from: d) {
+                bodies[r.id] = r
+            }
+        }
+        return cards.map { c in c.hasBody ? c : (bodies[c.id].map { c.with(body: $0) } ?? c) }
     }
 
     /// The catalogue shipped in the app, with the free bodies merged in.
@@ -411,13 +425,7 @@ final class AppState {
         guard let url = Resources.bundledCatalogue(),
               let d = try? Data(contentsOf: url),
               var cards = (try? JSONDecoder().decode(LossyArray<Recipe>.self, from: d))?.items else { return [] }
-        var bodies: [String: Recipe] = [:]
-        for u in Resources.bundledBodies() {
-            if let bd = try? Data(contentsOf: u), let b = try? JSONDecoder().decode(Recipe.self, from: bd) {
-                bodies[b.id] = b
-            }
-        }
-        cards = cards.map { c in bodies[c.id].map { c.with(body: $0) } ?? c }
+        cards = avecCorpsEmbarques(cards)
         return cards.sorted { $0.name < $1.name }
     }
 
@@ -642,22 +650,103 @@ final class AppState {
     /// What the sequence may serve: nothing the engine cannot adapt for this
     /// child, nothing under their age. A category the filter would empty
     /// falls back on the whole pool rather than on an empty day.
-    var servablePool: [Recipe] {
+    var servablePool: [Recipe] { servablePool(for: activeProfile) }
+
+    /// The same filter for any profile — the onboarding previews a week for
+    /// a child that is not saved yet.
+    func servablePool(for profile: ChildProfile) -> [Recipe] {
         let ok = recipes.filter { card in
-            guard card.minAgeMonths <= activeProfile.ageMonths else { return false }
+            guard card.minAgeMonths <= profile.ageMonths else { return false }
             guard let matrix = card.adaptability else { return true }
-            return !activeProfile.allergens.contains { matrix[$0] == "not_adaptable" }
+            return !profile.allergens.contains { matrix[$0] == "not_adaptable" }
         }
         let meals = ok.filter(\.isMeal), snacks = ok.filter(\.isSnack)
         return meals.isEmpty || snacks.isEmpty ? recipes : ok
     }
 
+    /// The first days of the week this child would get: what the onboarding
+    /// shows before asking for money. Real sequence, real pool, no picture.
+    func weekPreview(for profile: ChildProfile, days: Int = 3) -> [(day: Int, recipes: [Recipe])] {
+        let start = weekStart(0)
+        let picks = sequence.picks(from: start, to: start + days - 1,
+                                   pool: servablePool(for: profile), history: [:])
+        return (0..<days).map { d in
+            let p = picks[start + d]
+            let ids = [p?.meal, p?.snack].compactMap { $0 }
+            return (day: d, recipes: ids.compactMap { recipeByID($0) })
+        }
+    }
+
+    // MARK: - What the Family tab says about each child
+
+    /// The figures the Family tab shows: all computed from what the app
+    /// already knows, nothing estimated.
+    struct ChildFigures: Sendable {
+        var safeToday = 0          /* recipes this child can eat, adapted or not */
+        var asIsThisWeek = 0
+        var adaptedThisWeek = 0
+        var cookedThisWeek = 0
+        var plannedThisWeek = 0
+        var nextMilestone: Int?    /* months */
+        var unlockedAtMilestone = 0
+    }
+
+    private static let milestones = [6, 9, 12, 24, 48]
+
+    func figures(for profile: ChildProfile) -> ChildFigures {
+        var f = ChildFigures()
+        f.safeToday = servablePool(for: profile).count
+        if let next = Self.milestones.first(where: { $0 > profile.ageMonths }) {
+            var older = profile
+            older.ageMonths = next
+            f.nextMilestone = next
+            f.unlockedAtMilestone = max(0, servablePool(for: older).count - f.safeToday)
+        }
+        /* This week's split, from the cards' matrices so a locked body still
+         * counts. Only the active child has a plan; the others get the
+         * week the sequence would give them. */
+        let week: [Recipe] = profile.id == activeProfile.id
+            ? weekRecipes
+            : weekPreview(for: profile, days: 7).flatMap(\.recipes)
+        for r in week {
+            guard let v = liteResult(for: r, profile: profile) else { continue }
+            f.plannedThisWeek += 1
+            if v.status == .asIs { f.asIsThisWeek += 1 } else if v.status == .adapted { f.adaptedThisWeek += 1 }
+        }
+        if profile.id == activeProfile.id { f.cookedThisWeek = week.filter { cooked.contains($0.id) }.count }
+        return f
+    }
+
+    /// Everyone at the table: the youngest age, every allergen combined, and
+    /// how many recipes serve all of them.
+    struct TableFigures: Sendable {
+        var youngestMonths = 0
+        var allergens: [String] = []
+        var safeForAll = 0
+        var needASwap = 0
+    }
+
+    var tableFigures: TableFigures {
+        var t = TableFigures()
+        guard !profiles.isEmpty else { return t }
+        let family = ChildProfile.family(profiles)
+        t.youngestMonths = family.ageMonths
+        t.allergens = family.allergens
+        for r in servablePool(for: family) {
+            guard let v = liteResult(for: r, profile: family) else { continue }
+            if v.status == .asIs { t.safeForAll += 1 } else if v.status == .adapted { t.needASwap += 1 }
+        }
+        return t
+    }
+
     /// A verdict for a card without a body, from the catalogue's matrix: the
     /// worst answer among the child's allergens. Locked days stay honest.
-    func liteResult(for card: Recipe) -> AdaptedRecipe? {
+    func liteResult(for card: Recipe) -> AdaptedRecipe? { liteResult(for: card, profile: activeProfile) }
+
+    func liteResult(for card: Recipe, profile: ChildProfile) -> AdaptedRecipe? {
         guard let matrix = card.adaptability, let engine = engine,
-              let stage = try? engine.stage(for: activeProfile.ageMonths) else { return nil }
-        let answers = activeProfile.allergens.compactMap { matrix[$0] }
+              let stage = try? engine.stage(for: profile.ageMonths) else { return nil }
+        let answers = profile.allergens.compactMap { matrix[$0] }
         let status: RecipeStatus = answers.contains("not_adaptable") ? .notAdaptable
             : answers.contains("adapted") ? .adapted : .asIs
         return AdaptedRecipe(id: card.id, name: card.name, status: status, swapCount: 0,

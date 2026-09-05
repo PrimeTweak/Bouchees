@@ -232,6 +232,8 @@ struct FieldLabel: View {
 struct SettingsScreen: View {
     @Environment(AppState.self) private var app
     @State private var showPaywall = false
+    @State private var showSettings = false
+    @State private var showDemo = false
     @State private var reminderOn = WeeklyReminder.enabled
     @State private var showAbout = false
     @State private var email = ""
@@ -244,27 +246,75 @@ struct SettingsScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 /* Family, not settings: the core object of the app — who the
                  * cooking is for — was filed as a technical preference. */
-                Text("Family")
-                    .scaledFont(Type.display)
-                    .foregroundStyle(Tone.text)
-                    .padding(.top, 8)
+                HStack(alignment: .center) {
+                    Text("Family")
+                        .scaledFont(Type.display)
+                        .foregroundStyle(Tone.text)
+                    Spacer(minLength: 8)
+                    /* Settings behind a gear: the tab is about the children,
+                     * and its first section used to be the phone's theme. */
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                            .scaledFont(Type.heading, weight: .semibold)
+                            .foregroundStyle(Tone.text)
+                            .frame(width: 36, height: 36)
+                    }
+                    .buttonStyle(.plain)
+                    .glass(Circle())
+                    .accessibilityLabel(Text("Settings"))
+                }
+                .padding(.top, 8)
 
                 childrenSection
-                subscriptionSection
-                appearanceSection
-                contentSection
-                footnotes
+                tableSection
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 130)
         }
         .background(Tone.canvas.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-        /* The field is the same modifier Recipes and Shopping use; it carries
-         * no pill here because this screen names the children in a section of
-         * its own. */
         .softTopBar { EmptyView() }
         .sheet(isPresented: $showPaywall) { PaywallScreen() }
+        .sheet(isPresented: $showSettings) { settingsSheet }
+    }
+
+    /// Appearance, subscription, content, the demo, about — one sheet, sized
+    /// to its content like About.
+    private var settingsSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Settings")
+                        .scaledFont(Type.title)
+                        .foregroundStyle(Tone.text)
+                        .padding(.top, 6)
+                    appearanceSection
+                    subscriptionSection
+                    contentSection
+                    demoSection
+                    footnotes
+                }
+                .padding(.horizontal, Layout.gutter)
+                .padding(.bottom, 24)
+            }
+            .background(Tone.canvas.ignoresSafeArea())
+            .toolbar(.hidden, for: .navigationBar)
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+    }
+
+    /// Replay the demo and the week — for a partner, or after skipping it.
+    private var demoSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("The demo").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            Button { showDemo = true } label: {
+                SettingRow(title: "Replay the demo", value: "")
+            }
+            .buttonStyle(.plain)
+            .card()
+        }
+        .fullScreenCover(isPresented: $showDemo) { ReplayDemo(done: { showDemo = false }) }
     }
 
     private var appearanceSection: some View {
@@ -292,21 +342,59 @@ struct SettingsScreen: View {
 
     private var childrenSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Children").eyebrow().padding(.top, 26).padding(.bottom, 9)
-            VStack(spacing: 0) {
-                ForEach(app.profiles) { p in
-                    NavigationLink { ProfilesScreen() } label: {
-                        SettingRow(title: p.firstName, value: childSummary(p))
-                    }
-                    .buttonStyle(.plain)
-                    Divider().overlay(Tone.hairline).padding(.leading, 15)
-                }
+            Text("Your children").eyebrow().padding(.top, 26).padding(.bottom, 9)
+            ForEach(Array(app.profiles.enumerated()), id: \.element.id) { i, p in
                 NavigationLink { ProfilesScreen() } label: {
-                    SettingRow(title: "Add a child", value: "+", accent: true)
+                    ChildCard(profile: p, index: i, figures: app.figures(for: p), summary: childSummary(p))
                 }
                 .buttonStyle(.plain)
+                .padding(.bottom, 8)
             }
-            .card()
+            NavigationLink { ProfilesScreen() } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "plus").scaledFont(Type.secondary, weight: .semibold)
+                    Text("Add a child").scaledFont(Type.secondary, weight: .semibold)
+                }
+                .foregroundStyle(Tone.brand)
+                .padding(.vertical, 4)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// One week that works for everyone: the youngest age, every allergen,
+    /// and the real count of recipes that serve all of them.
+    @ViewBuilder
+    private var tableSection: some View {
+        if app.profiles.count > 1 {
+            let t = app.tableFigures
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Everyone at the table").eyebrow().padding(.top, 26).padding(.bottom, 9)
+                VStack(alignment: .leading, spacing: 10) {
+                    Toggle(isOn: Binding(get: { app.familyMode }, set: { _ in app.toggleFamilyMode() })) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(String(format: String(localized: "Cook for all %lld"), app.profiles.count))
+                                .scaledFont(Type.body, weight: .medium).foregroundStyle(Tone.text)
+                            Text("One week that works for everyone: the youngest age, every allergen combined.")
+                                .scaledFont(Type.caption).foregroundStyle(Tone.text2)
+                        }
+                    }
+                    .tint(Tone.brand)
+                    HStack(spacing: 4) {
+                        Chip(text: String(format: String(localized: "%lld MONTHS"), t.youngestMonths), tone: Tone.text, tint: Tone.text.opacity(0.08))
+                        ForEach(t.allergens, id: \.self) { a in
+                            Chip(text: String(localized: "NO ") + app.allergenName(a).uppercased(), tone: Tone.swap, tint: Tone.swap.opacity(0.12))
+                        }
+                    }
+                    .lineLimit(1)
+                    HStack(spacing: 6) {
+                        Figure(value: t.safeForAll, label: String(localized: "SAFE FOR ALL"), tone: Tone.text)
+                        Figure(value: t.needASwap, label: String(localized: "NEED A SWAP"), tone: Tone.swap)
+                    }
+                }
+                .padding(13)
+                .card()
+            }
         }
     }
 
@@ -616,6 +704,100 @@ private struct Segment: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+}
+
+// MARK: - Family cards
+
+/// One child, with the figures the app already knows about them.
+private struct ChildCard: View {
+    let profile: ChildProfile
+    let index: Int
+    let figures: AppState.ChildFigures
+    let summary: String
+
+    /* Brand, amber, green, in order of adding: told apart at a glance. */
+    private var avatar: Color { [Tone.brand, Tone.swap, Tone.yes][index % 3] }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(spacing: 10) {
+                Text(String(profile.firstName.prefix(1)).uppercased())
+                    .scaledFont(Type.body, weight: .bold)
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .background(avatar, in: Circle())
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(profile.firstName).scaledFont(Type.body, weight: .semibold).foregroundStyle(Tone.text)
+                    Text(summary).scaledFont(Type.caption).foregroundStyle(Tone.text2)
+                }
+                Spacer(minLength: 6)
+                Image(systemName: "chevron.right").scaledFont(Type.caption, weight: .semibold).foregroundStyle(Tone.text3)
+            }
+            HStack(spacing: 6) {
+                Figure(value: figures.safeToday, label: String(localized: "SAFE TODAY"), tone: Tone.text)
+                Figure(value: figures.asIsThisWeek, label: String(localized: "AS IS"), tone: Tone.yes)
+                Figure(value: figures.adaptedThisWeek, label: String(localized: "ADAPTED"), tone: Tone.swap)
+            }
+            if let m = figures.nextMilestone, figures.unlockedAtMilestone > 0 {
+                ligne("arrow.up", Tone.brand,
+                      String(format: String(localized: "At %lld months, "), m),
+                      String(format: String(localized: "%lld more recipes open up."), figures.unlockedAtMilestone))
+            } else if figures.nextMilestone == nil {
+                ligne("checkmark", Tone.yes, String(localized: "Every age rule is behind them. "),
+                      String(localized: "Nothing left to unlock."))
+            }
+            if figures.plannedThisWeek > 0 {
+                ligne("checkmark", Tone.text3, String(localized: "Cooked this week: "),
+                      String(format: String(localized: "%lld of %lld"), figures.cookedThisWeek, figures.plannedThisWeek))
+            }
+        }
+        .padding(13)
+        .card()
+    }
+
+    private func ligne(_ symbole: String, _ tone: Color, _ fort: String, _ suite: String) -> some View {
+        HStack(spacing: 9) {
+            Image(systemName: symbole)
+                .scaledFont(Type.label)
+                .foregroundStyle(tone)
+                .frame(width: 24, height: 24)
+                .background(tone.opacity(0.10), in: Circle())
+            (Text(fort).foregroundStyle(Tone.text) + Text(suite).foregroundStyle(Tone.text2))
+                .scaledFont(Type.secondary)
+        }
+    }
+}
+
+/// A big number over a small label, the app's tally style.
+private struct Figure: View {
+    let value: Int
+    let label: String
+    let tone: Color
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text("\(value)").scaledFont(Type.heading, weight: .bold).foregroundStyle(tone).monospacedDigit()
+            Text(label).scaledFont(Type.micro, weight: .semibold).foregroundStyle(Tone.text2).kerning(0.4)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(Tone.canvas.opacity(0.6), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+private struct Chip: View {
+    let text: String
+    let tone: Color
+    let tint: Color
+
+    var body: some View {
+        Text(text)
+            .scaledFont(Type.micro, weight: .bold)
+            .foregroundStyle(tone)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(tint, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
     }
 }
 

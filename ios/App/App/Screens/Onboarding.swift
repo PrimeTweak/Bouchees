@@ -19,6 +19,7 @@ struct OnboardingFlow: View {
             switch step {
             case 0: LiveDemoStep(draft: $draft, next: { step = 1 })
             case 1: WhoStep(draft: $draft, name: $name, next: { step = 2 })
+            case 2: WeekStep(draft: draft, name: name, next: { step = 3 })
             default: OfferStep(draft: draft, finish: finish)
             }
         }
@@ -29,6 +30,40 @@ struct OnboardingFlow: View {
         draft.name = name.trimmingCharacters(in: .whitespaces).isEmpty
             ? String(localized: "My child") : name
         app.save(draft)
+    }
+}
+
+/// The demo and the week again, for the child already saved: shown to a
+/// partner, or revisited after being skipped. No name asked, no offer.
+struct ReplayDemo: View {
+    @Environment(AppState.self) private var app
+    let done: () -> Void
+    @State private var step = 0
+    @State private var draft = ChildProfile.defaut
+
+    var body: some View {
+        ZStack {
+            Tone.canvas.ignoresSafeArea()
+            switch step {
+            case 0: LiveDemoStep(draft: $draft, next: { step = 1 })
+            default: WeekStep(draft: draft, name: draft.firstName, next: done)
+            }
+        }
+        .animation(.soft(0.28), value: step)
+        .onAppear { draft = app.activeProfile }
+        .overlay(alignment: .topTrailing) {
+            Button(action: done) {
+                Image(systemName: "xmark")
+                    .scaledFont(Type.secondary, weight: .semibold)
+                    .foregroundStyle(Tone.text)
+                    .frame(width: 34, height: 34)
+            }
+            .buttonStyle(.plain)
+            .glass(Circle())
+            .padding(.trailing, Layout.gutter)
+            .padding(.top, 12)
+            .accessibilityLabel(Text("Close"))
+        }
     }
 }
 
@@ -45,7 +80,16 @@ private struct LiveDemoStep: View {
     /// The recipe the demo adapts. Chosen because it carries milk, egg and
     /// wheat, so most taps produce a visible swap.
     private var demoRecipe: Recipe? {
-        app.recipes.first { $0.id == "banana-oat-muffins" } ?? app.recipes.first
+        /* Only a recipe WITH a body can be adapted. The old fallback took the
+         * first card alphabetically, which after a sync is a card without one
+         * — and the demo went blank. */
+        let withBody = app.recipes.filter(\.hasBody)
+        return withBody.first { $0.id == "banana-oat-muffins" }
+            ?? withBody.first { r in
+                let ids = Set(r.ingredients.map(\.id))
+                return ids.contains("cow_milk") || ids.contains("egg") || ids.contains("wheat_flour")
+            }
+            ?? withBody.first
     }
 
     private var result: AdaptedRecipe? {
@@ -79,6 +123,20 @@ private struct LiveDemoStep: View {
                 if let r = demoRecipe, let res = result {
                     DemoCard(recipe: r, result: res)
                         .padding(.top, 20)
+                } else {
+                    /* Never nothing: the engine is still loading, or no body
+                     * is here yet. Say so instead of leaving a hole. */
+                    HStack(spacing: 10) {
+                        ProgressView()
+                        Text("Loading a recipe to adapt…")
+                            .scaledFont(Type.secondary)
+                            .foregroundStyle(Tone.text3)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(16)
+                    .background(Tone.text.opacity(0.04),
+                                in: RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
+                    .padding(.top, 20)
                 }
 
                 AllergenPad(selected: $draft.allergens, families: app.knownAllergens)
@@ -320,7 +378,7 @@ private struct WhoStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Step 2 of 3")
+                Text("Step 2 of 4")
                     .scaledFont(Type.label)
                     .foregroundStyle(Tone.brand)
                     .textCase(.uppercase)
@@ -374,7 +432,9 @@ private struct WhoStep: View {
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 9) {
                 Button(action: next) {
-                    Text("See the recipes")
+                    Text(name.trimmingCharacters(in: .whitespaces).isEmpty
+                         ? String(localized: "Plan the week")
+                         : String(format: String(localized: "Plan %@'s week"), name.trimmingCharacters(in: .whitespaces)))
                         .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
@@ -439,7 +499,131 @@ private struct StageRow: View {
     }
 }
 
-// MARK: - Step 3 — the offer
+// MARK: - Step 3 — the week
+
+/// The thing the subscription actually sells, shown before the price: this
+/// child's real week, from the real sequence, with the name just typed. Then
+/// four tiles, three words each, for the four features the demo never showed.
+private struct WeekStep: View {
+    @Environment(AppState.self) private var app
+    let draft: ChildProfile
+    let name: String
+    let next: () -> Void
+
+    private var prenom: String {
+        let t = name.trimmingCharacters(in: .whitespaces)
+        return t.isEmpty ? String(localized: "Your child") : t
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Step 3 of 4")
+                    .scaledFont(Type.label)
+                    .foregroundStyle(Tone.brand)
+                    .textCase(.uppercase)
+                    .kerning(1.4)
+
+                Text(String(format: String(localized: "%@'s week is ready."), prenom))
+                    .scaledFont(Type.display)
+                    .foregroundStyle(Tone.text)
+                    .padding(.top, 8)
+
+                Text(String(format: String(localized: "Fourteen recipes, one meal and one snack a day — every one of them safe for %@, already adapted."), prenom))
+                    .scaledFont(Type.body)
+                    .foregroundStyle(Tone.textSecondary)
+                    .padding(.top, 8)
+
+                apercu
+                    .padding(.top, 18)
+
+                tuiles
+                    .padding(.top, 18)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.bottom, 16)
+        }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 8) {
+                Button(action: next) {
+                    Text("Continue")
+                        .scaledFont(Type.heading, weight: .semibold)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: Layout.tapTarget + 6)
+                }
+                .buttonStyle(PrimaryButton())
+
+                Text("Nothing leaves this device.")
+                    .scaledFont(Type.secondary)
+                    .foregroundStyle(Tone.text3)
+            }
+            .padding(.horizontal, Layout.gutter)
+            .padding(.top, 10)
+            .padding(.bottom, 6)
+            .background(Tone.canvas)
+        }
+    }
+
+    /// The first three days, fading out: there is more below the fold.
+    private var apercu: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(app.weekPreview(for: draft), id: \.day) { jour in
+                Text(WeekDay.full[jour.day])
+                    .eyebrow()
+                    .padding(.top, jour.day == 0 ? 0 : 12)
+                    .padding(.bottom, 4)
+                ForEach(jour.recipes, id: \.id) { r in
+                    HStack(spacing: 12) {
+                        if let res = app.adaptPreview(r, for: draft) ?? app.liteResult(for: r, profile: draft) {
+                            RecipeVisual(recipe: r, result: res)
+                                .frame(width: 52, height: 52)
+                                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                        } else {
+                            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                                .fill(Tone.text.opacity(0.06))
+                                .frame(width: 52, height: 52)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(r.name).scaledFont(Type.body, weight: .semibold).foregroundStyle(Tone.text).lineLimit(1)
+                            Text(r.isMeal ? String(localized: "Meal") : String(localized: "Snack"))
+                                .scaledFont(Type.caption).foregroundStyle(Tone.text2)
+                        }
+                    }
+                    .padding(.vertical, 7)
+                }
+            }
+        }
+        .mask(LinearGradient(stops: [.init(color: .black, location: 0.72), .init(color: .clear, location: 1)],
+                             startPoint: .top, endPoint: .bottom))
+    }
+
+    private var tuiles: some View {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+            tuile("calendar", String(localized: "Your week"), String(localized: "Planned for you. Swap any two dishes."))
+            tuile("barcode.viewfinder", String(localized: "The scanner"), String(localized: "A barcode at the store: yes or no, no signal needed."))
+            tuile("cart", String(localized: "The list"), String(localized: "Groceries build themselves from the week."))
+            tuile("play.fill", String(localized: "Cooking mode"), String(localized: "One step at a time, one hand free."))
+        }
+    }
+
+    private func tuile(_ symbole: String, _ titre: String, _ texte: String) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Image(systemName: symbole)
+                .scaledFont(Type.caption, weight: .semibold)
+                .foregroundStyle(.white)
+                .frame(width: 24, height: 24)
+                .background(Tone.brand, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            Text(titre).scaledFont(Type.secondary, weight: .semibold).foregroundStyle(Tone.text)
+            Text(texte).scaledFont(Type.label, weight: .regular).foregroundStyle(Tone.text2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(Tone.text.opacity(0.04), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+// MARK: - Step 4 — the offer
 
 /// The green box is the most important thing on this screen, and it announces
 /// what is FREE. Counter-intuitive, and it is what works: showing that safety

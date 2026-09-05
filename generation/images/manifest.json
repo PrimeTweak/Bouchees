@@ -8,16 +8,16 @@
     "revisePar": "vérification automatique (anthropic)",
     "verification": {
       "moteur": "anthropic",
-      "le": "2026-08-26T19:52:51.922Z",
+      "le": "2026-09-05T11:25:11.663Z",
       "detectes": [
         "oat",
-        "banana",
-        "nut"
+        "muffin"
       ],
-      "reconnus": 2,
+      "reconnus": 1,
       "attendus": 8,
       "avertissements": [
-        "la vision hésite sur : type of nut on top (could be peanut, cashew, or oat flake)"
+        "only one ingredient recognised out of 8 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : possible banana or spice inside batter (not visible, only inferred from color)"
       ]
     }
   },
@@ -847,6 +847,139 @@
       "attendus": 7,
       "avertissements": [
         "la vision hésite sur : exact herb variety (parsley, cilantro, or spinach), possible sweet potato in the mixture, exact grain (quinoa or couscous or breadcrumb)"
+      ]
+    }
+  },
+  "crispy-tofu-with-sweet-maple-sauce": {
+    "fichier": "images/crispy-tofu-with-sweet-maple-sauce-47beb4b32a8c.png",
+    "empreinte": "47beb4b32a8c",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T11:57:01.591Z",
+      "detectes": [
+        "tofu"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified"
+      ]
+    }
+  },
+  "banana-oat-pancakes": {
+    "fichier": "images/banana-oat-pancakes-bf4c2dd36cae.png",
+    "empreinte": "bf4c2dd36cae",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T12:03:24.045Z",
+      "detectes": [
+        "oat",
+        "pancake"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : exact flour type used in batter (oat flour, whole wheat, or mixed), possible seeds mixed into batter"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-patties": {
+    "fichier": "images/sweet-potato-chickpea-patties-fb11134592c0.png",
+    "empreinte": "fb11134592c0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T12:35:15.376Z",
+      "detectes": [
+        "chickpea",
+        "carrot",
+        "herb"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : exact spices used, possible sweet potato or squash in mixture, exact herb (parsley or cilantro)"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-bites": {
+    "fichier": "images/sweet-potato-chickpea-bites-879764e73295.png",
+    "empreinte": "879764e73295",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T12:41:38.862Z",
+      "detectes": [
+        "chickpea",
+        "cornbread",
+        "sweet potato"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : the yellow crumb base could be cornbread or chickpea-based cake, orange interior could be sweet potato or pumpkin, small round toppings identified as chickpeas but could be macadamia nuts"
+      ]
+    }
+  },
+  "banana-oat-blueberry-muffins": {
+    "fichier": "images/banana-oat-blueberry-muffins-216163ead925.png",
+    "empreinte": "216163ead925",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T12:47:58.267Z",
+      "detectes": [
+        "blueberry",
+        "oat",
+        "muffin liner"
+      ],
+      "reconnus": 1,
+      "attendus": 11,
+      "avertissements": [
+        "only one ingredient recognised out of 11 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : sugar topping (granulated sugar or glaze), type of flour used in batter"
+      ]
+    }
+  },
+  "lentil-sweet-potato-patties": {
+    "fichier": "images/lentil-sweet-potato-patties-a897a56b8b9a.png",
+    "empreinte": "a897a56b8b9a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T13:19:43.350Z",
+      "detectes": [
+        "lentil",
+        "oat",
+        "carrot",
+        "bean"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "only one ingredient recognised out of 8 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : exact legume variety (lentil vs small bean), possible sweet potato instead of carrot, possible quinoa in the mix"
       ]
     }
   }

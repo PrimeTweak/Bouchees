@@ -150,6 +150,8 @@ struct ScannerScreen: View {
 
     /// The product sheet, when the parent asks for the reasoning.
     @State private var showDetails = false
+    /* Once. The one screen where a parent has to know what is NOT checked. */
+    @AppStorage("scanner.firstRunSeen") private var firstRunSeen = false
 
     var body: some View {
         Group {
@@ -168,6 +170,38 @@ struct ScannerScreen: View {
         .onDisappear { scanner.stop() }
     }
 
+    /// What the scanner reads, and what it cannot see. Said once, over the
+    /// camera, before the first scan: "may contain" is shown, not decided.
+    private var premierLancement: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("What the scanner reads")
+                .scaledFont(Type.heading, weight: .semibold)
+                .foregroundStyle(Tone.text)
+            Text(String(format: String(localized: "**The printed ingredient list.** It finds the allergens %@ avoids, under every name they hide behind — casein, whey, albumin."), app.activeProfile.name))
+                .scaledFont(Type.secondary)
+                .foregroundStyle(Tone.text2)
+            Text("**What it cannot see:** cross-contamination. A \"may contain\" line is shown to you, not decided for you. That call is yours.")
+                .scaledFont(Type.secondary)
+                .foregroundStyle(Tone.text2)
+                .padding(.top, 2)
+            Button { withAnimation(.soft(0.25)) { firstRunSeen = true } } label: {
+                Text("Got it")
+                    .scaledFont(Type.body, weight: .semibold)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: Layout.tapTarget)
+            }
+            .buttonStyle(PrimaryButton())
+            .padding(.top, 6)
+        }
+        .padding(16)
+        .background(Tone.canvas, in: RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
+        .shadow(color: .black.opacity(0.18), radius: 18, y: 8)
+        .padding(.horizontal, Layout.gutter)
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom, 24)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
     private var content: some View {
         /* Not a bottom-aligned ZStack: it aligns to its container, not to the
          * safe area, so the verdict sat under the tab bar. */
@@ -177,6 +211,8 @@ struct ScannerScreen: View {
 
             ViewfinderFrame()
                 .allowsHitTesting(false)
+
+            if !firstRunSeen { premierLancement }
         }
         /* The child pill, on the one screen where the wrong child hurts. */
         .softTopBar { ScannerTopBar() }

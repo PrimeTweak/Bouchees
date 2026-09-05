@@ -5,16 +5,16 @@
         "milk"
       ],
       "ageMois": 6,
-      "as_is": 20,
+      "as_is": 34,
       "adapted": 9,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -23,16 +23,16 @@
         "egg"
       ],
       "ageMois": 6,
-      "as_is": 20,
+      "as_is": 34,
       "adapted": 9,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -41,16 +41,16 @@
         "peanut"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -59,16 +59,16 @@
         "tree_nut"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -77,16 +77,16 @@
         "wheat"
       ],
       "ageMois": 6,
-      "as_is": 25,
+      "as_is": 39,
       "adapted": 4,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -95,16 +95,16 @@
         "soy"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -113,16 +113,16 @@
         "sesame"
       ],
       "ageMois": 6,
-      "as_is": 28,
+      "as_is": 42,
       "adapted": 1,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -131,16 +131,16 @@
         "fish"
       ],
       "ageMois": 6,
-      "as_is": 29,
-      "adapted": 0,
+      "as_is": 41,
+      "adapted": 2,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -149,16 +149,16 @@
         "shellfish"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -167,16 +167,16 @@
         "mustard"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -185,16 +185,16 @@
         "sulphites"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -204,16 +204,16 @@
         "egg"
       ],
       "ageMois": 6,
-      "as_is": 15,
+      "as_is": 29,
       "adapted": 14,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -223,16 +223,16 @@
         "soy"
       ],
       "ageMois": 6,
-      "as_is": 20,
+      "as_is": 34,
       "adapted": 9,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -242,16 +242,16 @@
         "wheat"
       ],
       "ageMois": 6,
-      "as_is": 18,
+      "as_is": 32,
       "adapted": 11,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -261,16 +261,16 @@
         "wheat"
       ],
       "ageMois": 6,
-      "as_is": 20,
+      "as_is": 34,
       "adapted": 9,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -280,16 +280,16 @@
         "tree_nut"
       ],
       "ageMois": 6,
-      "as_is": 29,
+      "as_is": 43,
       "adapted": 0,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -300,16 +300,16 @@
         "sesame"
       ],
       "ageMois": 6,
-      "as_is": 28,
+      "as_is": 42,
       "adapted": 1,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -320,16 +320,16 @@
         "wheat"
       ],
       "ageMois": 6,
-      "as_is": 15,
+      "as_is": 29,
       "adapted": 14,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -341,16 +341,16 @@
         "tree_nut"
       ],
       "ageMois": 6,
-      "as_is": 15,
+      "as_is": 29,
       "adapted": 14,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -360,36 +360,16 @@
         "shellfish"
       ],
       "ageMois": 6,
-      "as_is": 29,
-      "adapted": 0,
+      "as_is": 41,
+      "adapted": 2,
       "not_adaptable": 0,
-      "outOfAge": 56,
+      "outOfAge": 75,
       "byCategory": {
-        "Meal": 9,
-        "Snack": 20
+        "Meal": 18,
+        "Snack": 25
       },
       "blockers": {},
-      "usable": 29,
-      "missingCategories": {},
-      "missing": 0
-    },
-    {
-      "profile": [
-        "soy"
-      ],
-      "ageMois": 9,
-      "as_is": 49,
-      "adapted": 1,
-      "not_adaptable": 1,
-      "outOfAge": 34,
-      "byCategory": {
-        "Meal": 24,
-        "Snack": 26
-      },
-      "blockers": {
-        "tofu": 1
-      },
-      "usable": 50,
+      "usable": 43,
       "missingCategories": {},
       "missing": 0
     },
@@ -399,18 +379,19 @@
         "soy"
       ],
       "ageMois": 9,
-      "as_is": 35,
-      "adapted": 15,
-      "not_adaptable": 1,
-      "outOfAge": 34,
+      "as_is": 55,
+      "adapted": 17,
+      "not_adaptable": 2,
+      "outOfAge": 44,
       "byCategory": {
-        "Meal": 24,
-        "Snack": 26
+        "Meal": 37,
+        "Snack": 35
       },
       "blockers": {
-        "tofu": 1
+        "tofu": 1,
+        "ricotta": 1
       },
-      "usable": 50,
+      "usable": 72,
       "missingCategories": {},
       "missing": 0
     },
@@ -419,66 +400,94 @@
         "milk"
       ],
       "ageMois": 9,
-      "as_is": 37,
-      "adapted": 14,
-      "not_adaptable": 0,
-      "outOfAge": 34,
+      "as_is": 57,
+      "adapted": 16,
+      "not_adaptable": 1,
+      "outOfAge": 44,
       "byCategory": {
-        "Meal": 25,
-        "Snack": 26
+        "Meal": 38,
+        "Snack": 35
       },
-      "blockers": {},
-      "usable": 51,
+      "blockers": {
+        "ricotta": 1
+      },
+      "usable": 73,
       "missingCategories": {},
       "missing": 0
     },
     {
       "profile": [
+        "soy"
+      ],
+      "ageMois": 9,
+      "as_is": 72,
+      "adapted": 1,
+      "not_adaptable": 1,
+      "outOfAge": 44,
+      "byCategory": {
+        "Meal": 37,
+        "Snack": 36
+      },
+      "blockers": {
+        "tofu": 1
+      },
+      "usable": 73,
+      "missingCategories": {},
+      "missing": 0
+    },
+    {
+      "profile": [
+        "milk",
         "egg"
       ],
       "ageMois": 9,
-      "as_is": 36,
-      "adapted": 15,
-      "not_adaptable": 0,
-      "outOfAge": 34,
+      "as_is": 47,
+      "adapted": 26,
+      "not_adaptable": 1,
+      "outOfAge": 44,
       "byCategory": {
-        "Meal": 25,
-        "Snack": 26
+        "Meal": 38,
+        "Snack": 35
       },
-      "blockers": {},
-      "usable": 51,
+      "blockers": {
+        "ricotta": 1
+      },
+      "usable": 73,
       "missingCategories": {},
       "missing": 0
     },
     {
       "profile": [
-        "peanut"
+        "milk",
+        "wheat"
       ],
       "ageMois": 9,
-      "as_is": 51,
-      "adapted": 0,
-      "not_adaptable": 0,
-      "outOfAge": 34,
+      "as_is": 50,
+      "adapted": 23,
+      "not_adaptable": 1,
+      "outOfAge": 44,
       "byCategory": {
-        "Meal": 25,
-        "Snack": 26
+        "Meal": 38,
+        "Snack": 35
       },
-      "blockers": {},
-      "usable": 51,
+      "blockers": {
+        "ricotta": 1
+      },
+      "usable": 73,
       "missingCategories": {},
       "missing": 0
     }
   ],
   "blockers": [
     {
+      "id": "ricotta",
+      "name": "Ricotta",
+      "n": 54
+    },
+    {
       "id": "pita",
       "name": "Pita bread",
       "n": 16
-    },
-    {
-      "id": "ricotta",
-      "name": "Ricotta",
-      "n": 12
     },
     {
       "id": "walnuts",
@@ -499,88 +508,114 @@
   "commande": [
     {
       "n": 2,
-      "ageMois": 6,
-      "categories": [
-        "Meal"
-      ],
-      "evite": [
-        "milk",
-        "egg",
-        "wheat"
-      ],
-      "vedette": "ground beef",
-      "passePartout": false,
-      "reason": "pool: 74 meals still missing, youngest ages first"
-    },
-    {
-      "n": 2,
-      "ageMois": 9,
-      "categories": [
-        "Snack"
-      ],
-      "evite": [
-        "peanut",
-        "tree_nut"
-      ],
-      "vedette": "apple",
-      "passePartout": false,
-      "reason": "pool: 65 snacks still missing, youngest ages first"
-    },
-    {
-      "n": 2,
-      "ageMois": 9,
-      "categories": [
-        "Meal"
-      ],
-      "evite": [
-        "milk",
-        "egg",
-        "peanut",
-        "tree_nut"
-      ],
-      "vedette": "chickpeas",
-      "passePartout": false,
-      "reason": "pool: 72 meals still missing, youngest ages first"
-    },
-    {
-      "n": 2,
       "ageMois": 12,
       "categories": [
-        "Snack"
+        "Meal"
       ],
       "evite": [
         "wheat"
       ],
-      "vedette": "raspberries",
+      "vedette": "cod",
       "passePartout": false,
-      "reason": "pool: 63 snacks still missing, youngest ages first"
+      "reason": "pool: 57 meals still missing, youngest ages first"
     },
     {
       "n": 2,
       "ageMois": 24,
       "categories": [
-        "Meal"
+        "Snack"
       ],
       "evite": [
         "milk"
       ],
-      "vedette": "eggplant",
+      "vedette": "banana",
       "passePartout": false,
-      "reason": "pool: 70 meals still missing, youngest ages first"
+      "reason": "pool: 49 snacks still missing, youngest ages first"
     },
     {
       "n": 2,
       "ageMois": 6,
       "categories": [
-        "Snack"
+        "Meal"
       ],
       "evite": [
         "milk",
         "egg"
       ],
-      "vedette": "oats",
+      "vedette": "turkey",
       "passePartout": false,
-      "reason": "pool: 61 snacks still missing, youngest ages first"
+      "reason": "pool: 55 meals still missing, youngest ages first"
+    },
+    {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "vedette": "sweet potato",
+      "passePartout": false,
+      "reason": "pool: 47 snacks still missing, youngest ages first"
+    },
+    {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 53 meals still missing, youngest ages first"
+    },
+    {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "dates",
+      "passePartout": false,
+      "reason": "pool: 45 snacks still missing, youngest ages first"
+    },
+    {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "vedette": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 51 meals still missing, youngest ages first"
+    },
+    {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "vedette": "melon",
+      "passePartout": false,
+      "reason": "pool: 43 snacks still missing, youngest ages first"
     },
     {
       "n": 2,
@@ -590,55 +625,26 @@
       ],
       "evite": [
         "milk",
-        "egg",
-        "wheat"
+        "egg"
       ],
-      "vedette": "peas",
+      "vedette": "black beans",
       "passePartout": false,
-      "reason": "pool: 68 meals still missing, youngest ages first"
+      "reason": "pool: 49 meals still missing, youngest ages first"
     },
     {
       "n": 2,
-      "ageMois": 9,
+      "ageMois": 6,
       "categories": [
         "Snack"
-      ],
-      "evite": [
-        "peanut",
-        "tree_nut"
-      ],
-      "vedette": "cucumber",
-      "passePartout": false,
-      "reason": "pool: 59 snacks still missing, youngest ages first"
-    },
-    {
-      "n": 2,
-      "ageMois": 9,
-      "categories": [
-        "Meal"
       ],
       "evite": [
         "milk",
         "egg",
-        "peanut",
-        "tree_nut"
-      ],
-      "vedette": "zucchini",
-      "passePartout": false,
-      "reason": "pool: 66 meals still missing, youngest ages first"
-    },
-    {
-      "n": 2,
-      "ageMois": 12,
-      "categories": [
-        "Snack"
-      ],
-      "evite": [
         "wheat"
       ],
-      "vedette": "plum",
+      "vedette": "beet",
       "passePartout": false,
-      "reason": "pool: 57 snacks still missing, youngest ages first"
+      "reason": "pool: 41 snacks still missing, youngest ages first"
     }
   ]
 }

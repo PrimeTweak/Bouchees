@@ -2192,4 +2192,16 @@ test("prompt: the model is told what already exists and what this run wrote", ()
   assert(/Built around: lentils/.test(p), "no hero ingredient");
 });
 
+test("bundle: the demo recipe ships with a body, so the onboarding can adapt it offline", () => {
+  /* The saved catalogue is the server's — cards without bodies — and the
+   * demo asks for one recipe by name. Its body has to be in the bundle. */
+  const man = read("../dist/manifest.json");
+  assert(man.free.includes("banana-oat-muffins"), "banana-oat-muffins is not among the bundled free bodies");
+  const body = read("../dist/recipes/banana-oat-muffins.json");
+  assert(Array.isArray(body.steps) && body.steps.length >= 4, "the bundled body has no steps");
+  const ids = body.ingredients.map((i) => i.id);
+  assert(ids.some((i) => ["cow_milk", "egg", "wheat_flour"].includes(i)),
+         "the demo recipe carries no allergen to swap, so a tap would show nothing");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

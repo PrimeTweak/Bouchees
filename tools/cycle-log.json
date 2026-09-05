@@ -1,12 +1,80 @@
 {
-  "le": "2026-09-05T02:23:12.703Z",
+  "le": "2026-09-05T02:37:27.679Z",
   "recettes": {
     "commandees": 20,
-    "redigees": 0,
-    "acceptees": 0,
-    "rejetees": [],
+    "redigees": 20,
+    "acceptees": 11,
+    "rejetees": [
+      {
+        "id": "green-pea-and-white-fish-coconut-curry",
+        "erreurs": [
+          "standard 6: step 3 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "cucumber-chickpea-sunflower-bites",
+        "erreurs": [
+          "standard 6: step 10 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "polenta-chicken-vegetable-bowl",
+        "erreurs": [
+          "standard 5: step 6 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-quinoa-spinach-skillet",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words",
+          "standard 5: step 5 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-coconut-curry-with-sweet-potato",
+        "erreurs": [
+          "standard 5: step 1 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "peach-oat-soft-bars",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "peach-coconut-chia-cups",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "cucumber-avocado-rice-cake-bites",
+        "erreurs": [
+          "cuisson au four sans température indiquée"
+        ]
+      },
+      {
+        "id": "polenta-lentil-tomato-bake",
+        "erreurs": [
+          "beaucoup trop de liquide pour la farine (4.8×) — la pâte ne tiendra pas"
+        ]
+      }
+    ],
     "aRevoir": [],
-    "nouvelles": []
+    "nouvelles": [
+      "green-pea-and-chicken-pasta-skillet",
+      "zucchini-chicken-quinoa-skillet",
+      "zucchini-white-bean-tomato-skillet",
+      "plum-chia-oat-soft-bars",
+      "plum-coconut-yogurt-swirl-cups",
+      "pear-ricotta-rice-cakes",
+      "pear-coconut-chia-pudding-cups",
+      "white-bean-and-spinach-rice-skillet",
+      "white-bean-and-sweet-potato-coconut-curry",
+      "carrot-oat-mini-muffins",
+      "carrot-ricotta-rice-cakes"
+    ]
   },
   "images": null
 }
