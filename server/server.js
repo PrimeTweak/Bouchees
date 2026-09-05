@@ -93,6 +93,10 @@ const ProductCache = (function () {
       if (Object.keys(table).length > MAX) table = {};
       schedulePersist();
     },
+    /* Cancels the deferred write. A closed server must not write its table
+     * five seconds later into a file another instance has since taken over
+     * — which is how one test's miss reached the next test. */
+    close: function () { if (timer) { clearTimeout(timer); timer = null; } },
     /* Every product found since the seed, for the cycle to fold in. */
     _hits: function () {
       const out = {};
@@ -739,7 +743,7 @@ function createServer(options) {
   const insecureLogin = options && "allowInsecureLogin" in options
     ? !!options.allowInsecureLogin
     : process.env.ALLOW_INSECURE_LOGIN === "1";
-  return http.createServer(async function (req, res) {
+  const server = http.createServer(async function (req, res) {
     req.on("error", function () { /* aborted by rawBody; the 413 below answers */ });
     const url = new URL(req.url, "http://x");
     const key = req.method + " " + url.pathname;
@@ -759,6 +763,8 @@ function createServer(options) {
       if (err.status === 413) res.on("finish", function () { req.destroy(); });
     }
   });
+  server.on("close", function () { ProductCache.close(); });
+  return server;
 }
 
 if (require.main === module) {

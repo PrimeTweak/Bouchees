@@ -29,16 +29,22 @@ const recettes = read("recipes.json");
 const parId = Object.fromEntries(recettes.map((r) => [r.id, r]));
 
 let n = 0;
+/* Async tests run one after another, not all at once. Two server tests
+ * that each replace global.fetch used to overlap: one test's stub answered
+ * the other's calls, which passed on a fast machine and failed on CI. */
+let chaine = Promise.resolve();
 const enAttente = [];
 function test(name, fn) {
   n++;
-  try {
-    const r = fn();
-    if (r && typeof r.then === "function") {
-      enAttente.push(r.then(function () { console.log("  ok  " + name); },
-        function (e) { console.error("FAILED " + name + "\n      " + e.message); process.exitCode = 1; }));
-    } else console.log("  ok  " + name);
+  if (fn.constructor.name === "AsyncFunction") {
+    /* Started only when the previous async test has finished. */
+    chaine = chaine.then(fn).then(
+      function () { console.log("  ok  " + name); },
+      function (e) { console.error("FAILED " + name + "\n      " + e.message); process.exitCode = 1; });
+    enAttente.push(chaine);
+    return;
   }
+  try { fn(); console.log("  ok  " + name); }
   catch (e) { console.error("FAILED " + name + "\n      " + e.message); process.exitCode = 1; }
 }
 const adapter = (id, allergens, ageMois) =>
@@ -1776,7 +1782,8 @@ async function serveurDeTest(db, options) {
       r.end();
     });
   }
-  return { S: S, call: call, close: () => { if (srv.closeAllConnections) srv.closeAllConnections(); srv.close(); } };
+  return { S: S, call: call, port: srv.address().port,
+           close: () => { if (srv.closeAllConnections) srv.closeAllConnections(); srv.close(); } };
 }
 
 test("server: sign-in answers 503 until it is real", async () => {
@@ -2274,7 +2281,10 @@ test("scanner: a single-ingredient label is a verdict, not unreadable", () => {
 test("server: twenty parents scanning the same product at once share one lookup", async () => {
   /* A launch is everyone scanning the same box. Without sharing, twenty
    * requests for one code spent the whole minute's budget on one product. */
-  const Srv = require(path.join(__dirname, "..", "server", "server.js"));
+  /* Through serveurDeTest like every other server test: a fresh module,
+   * its own cache file, no table inherited from the test before. */
+  const t = await serveurDeTest();
+  t.S._OffBudget._reset(); t.S._ProductCache._reset();
   const http = require("http");
   const fetchAvant = global.fetch;
   let sorties = 0;
@@ -2284,13 +2294,9 @@ test("server: twenty parents scanning the same product at once share one lookup"
     return { status: 200, headers: { get: () => "application/json" },
              json: async () => ({ status: 1, product: { product_name: "Cheerios", ingredients_text: "Whole grain oats." } }) };
   };
-  Srv._ProductCache._reset();
-  const srv = Srv.createServer();
-  await new Promise((r) => srv.listen(0, r));
-  const port = srv.address().port;
-  const un = () => new Promise((r) => http.get({ port, path: "/api/product?code=065633130111" }, (x) => { x.resume(); x.on("end", () => r(x.statusCode)); }));
+  const un = () => new Promise((r) => http.get({ port: t.port, path: "/api/product?code=065633130111" }, (x) => { x.resume(); x.on("end", () => r(x.statusCode)); }));
   const codes = await Promise.all(Array.from({ length: 20 }, un));
-  srv.close();
+  t.close();
   global.fetch = fetchAvant;
   assert(codes.every((c) => c === 200), "a parent got " + codes.find((c) => c !== 200));
   assert.equal(sorties, 1, "twenty identical scans made " + sorties + " outbound calls");

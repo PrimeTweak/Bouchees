@@ -10,6 +10,7 @@
     "from 190/191: single-ingredient labels get a verdict, the shopping aisle folds at the last tick, concurrent scans of one code share one lookup",
     "not done, on purpose: splitting Onboarding, Scanner, AppState and the tests — after publication, one file per build",
     "every identifier in the JavaScript files touched by this build is English — hashToken, hashEmail, legalPage, inFlight, accountFromRequest, validToken, rateLimit, normaliseEmail, loadCorpus, keepRejected, pullProductsSeen, TERMS_EN/FR, PRIVACY_EN/FR and the rest: forty-five renamed across forty-one files, JSON keys untouched. The engine, generation, vision and ingest modules still carry French names from before; that is its own chantier, after publication",
-    "the repository's documentation is English: docs/APP-STORE.md merges and replaces ios/APP-STORE-REVIEW.md (which described a test account, a collected e-mail and a file that no longer exist); ingest/LICENSES.md is translated and records why adapters no longer invent a licence"
+    "the repository's documentation is English: docs/APP-STORE.md merges and replaces ios/APP-STORE-REVIEW.md (which described a test account, a collected e-mail and a file that no longer exist); ingest/LICENSES.md is translated and records why adapters no longer invent a licence",
+    "the test runner ran every async test at once; two server tests that each replace global.fetch overlapped on CI, and one test's 'not found' stub answered the other's scans — 'a parent got 404'. Async tests now run one after another; reproduced word for word on the old runner under load, green on the new one. The product cache also cancels its deferred write when its server closes"
   ]
 }
