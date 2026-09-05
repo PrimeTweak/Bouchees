@@ -127,21 +127,15 @@ final class AppState {
     }
 
     /// Moves a recipe to another day and writes it down straight away.
-    func move(_ recipe: Recipe, to day: Int) {
-        let avant = (0..<7).map { plan.recipes(on: $0).count }
-        plan.move(recipe.id, to: day)
+    /// Dropping one recipe on another exchanges them, in a day or across two.
+    func exchange(_ a: String, _ b: String) {
+        plan.exchange(a, b)
         local.saveWeekPlan(plan, week: weekStart(0))
-        let apres = (0..<7).map { plan.recipes(on: $0).count }
-        sonde("move -> jour \(day) · \(recipe.id.prefix(18)) · \(avant) -> \(apres)")
     }
 
-    /// PROBE, build 170 only. Every step of a drop, on screen, because the
-    /// failure cannot be reproduced from the code alone.
-    private(set) var traces: [String] = []
-
-    func sonde(_ ligne: String) {
-        traces.append(ligne)
-        if traces.count > 8 { traces.removeFirst() }
+    func move(_ recipe: Recipe, to day: Int) {
+        plan.move(recipe.id, to: day)
+        local.saveWeekPlan(plan, week: weekStart(0))
     }
 
     /// Swaps two whole days.

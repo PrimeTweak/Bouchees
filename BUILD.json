@@ -1,8 +1,10 @@
 {
-  "build": 170,
+  "build": 171,
   "date": "2026-09-03",
   "carries": [
-    "PROBE BUILD. Seven fixes were reasoned from the code because SwiftUI cannot be run here; this one measures instead. Every step of a drop writes a line on screen: the lift, each hover, what dropDestination receives, whether the id resolves, and the plan's day counts before and after the move",
-    "the probe panel and every sonde call come out in the next build"
+    "the probe answered: the drop chain worked end to end, but the target was always the day the recipe came from — the day above sits three times further than the day below, because your own day's first row and header stand between you and it",
+    "every row is a drop target now: dropping one recipe on another exchanges them, inside a day or across two. The nearest target is half a row away in either direction, and an exchange cannot break the week's one meal and one snack a day the way a move can",
+    "the targeted row lights up; the day targets stay for dropping onto a day as a whole",
+    "the probe and its panel are out"
   ]
 }

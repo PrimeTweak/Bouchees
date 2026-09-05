@@ -2136,4 +2136,28 @@ test("engine: an ingredient the catalogue does not know is never called safe", (
   assert.equal(a.status, "not_adaptable");
 });
 
+test("plan: exchanging two recipes keeps every day's count", () => {
+  /* A move takes from one day and gives to another, which is how a week
+   * ends up [2,2,2,2,3,2,1]. An exchange cannot do that. */
+  const plan = { 0: ["a", "b"], 1: ["c", "d"], 2: ["e", "f"] };
+  const echanger = (p, x, y) => {
+    let px = null, py = null;
+    for (const day of Object.keys(p)) {
+      const ix = p[day].indexOf(x); if (ix >= 0) px = [day, ix];
+      const iy = p[day].indexOf(y); if (iy >= 0) py = [day, iy];
+    }
+    if (!px || !py) return p;
+    p[px[0]][px[1]] = y; p[py[0]][py[1]] = x;
+    return p;
+  };
+  const avant = Object.keys(plan).map((d) => plan[d].length);
+  echanger(plan, "b", "e");                 /* across two days */
+  echanger(plan, "c", "d");                 /* inside one day */
+  const apres = Object.keys(plan).map((d) => plan[d].length);
+  assert.deepEqual(apres, avant, "an exchange changed a day's count");
+  assert.deepEqual(plan[0], ["a", "e"]);
+  assert.deepEqual(plan[1], ["d", "c"]);
+  assert.deepEqual(plan[2], ["b", "f"]);
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

@@ -510,6 +510,21 @@ struct WeekPlan: Codable, Equatable {
         days[day, default: []].append(recipeID)
     }
 
+    /// Exchanges two recipes wherever they sit, in one day or across two.
+    /// A swap keeps the week's shape: both days end with what they had.
+    mutating func exchange(_ a: String, _ b: String) {
+        guard a != b else { return }
+        var placeA: (day: Int, index: Int)?
+        var placeB: (day: Int, index: Int)?
+        for (day, list) in days {
+            if let i = list.firstIndex(of: a) { placeA = (day, i) }
+            if let i = list.firstIndex(of: b) { placeB = (day, i) }
+        }
+        guard let x = placeA, let y = placeB else { return }
+        days[x.day]?[x.index] = b
+        days[y.day]?[y.index] = a
+    }
+
     /// Swaps everything between two days. What a long press offers.
     mutating func swap(_ a: Int, _ b: Int) {
         let left = days[a]
