@@ -1,5 +1,5 @@
 /* This validator is the gate that stops it. Validator for generated recipes
- * valider(recette, brief, data) → { ok, erreurs[], avertissements[] } */
+ * validate(recette, brief, data) → { ok, erreurs[], avertissements[] } */
 "use strict";
 const path = require("path");
 const Engine = require(path.join(__dirname, "..", "engine", "engine.js"));
@@ -9,7 +9,7 @@ const ROLES = ["flour", "binder", "fat", "liquid", "dairy", "protein", "sweetene
 const UNITES = ["ml", "g", "unit", "unit", "clove", "clove", "tranche", "tranches",
                 "boîte", "boîtes", "filet", "filets", "au goût"];
 
-function valider(r, brief, data, idsExistants) {
+function validate(r, brief, data, idsExistants) {
   const e = [], a = [];
   const catalogue = data.catalogue;
   idsExistants = idsExistants || [];
@@ -89,11 +89,11 @@ function valider(r, brief, data, idsExistants) {
   return { ok: e.length === 0, erreurs: e, avertissements: a };
 }
 
-function validerLot(recettes, brief, data, idsExistants) {
+function validateBatch(recettes, brief, data, idsExistants) {
   const seen = (idsExistants || []).slice();
   const acceptees = [], rejetees = [], aRevoir = [];
   (recettes || []).forEach(function (r) {
-    const v = valider(r, brief, data, seen);
+    const v = validate(r, brief, data, seen);
     if (!v.ok) { rejetees.push({ recette: r, erreurs: v.erreurs }); return; }
     seen.push(r.id);
     if (v.avertissements.length) aRevoir.push({ recette: r, avertissements: v.avertissements });
@@ -165,4 +165,4 @@ function standard(r, catalogue) {
   return out;
 }
 
-module.exports = { valider: valider, standard: standard, validerLot: validerLot };
+module.exports = { validate: validate, standard: standard, validateBatch: validateBatch };

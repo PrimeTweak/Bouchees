@@ -9,26 +9,26 @@ const path = require("path");
 const crypto = require("crypto");
 const { verifierSignature, evenementPertinent, creerSession } = require("./stripe.js");
 const Apple = require("./apple.js");
-const { CONDITIONS, CONFIDENTIALITE, CONDITIONS_FR, CONFIDENTIALITE_FR } = require("./legal-pages.js");
+const { TERMS_EN, PRIVACY_EN, TERMS_FR, PRIVACY_FR } = require("./legal-pages.js");
 const Ratings = require("./ratings.js");
 
 const root = path.join(__dirname, "..");
 const dist = path.join(root, "dist");
 const PORT = process.env.PORT || 8787;
-const FICHIER_COMPTES = process.env.BOUCHEES_COMPTES || path.join(__dirname, "accounts.json");
+const ACCOUNTS_FILE = process.env.BOUCHEES_COMPTES || path.join(__dirname, "accounts.json");
 const SECRET_WEBHOOK = process.env.STRIPE_WEBHOOK_SECRET || "";
 const GRACE_DAYS = 3;   /* access is not cut the second a payment fails */
 
 /* ---------- petite base sur fichier ---------- */
 function readAccounts() {
-  try { return JSON.parse(fs.readFileSync(FICHIER_COMPTES, "utf8")); }
+  try { return JSON.parse(fs.readFileSync(ACCOUNTS_FILE, "utf8")); }
   catch (e) { return { accounts: {}, tokens: {} }; }
 }
 /* Written to a sibling file and renamed over the original. */
 function writeAccounts(db) {
-  const tmp = FICHIER_COMPTES + "." + process.pid + ".tmp";
+  const tmp = ACCOUNTS_FILE + "." + process.pid + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
-  fs.renameSync(tmp, FICHIER_COMPTES);
+  fs.renameSync(tmp, ACCOUNTS_FILE);
 }
 
 /* Thirty days. A token used to live forever: a phone lost in 2026 could still
@@ -36,45 +36,45 @@ function writeAccounts(db) {
 const TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
 /* 254 characters is the most an address can be; anything longer is not
  * an address, it is a payload. */
-function normaliserCourriel(c) { return String(c || "").trim().toLowerCase().slice(0, 254); }
-function jetonNeuf() { return crypto.randomBytes(24).toString("hex"); }
+function normaliseEmail(c) { return String(c || "").trim().toLowerCase().slice(0, 254); }
+function newToken() { return crypto.randomBytes(24).toString("hex"); }
 /* Stored hashed: a copy of accounts.json must not be a copy of every live
  * session. The token itself never rests on the server. */
-function empreinteJeton(token) { return crypto.createHash("sha256").update(String(token)).digest("hex"); }
+function hashToken(token) { return crypto.createHash("sha256").update(String(token)).digest("hex"); }
 /* Ratings are keyed on this rather than the address: the file must not read
  * as a list of parents of allergic children. */
-function empreinteCourriel(email) { return crypto.createHash("sha256").update("bouchees:" + String(email)).digest("hex").slice(0, 32); }
+function hashEmail(email) { return crypto.createHash("sha256").update("bouchees:" + String(email)).digest("hex").slice(0, 32); }
 
 /* ---------- product lookups: cache and budget ---------- */
 
 /* Shared across every caller. Hits keep for thirty days, misses for a day.
  * Persisted beside accounts.json so a redeploy does not start cold. */
-const FICHIER_CACHE = process.env.BOUCHEES_PRODUCT_CACHE ||
+const CACHE_FILE = process.env.BOUCHEES_PRODUCT_CACHE ||
                       path.join(__dirname, "product-cache.json");
 /* Products found once, shipped in the repository: Render's disk is wiped on
  * every deploy, so a file cache alone forgot every product at each push,
  * and each forgotten product cost its lookups again. The seed loads under
  * the live cache and never expires; the cycle commits it. */
-const FICHIER_AMORCE = path.join(__dirname, "..", "data", "products-seen.json");
+const SEED_FILE = path.join(__dirname, "..", "data", "products-seen.json");
 
 const ProductCache = (function () {
   const HIT_TTL = 30 * 24 * 3600 * 1000, MISS_TTL = 24 * 3600 * 1000, MAX = 50000;
   let table = {};
   let seed = {};
-  try { seed = JSON.parse(fs.readFileSync(FICHIER_AMORCE, "utf8")); } catch (e) { seed = {}; }
-  try { table = JSON.parse(fs.readFileSync(FICHIER_CACHE, "utf8")); } catch (e) { table = {}; }
+  try { seed = JSON.parse(fs.readFileSync(SEED_FILE, "utf8")); } catch (e) { seed = {}; }
+  try { table = JSON.parse(fs.readFileSync(CACHE_FILE, "utf8")); } catch (e) { table = {}; }
   let timer = null;
   function persist() {
     timer = null;
     try {
-      const tmp = FICHIER_CACHE + "." + process.pid + ".tmp";
+      const tmp = CACHE_FILE + "." + process.pid + ".tmp";
       fs.writeFileSync(tmp, JSON.stringify(table));
-      fs.renameSync(tmp, FICHIER_CACHE);
+      fs.renameSync(tmp, CACHE_FILE);
     } catch (e) { /* the cache is a convenience; losing it costs a lookup */ }
   }
   /* Written within five seconds of a change, never on every scan: the old
    * rule wrote every twenty, and a server that saw nineteen never wrote. */
-  function planifier() { if (!timer) timer = setTimeout(persist, 5000).unref(); }
+  function schedulePersist() { if (!timer) timer = setTimeout(persist, 5000).unref(); }
   return {
     get: function (code) {
       const e = table[code];
@@ -91,7 +91,7 @@ const ProductCache = (function () {
       entry.at = Date.now();
       table[code] = entry;
       if (Object.keys(table).length > MAX) table = {};
-      planifier();
+      schedulePersist();
     },
     /* Every product found since the seed, for the cycle to fold in. */
     _hits: function () {
@@ -134,7 +134,7 @@ const OffBudget = (function () {
   };
 })();
 
-function absent(raw, forms, via) {
+function missing(raw, forms, via) {
   return {
     error: "product not found",
     scanned: raw,
@@ -224,12 +224,12 @@ function rawBody(req) {
 /* A token entry is either the bare email (the old shape, treated as issued
  * now on first sight so nothing already installed is logged out) or an object
  * with the email and the issue time. */
-function jetonValide(db, token) {
-  const cle = empreinteJeton(token);
-  const entry = db.tokens[cle];
+function validToken(db, token) {
+  const key = hashToken(token);
+  const entry = db.tokens[key];
   if (!entry) return null;
   if (Date.now() - (entry.cree || 0) > TOKEN_TTL_MS) {
-    delete db.tokens[cle];
+    delete db.tokens[key];
     return null;
   }
   return entry.email;
@@ -239,16 +239,16 @@ function jetonValide(db, token) {
  * transaction: verified up to Apple's root and still in force, it entitles
  * this request on its own — no account, no email, nothing stored. A
  * session token from a real sign-in still works when one exists. */
-function compteDeLaRequete(req, db) {
+function accountFromRequest(req, db) {
   const auth = req.headers.authorization || "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
   if (!token) return null;
-  if ((token.match(/\./g) || []).length === 2) return compteDepuisRecu(token);
-  const email = jetonValide(db, token);
+  if ((token.match(/\./g) || []).length === 2) return accountFromReceipt(token);
+  const email = validToken(db, token);
   return email ? db.accounts[email] || null : null;
 }
 
-function compteDepuisRecu(jws) {
+function accountFromReceipt(jws) {
   const v = Apple.verifierJWS(jws);
   if (!v.ok) return null;
   const etat = Apple.etatDepuisTransaction(v.charge);
@@ -259,12 +259,12 @@ function compteDepuisRecu(jws) {
 
 /* One lookup in flight per code: twenty parents scanning the same Cheerios
  * at once share one request instead of spending twenty. */
-const enVol = {};
+const inFlight = {};
 function lookupProduct(ctx) {
-  const cle = Barcode.digits(ctx.url.searchParams.get("code")) || "";
-  if (cle && enVol[cle]) return enVol[cle];
-  const p = lookupProductOnce(ctx).finally(function () { delete enVol[cle]; });
-  if (cle) enVol[cle] = p;
+  const key = Barcode.digits(ctx.url.searchParams.get("code")) || "";
+  if (key && inFlight[key]) return inFlight[key];
+  const p = lookupProductOnce(ctx).finally(function () { delete inFlight[key]; });
+  if (key) inFlight[key] = p;
   return p;
 }
 
@@ -286,10 +286,10 @@ async function lookupProductOnce(ctx) {
   /* Keyed on the canonical form — the longest, which is the thirteen-digit
    * one — so a UPC-A and its EAN-13 twin share one entry. */
   const key = forms.reduce(function (a, b) { return b.length > a.length ? b : a; }, forms[0]);
-  const connu = ProductCache.get(key);
-  if (connu) {
-    if (connu.hit) return { status: 200, body: connu.payload };
-    return { status: 404, body: absent(raw, forms, "cache") };
+  const known = ProductCache.get(key);
+  if (known) {
+    if (known.hit) return { status: 200, body: known.payload };
+    return { status: 404, body: missing(raw, forms, "cache") };
   }
 
   /* The budget stops us before the ban does: twelve a minute, under their
@@ -303,9 +303,9 @@ async function lookupProductOnce(ctx) {
     } };
   }
 
-  const champs = "product_name,product_name_fr,brands,ingredients_text_fr," +
+  const fields = "product_name,product_name_fr,brands,ingredients_text_fr," +
                "ingredients_text,allergens_tags,traces_tags,image_small_url";
-  const entetes = {
+  const headers = {
     /* The fallback names a domain that resolves. The old one, ".example",
      * gave Open Food Facts no one to contact before blocking an address. */
     "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
@@ -317,16 +317,16 @@ async function lookupProductOnce(ctx) {
    * parent: two unknowns in a row and the next real product came back
    * "busy". One call per form of the code, and the forms are ordered
    * longest first — the thirteen-digit one is the canonical index. */
-  const plan = forms.slice().sort(function (a, b) { return b.length - a.length; })
+  const steps = forms.slice().sort(function (a, b) { return b.length - a.length; })
     .map(function (forme) { return { hote: "world.openfoodfacts.org", genre: "food", forme: forme }; });
 
   let unavailable = false;
-  for (const step of plan) {
+  for (const step of steps) {
     if (!OffBudget.take()) { unavailable = true; break; }
     let r;
     try {
     r = await fetch("https://" + step.hote + "/api/v2/product/" + step.forme +
-                    "?fields=" + champs, { headers: entetes });
+                    "?fields=" + fields, { headers: headers });
     } catch (e) { unavailable = true; continue; }
 
   /* "limited" is not "not found": a refused request comes back as a 429,
@@ -371,11 +371,11 @@ async function lookupProductOnce(ctx) {
     } };
   }
   ProductCache.set(key, { hit: false });
-  return { status: 404, body: absent(raw, forms, "live") };
+  return { status: 404, body: missing(raw, forms, "live") };
 
 }
 
-function pageLegale(req, res, en, fr) {
+function legalPage(req, res, en, fr) {
   const lang = String(req.headers["accept-language"] || "");
   const page = /^\s*fr\b|,\s*fr\b/i.test(lang) && !/^\s*en\b/i.test(lang) ? fr : en;
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
@@ -406,12 +406,12 @@ const routes = {
   /* Legal pages in both languages: /fr/... is explicit; the bare path
    * follows Accept-Language, so a French phone lands on the French text.
    * Vary tells caches the answer depends on that header. */
-  "GET /terms": function (req, res) { pageLegale(req, res, CONDITIONS, CONDITIONS_FR); },
-  "GET /privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE, CONFIDENTIALITE_FR); },
-  "GET /fr/terms": function (req, res) { pageLegale(req, res, CONDITIONS_FR, CONDITIONS_FR); },
-  "GET /fr/privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE_FR, CONFIDENTIALITE_FR); },
-  "GET /en/terms": function (req, res) { pageLegale(req, res, CONDITIONS, CONDITIONS); },
-  "GET /en/privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE, CONFIDENTIALITE); },
+  "GET /terms": function (req, res) { legalPage(req, res, TERMS_EN, TERMS_FR); },
+  "GET /privacy": function (req, res) { legalPage(req, res, PRIVACY_EN, PRIVACY_FR); },
+  "GET /fr/terms": function (req, res) { legalPage(req, res, TERMS_FR, TERMS_FR); },
+  "GET /fr/privacy": function (req, res) { legalPage(req, res, PRIVACY_FR, PRIVACY_FR); },
+  "GET /en/terms": function (req, res) { legalPage(req, res, TERMS_EN, TERMS_EN); },
+  "GET /en/privacy": function (req, res) { legalPage(req, res, PRIVACY_EN, PRIVACY_EN); },
 
   /* The safety tables: free, always, no account required. */
   "GET /api/safety": function (req, res) {
@@ -448,7 +448,7 @@ const routes = {
     if (!ctx.account || !ctx.account.email) return json(res, 401, { error: "sign-in required to rate" });
         /* One rating per second per account: authentication stops a stranger
      * writing, not a signed-in client looping. */
-    if (!limiteDebit(ctx.account.email)) {
+    if (!rateLimit(ctx.account.email)) {
       return json(res, 429, { error: "too many requests" });
     }
     let corps;
@@ -456,8 +456,8 @@ const routes = {
     catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
 
     const r = corps.rating === null
-      ? Ratings.removeRating(corps.recipe, empreinteCourriel(ctx.account.email))
-      : Ratings.rate(corps.recipe, empreinteCourriel(ctx.account.email), corps.rating);
+      ? Ratings.removeRating(corps.recipe, hashEmail(ctx.account.email))
+      : Ratings.rate(corps.recipe, hashEmail(ctx.account.email), corps.rating);
     if (!r.ok) return json(res, 400, { error: r.reason });
     json(res, 200, { ok: true, aggregate: r.aggregate });
   },
@@ -467,7 +467,7 @@ const routes = {
   "GET /api/ratings": function (req, res, ctx) {
     const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
     if (!ids.length) return json(res, 200, {});
-    json(res, 200, Ratings.aggregates(ids, ctx.account && ctx.account.email ? empreinteCourriel(ctx.account.email) : null));
+    json(res, 200, Ratings.aggregates(ids, ctx.account && ctx.account.email ? hashEmail(ctx.account.email) : null));
   },
 
   /* The Top rated tab. This is how a recipe that left the window comes back:
@@ -602,18 +602,18 @@ const routes = {
     }
     /* Five attempts a minute per address: sign-in creates accounts, and an
      * unmetered route that creates records is a way to fill the disk. */
-    if (!limiteDebit("login:" + (req.socket.remoteAddress || "?"), 5)) {
+    if (!rateLimit("login:" + (req.socket.remoteAddress || "?"), 5)) {
       return json(res, 429, { error: "too many attempts" });
     }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
     catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
-    const email = normaliserCourriel(corps.email);
+    const email = normaliseEmail(corps.email);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: "email invalide" });
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
-    const token = jetonNeuf();
-    db.tokens[empreinteJeton(token)] = { email: email, cree: Date.now() };
+    const token = newToken();
+    db.tokens[hashToken(token)] = { email: email, cree: Date.now() };
     writeAccounts(db);
     json(res, 200, { token: token, email: email, subscribed: subscriptionActive(db.accounts[email]),
                      note: "En production, ce token s'envoie par email — il ne revient pas dans la réponse." });
@@ -621,8 +621,8 @@ const routes = {
 
   "POST /api/logout": async function (req, res, ctx) {
     const auth = (req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
-    const cle = auth ? empreinteJeton(auth) : "";
-    if (cle && ctx.db.tokens[cle]) { delete ctx.db.tokens[cle]; writeAccounts(ctx.db); }
+    const key = auth ? hashToken(auth) : "";
+    if (key && ctx.db.tokens[key]) { delete ctx.db.tokens[key]; writeAccounts(ctx.db); }
     json(res, 200, { ok: true });
   },
 
@@ -663,7 +663,7 @@ const routes = {
     const maj = evenementPertinent(evt);
     if (!maj) return json(res, 200, { ignored: evt.type });
 
-    const email = normaliserCourriel(maj.email);
+    const email = normaliseEmail(maj.email);
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
     db.accounts[email].subscription = {
@@ -683,7 +683,7 @@ const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; ch
 
 /* A minute of recent calls per key, nothing persisted. */
 const _debits = new Map();
-function limiteDebit(key, parMinute) {
+function rateLimit(key, parMinute) {
   const max = parMinute || 60;
   const now = Date.now();
   const seen = (_debits.get(key) || []).filter(function (t) {
@@ -748,7 +748,7 @@ function createServer(options) {
     const route = routes[key];
     if (!route) return serveStatic(req, res, url);
     const db = readAccounts();
-    const ctx = { db: db, url: url, account: compteDeLaRequete(req, db),
+    const ctx = { db: db, url: url, account: accountFromRequest(req, db),
                   insecureLogin: insecureLogin };
     try { await route(req, res, ctx); }
     catch (err) {
@@ -765,7 +765,7 @@ if (require.main === module) {
   createServer().listen(PORT, function () {
     console.log("Bouchées — serveur sur http://localhost:" + PORT);
     console.log("  batches free servis à tous, batches abonnés filtrés côté serveur");
-    if (!SECRET_WEBHOOK) console.log("  (STRIPE_WEBHOOK_SECRET absent : le webhook répondra 500)");
+    if (!SECRET_WEBHOOK) console.log("  (STRIPE_WEBHOOK_SECRET missing : le webhook répondra 500)");
   });
 }
 
@@ -774,4 +774,4 @@ module.exports = { createServer: createServer, canReadBody: canReadBody,
                    /* Exposed for the tests only. */
                    _ProductCache: ProductCache, _OffBudget: OffBudget,
                    _MAX_BODY: MAX_BODY, _TOKEN_TTL_MS: TOKEN_TTL_MS,
-                   _empreinteJeton: empreinteJeton };
+                   _empreinteJeton: hashToken };

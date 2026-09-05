@@ -1004,10 +1004,10 @@ test("illustration: every allergen family has its glyph", () => {
 
 /* ---------- blocs A/B/C/D/F (v0.4) ---------- */
 
-const Trous = require(path.join(__dirname, "..", "tools", "gaps.js"));
-const Publier = require(path.join(__dirname, "..", "tools", "publish.js"));
-const PromptRecette = require(path.join(__dirname, "..", "generation", "recipe-prompt.js"));
-const Valideur = require(path.join(__dirname, "..", "generation", "recipe-validator.js"));
+const Gaps = require(path.join(__dirname, "..", "tools", "gaps.js"));
+const Publisher = require(path.join(__dirname, "..", "tools", "publish.js"));
+const RecipePrompt = require(path.join(__dirname, "..", "generation", "recipe-prompt.js"));
+const Validator = require(path.join(__dirname, "..", "generation", "recipe-validator.js"));
 const Images = require(path.join(__dirname, "..", "generation", "images.js"));
 const Stripe = require(path.join(__dirname, "..", "server", "stripe.js"));
 const Server = require(path.join(__dirname, "..", "server", "server.js"));
@@ -1018,7 +1018,7 @@ try { corpusComplet = corpusComplet.concat(lire2("data/generated/generated-recip
 /* --- B : rapport de gaps --- */
 
 test("gaps: an 18-month recipe does not count as usable at 6 months", () => {
-  const cases = Trous.analyser(corpusComplet);
+  const cases = Gaps.analyse(corpusComplet);
   const c = cases.find((x) => x.ageMois === 6 && x.profile.length === 1 && x.profile[0] === "milk");
   const tropVieilles = corpusComplet.filter((r) => r.minAgeMonths > 6).length;
   assert.equal(c.outOfAge, tropVieilles);
@@ -1026,45 +1026,45 @@ test("gaps: an 18-month recipe does not count as usable at 6 months", () => {
 });
 
 test("gaps: the ranking puts the emptiest combinations first", () => {
-  const cl = Trous.classer(Trous.analyser(corpusComplet));
+  const cl = Gaps.classify(Gaps.analyse(corpusComplet));
   for (let i = 1; i < cl.length; i++) assert(cl[i - 1].missing >= cl[i].missing);
 });
 
 test("gaps: the brief merges identical gaps instead of repeating them", () => {
-  const cmd = Trous.commande(Trous.classer(Trous.analyser(corpusComplet)));
+  const cmd = Gaps.commande(Gaps.classify(Gaps.analyse(corpusComplet)));
   const cles = cmd.map((c) => c.categories[0] + "|" + c.evite.join(","));
   assert.equal(new Set(cles).size, cles.length, "la commande contient des doublons");
 });
 
 test("gaps: a truncated corpus opens a visible gap", () => {
   const ampute = corpusComplet.filter((r) => r.category !== "Snack");
-  const cl = Trous.classer(Trous.analyser(ampute));
-  assert(cl[0].missingCategories["Snack"] >= Trous.SEUIL_CATEGORIE - 0);
+  const cl = Gaps.classify(Gaps.analyse(ampute));
+  assert(cl[0].missingCategories["Snack"] >= Gaps.SEUIL_CATEGORIE - 0);
 });
 
 /* --- A : publication --- */
 
 test("publishing: every recipe has a card and a body, and nothing else", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   assert.equal(r.catalogue.length, corpusComplet.length, "one card per recipe");
   assert.equal(Object.keys(r.bodies).length, corpusComplet.length, "one body per recipe");
   assert.equal(r.unknownCategory.length, 0, "neither Meal nor Snack: " + r.unknownCategory);
 });
 
 test("publishing: the catalogue holds NO ingredient and NO step, only what is public", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   const txt = JSON.stringify(r.catalogue);
   assert(!/"ingredients"|"steps"/.test(txt), "the catalogue leaks a body");
   r.catalogue.forEach((c) => {
     assert(["Meal", "Snack"].indexOf(c.category) !== -1, c.id + ": " + c.category);
     assert(typeof c.free === "boolean", c.id + " has no free flag");
     assert(Array.isArray(c.allergens), c.id + " has no allergen list");
-    assert.equal(Object.keys(c.adaptability).length, Publier.FAMILIES.length, c.id + " matrix incomplete");
+    assert.equal(Object.keys(c.adaptability).length, Publisher.FAMILIES.length, c.id + " matrix incomplete");
   });
 });
 
 test("publishing: the adaptability matrix says as_is only where the allergen is absent", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   r.catalogue.forEach((c) => {
     c.allergens.forEach((a) => {
       assert.notEqual(c.adaptability[a], "as_is", c.id + " contains " + a + " yet says as_is");
@@ -1073,13 +1073,13 @@ test("publishing: the adaptability matrix says as_is only where the allergen is 
 });
 
 test("publishing: the safety tables sit outside the bodies", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   assert(r.securite.substitutions.length > 0 && r.securite.base.allergens.length === 11);
   Object.values(r.bodies).forEach((b) => { assert(!b.substitutions && !b.allergenesTable, b.id); });
 });
 
 test("publishing: the free list only names recipes that exist", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   const ids = new Set(r.catalogue.map((c) => c.id));
   r.manifest.free.forEach((id) => assert(ids.has(id), "free names a ghost: " + id));
   assert(r.manifest.free.length >= 10, "the free list is the free tier; it cannot be empty");
@@ -1088,7 +1088,7 @@ test("publishing: the free list only names recipes that exist", () => {
 /* --- C : prompt et validateur --- */
 
 test("prompt: offers only ingredients compatible with the brief", () => {
-  const autorises = PromptRecette.ingredientsAutorises(data.catalogue, ["milk", "egg"]);
+  const autorises = RecipePrompt.ingredientsAutorises(data.catalogue, ["milk", "egg"]);
   autorises.forEach((id) => {
     const a = data.catalogue[id].allergens;
     assert(!a.includes("milk") && !a.includes("egg"), id + " should not be offered");
@@ -1100,7 +1100,7 @@ test("validator: rejects an ingredient the model invented", () => {
   const faux = { id: "test-invente", name: "Test", category: "Collation", minAgeMonths: 12, timeMinutes: 10,
     ingredients: [{ id: "graines_de_tournesol_grillees", qty: 100, unit: "ml" }, { id: "banana", qty: 1, unit: "unit" }],
     steps: ["Mélanger les ingredients.", "Servir tiède."] };
-  const v = Valideur.valider(faux, { evite: [], ageMois: 12, categories: ["Collation"] }, data);
+  const v = Validator.validate(faux, { evite: [], ageMois: 12, categories: ["Collation"] }, data);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /hors catalogue/.test(x)));
 });
@@ -1109,7 +1109,7 @@ test("validator: rejects a recipe holding the excluded allergen", () => {
   const faux = { id: "test-fuite", name: "Test", category: "Collation", minAgeMonths: 12, timeMinutes: 10,
     ingredients: [{ id: "cow_milk", qty: 250, unit: "ml", role: "liquid" }, { id: "banana", qty: 1, unit: "unit" }],
     steps: ["Mélanger les ingredients.", "Servir frais."] };
-  const v = Valideur.valider(faux, { evite: ["milk"], ageMois: 12, categories: ["Collation"] }, data);
+  const v = Validator.validate(faux, { evite: ["milk"], ageMois: 12, categories: ["Collation"] }, data);
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /allergène que la commande exclut/.test(x)));
 });
@@ -1125,7 +1125,7 @@ test("validator: accepts a compliant recipe and flags the ambiguous role", () =>
             "Spoon into 4 small bowls.",
             "Chill 20 minutes, until cold and slightly set.",
             "Serve at 6 months as is; keeps 2 days in the fridge."] };
-  const v = Valideur.valider(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Snack"] }, data);
+  const v = Validator.validate(bonne, { evite: ["milk", "egg", "wheat"], ageMois: 6, categories: ["Snack"] }, data);
   assert.equal(v.ok, true, v.erreurs.join(" / "));
 });
 
@@ -1133,7 +1133,7 @@ test("validator: refuses a taken id and marketing superlatives", () => {
   const d = { id: "banana-oat-muffins", name: "Les meilleurs muffins", category: "Collation",
     minAgeMonths: 12, timeMinutes: 20, ingredients: [{ id: "banana", qty: 1, unit: "unit" }, { id: "rolled_oats", qty: 250, unit: "ml" }],
     steps: ["Mélanger les ingredients.", "Cuire vingt minutes."] };
-  const v = Valideur.valider(d, { evite: [], ageMois: 12, categories: ["Collation"] }, data, corpusComplet.map((r) => r.id));
+  const v = Validator.validate(d, { evite: [], ageMois: 12, categories: ["Collation"] }, data, corpusComplet.map((r) => r.id));
   assert.equal(v.ok, false);
   assert(v.erreurs.some((x) => /déjà utilisé/.test(x)));
 });
@@ -1948,7 +1948,7 @@ test("wall: a malformed id never reaches the file system", async () => {
 /* Same hash, same choice, same fallback. If the Swift drifts from this, the
  * app's rotation drifts from what these tests promise. */
 (function () {
-  const cat = Publier.publier().catalogue;
+  const cat = Publisher.publier().catalogue;
 function mix(h,v){h=BigInt.asUintN(64,(h^v)*0xBF58476D1CE4E5B9n);h=BigInt.asUintN(64,(h^(h>>31n))*0x94D049BB133111EBn);return h^(h>>29n);}
 function score(seed,day,id){let h=seed^0x9E3779B97F4A7C15n;h=mix(h,BigInt.asUintN(64,BigInt(day)));for(const b of Buffer.from(id))h=mix(h,BigInt(b));return h;}
 function choose(seed,day,cands,hist,isMeal,gap){if(!cands.length)return null;const last={};for(const [d,p] of Object.entries(hist)){const dd=+d;if(dd>=day)continue;const id=isMeal?p.meal:p.snack;if(id&&(last[id]??-1e9)<dd)last[id]=dd;}
@@ -1987,7 +1987,7 @@ function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,c
   test("sequence: never proposes a dish the engine cannot adapt for the child", () => {
     /* The whole point of the app. The pool is filtered before the sequence
      * picks, so a week can hold nothing a family cannot eat. */
-    const cat = Publier.publier().catalogue;
+    const cat = Publisher.publier().catalogue;
     const profiles = [["milk", "egg", "peanut", "tree_nut"], ["milk", "egg", "wheat"],
                       ["peanut", "tree_nut", "sesame"], ["fish", "shellfish"], ["milk"]];
     const ages = [6, 9, 12, 24, 48];
@@ -2051,7 +2051,7 @@ test("standard: a draft that says mix all the ingredients is refused, with every
     /* "Bake at 200 °C" with neither a duration nor a cue: that is what rule 5
      * refuses now. A duration alone would pass — a parent can follow it. */
     steps: ["Mix all the ingredients.", "Shape into balls.", "Bake at 200 \u00b0C.", "Serve."] };
-  const e = Valideur.standard(draft, data.catalogue);
+  const e = Validator.standard(draft, data.catalogue);
   assert(e.some((x) => x.startsWith("standard 6")), "too few steps");
   assert(e.some((x) => /all the ingredients/.test(x)));
   assert(e.some((x) => /turkey is never named/.test(x)));
@@ -2066,13 +2066,13 @@ test("standard: the rewritten free recipes all pass it", () => {
     "banana-oat-muffins", "fluffy-pancakes", "pasta-in-rose-sauce-with-chicken"];
   rewritten.forEach((id) => {
     assert(free.indexOf(id) !== -1, id + " is meant to be free");
-    const e = Valideur.standard(parId[id], data.catalogue);
+    const e = Validator.standard(parId[id], data.catalogue);
     assert.equal(e.length, 0, id + ": " + e.join(" / "));
   });
 });
 
 test("publishing: every source on a card decodes — source, license, an optional url", () => {
-  const r = Publier.publier();
+  const r = Publisher.publier();
   r.catalogue.forEach((c) => {
     if (!c.source) return;
     assert.equal(typeof c.source.source, "string", c.id + ": source without a source key — the phone drops the card");
@@ -2182,7 +2182,7 @@ test("standard: a duration alone satisfies rule 5, and taking off the heat is no
     steps: ["Heat the oven to 200 \u00b0C (400 \u00b0F).", "Grate the apple.", "Mix the ground turkey with the grated apple.",
             "Shape into balls.", "Bake for 18 to 20 minutes.", "Remove from the heat and let rest.",
             "Serve warm. Keeps three days in the fridge."] };
-  const e = Valideur.standard(ok, data.catalogue);
+  const e = Validator.standard(ok, data.catalogue);
   assert(!e.some((x) => x.startsWith("standard 5")), "rule 5 refused a bake with a duration: " + JSON.stringify(e));
 });
 
@@ -2190,16 +2190,16 @@ test("commission: no line repeats in a run, and every line has a hero ingredient
   /* Eleven of fourteen rejections in one run were the same dish written
    * again: the commission repeated its lines, and the model was never told
    * what existed. */
-  const r = Trous.report(corpusComplet, data, { perRun: 20 });
-  const cles = r.commande.map((l) => l.categories[0] + "|" + l.ageMois + "|" + l.evite.join(",") + "|" + (l.vedette || ""));
+  const r = Gaps.report(corpusComplet, data, { perRun: 20 });
+  const cles = r.commande.map((l) => l.categories[0] + "|" + l.ageMois + "|" + l.evite.join(",") + "|" + (l.hero || ""));
   assert.equal(new Set(cles).size, cles.length, "a commission line repeats: " + cles.join(" ; "));
-  const sansVedette = r.commande.filter((l) => !l.passePartout && l.reason.startsWith("pool:") && !l.vedette);
+  const sansVedette = r.commande.filter((l) => !l.passePartout && l.reason.startsWith("pool:") && !l.hero);
   assert.equal(sansVedette.length, 0, "a pool line has no hero ingredient");
 });
 
 test("prompt: the model is told what already exists and what this run wrote", () => {
-  const ligne = { n: 2, ageMois: 9, categories: ["Meal"], evite: ["milk"], reason: "test", vedette: "lentils" };
-  const p = PromptRecette.construire(ligne, data, { existants: ["Turkey rice bowl"], ecritsCeTour: ["Salmon patties"] });
+  const ligne = { n: 2, ageMois: 9, categories: ["Meal"], evite: ["milk"], reason: "test", hero: "lentils" };
+  const p = RecipePrompt.construire(ligne, data, { existants: ["Turkey rice bowl"], ecritsCeTour: ["Salmon patties"] });
   assert(/NOT AGAIN/.test(p), "no exclusion block");
   assert(/Turkey rice bowl/.test(p), "the pool is not named");
   assert(/Salmon patties/.test(p), "this run's drafts are not named");

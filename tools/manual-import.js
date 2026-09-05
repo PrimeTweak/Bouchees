@@ -8,9 +8,9 @@ const root = path.join(__dirname, "..");
 const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 const write = (p, o) => fs.writeFileSync(path.join(root, p), JSON.stringify(o, null, 2) + "\n");
 
-const Valideur = require("../generation/recipe-validator.js");
+const Validator = require("../generation/recipe-validator.js");
 const Coherence = require("../generation/coherence.js");
-const Publier = require("./publish.js");
+const Publisher = require("./publish.js");
 
 const args = process.argv.slice(2);
 const fichier = args.find((a) => !a.startsWith("--"));
@@ -75,7 +75,7 @@ function principal() {
   recettes.forEach(function (r) {
     /* The brief is not known here: validation runs with no avoided allergen
      * and the engine judges the rest. */
-    const v = Valideur.valider(r, null, data, ids.concat(survivantes.map((s) => s.id)));
+    const v = Validator.validate(r, null, data, ids.concat(survivantes.map((s) => s.id)));
     if (!v.ok) {
       rejetees.push({ id: r.id || "(no id)", erreurs: v.erreurs });
       console.log("  x  " + (r.id || "(no id)") + " — " + v.erreurs[0]);
@@ -143,7 +143,7 @@ function principal() {
   fs.mkdirSync(path.join(root, "data", "generated"), { recursive: true });
   write("data/generated/generated-recipes.json", generees);
 
-  const r = Publier.publier();
+  const r = Publisher.publier();
   const dist = path.join(root, "dist");
   fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });

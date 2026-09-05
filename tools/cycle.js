@@ -1,4 +1,4 @@
-/* The cycle log says so on every run. Le cycle du mois — une seule brief
+/* The cycle log says so on every run. Le cycle du mois — une seule commission
  * node tools/cycle.js */
 "use strict";
 const fs = require("fs");
@@ -7,10 +7,10 @@ const root = path.join(__dirname, "..");
 const read = (p) => JSON.parse(fs.readFileSync(path.join(root, p), "utf8"));
 const write = (p, o) => fs.writeFileSync(path.join(root, p), JSON.stringify(o, null, 2) + "\n");
 
-const Trous = require("./gaps.js");
-const Publier = require("./publish.js");
-const PromptRecette = require("../generation/recipe-prompt.js");
-const Valideur = require("../generation/recipe-validator.js");
+const Gaps = require("./gaps.js");
+const Publisher = require("./publish.js");
+const RecipePrompt = require("../generation/recipe-prompt.js");
+const Validator = require("../generation/recipe-validator.js");
 const Coherence = require("../generation/coherence.js");
 const Images = require("../generation/images.js");
 const Vision = require("../generation/vision.js");
@@ -29,7 +29,7 @@ function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
 /* Products the live server found since the last cycle, folded into the
  * seed the repository ships. Needs BOUCHEES_ADMIN_SECRET in cle-api.txt;
  * without it, or offline, the step is skipped and says so. */
-async function ramenerProduitsVus() {
+async function pullProductsSeen() {
   const secret = process.env.BOUCHEES_ADMIN_SECRET;
   if (!secret) { console.log("  products seen: no BOUCHEES_ADMIN_SECRET in cle-api.txt — skipped"); return; }
   const base = process.env.BOUCHEES_SERVER || "https://bouchees.onrender.com";
@@ -50,23 +50,23 @@ async function ramenerProduitsVus() {
 /* Every rejected draft is kept with its reasons. A rejection that is only
  * printed cannot be audited, and the validator cannot be tuned without a
  * corpus of what it refused. Last two hundred, newest first. */
-const REJETS = path.join(__dirname, "..", "data", "generated", "rejected.json");
-function garderRejet(rec, commande, erreurs) {
-  let liste = [];
-  try { liste = JSON.parse(fs.readFileSync(REJETS, "utf8")); } catch (e) { liste = []; }
-  liste.unshift({ date: new Date().toISOString().slice(0, 10), commande: commande,
+const REJECTED_FILE = path.join(__dirname, "..", "data", "generated", "rejected.json");
+function keepRejected(rec, commande, erreurs) {
+  let entries = [];
+  try { entries = JSON.parse(fs.readFileSync(REJECTED_FILE, "utf8")); } catch (e) { entries = []; }
+  entries.unshift({ date: new Date().toISOString().slice(0, 10), commande: commande,
                   erreurs: erreurs, recette: rec });
-  fs.writeFileSync(REJETS, JSON.stringify(liste.slice(0, 200), null, 2) + "\n");
+  fs.writeFileSync(REJECTED_FILE, JSON.stringify(entries.slice(0, 200), null, 2) + "\n");
 }
 
-function chargerDonnees() {
+function loadData() {
   return {
     catalogue: read("data/ingredients.json"),
     substitutions: read("data/substitutions.json"),
     base: read("data/base.json")
   };
 }
-function chargerCorpus() {
+function loadCorpus() {
   let c = read("data/recipes.json");
   try { c = c.concat(read("data/imported/imported-recipes.json")); } catch (e) {}
   try { c = c.concat(read("data/generated/generated-recipes.json")); } catch (e) {}
@@ -76,19 +76,19 @@ function chargerCorpus() {
 /* ---------- 1 to 5: the recipes ---------- */
 async function cycleRecettes(data, options) {
   const log = { commandees: 0, redigees: 0, acceptees: 0, rejetees: [], aRevoir: [], nouvelles: [] };
-  const corpus = chargerCorpus();
+  const corpus = loadCorpus();
 
   title("1 · Where recipes are missing");
-  const r = Trous.report(corpus);
+  const r = Gaps.report(corpus);
   fs.writeFileSync(path.join(root, "tools", "rapport-trous.md"), "");
-  const brief = r.commande;
-  if (!brief.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return log; }
-  brief.forEach(function (c) {
+  const commission = r.commande;
+  if (!commission.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return log; }
+  commission.forEach(function (c) {
     console.log("  " + c.n + " x " + c.categories[0].toLowerCase() + " from " + c.ageMois + " months" +
-                (c.vedette ? ", around " + c.vedette : "") +
+                (c.hero ? ", around " + c.hero : "") +
       (c.passePartout ? " (works for everyone)" : " — no " + c.evite.join(", ")));
   });
-  log.commandees = brief.reduce((s, c) => s + c.n, 0);
+  log.commandees = commission.reduce((s, c) => s + c.n, 0);
 
   title("2 · Writing");
   const moteur = options.moteurTexte || MoteursTexte.choisir();
@@ -97,14 +97,14 @@ async function cycleRecettes(data, options) {
   let drafts = [];
   let aSec = false;
   let k = 0;
-  for (const ligne of brief) {
-    const prompt = PromptRecette.construire(ligne, data, {
+  for (const ligne of commission) {
+    const prompt = RecipePrompt.construire(ligne, data, {
       existants: corpus.map((x) => x.name || x.id),
       ecritsCeTour: drafts.map((d) => d.rec.name || d.rec.id)
     });
-    process.stdout.write("  " + (++k) + "/" + brief.length + "  " + ligne.n + " " + ligne.categories[0].toLowerCase() +
+    process.stdout.write("  " + (++k) + "/" + commission.length + "  " + ligne.n + " " + ligne.categories[0].toLowerCase() +
                          " from " + ligne.ageMois + " months" + (ligne.evite.length ? ", no " + ligne.evite.join("/") : "") +
-                         (ligne.vedette ? ", around " + ligne.vedette : "") + " … ");
+                         (ligne.hero ? ", around " + ligne.hero : "") + " … ");
     try {
       if (aSec) { console.log("skipped — no credit"); continue; }
       const output = await moteur.rediger(prompt);
@@ -138,10 +138,10 @@ async function cycleRecettes(data, options) {
   title("3 · Validation — catalogue, allergens, ages");
   const survivantes = [];
   drafts.forEach(function (b) {
-    const v = Valideur.valider(b.rec, b.commande, data, idsExistants.concat(survivantes.map((s) => s.rec.id)));
+    const v = Validator.validate(b.rec, b.commande, data, idsExistants.concat(survivantes.map((s) => s.rec.id)));
     if (!v.ok) {
       log.rejetees.push({ id: b.rec.id, erreurs: v.erreurs });
-      garderRejet(b.rec, b.commande, v.erreurs);
+      keepRejected(b.rec, b.commande, v.erreurs);
       console.log("  x  " + b.rec.id + " — " + v.erreurs[0]); return;
     }
     if (v.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: v.avertissements });
@@ -155,7 +155,7 @@ async function cycleRecettes(data, options) {
     const c = Coherence.verifier(b.rec, data);
     if (!c.ok) {
       log.rejetees.push({ id: b.rec.id, erreurs: c.erreurs });
-      garderRejet(b.rec, b.commande, c.erreurs);
+      keepRejected(b.rec, b.commande, c.erreurs);
       console.log("  x  " + b.rec.id + " — " + c.erreurs[0]); return;
     }
     if (c.avertissements.length) log.aRevoir.push({ id: b.rec.id, avertissements: c.avertissements });
@@ -189,16 +189,16 @@ async function cycleRecettes(data, options) {
 /* ---------- 6 to 8: the images ---------- */
 async function cycleImages(data, options) {
   const log = { generees: 0, acceptees: 0, rejetees: [] };
-  const corpus = chargerCorpus();
+  const corpus = loadCorpus();
   let manifest = {};
   try { manifest = read("generation/images/manifest.json"); } catch (e) {}
 
   title("6 · Images to produce");
-  const plan = Images.aGenerer(corpus, data, manifest);
-  if (!plan.length) { console.log("  every image is up to date"); return log; }
-  console.log("  " + plan.length + " image(s) — " +
-    plan.filter((p) => p.state === "missing").length + " missing, " +
-    plan.filter((p) => p.state === "stale").length + " stale");
+  const steps = Images.aGenerer(corpus, data, manifest);
+  if (!steps.length) { console.log("  every image is up to date"); return log; }
+  console.log("  " + steps.length + " image(s) — " +
+    steps.filter((p) => p.state === "missing").length + " missing, " +
+    steps.filter((p) => p.state === "stale").length + " stale");
 
   const mImage = options.moteurImage || MoteursImage.choisir();
   const mVision = options.moteurVision || Vision.choisir();
@@ -236,7 +236,7 @@ async function cycleImages(data, options) {
   }
   console.log("  vision check: " + mVision.name + (mVision.name === "absent" ? "  (no vision — everything will be rejected)" : ""));
 
-  const limite = Number(val("--max", plan.length));
+  const limit = Number(val("--max", steps.length));
   /* Images live at the root, in images/. That is exactly what the client's
    * /images/... URL resolves to on the server — writing them anywhere else
    * donnait un 404 silencieux et un repli permanent sur l'illustration. */
@@ -244,7 +244,7 @@ async function cycleImages(data, options) {
   if (!options.sec) fs.mkdirSync(folder, { recursive: true });
 
   title("7 · Generation and verification");
-  for (const p of plan.slice(0, limite)) {
+  for (const p of steps.slice(0, limit)) {
     const recipe = corpus.find((r) => r.id === p.id);
     let img;
         /* SQUARE, and that is the whole point: fLUX schnell is trained square,
@@ -344,32 +344,32 @@ async function cycleImages(data, options) {
    * interrupted run. We SAY so rather than leave it to guesswork. */
   if (!options.sec) {
     const declares = new Set(Object.values(manifest).map(function (e) { return e.fichier; }));
-    let orphelins = [];
+    let orphans = [];
     try {
-      orphelins = fs.readdirSync(folder)
+      orphans = fs.readdirSync(folder)
         .filter(function (f) { return /\.(png|webp|jpg|jpeg)$/i.test(f); })
         .filter(function (f) { return !declares.has("images/" + f); });
     } catch (e) {}
-    if (orphelins.length) {
-      console.log("\n  " + orphelins.length + " image(s) on disk with no vision verdict:");
-      orphelins.slice(0, 5).forEach(function (f) { console.log("      " + f); });
+    if (orphans.length) {
+      console.log("\n  " + orphans.length + " image(s) on disk with no vision verdict:");
+      orphans.slice(0, 5).forEach(function (f) { console.log("      " + f); });
       console.log("  They will NOT be published — an image with no verdict is never shown.");
       console.log("  Relance le cycle pour les refaire, ou supprime-les.");
-      log.orphelins = orphelins;
+      log.orphans = orphans;
     }
   }
   return log;
 }
 
 async function principal() {
-  const data = chargerDonnees();
+  const data = loadData();
   const options = { sec: a("--sec") };
   console.log("═".repeat(64));
   console.log("  Bouchees cycle — " + new Date().toISOString().slice(0, 10) + (options.sec ? "   [DRY RUN]" : ""));
   console.log("═".repeat(64));
 
   let jr = null, ji = null;
-  await ramenerProduitsVus();
+  await pullProductsSeen();
   if (!a("--images-seulement")) jr = await cycleRecettes(data, options);
   /* A run without credit is a failed run: exit non-zero so GENERER.command
    * stops after one tour instead of three. */
@@ -378,7 +378,7 @@ async function principal() {
 
   if (!options.sec) {
     title("8 · Republishing");
-    const r = Publier.publier();
+    const r = Publisher.publier();
     const dist = path.join(root, "dist");
     fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
     fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
@@ -414,7 +414,7 @@ async function principal() {
     let entries = 0;
     /* Named, not just counted: a number that does not match tells you
      * nothing about which recipe to look at. */
-    const orphelins = [];      /* manifest says done, file is not there */
+    const orphans = [];      /* manifest says done, file is not there */
     const nonPubliees = [];    /* manifest says done, catalogue has no image */
     try {
       const man = JSON.parse(fsx.readFileSync(
@@ -423,7 +423,7 @@ async function principal() {
         const e = man[k];
         if (!(e && e.fichier && e.revisePar)) return;
         entries++;
-        if (!fsx.existsSync(path.join(folder, e.fichier))) orphelins.push(k + " -> " + e.fichier);
+        if (!fsx.existsSync(path.join(folder, e.fichier))) orphans.push(k + " -> " + e.fichier);
       });
     } catch (e) { /* none yet */ }
 
@@ -462,12 +462,12 @@ async function principal() {
         console.log("  Des fichiers existent sans entree au manifeste : le cycle");
         console.log("  a ete interrompu, ou la vision les a rejetes. PHOTOS.command les reprend.");
       }
-      if (orphelins.length) {
+      if (orphans.length) {
         console.log("  Le manifeste declare une photo dont le FICHIER manque :");
-        orphelins.forEach(function (o) { console.log("    " + o); });
+        orphans.forEach(function (o) { console.log("    " + o); });
         console.log("  Le fichier a ete efface ou jamais pousse. PHOTOS.command le refait.");
       }
-      if (nonPubliees.length && !orphelins.length) {
+      if (nonPubliees.length && !orphans.length) {
         console.log("  Une photo est prete mais la recette n'est pas dans le catalogue publie :");
         nonPubliees.forEach(function (o) { console.log("    " + o); });
         console.log("  La recette a ete retiree du bassin, ou n'y est pas encore. Rien a faire.");

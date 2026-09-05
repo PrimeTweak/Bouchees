@@ -50,7 +50,7 @@ function construire(ligne, data, contexte) {
 "  Minimum age: " + ligne.ageMois + " months",
 "  Must be free of: " + (nomsEvites.length ? nomsEvites.join(", ") : "no allergen constraint"),
 "  Why: " + ligne.reason,
-(ligne.vedette ? "  Built around: " + ligne.vedette + " — it is the main ingredient, in the name and in the dish." : ""),
+(ligne.hero ? "  Built around: " + ligne.hero + " — it is the main ingredient, in the name and in the dish." : ""),
 "",
 "NOT AGAIN — these already exist. Do not rewrite them under another name, do",
 "not vary them; each new recipe is a DIFFERENT dish with a different main",
@@ -119,8 +119,8 @@ interditsAge.length ? interditsAge.join("\n") : "  none",
   ].join("\n");
 }
 
-function construireTout(brief, data) {
-  return brief.map(function (l) { return construire(l, data); });
+function construireTout(commission, data) {
+  return commission.map(function (l) { return construire(l, data); });
 }
 
 if (require.main === module) {
@@ -129,24 +129,24 @@ if (require.main === module) {
     substitutions: read("data/substitutions.json"),
     base: read("data/base.json")
   };
-  let brief;
+  let commission;
   try {
-    brief = read("tools/gap-report.json").commande;
+    commission = read("tools/gap-report.json").commande;
   } catch (e) {
     console.error("Lance d'abord : node tools/gaps.js");
     process.exit(1);
   }
-  if (!brief.length) {
+  if (!commission.length) {
     console.log("Aucun trou sous les seuils — pas de commande à générer ce mois-ci.");
     process.exit(0);
   }
-  const prompts = construireTout(brief, data);
+  const prompts = construireTout(commission, data);
   const output = prompts.map(function (p, i) {
     return "═".repeat(72) + "\nPROMPT " + (i + 1) + " / " + prompts.length + "\n" + "═".repeat(72) + "\n\n" + p;
   }).join("\n\n\n");
   fs.writeFileSync(path.join(root, "generation", "prompt-du-mois.txt"), output + "\n");
   console.log("Écrit : generation/monthly-prompt.txt (" + prompts.length + " prompt(s), " +
-    brief.reduce((s, c) => s + c.n, 0) + " recettes commandées)");
+    commission.reduce((s, c) => s + c.n, 0) + " recettes commandées)");
 }
 
 module.exports = { construire: construire, construireTout: construireTout, ingredientsAutorises: ingredientsAutorises };

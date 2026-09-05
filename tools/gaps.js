@@ -33,7 +33,7 @@ const SEUIL_SEMAINE = 12;
 /* A family does not only eat dinner: variety per category matters. */
 const SEUIL_CATEGORIE = 6;
 
-function nomProfil(ids) {
+function profileName(ids) {
   if (!ids.length) return "aucun évitement";
   return "no " + ids.map(function (id) {
     const a = data.base.allergens.find((x) => x.id === id);
@@ -44,7 +44,7 @@ function nomStade(mois) {
   return Engine.stadePour(mois, data.base).name;
 }
 
-function analyser(corpus) {
+function analyse(corpus) {
   const cases = [];
   PROFILS.forEach(function (profile) {
     STADES.forEach(function (ageMois) {
@@ -81,7 +81,7 @@ function analyser(corpus) {
 
 /* Ranking: combinations under the threshold first, then those where a whole
  * category is empty (not a single breakfast, for instance). */
-function classer(cases) {
+function classify(cases) {
   return cases.slice().sort(function (a, b) {
     if (b.missing !== a.missing) return b.missing - a.missing;
     const videA = CATEGORIES.filter((c) => a.byCategory[c] === 0).length;
@@ -106,14 +106,14 @@ function bloquantsGlobaux(cases) {
 /* A recipe with no milk AND no egg AND no peanut serves all three profiles.
  * So gaps sharing an age and a category are merged: the month's batch becomes
  * a handful of strong instructions instead of twenty redundant lines. */
-function brief(classement, target) {
+function commission(classement, target) {
   target = target || 8;
   const groupes = {};
   for (const c of classement) {
     if (c.missing === 0) continue;
     const cats = Object.keys(c.missingCategories);
-    const cles = cats.length ? cats : ["Meal"];
-    cles.forEach(function (cat) {
+    const keys = cats.length ? cats : ["Meal"];
+    keys.forEach(function (cat) {
       const key = c.ageMois + "|" + cat;
       if (!groupes[key]) groupes[key] = { ageMois: c.ageMois, category: cat, evite: {}, missing: 0, horsAge: c.outOfAge, usable: c.usable };
       c.profile.forEach(function (a) { groupes[key].evite[a] = 1; });
@@ -160,16 +160,16 @@ function brief(classement, target) {
    * six meals and sees the same one every six days, and only the five major
    * allergens, because a recipe free of milk, egg, peanut, tree nut and wheat
    * already serves most families. Mustard and sulphites come after. */
-  if (reste > 0 && brief.pool) {
-    const deficit = { Meal: brief.pool.Meal.missing, Snack: brief.pool.Snack.missing };
-    const tour = brief.pool.seed || 0;
+  if (reste > 0 && commission.pool) {
+    const deficit = { Meal: commission.pool.Meal.missing, Snack: commission.pool.Snack.missing };
+    const tour = commission.pool.seed || 0;
     const ages = [6, 6, 9, 9, 12, 24];
     const profils = [["milk", "egg"], ["milk", "egg", "wheat"], ["peanut", "tree_nut"],
                      ["milk", "egg", "peanut", "tree_nut"], ["wheat"], ["milk"]];
     /* A hero ingredient per line, drawn from what the catalogue allows at that
      * age, rotating and never repeated in one run: it is the single strongest
      * lever against the model writing the same dish twice. */
-    const vedettes = { Meal: ["lentils", "salmon", "chicken", "white beans", "tofu", "ground beef", "cod", "chickpeas",
+    const heroes = { Meal: ["lentils", "salmon", "chicken", "white beans", "tofu", "ground beef", "cod", "chickpeas",
                               "turkey", "eggplant", "cauliflower", "peas", "quinoa", "zucchini", "black beans", "polenta"],
                        Snack: ["pear", "avocado", "peach", "mango", "carrot", "blueberries", "apple", "banana",
                                "raspberries", "sweet potato", "oats", "dates", "cucumber", "melon", "plum", "beet"] };
@@ -180,13 +180,13 @@ function brief(classement, target) {
       const cat = (i % 2 === 0 && deficit.Meal > 0) || deficit.Snack <= 0 ? "Meal" : "Snack";
       const profile = profils[(tour + i) % profils.length];
       const age = ages[(tour + i) % ages.length];
-      const vedette = vedettes[cat][(tour + i) % vedettes[cat].length];
-      const cle = cat + "|" + age + "|" + profile.join(",") + "|" + vedette;
+      const hero = heroes[cat][(tour + i) % heroes[cat].length];
+      const key = cat + "|" + age + "|" + profile.join(",") + "|" + hero;
       i++;
-      if (prises.has(cle)) continue;          /* never the same line twice in a run */
-      prises.add(cle);
+      if (prises.has(key)) continue;          /* never the same line twice in a run */
+      prises.add(key);
       const n = Math.min(reste, 2);
-      out.push({ n: n, ageMois: age, categories: [cat], evite: profile, vedette: vedette, passePartout: false,
+      out.push({ n: n, ageMois: age, categories: [cat], evite: profile, hero: hero, passePartout: false,
                  reason: "pool: " + deficit[cat] + " " + cat.toLowerCase() + "s still missing, youngest ages first" });
       deficit[cat] -= n; reste -= n;
     }
@@ -210,7 +210,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   l.push("|---|---|---|---|---|---|---|---|");
   classement.slice(0, 12).forEach(function (c) {
     const cats = Object.keys(c.missingCategories);
-    l.push("| " + nomProfil(c.profile) + " | " + nomStade(c.ageMois) + " | " + c.as_is +
+    l.push("| " + profileName(c.profile) + " | " + nomStade(c.ageMois) + " | " + c.as_is +
       " | " + c.adapted + " | " + c.not_adaptable + " | " + c.outOfAge + " | " + (c.missing || "—") +
       " | " + (cats.length ? cats.map((k) => k + " (" + c.missingCategories[k] + ")").join(", ") : "—") + " |");
   });
@@ -230,7 +230,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   if (!cmd.length) l.push("Aucun trou sous le seuil — le prochain lot peut viser la variété plutôt que la couverture.");
   cmd.forEach(function (c) {
     l.push("- **" + c.n + " " + c.categories[0].toLowerCase() + "** from " + c.ageMois + " months — " +
-      (c.passePartout ? "**works for everyone** (none of the 11 priority allergens)" : nomProfil(c.evite)));
+      (c.passePartout ? "**works for everyone** (none of the 11 priority allergens)" : profileName(c.evite)));
     l.push("    - " + c.reason);
   });
   l.push("");
@@ -256,13 +256,13 @@ function poolStatus(corpus, pub) {
 }
 
 function report(corpus, pub) {
-  const cases = analyser(corpus);
-  const classement = classer(cases);
+  const cases = analyse(corpus);
+  const classement = classify(cases);
   const blockers = bloquantsGlobaux(cases);
   const pool = poolStatus(corpus, pub);
   pool.seed = corpus.length;                       /* moves with every run */
-  brief.pool = pool;
-  const cmd = brief(classement, (pub && pub.perRun) || 20);
+  commission.pool = pool;
+  const cmd = commission(classement, (pub && pub.perRun) || 20);
   return { cases: cases, classement: classement, blockers: blockers, commande: cmd, pool: pool };
 }
 
@@ -283,10 +283,10 @@ if (require.main === module) {
     JSON.stringify({ classement: r.classement.slice(0, 25), blockers: r.blockers, commande: r.commande }, null, 2) + "\n");
   console.log("Gaps analysed: " + r.cases.length + " combinations (" + PROFILS.length + " profiles x " + STADES.length + " ages)");
   r.classement.slice(0, 5).forEach(function (c) {
-    console.log("  " + nomProfil(c.profile) + " @ " + nomStade(c.ageMois) + " → " + c.usable + " usable" +
+    console.log("  " + profileName(c.profile) + " @ " + nomStade(c.ageMois) + " → " + c.usable + " usable" +
       (c.missing ? "  MISSING " + c.missing : ""));
   });
   console.log("Suggested commission: " + r.commande.reduce((s, c) => s + c.n, 0) + " recipes");
 }
 
-module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, poolStatus: poolStatus, analyser: analyser, classer: classer, commande: brief, nomProfil: nomProfil, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };
+module.exports = { SEUIL_CATEGORIE: SEUIL_CATEGORIE, report: report, poolStatus: poolStatus, analyse: analyse, classify: classify, commande: commission, profileName: profileName, PROFILS: PROFILS, STADES: STADES, SEUIL_SEMAINE: SEUIL_SEMAINE };

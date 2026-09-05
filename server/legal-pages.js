@@ -5,9 +5,9 @@
 /* The contact address is configuration, not text: the placeholder shipped
  * for weeks. BOUCHEES_CONTACT on Render, or the fallback below. */
 const CONTACT = process.env.BOUCHEES_CONTACT || "bonjour@bouchees.ca";
-const RESPONSABLE = process.env.BOUCHEES_PRIVACY_OFFICER || "le fondateur de Bouchées";
+const OFFICER = process.env.BOUCHEES_PRIVACY_OFFICER || "le fondateur de Bouchées";
 
-const GABARIT = (titre, body, lang) => `<!DOCTYPE html>
+const TEMPLATE = (titre, body, lang) => `<!DOCTYPE html>
 <html lang="${lang || "en"}">
 <head>
 <meta charset="utf-8">
@@ -45,7 +45,7 @@ ${body}
 
 const MAJ = "August 2026";
 
-const CONDITIONS = GABARIT("Terms of Use", `
+const TERMS_EN = TEMPLATE("Terms of Use", `
 <h1>Terms of Use</h1>
 <p class="maj">Last updated: ${MAJ}</p>
 
@@ -116,7 +116,7 @@ limits liability that cannot be limited by law.</p>
 <p>Questions about these terms: <a href="mailto:${CONTACT}">${CONTACT}</a></p>
 `);
 
-const CONFIDENTIALITE = GABARIT("Privacy Policy", `
+const PRIVACY_EN = TEMPLATE("Privacy Policy", `
 <h1>Privacy Policy</h1>
 <p class="maj">Last updated: ${MAJ}</p>
 
@@ -182,7 +182,7 @@ same licence on request.</p>
 <h2>Person in charge of personal information</h2>
 <p>Under Québec's Act respecting the protection of personal information in the
 private sector (Law 25), the person in charge of personal information is
-${RESPONSABLE}, reachable at <a href="mailto:${CONTACT}">${CONTACT}</a>. The
+${OFFICER}, reachable at <a href="mailto:${CONTACT}">${CONTACT}</a>. The
 French version of this policy is available at <a href="/fr/privacy">/fr/privacy</a>.</p>
 
 <h2>Your rights</h2>
@@ -197,7 +197,7 @@ will be announced in the app.</p>
 `);
 
 
-const CONDITIONS_FR = GABARIT("Conditions d'utilisation", `
+const TERMS_FR = TEMPLATE("Conditions d'utilisation", `
 <h1>Conditions d'utilisation</h1>
 <p class="maj">Dernière mise à jour : ${MAJ}</p>
 
@@ -272,7 +272,7 @@ l'être en vertu de la loi.</p>
 <p>Questions sur ces conditions : <a href="mailto:${CONTACT}">${CONTACT}</a></p>
 `, "fr");
 
-const CONFIDENTIALITE_FR = GABARIT("Politique de confidentialité", `
+const PRIVACY_FR = TEMPLATE("Politique de confidentialité", `
 <h1>Politique de confidentialité</h1>
 <p class="maj">Dernière mise à jour : ${MAJ}</p>
 
@@ -341,7 +341,7 @@ disponible sous la même licence sur demande.</p>
 <h2>Responsable de la protection des renseignements personnels</h2>
 <p>En vertu de la Loi sur la protection des renseignements personnels dans le
 secteur privé (Loi 25), la personne responsable de la protection des
-renseignements personnels est ${RESPONSABLE}, joignable à
+renseignements personnels est ${OFFICER}, joignable à
 <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
 
 <h2>Vos droits</h2>
@@ -355,4 +355,4 @@ nous répondons dans les 30 jours prévus par la loi.</p>
 l'application vous en informe au prochain lancement.</p>
 `, "fr");
 
-module.exports = { CONDITIONS, CONFIDENTIALITE, CONDITIONS_FR, CONFIDENTIALITE_FR };
+module.exports = { TERMS_EN, PRIVACY_EN, TERMS_FR, PRIVACY_FR };
