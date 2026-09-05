@@ -382,6 +382,32 @@ private struct PressedTile: ButtonStyle {
 
 // MARK: - Step 2 — who
 
+/// The step counter with the way back beside it. The draft lives in the
+/// flow, so going back loses nothing.
+private struct StepHeader: View {
+    let label: LocalizedStringKey
+    let back: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(action: back) {
+                Image(systemName: "chevron.left")
+                    .scaledFont(Type.secondary, weight: .semibold)
+                    .foregroundStyle(Tone.text)
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .glass(Circle())
+            .accessibilityLabel(Text("Back"))
+            Text(label)
+                .scaledFont(Type.label)
+                .foregroundStyle(Tone.brand)
+                .textCase(.uppercase)
+                .kerning(1.4)
+        }
+    }
+}
+
 /// Name and age on one screen. They are two taps, not two decisions; splitting
 /// them added a step and bought nothing.
 private struct WhoStep: View {
