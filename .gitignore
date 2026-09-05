@@ -40,3 +40,7 @@ pack/
 
 # The API key for GENERER.command. Never versioned.
 cle-api.txt
+
+# Render's disk cache of products; the seed that ships is data/products-seen.json
+server/product-cache.json
+server/product-cache.json.*.tmp

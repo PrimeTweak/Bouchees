@@ -1875,7 +1875,7 @@ test("server: a full miss spends one unit per request made, and nothing before t
   };
   try {
     const code = "036000291452";                         // a UPC-A: two forms
-    const requetes = Barcode2.forms(code).length + 3;    // food per form, one per sibling
+    const requetes = Barcode2.forms(code).length;        // food per form; no siblings
     await t.call("GET", "/api/product?code=" + code);
     assert.equal(appels, requetes, "every step of the plan is tried on a miss");
     let restants = 0;
@@ -2227,6 +2227,27 @@ test("photos: a thumbnail is a valid PNG under 500 px on its long side", () => {
     assert.equal(b.readUInt32BE(0), 0x89504e47, c.id + ": not a PNG");
     const w = b.readUInt32BE(16), h = b.readUInt32BE(20);
     assert(Math.max(w, h) <= 480, c.id + ": thumbnail is " + w + "x" + h);
+  });
+});
+
+test("scanner: one lookup per form of the code, food only — no sibling databases", () => {
+  /* An unknown product cost five or six calls against a budget of twelve a
+   * minute shared by every parent; the three sibling databases hold nothing
+   * a child eats. */
+  const src = fs.readFileSync(path.join(__dirname, "..", "server", "server.js"), "utf8");
+  assert(!/openbeautyfacts|openpetfoodfacts|openproductsfacts/.test(src), "a sibling database is still queried");
+  const B = require(path.join(__dirname, "..", "engine", "barcode.js"));
+  assert(B.forms("065633130111").length <= 2, "a UPC-A yields more than two forms");
+});
+
+test("scanner: the product seed ships in the repository and the cache answers from it", () => {
+  const seedPath = path.join(__dirname, "..", "data", "products-seen.json");
+  assert(fs.existsSync(seedPath), "data/products-seen.json missing — Render's disk is wiped on deploy");
+  const seed = JSON.parse(fs.readFileSync(seedPath, "utf8"));
+  assert(typeof seed === "object" && !Array.isArray(seed), "the seed is not a code-keyed object");
+  Object.keys(seed).forEach((k) => {
+    assert(/^\d{8,14}$/.test(k), "seed key is not a barcode: " + k);
+    assert(seed[k].ingredientsText !== undefined, "seed entry without ingredients: " + k);
   });
 });
 

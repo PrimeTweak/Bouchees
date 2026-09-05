@@ -26,6 +26,27 @@ const val = (n, d) => { const x = args.find((v) => v.startsWith(n + "=")); retur
  * the current week, not into a month. */
 function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
 
+/* Products the live server found since the last cycle, folded into the
+ * seed the repository ships. Needs BOUCHEES_ADMIN_SECRET in cle-api.txt;
+ * without it, or offline, the step is skipped and says so. */
+async function ramenerProduitsVus() {
+  const secret = process.env.BOUCHEES_ADMIN_SECRET;
+  if (!secret) { console.log("  products seen: no BOUCHEES_ADMIN_SECRET in cle-api.txt — skipped"); return; }
+  const base = process.env.BOUCHEES_SERVER || "https://bouchees.onrender.com";
+  const fichier = path.join(__dirname, "..", "data", "products-seen.json");
+  let seed = {};
+  try { seed = JSON.parse(fs.readFileSync(fichier, "utf8")); } catch (e) { seed = {}; }
+  try {
+    const r = await fetch(base + "/api/products-seen?key=" + encodeURIComponent(secret));
+    if (!r.ok) { console.log("  products seen: server answered " + r.status + " — skipped"); return; }
+    const nouveaux = await r.json();
+    const avant = Object.keys(seed).length;
+    Object.keys(nouveaux).forEach(function (k) { seed[k] = nouveaux[k]; });
+    fs.writeFileSync(fichier, JSON.stringify(seed, null, 1) + "\n");
+    console.log("  products seen: " + (Object.keys(seed).length - avant) + " new, " + Object.keys(seed).length + " in the repository");
+  } catch (e) { console.log("  products seen: " + e.message + " — skipped"); }
+}
+
 /* Every rejected draft is kept with its reasons. A rejection that is only
  * printed cannot be audited, and the validator cannot be tuned without a
  * corpus of what it refused. Last two hundred, newest first. */
@@ -348,6 +369,7 @@ async function principal() {
   console.log("═".repeat(64));
 
   let jr = null, ji = null;
+  await ramenerProduitsVus();
   if (!a("--images-seulement")) jr = await cycleRecettes(data, options);
   /* A run without credit is a failed run: exit non-zero so GENERER.command
    * stops after one tour instead of three. */

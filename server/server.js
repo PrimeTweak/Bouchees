@@ -43,30 +43,51 @@ function jetonNeuf() { return crypto.randomBytes(24).toString("hex"); }
  * Persisted beside accounts.json so a redeploy does not start cold. */
 const FICHIER_CACHE = process.env.BOUCHEES_PRODUCT_CACHE ||
                       path.join(__dirname, "product-cache.json");
+/* Products found once, shipped in the repository: Render's disk is wiped on
+ * every deploy, so a file cache alone forgot every product at each push,
+ * and each forgotten product cost its lookups again. The seed loads under
+ * the live cache and never expires; the cycle commits it. */
+const FICHIER_AMORCE = path.join(__dirname, "..", "data", "products-seen.json");
+
 const ProductCache = (function () {
   const HIT_TTL = 30 * 24 * 3600 * 1000, MISS_TTL = 24 * 3600 * 1000, MAX = 50000;
   let table = {};
+  let seed = {};
+  try { seed = JSON.parse(fs.readFileSync(FICHIER_AMORCE, "utf8")); } catch (e) { seed = {}; }
   try { table = JSON.parse(fs.readFileSync(FICHIER_CACHE, "utf8")); } catch (e) { table = {}; }
-  let sales = 0;
+  let timer = null;
   function persist() {
+    timer = null;
     try {
       const tmp = FICHIER_CACHE + "." + process.pid + ".tmp";
       fs.writeFileSync(tmp, JSON.stringify(table));
       fs.renameSync(tmp, FICHIER_CACHE);
     } catch (e) { /* the cache is a convenience; losing it costs a lookup */ }
   }
+  /* Written within five seconds of a change, never on every scan: the old
+   * rule wrote every twenty, and a server that saw nineteen never wrote. */
+  function planifier() { if (!timer) timer = setTimeout(persist, 5000).unref(); }
   return {
     get: function (code) {
       const e = table[code];
-      if (!e) return null;
-      if (Date.now() - e.at > (e.hit ? HIT_TTL : MISS_TTL)) { delete table[code]; return null; }
-      return e;
+      if (e) {
+        if (Date.now() - e.at > (e.hit ? HIT_TTL : MISS_TTL)) { delete table[code]; }
+        else return e;
+      }
+      if (seed[code]) return { hit: true, payload: seed[code] };
+      return null;
     },
     set: function (code, entry) {
       entry.at = Date.now();
       table[code] = entry;
       if (Object.keys(table).length > MAX) table = {};
-      if (++sales % 20 === 0) persist();
+      planifier();
+    },
+    /* Every product found since the seed, for the cycle to fold in. */
+    _hits: function () {
+      const out = {};
+      Object.keys(table).forEach(function (k) { if (table[k].hit && !seed[k]) out[k] = table[k].payload; });
+      return out;
     },
     /* For the tests, and for a rebuild after a change to the shape. */
     _reset: function () { table = {}; },
@@ -425,6 +446,14 @@ const routes = {
    * Facts, derives allergens WITH OUR catalogue, and keeps nothing. */
     /* Product lookup by barcode: two things were missing and each one hid
    * products that are in the database: */
+  /* The products found since the seed, for the cycle to fold into the
+   * repository. Keyed on a secret so the list is not a public export. */
+  "GET /api/products-seen": function (req, res, ctx) {
+    const secret = process.env.BOUCHEES_ADMIN_SECRET;
+    if (!secret || ctx.url.searchParams.get("key") !== secret) return json(res, 404, { error: "not found" });
+    json(res, 200, ProductCache._hits());
+  },
+
   "GET /api/product": async function (req, res, ctx) {
         /* GS1-aware: a QR or a Data Matrix hands over a URL or an element string,
      * and keeping only their digits gave a seventeen-digit key that nothing
@@ -469,15 +498,14 @@ const routes = {
       "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
     };
 
-        /* Food with both forms, then one form per sibling: food is where a
-     * grocery product lives; the siblings only need a look. */
-    const plan = [];
-    for (const forme of forms) plan.push({ hote: "world.openfoodfacts.org", genre: "food", forme: forme });
-    for (const b of [["world.openbeautyfacts.org", "beauty"],
-                     ["world.openpetfoodfacts.org", "petfood"],
-                     ["world.openproductsfacts.org", "product"]]) {
-      plan.push({ hote: b[0], genre: b[1], forme: forms[0] });
-    }
+    /* Food only. The three sibling databases (beauty, pet food, products)
+     * hold nothing a child eats, and asking them cost three calls per
+     * unknown product against a budget of twelve a minute shared by every
+     * parent: two unknowns in a row and the next real product came back
+     * "busy". One call per form of the code, and the forms are ordered
+     * longest first — the thirteen-digit one is the canonical index. */
+    const plan = forms.slice().sort(function (a, b) { return b.length - a.length; })
+      .map(function (forme) { return { hote: "world.openfoodfacts.org", genre: "food", forme: forme }; });
 
     let unavailable = false;
     for (const step of plan) {

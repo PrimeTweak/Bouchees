@@ -1,11 +1,9 @@
 {
-  "build": 188,
+  "build": 189,
   "date": "2026-09-06",
   "carries": [
-    "a row title showed through the child pill. The first fix widened the shared top field, which would have buried the Family and Shopping titles at 97 per cent — the field is restored byte for byte. The cause was the pill itself: regular glass refracts what scrolls beneath it. It gets a canvas backing under its glass, for this pill alone",
-    "About pushed inside Settings showed two chevrons: the stack's own back button and the one drawn here. The system bar is hidden on About as on every other screen, and the chevron drawn is the same 36-point glass circle the recipe page uses, on its own line",
-    "with StoreKit silent, the offer's price line fell back to '7 days free' right above a button saying 'Try 7 days free'; the line is omitted until the store answers, on the week and in the onboarding",
-    "today: the red rule is gone, and the field is what marks the day — but it only showed around the header, because every row paints an opaque canvas to hide the swipe pill behind it. Rows inside today's block now paint the day's own field through an environment value, so the block is one surface. The field is Tone.today, amber at 14 per cent over the canvas: warm sand, not grey, and a deep brown in the dark",
-    "build fix: the row-canvas key was inserted between `private` and `struct CookedSwipe`, because the anchor searched for was `struct CookedSwipe` and the declaration read `private struct CookedSwipe`. A checker rule now refuses a modifier followed by nothing or by a comment"
+    "SCANNER — why products that once scanned stopped scanning. Three causes, all on the server, none in the app: (1) an unknown product cost five or six lookups — every form of the code, then three sibling databases that hold nothing a child eats — against a budget of twelve a minute shared by every parent, so two unknowns in a row and the next real product came back 'busy'; food only now, one call per form; (2) the product cache lived on Render's disk, which is wiped on every deploy, so every push forgot every product; a seed now ships in the repository, data/products-seen.json, loaded under the live cache and never expiring; (3) the disk cache was written every twenty scans — a server that saw nineteen never wrote; it writes within five seconds of a change",
+    "the cycle folds the products the live server found into the seed, through a route keyed on BOUCHEES_ADMIN_SECRET; proven on an instance: Render redeployed, disk empty, Open Food Facts offline — a seeded product answers in zero calls",
+    "no build: the app is unchanged"
   ]
 }
