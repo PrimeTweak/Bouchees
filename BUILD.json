@@ -1,9 +1,10 @@
 {
-  "build": 183,
+  "build": 186,
   "date": "2026-09-06",
   "carries": [
-    "PHOTOS: the chain from a pushed file to a client's screen was proven on a live instance — fingerprinted name, immutable cache, 404 on the unknown, no traversal, catalogue never cached — and one link was missing: the repository held no thumbnail at all, because only a Mac script made them. A client downloaded 2 MB per 66-point square, 32 MB a week. publish.js now makes the thumbnail itself in plain Node, no dependency, so a photo pushed from anywhere ships with one: 7 MB a week. Two tests hold it",
-    "CODE: every French identifier is English — threshold, deadZone, follow, release, highlight, preview, tiles, stage, firstLaunch, withBundledBodies and the rest; four French comments and eighteen personal ones rewritten impersonal; six dead types and two dead properties removed",
-    "a child's age is clamped to 6–72 months when profiles are read: the counter bounds its own taps, but a file from an old build can carry anything"
+    "a row title showed through the child pill. The first fix widened the shared top field, which would have buried the Family and Shopping titles at 97 per cent — the field is restored byte for byte. The cause was the pill itself: regular glass refracts what scrolls beneath it. It gets a canvas backing under its glass, for this pill alone",
+    "About pushed inside Settings showed two chevrons: the stack's own back button and the one drawn here. The system bar is hidden on About as on every other screen, and the chevron drawn is the same 36-point glass circle the recipe page uses, on its own line",
+    "with StoreKit silent, the offer's price line fell back to '7 days free' right above a button saying 'Try 7 days free'; the line is omitted until the store answers, on the week and in the onboarding",
+    "today carried four marks — the word, a darker header, the wrapping field and a red rule; the rule is gone. The field does what a rule cannot: it wraps the meal and the snack together, which is what today is. The red was also the only brand colour in the list, where brand means action"
   ]
 }

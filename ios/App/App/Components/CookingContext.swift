@@ -59,6 +59,10 @@ struct CookingContextHeader: View {
             .padding(.vertical, ownGlass ? 8 : 2)
             .contentShape(Capsule())
         }
+        /* A canvas backing under the glass, for this pill only: regular
+         * glass refracts what scrolls beneath it, and a row title read
+         * through the child's name. */
+        .background { if ownGlass { Capsule().fill(Tone.canvas.opacity(0.88)) } }
         .glassIf(ownGlass)
         .buttonStyle(.plain)
         .accessibilityLabel("\(title). \(subtitle). Tap to switch.")

@@ -270,16 +270,12 @@ struct RecipesScreen: View {
             .compactMap { r in app.resultFor(r).map { (recipe: r, result: $0) } }
 
         if isToday {
-            HStack(alignment: .top, spacing: 0) {
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .fill(Tone.brand)
-                    .frame(width: 3)
-                    .padding(.vertical, 9)
-                    .padding(.leading, 6)
-                VStack(alignment: .leading, spacing: 0) {
-                    dayHeader(dayIndex, slot: slot, today: true)
-                    dayBody(dayIndex, dishes: dishes, slot: slot)
-                }
+            /* One mark for today: the word and the field that wraps the meal
+             * and the snack together. The red rule was a third, and the only
+             * brand colour in the list. */
+            VStack(alignment: .leading, spacing: 0) {
+                dayHeader(dayIndex, slot: slot, today: true)
+                dayBody(dayIndex, dishes: dishes, slot: slot)
             }
             .background(Tone.text.opacity(0.04),
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -325,7 +321,7 @@ struct RecipesScreen: View {
             /* No count: it numbered the rows sitting right below it. */
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, today ? 13 : Layout.gutter)
+        .padding(.horizontal, today ? Layout.gutter - 8 : Layout.gutter)
         .padding(.top, today ? 11 : 6)
         .padding(.bottom, 2)
     }
@@ -466,10 +462,10 @@ extension RecipesScreen {
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
     /// number the app invented.
-    private var priceLine: String {
-        guard let price = app.subscription.displayPrice else {
-            return String(localized: "7 days free")
-        }
+    private var priceLine: String? {
+        /* Nothing when StoreKit has not answered: the button already says
+         * "7 days free", and a second line saying it again read as a bug. */
+        guard let price = app.subscription.displayPrice else { return nil }
         let period = app.subscription.displayPeriod ?? String(localized: "month")
         return String(format: String(localized: "7 days free, then %@/%@"), price, period)
     }
@@ -496,10 +492,12 @@ extension RecipesScreen {
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
-                    Text(priceLine)
-                        .scaledFont(Type.caption)
-                        .foregroundStyle(Tone.upsellText2)
-                        .padding(.top, 2)
+                    if let priceLine {
+                        Text(priceLine)
+                            .scaledFont(Type.caption)
+                            .foregroundStyle(Tone.upsellText2)
+                            .padding(.top, 2)
+                    }
 
                     /* Solid, in the action colour. On the dark card a light
                      * button was right; on this one the reverse reads

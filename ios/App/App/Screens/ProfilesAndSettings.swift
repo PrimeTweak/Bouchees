@@ -716,20 +716,21 @@ struct AboutScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 10) {
-                    if pushed {
-                        Button { dismiss() } label: {
-                            Image(systemName: "chevron.left")
-                                .scaledFont(Type.secondary, weight: .semibold)
-                                .foregroundStyle(Tone.text)
-                                .frame(width: 32, height: 32)
-                        }
-                        .buttonStyle(.plain)
-                        .glass(Circle())
-                        .accessibilityLabel(Text("Back"))
+                if pushed {
+                    /* The same back as every other screen: a glass circle
+                     * on its own line, above the title. */
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left")
+                            .scaledFont(Type.heading, weight: .semibold)
+                            .foregroundStyle(Tone.text)
+                            .frame(width: 36, height: 36)
                     }
-                    Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
+                    .buttonStyle(.plain)
+                    .glass(Circle())
+                    .accessibilityLabel(Text("Back"))
+                    .padding(.bottom, 14)
                 }
+                Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
 
                 section("Safety", Settings.medicalDisclaimer)
                 section("Photos", String(localized: """
@@ -764,6 +765,8 @@ struct AboutScreen: View {
             }
         }
         .background(Tone.canvas.ignoresSafeArea())
+        /* The stack's own back button would double the chevron drawn here. */
+        .toolbar(.hidden, for: .navigationBar)
         /* Sized to its content, like the other sheets. */
         .presentationDetents(height > 0
             ? [.height(min(max(height, 320), UIScreen.main.bounds.height * 0.92)), .large]

@@ -691,10 +691,8 @@ private struct OfferStep: View {
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
     /// number the app invented.
-    private var priceLine: String {
-        guard let price = app.subscription.displayPrice else {
-            return String(localized: "7 days free")
-        }
+    private var priceLine: String? {
+        guard let price = app.subscription.displayPrice else { return nil }
         let period = app.subscription.displayPeriod ?? String(localized: "month")
         return String(format: String(localized: "7 days free, then %@/%@"), price, period)
     }
@@ -751,9 +749,11 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                Text(priceLine)
-                    .scaledFont(Type.secondary)
-                    .foregroundStyle(Tone.textTertiary)
+                if let priceLine {
+                    Text(priceLine)
+                        .scaledFont(Type.secondary)
+                        .foregroundStyle(Tone.textTertiary)
+                }
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 10)
