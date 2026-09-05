@@ -8,161 +8,14 @@ import UIKit
 
 // MARK: - Profiles
 
-struct ProfilesScreen: View {
-    @Environment(AppState.self) private var app
-    @State private var editing: ChildProfile?
-    @State private var pendingDeletion: ChildProfile?
-
-    var body: some View {
-        List {
-            Section {
-                ForEach(app.profiles) { p in
-                    Button {
-                        app.select(p.id)
-                    } label: {
-                        ProfileRow(profile: p,
-                                    isOn: !app.familyMode && p.id == app.activeProfileID,
-                                    names: app.allergenNames(p.allergens),
-                                    tally: app.tally(for: p))
-                    }
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            pendingDeletion = p
-                        } label: { Label("Remove", systemImage: "trash") }
-
-                        Button {
-                            editing = p
-                        } label: { Label("Edit", systemImage: "pencil") }
-                        .tint(Tone.brand)
-                    }
-                }
-            } header: {
-                Text("Your children")
-            } footer: {
-                Text("Age determines textures and safety guidance. Allergens are removed from every recipe, with a replacement suggested.")
-            }
-
-            if app.profiles.count > 1 {
-                Section {
-                    Toggle(isOn: Binding(
-                        get: { app.familyMode },
-                        set: { _ in app.toggleFamilyMode() })) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Everyone at the table").font(.body)
-                                Text("Youngest child’s age, and everything each one avoids")
-                                    .font(.caption).foregroundStyle(.secondary)
-                            }
-                        }
-                        .tint(Tone.brand)
-                }
-            }
-
-            Section {
-                Button {
-                    editing = ChildProfile(name: "", ageMonths: 9, allergens: [])
-                } label: {
-                    Label("Add a child", systemImage: "plus.circle.fill")
-                }
-            }
-        }
-        .navigationTitle("Children")
-        .sheet(item: $editing) { p in
-            ProfileEditor(profile: p)
-        }
-        .alert("Remove this profile?",
-               isPresented: Binding(get: { pendingDeletion != nil },
-                                    set: { if !$0 { pendingDeletion = nil } }),
-               presenting: pendingDeletion) { p in
-            Button("Remove", role: .destructive) { app.remove(p) }
-            Button("Cancel", role: .cancel) { }
-        } message: { p in
-            Text("\(p.name)'s profile and their allergens will be erased from this device.")
-        }
-    }
-}
-
-struct ProfileRow: View {
-    let profile: ChildProfile
-    let isOn: Bool
-    let names: [String]
-    var tally: AppState.ProfileTally? = nil
-
-    private var avatarColor: Color {
-        let teintes: [Color] = [Tone.brand, Tone.yes, Tone.swap, Tone.no]
-        var somme = 0
-        for octet in profile.name.utf8 { somme = (somme &* 31 &+ Int(octet)) % 9973 }
-        return teintes[somme % teintes.count]
-    }
-
-    var body: some View {
-        HStack(spacing: 13) {
-            Text(String(profile.name.prefix(1)).uppercased())
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(width: 38, height: 38)
-                .background(avatarColor, in: Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(profile.name).font(.headline).foregroundStyle(.primary)
-                Text(names.isEmpty
-                     ? "\(Format.age(profile.ageMonths)) — no allergen avoided"
-                     : "\(Format.age(profile.ageMonths)) — no \(Format.list(names))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-
-            Spacer()
-
-            if isOn {
-                Image(systemName: "checkmark").foregroundStyle(Tone.brand).font(.headline)
-            }
-        }
-        .padding(.vertical, 4)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isOn ? [.isSelected] : [])
-
-        /* What a parent wants to know first: the children, then the rest. */
-        if let t = tally, t.total > 0 {
-            HStack(spacing: 16) {
-                TallyItem(count: t.asIs, label: "as is", color: Tone.yes)
-                TallyItem(count: t.adapted, label: "adapted", color: Tone.swap)
-                if t.blocked > 0 {
-                    TallyItem(count: t.blocked, label: "blocked", color: Tone.no)
-                }
-                Spacer()
-            }
-            .padding(.top, 2)
-            .padding(.bottom, 4)
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(t.asIs) recipes as is, \(t.adapted) adapted, \(t.blocked) blocked")
-        }
-    }
-}
-
-/// One figure with its label. Small, quiet, and the number carries the weight.
-private struct TallyItem: View {
-    let count: Int
-    let label: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Text("\(count)")
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(color)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
 struct ProfileEditor: View {
     @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var fermer
     @State var profile: ChildProfile
+    /// False for a child not saved yet: there is nothing to remove.
+    var canRemove = false
     @State private var showAllAllergens = false
+    @State private var confirmRemove = false
 
     var body: some View {
         NavigationStack {
@@ -190,10 +43,29 @@ struct ProfileEditor: View {
                                          showAllAllergens: $showAllAllergens,
                                          allergens: app.knownAllergens)
                     }
+
+                    if canRemove {
+                        Button(role: .destructive) { confirmRemove = true } label: {
+                            Text("Remove this child")
+                                .scaledFont(Type.body, weight: .medium)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: Layout.tapTarget)
+                        }
+                        .foregroundStyle(Tone.no)
+                        .background(Tone.no.opacity(0.08),
+                                    in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .padding(.top, 8)
+                    }
                 }
                 .padding(20)
             }
             .background(Tone.canvas.ignoresSafeArea())
+            .alert("Remove this profile?", isPresented: $confirmRemove) {
+                Button("Remove", role: .destructive) { app.remove(profile); fermer() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The week and the shopping list will be rebuilt for the children who remain.")
+            }
             .navigationTitle(profile.name.isEmpty ? "New child" : profile.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -234,6 +106,8 @@ struct SettingsScreen: View {
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var showDemo = false
+    @State private var editing: ChildProfile?
+    @State private var hauteurReglages: CGFloat = 0
     @State private var reminderOn = WeeklyReminder.enabled
     @State private var showAbout = false
     @State private var email = ""
@@ -284,10 +158,8 @@ struct SettingsScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Settings")
-                        .scaledFont(Type.title)
-                        .foregroundStyle(Tone.text)
-                        .padding(.top, 6)
+                    /* Same title, same distance from the handle, as About. */
+                    Text("Settings").scaledFont(Type.display).foregroundStyle(Tone.text)
                     appearanceSection
                     subscriptionSection
                     contentSection
@@ -295,12 +167,22 @@ struct SettingsScreen: View {
                     footnotes
                 }
                 .padding(.horizontal, Layout.gutter)
+                .padding(.top, 26)
                 .padding(.bottom, 24)
+                .background {
+                    GeometryReader { geo in
+                        Color.clear.onAppear { hauteurReglages = geo.size.height }
+                            .onChange(of: geo.size.height) { _, h in hauteurReglages = h }
+                    }
+                }
             }
             .background(Tone.canvas.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
         }
-        .presentationDetents([.large])
+        /* Sized to its content, like About. */
+        .presentationDetents(hauteurReglages > 0
+            ? [.height(min(max(hauteurReglages, 320), UIScreen.main.bounds.height * 0.92)), .large]
+            : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
 
@@ -344,13 +226,15 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Your children").eyebrow().padding(.top, 26).padding(.bottom, 9)
             ForEach(Array(app.profiles.enumerated()), id: \.element.id) { i, p in
-                NavigationLink { ProfilesScreen() } label: {
+                /* Straight to this child's editor: the list in between
+                 * repeated the children and offered "add" a second time. */
+                Button { editing = p } label: {
                     ChildCard(profile: p, index: i, figures: app.figures(for: p), summary: childSummary(p))
                 }
                 .buttonStyle(.plain)
                 .padding(.bottom, 8)
             }
-            NavigationLink { ProfilesScreen() } label: {
+            Button { editing = .defaut } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "plus").scaledFont(Type.secondary, weight: .semibold)
                     Text("Add a child").scaledFont(Type.secondary, weight: .semibold)
@@ -359,6 +243,9 @@ struct SettingsScreen: View {
                 .padding(.vertical, 4)
             }
             .buttonStyle(.plain)
+        }
+        .sheet(item: $editing) { p in
+            ProfileEditor(profile: p, canRemove: app.profiles.contains { $0.id == p.id })
         }
     }
 

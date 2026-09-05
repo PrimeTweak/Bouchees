@@ -2192,16 +2192,19 @@ test("prompt: the model is told what already exists and what this run wrote", ()
   assert(/Built around: lentils/.test(p), "no hero ingredient");
 });
 
-test("bundle: the demo recipe ships with a body, so the onboarding can adapt it offline", () => {
+test("bundle: the demo recipe ships with a body, a photo, and three allergens to swap", () => {
   /* The saved catalogue is the server's — cards without bodies — and the
-   * demo asks for one recipe by name. Its body has to be in the bundle. */
+   * demo asks for one recipe by name. Its body has to be in the bundle,
+   * its photo has to be published, and a tap on milk, egg or wheat has to
+   * show a swap. */
   const man = read("../dist/manifest.json");
-  assert(man.free.includes("banana-oat-muffins"), "banana-oat-muffins is not among the bundled free bodies");
-  const body = read("../dist/recipes/banana-oat-muffins.json");
+  assert(man.free.includes("fluffy-pancakes"), "fluffy-pancakes is not among the bundled free bodies");
+  const card = read("../dist/catalogue.json").find((c) => c.id === "fluffy-pancakes");
+  assert(card && card.image, "the demo recipe has no published photo — the demo would show a grey plate");
+  const body = read("../dist/recipes/fluffy-pancakes.json");
   assert(Array.isArray(body.steps) && body.steps.length >= 4, "the bundled body has no steps");
   const ids = body.ingredients.map((i) => i.id);
-  assert(ids.some((i) => ["cow_milk", "egg", "wheat_flour"].includes(i)),
-         "the demo recipe carries no allergen to swap, so a tap would show nothing");
+  ["cow_milk", "egg", "wheat_flour"].forEach((a) => assert(ids.includes(a), "the demo recipe lost " + a));
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

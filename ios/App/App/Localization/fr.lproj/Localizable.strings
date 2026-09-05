@@ -511,3 +511,5 @@
 "Nothing left to unlock." = "Plus rien à débloquer.";
 "Cooked this week: " = "Cuisinées cette semaine : ";
 "%lld of %lld" = "%lld sur %lld";
+"Remove this child" = "Retirer cet enfant";
+"The week and the shopping list will be rebuilt for the children who remain." = "La semaine et la liste d'épicerie seront refaites pour les enfants qui restent.";

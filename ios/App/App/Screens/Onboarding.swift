@@ -77,18 +77,23 @@ private struct LiveDemoStep: View {
     @Binding var draft: ChildProfile
     let next: () -> Void
 
-    /// The recipe the demo adapts. Chosen because it carries milk, egg and
+    /// The recipe the demo adapts: pancakes, which carry milk, egg and
     /// wheat, so most taps produce a visible swap.
     private var demoRecipe: Recipe? {
         /* Only a recipe WITH a body can be adapted. The old fallback took the
          * first card alphabetically, which after a sync is a card without one
          * — and the demo went blank. */
+        /* A body, a photo, and an allergen to swap — in that order of
+         * preference. The muffins lost their photo file on the way to the
+         * repository; a demo with a grey plate on it sells nothing. */
         let withBody = app.recipes.filter(\.hasBody)
-        return withBody.first { $0.id == "banana-oat-muffins" }
-            ?? withBody.first { r in
-                let ids = Set(r.ingredients.map(\.id))
-                return ids.contains("cow_milk") || ids.contains("egg") || ids.contains("wheat_flour")
-            }
+        let swappable: (Recipe) -> Bool = { r in
+            let ids = Set(r.ingredients.map(\.id))
+            return ids.contains("cow_milk") || ids.contains("egg") || ids.contains("wheat_flour")
+        }
+        return withBody.first { $0.id == "fluffy-pancakes" && $0.image != nil }
+            ?? withBody.first { $0.image != nil && swappable($0) }
+            ?? withBody.first(where: swappable)
             ?? withBody.first
     }
 

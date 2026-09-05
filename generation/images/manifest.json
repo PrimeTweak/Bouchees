@@ -982,5 +982,121 @@
         "la vision hésite sur : exact legume variety (lentil vs small bean), possible sweet potato instead of carrot, possible quinoa in the mix"
       ]
     }
+  },
+  "banana-oat-blender-muffins": {
+    "fichier": "images/banana-oat-blender-muffins-9443d4db3f87.png",
+    "empreinte": "9443d4db3f87",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T13:32:44.554Z",
+      "detectes": [
+        "oat",
+        "muffin"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "only one ingredient recognised out of 8 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : banana, cinnamon, brown sugar, honey"
+      ]
+    }
+  },
+  "banana-chickpea-yogurt-muffins": {
+    "fichier": "images/banana-chickpea-yogurt-muffins-eb2f155fcaef.png",
+    "empreinte": "eb2f155fcaef",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T13:39:11.941Z",
+      "detectes": [
+        "oat",
+        "flour",
+        "banana",
+        "cinnamon"
+      ],
+      "reconnus": 4,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : exact mix-ins not visible (banana vs plain oat), possible nutmeg or spice blend, possible brown sugar topping"
+      ]
+    }
+  },
+  "cucumber-ricotta-pita-rounds": {
+    "fichier": "images/cucumber-ricotta-pita-rounds-edf60f4ec30d.png",
+    "empreinte": "edf60f4ec30d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T13:45:32.679Z",
+      "detectes": [
+        "pita bread",
+        "cucumber",
+        "cream cheese",
+        "ricotta",
+        "olive oil"
+      ],
+      "reconnus": 4,
+      "attendus": 6,
+      "avertissements": [
+        "la vision hésite sur : cream cheese or ricotta or labneh, olive oil or another liquid drizzle"
+      ]
+    }
+  },
+  "turkey-rice-bowl-with-roasted-vegetables": {
+    "fichier": "images/turkey-rice-bowl-with-roasted-vegetables-0f6c32bafb20.png",
+    "empreinte": "0f6c32bafb20",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T13:51:54.844Z",
+      "detectes": [
+        "rice",
+        "zucchini",
+        "red bell pepper",
+        "carrot",
+        "ground meat",
+        "chicken"
+      ],
+      "reconnus": 5,
+      "attendus": 12,
+      "avertissements": [
+        "la vision hésite sur : ground meat type (pork, turkey, or beef), chicken (could be pork)"
+      ]
+    }
+  },
+  "blueberry-banana-chickpea-muffins": {
+    "fichier": "images/blueberry-banana-chickpea-muffins-cfd75531678a.png",
+    "empreinte": "cfd75531678a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T14:04:38.465Z",
+      "detectes": [
+        "blueberry",
+        "muffin"
+      ],
+      "reconnus": 0,
+      "attendus": 8,
+      "avertissements": [
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "la vision hésite sur : type of flour used (all-purpose, whole wheat, oat), possible sugar topping on surface"
+      ]
+    }
   }
 }

@@ -186,7 +186,6 @@ private struct RouteDestination: View {
             }
         case .saved: SavedScreen()
         case .topRated: TopRatedScreen()
-        case .profiles: ProfilesScreen()
         }
     }
 }
@@ -198,7 +197,6 @@ enum Route: Hashable {
     case recipe(String)
     case saved
     case topRated
-    case profiles
 }
 
 /// With no engine the app can assert nothing. Better to say so plainly than to

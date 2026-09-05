@@ -218,8 +218,13 @@ def check():
                 r"^\s*(?:@\w+(?:\([^)]*\))?\s+)*(?:private\s+)?var\s+(\w+)\s*(?::[^=\n]+)?=",
                 corps, re.M))
             # A property wrapper supplies its own value too.
+            # A wrapped property is out of the memberwise init only when it is
+            # private. A public `@State var profile` takes `profile:` as its
+            # initial value — ProfileEditor(profile:) is legal Swift.
             enveloppes = set(re.findall(
-                r"^\s*@(?:State|Environment|FocusState|AppStorage)\b[^\n]*\b(?:var)\s+(\w+)",
+                r"^\s*@(?:State|Environment|FocusState|AppStorage)\b[^\n]*\bprivate\s+(?:var)\s+(\w+)",
+                corps, re.M)) | set(re.findall(
+                r"^\s*@(?:Environment|FocusState)\b[^\n]*\b(?:var)\s+(\w+)",
                 corps, re.M))
             champs -= enveloppes
             # A computed property is not an init parameter: it is followed by

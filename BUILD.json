@@ -1,11 +1,10 @@
 {
-  "build": 177,
+  "build": 178,
   "date": "2026-09-05",
   "carries": [
-    "cumulative from 175: the demo body fix (176) and the four mockups",
-    "ONBOARDING is four steps. Step three is new: the child's real week — the sequence's own picks for a profile not saved yet, three days fading out — with the name just typed, then four tiles for the four features the demo never showed. The price comes after what it buys. Step two's button says Plan Livia's week instead of promising recipes and delivering a paywall",
-    "SCANNER: a card over the camera, once, says what it reads and what it cannot see — a may-contain line is shown, not decided",
-    "FAMILY: settings move behind a gear; the tab shows one card per child with figures the app already computes — recipes safe today, this week's as-is and adapted, what the next age milestone unlocks, cooked this week — and Everyone at the table with the youngest age, every allergen as a chip, and the count that serves all of them",
-    "Replay the demo, in settings: the demo and the week again for the saved child, no name asked, no offer"
+    "the demo showed a grey plate because banana-oat-muffins has no published photo: the vision approved one on August 26 and the file never reached the repository — the orphan the photo report counts. The demo now adapts the pancakes, which carry milk, egg AND wheat and have a photo; a test pins body, photo and the three allergens",
+    "tapping a child on Family opened a system List that repeated the children and offered Add a child again: the card opens that child's editor directly, the plus opens an empty one, removal lives in the editor, and the list is gone with its route",
+    "the settings sheet is sized to its content like About, with the same title and the same distance from the handle",
+    "the Swift checker wrongly refused ProfileEditor(profile:): a public @State var takes its initial value through the memberwise init; only a private one is out"
   ]
 }
