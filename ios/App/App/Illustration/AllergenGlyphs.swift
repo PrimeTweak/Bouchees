@@ -141,36 +141,3 @@ struct AllergenGlyph: View {
     }
 }
 
-/// The allergen toggle: glyph plus name, pressed state clearly visible.
-struct AllergenToggle: View {
-    let allergene: Allergen
-    let isOn: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 9) {
-                AllergenGlyph(identifier: allergene.id, size: 20)
-                    .foregroundStyle(isOn ? Color.white : Color.primary)
-                Text(LocalizedStringKey(allergene.name))
-                    .font(.subheadline.weight(.medium))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, 13)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundStyle(isOn ? Color.white : Color.secondary)
-            .background(isOn ? Color.primary : Tone.surface,
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(isOn ? Color.clear : Color.primary.opacity(0.1), lineWidth: 1.5)
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isOn ? [.isSelected] : [])
-        .accessibilityLabel("\(allergene.name)\(isOn ? String(localized: ", avoided") : "")")
-    }
-}

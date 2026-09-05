@@ -128,22 +128,7 @@ echo ""
 
 node tools/cycle.js --images-seulement
 
-# Les vignettes, tout de suite : une photo de 3 Mo pour une case de 66 points
-# coute cher en donnees. sips est integre a macOS, rien a installer.
-echo ""
-echo "  Vignettes"
-echo "  ---------"
-mkdir -p images/thumbs
-n=0; d=0
-for f in images/*.png; do
-  [ -f "$f" ] || continue
-  cible="images/thumbs/$(basename "$f")"
-  if [ -f "$cible" ] && [ "$cible" -nt "$f" ]; then d=$((d+1)); continue; fi
-  sips -Z 480 "$f" --out "$cible" >/dev/null 2>&1 && n=$((n+1))
-done
-echo "    fabriquees   $n"
-echo "    deja a jour  $d"
-
+# Thumbnails are made by publish.js itself now, on any machine.
 # Republier : c'est ce qui inscrit le champ thumb dans le catalogue.
 node tools/publish.js | head -3
 

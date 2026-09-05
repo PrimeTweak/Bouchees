@@ -2,6 +2,7 @@
  * safety tables. The server hands bodies only to the entitled. */
 
 const fs = require("fs");
+const Vignettes = require("./thumbs.js");
 const path = require("path");
 const crypto = require("crypto");
 const root = path.join(__dirname, "..");
@@ -61,6 +62,9 @@ function publier(options) {
     /* A photo is published only when reviewed AND present on disk. */
     if (img && img.revisePar && img.fichier && fs.existsSync(path.join(root, img.fichier))) {
       copie.image = img.fichier;
+      /* Made here, so a photo pushed from anywhere ships with its thumbnail;
+       * a client without one downloaded 2 MB per 66-point square. */
+      Vignettes.thumbnail(root, img.fichier);
       const vignette = img.fichier.replace(/^images\//, "images/thumbs/");
       if (fs.existsSync(path.join(root, vignette))) copie.thumb = vignette;
     }

@@ -21,7 +21,7 @@ struct ShoppingScreen: View {
     }
 
     /// Off by default: the week is the normal shopping trip, and a day is the
-    /// exception you ask for.
+    /// exception asked for.
     @State private var dayFilter = false
 
     /// The staples — salt, oil, baking powder — sit in their own group at
@@ -201,7 +201,7 @@ struct ShoppingScreen: View {
 
     /// What is LEFT, not what is done: standing at the door of a shop, the
     /// question is how much is left to find — the number already in the basket
-    /// is the one you can see by looking down.
+    /// is the one visible by looking down.
     private var progress: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 7) {
@@ -337,7 +337,7 @@ private struct ShoppingRow: View {
                         .padding(.top, 2)
                     }
 
-                    /* Why there is so much of it, and what you lose by
+                    /* Why there is so much of it, and what is lost by
                      * skipping it. */
                     if item.recipes.count > 1 {
                         Text(item.recipes.joined(separator: " · "))

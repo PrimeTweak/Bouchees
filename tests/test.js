@@ -2207,4 +2207,27 @@ test("bundle: the demo recipe ships with a body, a photo, and three allergens to
   ["cow_milk", "egg", "wheat_flour"].forEach((a) => assert(ids.includes(a), "the demo recipe lost " + a));
 });
 
+test("photos: every published card ships with a thumbnail, and both files answer", () => {
+  /* A client with no thumbnail downloaded two megabytes per row; the
+   * repository shipped none, because only a Mac script made them. */
+  const cat = read("../dist/catalogue.json");
+  const avec = cat.filter((c) => c.image);
+  const sans = avec.filter((c) => !c.thumb);
+  assert.equal(sans.length, 0, "published without a thumbnail: " + sans.map((c) => c.id).join(", "));
+  avec.forEach((c) => {
+    assert(fs.existsSync(path.join(__dirname, "..", c.image)), c.id + ": photo file missing");
+    assert(fs.existsSync(path.join(__dirname, "..", c.thumb)), c.id + ": thumbnail file missing");
+  });
+});
+
+test("photos: a thumbnail is a valid PNG under 500 px on its long side", () => {
+  const cat = read("../dist/catalogue.json").filter((c) => c.thumb);
+  cat.forEach((c) => {
+    const b = fs.readFileSync(path.join(__dirname, "..", c.thumb));
+    assert.equal(b.readUInt32BE(0), 0x89504e47, c.id + ": not a PNG");
+    const w = b.readUInt32BE(16), h = b.readUInt32BE(20);
+    assert(Math.max(w, h) <= 480, c.id + ": thumbnail is " + w + "x" + h);
+  });
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

@@ -13,7 +13,7 @@ import UIKit
 
 // MARK: - Context header
 
-/// Who you are cooking for, over the hero photo. In a family with two children
+/// The child being cooked for, over the hero photo. In a family with two children
 /// on different profiles, cooking for the wrong one is the worst failure this
 /// app can have — so it is never more than a glance away.
 struct CookingContextHeader: View {
@@ -22,7 +22,7 @@ struct CookingContextHeader: View {
     /// the content down.
     var compact: Bool = false
 
-    /// Draw our own glass, or let the toolbar supply it: that is why the pill
+    /// Draw the glass here, or let the toolbar supply it: that is why the pill
     /// needed two taps.
     var ownGlass: Bool = true
 
@@ -123,9 +123,8 @@ struct ChildPickerSheet: View {
     @Environment(AppState.self) private var app
     @Environment(\.dismiss) private var dismiss
 
-    /// One row per child, plus family mode when there are two: "Who are you
-    /// cooking for?" asked a question the parent had already answered by
-    /// tapping the pill — and it reserved 60pt to do it.
+    /// One row per child, plus family mode when there are two. No heading:
+    /// the pill just tapped already asks the question.
     private var sheetHeight: CGFloat {
         let rows = CGFloat(app.profiles.count) * 92
         let family: CGFloat = app.profiles.count > 1 ? 138 : 0
@@ -370,7 +369,7 @@ struct SearchSheet: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 11)
         /* Raised, not sunken. A white field on the canvas reads as the thing
-         * you type into; a grey well reads as a disabled row. */
+         * typed into; a grey well reads as a disabled row. */
         .background(Tone.cardTop,
                     in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
@@ -728,7 +727,7 @@ struct SearchScreen: View {
          * search field and the clear button from the modifiers below. */
         .softTopBar { EmptyView() }
         /* The system field, not one of ours. `Tab(role: .search)` places it
-         * and animates it; declaring our own would fight that. */
+         * and animates it; declaring another would fight that. */
         /* A way out: `Tab(role: .search)` places the field and animates it,
          * but it does not give the parent a way back — the only exit was
          * another tab, and that is not an exit, it is a detour. */

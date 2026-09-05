@@ -174,7 +174,7 @@ struct RankRow: View {
     }
 }
 
-// MARK: - Bloc de notation, dans la fiche
+// MARK: - Rating block, on the recipe page
 
 struct RatingBlock: View {
     let recipe: Recipe

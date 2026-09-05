@@ -1,9 +1,9 @@
 {
-  "build": 182,
+  "build": 183,
   "date": "2026-09-06",
   "carries": [
-    "the demo's subtitle promised what the photo cannot do: 'Tap one and watch' sent the eye to the picture, which never changes — a photo is made once per recipe, of the original, and eleven allergens would mean two thousand variants. It says 'Tap one — the recipe adapts', and the photo says 'original' the moment a swap is made, with one line stating it shows the dish before the swaps",
-    "the demo photo is 104 points, not 56: the food is what sells. The eleven allergens still sit above the button on an iPhone 15",
-    "About no longer stacks a second sheet over Settings: it is pushed inside the same sheet, with a chevron back. From the recipe page it still opens as a sheet, where it is the only one"
+    "PHOTOS: the chain from a pushed file to a client's screen was proven on a live instance — fingerprinted name, immutable cache, 404 on the unknown, no traversal, catalogue never cached — and one link was missing: the repository held no thumbnail at all, because only a Mac script made them. A client downloaded 2 MB per 66-point square, 32 MB a week. publish.js now makes the thumbnail itself in plain Node, no dependency, so a photo pushed from anywhere ships with one: 7 MB a week. Two tests hold it",
+    "CODE: every French identifier is English — threshold, deadZone, follow, release, highlight, preview, tiles, stage, firstLaunch, withBundledBodies and the rest; four French comments and eighteen personal ones rewritten impersonal; six dead types and two dead properties removed",
+    "a child's age is clamped to 6–72 months when profiles are read: the counter bounds its own taps, but a file from an old build can carry anything"
   ]
 }

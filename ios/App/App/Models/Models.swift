@@ -392,7 +392,7 @@ struct CatalogueResponse: Decodable, Sendable {
     }
 }
 
-/// Summary returned by /api/ratings — the public total, plus my own rating.
+/// Summary returned by /api/ratings — the public total, plus this device's rating.
 struct RatingSummary: Codable, Hashable, Sendable {
     let votes: Int
     let average: Double?

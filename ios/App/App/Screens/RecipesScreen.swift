@@ -283,7 +283,7 @@ struct RecipesScreen: View {
             }
             .background(Tone.text.opacity(0.04),
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay { surlignage(dayIndex) }
+            .overlay { highlight(dayIndex) }
             /* The zone is the block itself: taken after the top padding it
              * reached ten points into the day above. */
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
@@ -299,7 +299,7 @@ struct RecipesScreen: View {
                 dayHeader(dayIndex, slot: slot, today: false)
                 dayBody(dayIndex, dishes: dishes, slot: slot)
             }
-            .overlay { surlignage(dayIndex) }
+            .overlay { highlight(dayIndex) }
             .modifier(DropDayIf(active: slot.offset == 0, day: dayIndex,
                                 targeted: $targetedDay) { id in
                 if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
@@ -333,7 +333,7 @@ struct RecipesScreen: View {
     /// Drawn OVER the day: every row paints an opaque canvas to hide its
     /// swipe field, which masked a highlight sitting behind it.
     @ViewBuilder
-    private func surlignage(_ dayIndex: Int) -> some View {
+    private func highlight(_ dayIndex: Int) -> some View {
         if targetedDay == dayIndex {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(Tone.brand.opacity(0.10))
@@ -465,7 +465,7 @@ extension RecipesScreen {
 
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
-    /// number we invented.
+    /// number the app invented.
     private var priceLine: String {
         guard let price = app.subscription.displayPrice else {
             return String(localized: "7 days free")
@@ -656,42 +656,42 @@ private struct CookedSwipe<Content: View>: View {
     @ViewBuilder let content: Content
 
     @State private var offset: CGFloat = 0
-    private let seuil: CGFloat = 78
+    private let threshold: CGFloat = 78
 
     var body: some View {
-        rangee
+        row
             .contentShape(.rect)
-            .onTapGesture { if offset == 0 { open() } else { fermer() } }
+            .onTapGesture { if offset == 0 { open() } else { close() } }
             .accessibilityElement(children: .combine)
             .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder
-    private var rangee: some View {
+    private var row: some View {
         if #available(iOS 18, *) {
-            corps.gesture(HorizontalPan(onChange: suivre, onEnd: relacher))
+            rowBody.gesture(HorizontalPan(onChange: follow, onEnd: release))
         } else {
             /* No swipe below iOS 18: a SwiftUI DragGesture here blocks the
              * scroll, and a frozen list is worse than a missing shortcut. */
-            corps
+            rowBody
         }
     }
 
     /// How far the pill has filled: nothing for the first few points, full
     /// at the threshold. One number drives the fill, the glyph, the rim and
     /// the size, so they cannot disagree.
-    private var remplissage: CGFloat {
-        max(0, min(1, (-offset - 8) / (seuil - 8)))
+    private var fill: CGFloat {
+        max(0, min(1, (-offset - 8) / (threshold - 8)))
     }
 
-    private var corps: some View {
+    private var rowBody: some View {
         content
             .background(Tone.canvas)
             .offset(x: offset)
             .background(alignment: .trailing) {
-                if offset < -4 { pastille }
+                if offset < -4 { pill }
             }
-            .onChange(of: remplissage >= 1) { _, pleine in
+            .onChange(of: fill >= 1) { _, pleine in
                 if pleine { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
             }
     }
@@ -699,20 +699,20 @@ private struct CookedSwipe<Content: View>: View {
     /// The app's own language — glass, and a tint that fills — rather than a
     /// flat colour block, which the app has nowhere else. Brand for marking:
     /// "Start cooking" is brand, and this closes the same loop. Ink to undo.
-    private var pastille: some View {
-        let teinte = cooked ? Tone.text : Tone.brand
-        let t = remplissage
+    private var pill: some View {
+        let tint = cooked ? Tone.text : Tone.brand
+        let t = fill
         /* The glyph is drawn last, over the tint: its colour blends from the
          * tint to the canvas as the fill rises, one layer, no crossfade. */
         return Circle()
-            .fill(teinte.opacity(t))
+            .fill(tint.opacity(t))
             .frame(width: 38, height: 38)
             .background { Circle().fill(.clear).glass(Circle()) }
             .overlay {
                 /* Two stacked tints stand in for Color.mix, which is iOS 18. */
                 Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
                     .scaledFont(Type.heading, weight: .semibold)
-                    .foregroundStyle(teinte)
+                    .foregroundStyle(tint)
                     .overlay {
                         Image(systemName: cooked ? "arrow.uturn.backward" : "checkmark")
                             .scaledFont(Type.heading, weight: .semibold)
@@ -728,21 +728,21 @@ private struct CookedSwipe<Content: View>: View {
     /// A dead zone before the row moves at all: a UIKit pan has no minimum
     /// distance, so the row twitched on the two or three points of movement
     /// that come with an ordinary tap.
-    private let zoneMorte: CGFloat = 12
+    private let deadZone: CGFloat = 12
 
     /// The row follows the finger, and resists past the threshold rather than
     /// stopping dead.
-    private func suivre(_ x: CGFloat) {
-        let d = x + zoneMorte
+    private func follow(_ x: CGFloat) {
+        let d = x + deadZone
         guard d < 0 else { if offset != 0 { offset = 0 }; return }
-        offset = d < -seuil ? -seuil + (d + seuil) / 3 : d
+        offset = d < -threshold ? -threshold + (d + threshold) / 3 : d
     }
 
     /// Release commits only once the pill is full — a state the parent can
     /// see, not a number they have to guess — or on a deliberate flick.
-    private func relacher(_ x: CGFloat, _ vitesse: CGFloat) {
-        let commit = remplissage >= 1 || (remplissage > 0.7 && vitesse < -1400)
-        fermer()
+    private func release(_ x: CGFloat, _ velocity: CGFloat) {
+        let commit = fill >= 1 || (fill > 0.7 && velocity < -1400)
+        close()
         guard commit else { return }
         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -750,7 +750,7 @@ private struct CookedSwipe<Content: View>: View {
 
     /// The same return everywhere, and silent under Reduce Motion like the
     /// rest of the app.
-    private func fermer() {
+    private func close() {
         withAnimation(.soft(0.3)) { offset = 0 }
     }
 }

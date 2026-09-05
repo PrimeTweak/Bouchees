@@ -6,7 +6,7 @@ import StoreKit
 import Observation
 
 /// StoreKit and SwiftUI both define a type named Transaction.
-/// Cet alias tranche une fois pour toutes.
+/// One alias, so the two names never drift apart.
 typealias PurchaseTransaction = StoreKit.Transaction
 
 @MainActor
@@ -48,7 +48,7 @@ final class Subscription {
         serverToken = UserDefaults.standard.string(forKey: clefJeton)
         email = UserDefaults.standard.string(forKey: clefCourriel)
         ecoute = Task { [weak self] in
-            // Renouvellements et remboursements arrivent ici, hors achat.
+            // Renewals and refunds arrive here, outside a purchase.
             for await maj in PurchaseTransaction.updates {
                 await self?.traiter(maj)
             }

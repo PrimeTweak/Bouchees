@@ -14,7 +14,6 @@ struct RecipeDetailScreen: View {
 
     @Environment(AppState.self) private var app
 
-    private var verdict: Verdict { Verdict(result, firstName: firstName) }
 
     /// The photo runs to the top of the screen and the content scrolls
     /// beneath the floating controls. No opaque navigation bar: a gradient
@@ -96,7 +95,7 @@ struct RecipeDetailScreen: View {
 
         /* As an inset, not an overlay: the content ends above it on its own,
          * and it no longer collides with the tab bar — which is hidden here,
-         * as it is in any app once you are inside a detail. */
+         * as it is in any app once inside a detail. */
         .safeAreaInset(edge: .bottom) { startButton }
         /* The cause was never layout: on iOS 26 a glass container inside the
          * toolbar area intercepts touches, and `hitTest:` on it returns
@@ -160,7 +159,7 @@ struct RecipeDetailScreen: View {
     }
 
     /// The only button on this page. Everything else is read; this one moves
-    /// you into hands-in-the-batter mode.
+    /// the parent into hands-in-the-batter mode.
     private var startButton: some View {
         Button { cooking = true } label: {
             Text("Start cooking")
@@ -363,84 +362,6 @@ struct RecipeDetailScreen: View {
 }
 
 // MARK: - Ingredient row
-
-struct IngredientRow: View {
-    let ingredient: AdaptedIngredient
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                name
-                Spacer(minLength: 8)
-                Text(ingredient.displayQuantity)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.tertiary)
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-
-            if !etiquettes.isEmpty {
-                TagFlow(etiquettes: etiquettes)
-            }
-
-            if let note = ingredient.note {
-                Text(note).font(.footnote).foregroundStyle(.secondary)
-            }
-        }
-        .padding(.vertical, 9)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(descriptionAccessible)
-    }
-
-    @ViewBuilder
-    private var name: some View {
-        switch ingredient.status {
-        case .swapped:
-            (Text(ingredient.name).strikethrough(true, color: Tone.no).foregroundStyle(.secondary)
-             + Text("  →  ").foregroundStyle(Tone.brand)
-             + Text(ingredient.toName ?? "").foregroundStyle(Tone.brand))
-                .font(.subheadline.weight(.semibold))
-        case .omitted:
-            (Text(ingredient.name).strikethrough(true, color: Tone.no).foregroundStyle(.secondary)
-             + Text("  →  ").foregroundStyle(Tone.brand)
-             + Text("we leave it out").foregroundStyle(Tone.brand))
-                .font(.subheadline.weight(.semibold))
-        case .blocked:
-            Text(ingredient.name)
-                .strikethrough(true, color: Tone.no)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-        case .kept, .unknown:
-            Text(ingredient.name).font(.subheadline.weight(.semibold))
-        }
-    }
-
-    private var etiquettes: [(texte: String, color: Color)] {
-        var out: [(String, Color)] = []
-        if let m = ingredient.reason { out.append((m, Tone.brand)) }
-        if let r = ingredient.ratio,
-           ingredient.status == .swapped || ingredient.status == .omitted {
-            out.append((r, Tone.yes))
-        }
-        if let p = ingredient.prep { out.append((p, Tone.swap)) }
-        if ingredient.status == .blocked {
-            out.append(("no safe replacement", Tone.no))
-        }
-        return out.map { (texte: $0.0, color: $0.1) }
-    }
-
-    private var descriptionAccessible: String {
-        switch ingredient.status {
-        case .swapped:
-            return "\(ingredient.name), replaced by \(ingredient.toName ?? ""). \(ingredient.reason ?? "")"
-        case .omitted:
-            return "\(ingredient.name), removed. \(ingredient.reason ?? "")"
-        case .blocked:
-            return "\(ingredient.name), no safe replacement."
-        default:
-            return "\(ingredient.name), \(ingredient.displayQuantity). \(ingredient.prep ?? "")"
-        }
-    }
-}
 
 /// Wrapping labels, without depending on recent API.
 struct TagFlow: View {

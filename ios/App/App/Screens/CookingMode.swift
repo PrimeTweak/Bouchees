@@ -244,7 +244,7 @@ struct CookingMode: View {
     // MARK: - Logic
 
     /// Only the swaps whose replacement is actually named in this step. A list
-    /// of every swap on every screen is noise; the one in front of you is not.
+    /// of every swap on every screen is noise; the one on screen is not.
     private var swapsForCurrentStep: [AdaptedIngredient] {
         guard steps.indices.contains(step) else { return [] }
         let t = steps[step].lowercased()

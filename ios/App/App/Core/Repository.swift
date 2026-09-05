@@ -50,7 +50,7 @@ enum RepositoryError: LocalizedError {
 // MARK: - Settings
 
 enum Settings {
-    /// Replace with the address of your deployed service.
+    /// The address of the deployed service.
     static var serverBase: URL {
         if let s = ProcessInfo.processInfo.environment["BOUCHEES_SERVEUR"], let u = URL(string: s) {
             return u
@@ -84,7 +84,7 @@ enum Settings {
 final class LocalStore {
 
     /* Ticked items, per week. A shopping list without memory is useless in an
-     * aisle — you put the phone away to pick something up and lose your place.
+     * aisle — the phone goes away to pick something up and the place is lost.
      * Keyed by week index so a new week starts clean on its own. */
     /// The week plan, per batch. Moving a recipe to another day has to
     /// survive a relaunch — it is a decision the parent made.
@@ -167,7 +167,9 @@ final class LocalStore {
     func readProfiles() -> [ChildProfile] {
         guard let d = try? Data(contentsOf: profilesFile),
               let p = try? JSONDecoder().decode([ChildProfile].self, from: d) else { return [] }
-        return p
+        /* Clamped to the range the age rules cover: the counter bounds its
+         * own taps, but a file from an old build can carry anything. */
+        return p.map { var c = $0; c.ageMonths = min(72, max(6, c.ageMonths)); return c }
     }
 
     func writeProfiles(_ profiles: [ChildProfile]) {

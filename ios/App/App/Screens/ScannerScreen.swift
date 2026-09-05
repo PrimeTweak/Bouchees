@@ -172,7 +172,7 @@ struct ScannerScreen: View {
 
     /// What the scanner reads, and what it cannot see. Said once, over the
     /// camera, before the first scan: "may contain" is shown, not decided.
-    private var premierLancement: some View {
+    private var firstLaunch: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("What the scanner reads")
                 .scaledFont(Type.heading, weight: .semibold)
@@ -212,7 +212,7 @@ struct ScannerScreen: View {
             ViewfinderFrame()
                 .allowsHitTesting(false)
 
-            if !firstRunSeen { premierLancement }
+            if !firstRunSeen { firstLaunch }
         }
         /* The child pill, on the one screen where the wrong child hurts. */
         .softTopBar { ScannerTopBar() }
@@ -562,7 +562,7 @@ private struct FlowTags: View {
 /// GeometryReader, no @State, no round-trip — which is what makes it
 /// impossible to loop.
 /* The project has its own `enum Layout` holding the spacing constants, and it
- * wins the name lookup — so `: Layout` meant "inherit from my enum", which
+ * wins the name lookup — so `: Layout` meant "inherit from the local enum", which
  * gave four cascading errors none of which named the collision. */
 struct WrappingRow: SwiftUI.Layout {
     var spacing: CGFloat = 6

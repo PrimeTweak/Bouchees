@@ -305,7 +305,7 @@ struct AllergenPad: View {
         }
         /* A settle, not a fade: this grid is the demonstration: tick milk and
          * the card above changes, the counts diverge, the recipe is re-
-         * adapted in front of you. */
+         * adapted on screen. */
         .animation(.spring(response: 0.34, dampingFraction: 0.66), value: selected)
     }
 
@@ -568,7 +568,7 @@ private struct WeekStep: View {
     let back: () -> Void
     let next: () -> Void
 
-    private var prenom: String {
+    private var firstName: String {
         let t = name.trimmingCharacters(in: .whitespaces)
         return t.isEmpty ? String(localized: "Your child") : t
     }
@@ -578,20 +578,20 @@ private struct WeekStep: View {
             VStack(alignment: .leading, spacing: 0) {
                 StepHeader(label: "Step 3 of 4", back: back)
 
-                Text(String(format: String(localized: "%@'s week is ready."), prenom))
+                Text(String(format: String(localized: "%@'s week is ready."), firstName))
                     .scaledFont(Type.display)
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
-                Text(String(format: String(localized: "Fourteen recipes, one meal and one snack a day — every one of them safe for %@, already adapted."), prenom))
+                Text(String(format: String(localized: "Fourteen recipes, one meal and one snack a day — every one of them safe for %@, already adapted."), firstName))
                     .scaledFont(Type.body)
                     .foregroundStyle(Tone.textSecondary)
                     .padding(.top, 8)
 
-                apercu
+                preview
                     .padding(.top, 18)
 
-                tuiles
+                tiles
                     .padding(.top, 18)
             }
             .padding(.horizontal, Layout.gutter)
@@ -619,14 +619,14 @@ private struct WeekStep: View {
     }
 
     /// The first three days, fading out: there is more below the fold.
-    private var apercu: some View {
+    private var preview: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(app.weekPreview(for: draft), id: \.day) { jour in
-                Text(WeekDay.full[jour.day])
+            ForEach(app.weekPreview(for: draft), id: \.day) { entry in
+                Text(WeekDay.full[entry.day])
                     .eyebrow()
-                    .padding(.top, jour.day == 0 ? 0 : 12)
+                    .padding(.top, entry.day == 0 ? 0 : 12)
                     .padding(.bottom, 4)
-                ForEach(jour.recipes, id: \.id) { r in
+                ForEach(entry.recipes, id: \.id) { r in
                     HStack(spacing: 12) {
                         if let res = app.adaptPreview(r, for: draft) ?? app.liteResult(for: r, profile: draft) {
                             RecipeVisual(recipe: r, result: res)
@@ -651,24 +651,24 @@ private struct WeekStep: View {
                              startPoint: .top, endPoint: .bottom))
     }
 
-    private var tuiles: some View {
+    private var tiles: some View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
-            tuile("calendar", String(localized: "Your week"), String(localized: "Planned for you. Swap any two dishes."))
-            tuile("barcode.viewfinder", String(localized: "The scanner"), String(localized: "A barcode at the store: yes or no, no signal needed."))
-            tuile("cart", String(localized: "The list"), String(localized: "Groceries build themselves from the week."))
-            tuile("play.fill", String(localized: "Cooking mode"), String(localized: "One step at a time, one hand free."))
+            tile("calendar", String(localized: "Your week"), String(localized: "Planned for you. Swap any two dishes."))
+            tile("barcode.viewfinder", String(localized: "The scanner"), String(localized: "A barcode at the store: yes or no, no signal needed."))
+            tile("cart", String(localized: "The list"), String(localized: "Groceries build themselves from the week."))
+            tile("play.fill", String(localized: "Cooking mode"), String(localized: "One step at a time, one hand free."))
         }
     }
 
-    private func tuile(_ symbole: String, _ titre: String, _ texte: String) -> some View {
+    private func tile(_ symbol: String, _ title: String, _ text: String) -> some View {
         VStack(alignment: .leading, spacing: 7) {
-            Image(systemName: symbole)
+            Image(systemName: symbol)
                 .scaledFont(Type.caption, weight: .semibold)
                 .foregroundStyle(.white)
                 .frame(width: 24, height: 24)
                 .background(Tone.brand, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-            Text(titre).scaledFont(Type.secondary, weight: .semibold).foregroundStyle(Tone.text)
-            Text(texte).scaledFont(Type.label, weight: .regular).foregroundStyle(Tone.text2)
+            Text(title).scaledFont(Type.secondary, weight: .semibold).foregroundStyle(Tone.text)
+            Text(text).scaledFont(Type.label, weight: .regular).foregroundStyle(Tone.text2)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -690,7 +690,7 @@ private struct OfferStep: View {
 
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
-    /// number we invented.
+    /// number the app invented.
     private var priceLine: String {
         guard let price = app.subscription.displayPrice else {
             return String(localized: "7 days free")

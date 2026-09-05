@@ -403,14 +403,14 @@ final class AppState {
             /* The saved catalogue is the server's: cards without bodies. The
              * bundled free bodies are merged on this path too, or the demo
              * asks for a recipe by name and gets an empty card. */
-            recipes = avecCorpsEmbarques(saved)
+            recipes = withBundledBodies(saved)
         } else {
             recipes = bundledCatalogue()
         }
     }
 
     /// Merges the bundled free bodies into any catalogue that lacks them.
-    private func avecCorpsEmbarques(_ cards: [Recipe]) -> [Recipe] {
+    private func withBundledBodies(_ cards: [Recipe]) -> [Recipe] {
         var bodies: [String: Recipe] = [:]
         for u in Resources.bundledBodies() {
             if let d = try? Data(contentsOf: u), let r = try? JSONDecoder().decode(Recipe.self, from: d) {
@@ -425,7 +425,7 @@ final class AppState {
         guard let url = Resources.bundledCatalogue(),
               let d = try? Data(contentsOf: url),
               var cards = (try? JSONDecoder().decode(LossyArray<Recipe>.self, from: d))?.items else { return [] }
-        cards = avecCorpsEmbarques(cards)
+        cards = withBundledBodies(cards)
         return cards.sorted { $0.name < $1.name }
     }
 

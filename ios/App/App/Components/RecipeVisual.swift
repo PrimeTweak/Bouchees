@@ -98,7 +98,7 @@ actor PhotoCache {
     }
 
     private func cheminLocal(_ file: String) -> URL {
-        // Le name du file peut contenir un sous-folder : on l'aplatit pour
+        // A file name may carry a sub-folder; flattened so the cache stays
         // never write outside the cache folder.
         let sur = file.replacingOccurrences(of: "/", with: "_")
         return folder.appendingPathComponent(sur)

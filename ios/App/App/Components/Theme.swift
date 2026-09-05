@@ -95,56 +95,6 @@ struct Verdict {
 
 // MARK: - Composants
 
-struct VerdictChip: View {
-    let result: AdaptedRecipe
-
-    var body: some View {
-        HStack(spacing: 5) {
-            Image(systemName: result.status.symbol)
-                .scaledFont(Type.micro, weight: .bold)
-            Text(Verdict.token(result))
-                .font(.caption2.weight(.semibold))
-        }
-        .foregroundStyle(result.status.color)
-        .padding(.horizontal, 9)
-        .padding(.vertical, 5)
-        .background(.thinMaterial, in: Capsule())
-    }
-}
-
-struct GuidanceChip: View {
-    let count: Int
-
-    var body: some View {
-        Text("\(count) age-related safety note\(count > 1 ? "s" : "")")
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(Tint.courge)
-            .padding(.horizontal, 9)
-            .padding(.vertical, 5)
-            .background(.thinMaterial, in: Capsule())
-            .accessibilityLabel("\(count) age-related safety note\(count > 1 ? "s" : "")")
-    }
-}
-
-/// The swap preview: original struck through, arrow, replacement.
-struct SwapLine: View {
-    let de: String
-    let to: String
-    var autres: Int = 0
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Divider().padding(.bottom, 7)
-            (Text(de).strikethrough(true, color: Tint.canneberge).foregroundStyle(.secondary)
-             + Text("  →  ").foregroundStyle(Tint.betterave)
-             + Text(to).foregroundStyle(Tint.betterave).fontWeight(.semibold)
-             + Text(autres > 0 ? "  +\(autres)" : "").foregroundStyle(.tertiary))
-                .font(.caption)
-                .lineLimit(2)
-        }
-    }
-}
-
 struct EmptyState: View {
     let symbol: String
     let title: String

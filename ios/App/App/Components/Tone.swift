@@ -412,29 +412,6 @@ struct PrimaryButton: ButtonStyle {
 
 // MARK: - Top bar
 
-/// `safeAreaBar` is the iOS 26 modifier for this. Below that it falls back to
-/// `safeAreaInset`, which reserves the space but does not carry the edge
-/// effect — acceptable, because the effect itself is an iOS 26 feature.
-struct TopBar<Bar: View>: ViewModifier {
-    /* No `@ViewBuilder` on this stored property: the attribute makes the
-     * memberwise initialiser take `() -> Bar` rather than `Bar`, so
-     * `TopBar(bar: bar())` passed a value where a closure was expected. */
-    let bar: Bar
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        #if compiler(>=6.2)
-        if #available(iOS 26, *) {
-            content.safeAreaBar(edge: .top) { bar }
-        } else {
-            content.safeAreaInset(edge: .top) { bar }
-        }
-        #else
-        content.safeAreaInset(edge: .top) { bar }
-        #endif
-    }
-}
-
 extension View {
 }
 

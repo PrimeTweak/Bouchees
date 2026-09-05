@@ -10,7 +10,7 @@ import UIKit
 
 struct ProfileEditor: View {
     @Environment(AppState.self) private var app
-    @Environment(\.dismiss) private var fermer
+    @Environment(\.dismiss) private var dismiss
     @State var profile: ChildProfile
     /// False for a child not saved yet: there is nothing to remove.
     var canRemove = false
@@ -60,7 +60,7 @@ struct ProfileEditor: View {
             }
             .background(Tone.canvas.ignoresSafeArea())
             .alert("Remove this profile?", isPresented: $confirmRemove) {
-                Button("Remove", role: .destructive) { app.remove(profile); fermer() }
+                Button("Remove", role: .destructive) { app.remove(profile); dismiss() }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("The week and the shopping list will be rebuilt for the children who remain.")
@@ -74,11 +74,11 @@ struct ProfileEditor: View {
                             profile.name = String(localized: "My child")
                         }
                         app.save(profile)
-                        fermer()
+                        dismiss()
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { fermer() }
+                    Button("Cancel") { dismiss() }
                 }
             }
         }
@@ -106,10 +106,9 @@ struct SettingsScreen: View {
     @State private var showSettings = false
     @State private var showDemo = false
     @State private var editing: ChildProfile?
-    @State private var hauteurReglages: CGFloat = 0
+    @State private var settingsHeight: CGFloat = 0
     @State private var reminderOn = WeeklyReminder.enabled
     @State private var email = ""
-    @State private var accountMessage: String?
 
     /* A single body holding all five defeats the type checker — "unable to
      * type-check in reasonable time" is what a 200-line ViewBuilder earns. */
@@ -169,8 +168,8 @@ struct SettingsScreen: View {
                 .padding(.bottom, 24)
                 .background {
                     GeometryReader { geo in
-                        Color.clear.onAppear { hauteurReglages = geo.size.height }
-                            .onChange(of: geo.size.height) { _, h in hauteurReglages = h }
+                        Color.clear.onAppear { settingsHeight = geo.size.height }
+                            .onChange(of: geo.size.height) { _, h in settingsHeight = h }
                     }
                 }
             }
@@ -178,8 +177,8 @@ struct SettingsScreen: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         /* Sized to its content, like About. */
-        .presentationDetents(hauteurReglages > 0
-            ? [.height(min(max(hauteurReglages, 320), UIScreen.main.bounds.height * 0.92)), .large]
+        .presentationDetents(settingsHeight > 0
+            ? [.height(min(max(settingsHeight, 320), UIScreen.main.bounds.height * 0.92)), .large]
             : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
@@ -368,7 +367,7 @@ struct SettingsScreen: View {
 
 struct PaywallScreen: View {
     @Environment(AppState.self) private var app
-    @Environment(\.dismiss) private var fermer
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -440,7 +439,7 @@ struct PaywallScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { fermer() }
+                    Button("Close") { dismiss() }
                 }
             }
         }
@@ -627,15 +626,15 @@ private struct ChildCard: View {
                 Figure(value: figures.adaptedThisWeek, label: String(localized: "ADAPTED"), tone: Tone.swap)
             }
             if let m = figures.nextMilestone, figures.unlockedAtMilestone > 0 {
-                ligne("arrow.up", Tone.brand,
+                line("arrow.up", Tone.brand,
                       String(format: String(localized: "At %lld months, "), m),
                       String(format: String(localized: "%lld more recipes open up."), figures.unlockedAtMilestone))
             } else if figures.nextMilestone == nil {
-                ligne("checkmark", Tone.yes, String(localized: "Every age rule is behind them. "),
+                line("checkmark", Tone.yes, String(localized: "Every age rule is behind them. "),
                       String(localized: "Nothing left to unlock."))
             }
             if figures.plannedThisWeek > 0 {
-                ligne("checkmark", Tone.text3, String(localized: "Cooked this week: "),
+                line("checkmark", Tone.text3, String(localized: "Cooked this week: "),
                       String(format: String(localized: "%lld of %lld"), figures.cookedThisWeek, figures.plannedThisWeek))
             }
         }
@@ -643,14 +642,14 @@ private struct ChildCard: View {
         .card()
     }
 
-    private func ligne(_ symbole: String, _ tone: Color, _ fort: String, _ suite: String) -> some View {
+    private func line(_ symbol: String, _ tone: Color, _ lead: String, _ rest: String) -> some View {
         HStack(spacing: 9) {
-            Image(systemName: symbole)
+            Image(systemName: symbol)
                 .scaledFont(Type.label)
                 .foregroundStyle(tone)
                 .frame(width: 24, height: 24)
                 .background(tone.opacity(0.10), in: Circle())
-            (Text(fort).foregroundStyle(Tone.text) + Text(suite).foregroundStyle(Tone.text2))
+            (Text(lead).foregroundStyle(Tone.text) + Text(rest).foregroundStyle(Tone.text2))
                 .scaledFont(Type.secondary)
         }
     }
@@ -759,20 +758,20 @@ struct AboutScreen: View {
             .padding(.bottom, 34)
             .background {
                 GeometryReader { geo in
-                    Color.clear.onAppear { hauteur = geo.size.height }
-                        .onChange(of: geo.size.height) { _, h in hauteur = h }
+                    Color.clear.onAppear { height = geo.size.height }
+                        .onChange(of: geo.size.height) { _, h in height = h }
                 }
             }
         }
         .background(Tone.canvas.ignoresSafeArea())
         /* Sized to its content, like the other sheets. */
-        .presentationDetents(hauteur > 0
-            ? [.height(min(max(hauteur, 320), UIScreen.main.bounds.height * 0.92)), .large]
+        .presentationDetents(height > 0
+            ? [.height(min(max(height, 320), UIScreen.main.bounds.height * 0.92)), .large]
             : [.medium, .large])
         .presentationDragIndicator(.visible)
     }
 
-    @State private var hauteur: CGFloat = 0
+    @State private var height: CGFloat = 0
 
     private func section(_ heading: String, _ body: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {

@@ -1188,5 +1188,52 @@
         "la vision hésite sur : sweet potato instead of butternut squash, crushed tomato instead of tomato sauce"
       ]
     }
+  },
+  "turkey-zucchini-rice-skillet": {
+    "fichier": "images/turkey-zucchini-rice-skillet-54e0a6882c32.png",
+    "empreinte": "54e0a6882c32",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T18:00:53.466Z",
+      "detectes": [
+        "rice",
+        "ground meat",
+        "zucchini",
+        "red bell pepper",
+        "yellow bell pepper",
+        "green bell pepper"
+      ],
+      "reconnus": 4,
+      "attendus": 11,
+      "avertissements": [
+        "la vision hésite sur : ground turkey or ground chicken or ground pork"
+      ]
+    }
+  },
+  "lentil-sweet-potato-rice-bowl": {
+    "fichier": "images/lentil-sweet-potato-rice-bowl-8d242e671774.png",
+    "empreinte": "8d242e671774",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-05T18:07:17.660Z",
+      "detectes": [
+        "lentil",
+        "rice",
+        "sweet potato"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : brown lentil or green lentil, white rice or brown rice, sweet potato or butternut squash"
+      ]
+    }
   }
 }

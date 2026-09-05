@@ -244,7 +244,7 @@ struct AgePicker: View {
     ]
 
     /// The stage this age falls in, for the line under the counter.
-    private var stade: (name: String, texte: String) {
+    private var stage: (name: String, texte: String) {
         let i = Self.stages.lastIndex { ageMonths >= $0.min } ?? 0
         let s = Self.stages[i]
         return (name: s.name, texte: s.texte)
@@ -290,9 +290,9 @@ struct AgePicker: View {
 
             Divider().overlay(Tone.hairline).padding(.top, 10)
 
-            (Text(LocalizedStringKey(stade.name)).foregroundStyle(Tone.text).fontWeight(.semibold)
+            (Text(LocalizedStringKey(stage.name)).foregroundStyle(Tone.text).fontWeight(.semibold)
              + Text(" · ").foregroundStyle(Tone.text3)
-             + Text(LocalizedStringKey(stade.texte)).foregroundStyle(Tone.text2))
+             + Text(LocalizedStringKey(stage.texte)).foregroundStyle(Tone.text2))
                 .scaledFont(Type.caption)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 10)
@@ -304,7 +304,7 @@ struct AgePicker: View {
                 .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1.5)
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Age: \(ageMonths) months, \(stade.name)")
+        .accessibilityLabel("Age: \(ageMonths) months, \(stage.name)")
     }
 }
 
