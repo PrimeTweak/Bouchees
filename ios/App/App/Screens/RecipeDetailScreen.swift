@@ -339,10 +339,7 @@ struct RecipeDetailScreen: View {
         if let p = recipe.source {
             VStack(alignment: .leading, spacing: 5) {
                 Text("Source")
-                    .font(.caption.weight(.semibold))
-                    .textCase(.uppercase)
-                    .kerning(1.2)
-                    .foregroundStyle(.tertiary)
+                    .eyebrow()
                 Text(p.source).font(.caption.monospaced())
                 if let url = p.url, !url.isEmpty {
                     Text(url).font(.caption2.monospaced()).foregroundStyle(.tertiary)

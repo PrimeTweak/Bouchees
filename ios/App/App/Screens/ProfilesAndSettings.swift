@@ -91,10 +91,7 @@ struct FieldLabel: View {
 
     var body: some View {
         Text(texte)
-            .font(.caption.weight(.semibold))
-            .textCase(.uppercase)
-            .kerning(1.2)
-            .foregroundStyle(.tertiary)
+            .eyebrow()
     }
 }
 
@@ -717,18 +714,8 @@ struct AboutScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 if pushed {
-                    /* The same back as every other screen: a glass circle
-                     * on its own line, above the title. */
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .scaledFont(Type.heading, weight: .semibold)
-                            .foregroundStyle(Tone.text)
-                            .frame(width: 36, height: 36)
-                    }
-                    .buttonStyle(.plain)
-                    .glass(Circle())
-                    .accessibilityLabel(Text("Back"))
-                    .padding(.bottom, 14)
+                    BackButton { dismiss() }
+                        .padding(.bottom, 14)
                 }
                 Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
 

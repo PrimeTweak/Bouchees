@@ -21,7 +21,8 @@ function write(db) {
   fs.writeFileSync(FILE, JSON.stringify(db, null, 2));
 }
 
-/* ratings[recipeId][email] = { rating, le } */
+/* ratings[recipeId][voter] = { rating, le } — voter is a hash of the account,
+ * never the address itself. */
 function rate(recipeId, email, rating) {
   const n = Number(rating);
   if (!Number.isInteger(n) || n < 1 || n > 5) {

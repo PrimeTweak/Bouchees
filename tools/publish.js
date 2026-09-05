@@ -102,6 +102,12 @@ if (require.main === module) {
   const dist = path.join(root, "dist");
   fs.rmSync(path.join(dist, "batches"), { recursive: true, force: true });
   fs.mkdirSync(path.join(dist, "recipes"), { recursive: true });
+  /* A body whose recipe left the catalogue must leave dist/ too, or it
+   * stays downloadable by id — which is how four withheld recipes lingered. */
+  fs.readdirSync(path.join(dist, "recipes")).forEach(function (f) {
+    const id = f.replace(/\.json$/, "");
+    if (/\.json$/.test(f) && !r.bodies[id]) fs.unlinkSync(path.join(dist, "recipes", f));
+  });
   fs.writeFileSync(path.join(dist, "manifest.json"), JSON.stringify(r.manifest, null, 2) + "\n");
   fs.writeFileSync(path.join(dist, "safety.json"), JSON.stringify(r.securite) + "\n");
   fs.writeFileSync(path.join(dist, "catalogue.json"), JSON.stringify(r.catalogue) + "\n");

@@ -1,0 +1,3 @@
+/* System prompts. Info.plist itself carries the French text as the fallback
+   for the fr-CA development region; this file is what an English phone shows. */
+"NSCameraUsageDescription" = "Bouchées uses the camera to read a product's barcode and check its ingredients against your child's allergens. No image is stored or sent anywhere.";

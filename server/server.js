@@ -9,7 +9,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { verifierSignature, evenementPertinent, creerSession } = require("./stripe.js");
 const Apple = require("./apple.js");
-const { CONDITIONS, CONFIDENTIALITE } = require("./legal-pages.js");
+const { CONDITIONS, CONFIDENTIALITE, CONDITIONS_FR, CONFIDENTIALITE_FR } = require("./legal-pages.js");
 const Ratings = require("./ratings.js");
 
 const root = path.join(__dirname, "..");
@@ -34,8 +34,16 @@ function writeAccounts(db) {
 /* Thirty days. A token used to live forever: a phone lost in 2026 could still
  * rate recipes in 2030. */
 const TOKEN_TTL_MS = 30 * 24 * 3600 * 1000;
-function normaliserCourriel(c) { return String(c || "").trim().toLowerCase(); }
+/* 254 characters is the most an address can be; anything longer is not
+ * an address, it is a payload. */
+function normaliserCourriel(c) { return String(c || "").trim().toLowerCase().slice(0, 254); }
 function jetonNeuf() { return crypto.randomBytes(24).toString("hex"); }
+/* Stored hashed: a copy of accounts.json must not be a copy of every live
+ * session. The token itself never rests on the server. */
+function empreinteJeton(token) { return crypto.createHash("sha256").update(String(token)).digest("hex"); }
+/* Ratings are keyed on this rather than the address: the file must not read
+ * as a list of parents of allergic children. */
+function empreinteCourriel(email) { return crypto.createHash("sha256").update("bouchees:" + String(email)).digest("hex").slice(0, 32); }
 
 /* ---------- product lookups: cache and budget ---------- */
 
@@ -70,11 +78,13 @@ const ProductCache = (function () {
   return {
     get: function (code) {
       const e = table[code];
+      /* The seed wins over a cached miss: a product found once does not
+       * vanish because one later lookup came back empty. */
+      if (seed[code]) return { hit: true, payload: seed[code] };
       if (e) {
         if (Date.now() - e.at > (e.hit ? HIT_TTL : MISS_TTL)) { delete table[code]; }
         else return e;
       }
-      if (seed[code]) return { hit: true, payload: seed[code] };
       return null;
     },
     set: function (code, entry) {
@@ -215,14 +225,11 @@ function rawBody(req) {
  * now on first sight so nothing already installed is logged out) or an object
  * with the email and the issue time. */
 function jetonValide(db, token) {
-  const entry = db.tokens[token];
+  const cle = empreinteJeton(token);
+  const entry = db.tokens[cle];
   if (!entry) return null;
-  if (typeof entry === "string") {
-    db.tokens[token] = { email: entry, cree: Date.now() };
-    return entry;
-  }
   if (Date.now() - (entry.cree || 0) > TOKEN_TTL_MS) {
-    delete db.tokens[token];
+    delete db.tokens[cle];
     return null;
   }
   return entry.email;
@@ -250,6 +257,132 @@ function compteDepuisRecu(jws) {
            abonnementApple: { status: etat.status, periodEnd: etat.periodEnd || null } };
 }
 
+/* One lookup in flight per code: twenty parents scanning the same Cheerios
+ * at once share one request instead of spending twenty. */
+const enVol = {};
+function lookupProduct(ctx) {
+  const cle = Barcode.digits(ctx.url.searchParams.get("code")) || "";
+  if (cle && enVol[cle]) return enVol[cle];
+  const p = lookupProductOnce(ctx).finally(function () { delete enVol[cle]; });
+  if (cle) enVol[cle] = p;
+  return p;
+}
+
+async function lookupProductOnce(ctx) {
+  /* GS1-aware: a QR or a Data Matrix hands over a URL or an element string,
+   * and keeping only their digits gave a seventeen-digit key that nothing
+   * indexes. `digits` finds the GTIN inside, or says there is none. */
+  const raw = Barcode.digits(ctx.url.searchParams.get("code"));
+  if (!raw) {
+    return { status: 400, body: { error: "no barcode in this code",
+                          scanned: String(ctx.url.searchParams.get("code") || "").slice(0, 80) } };
+  }
+
+  const forms = Barcode.forms(raw);
+  if (!forms.length) return { status: 400, body: { error: "invalid barcode" } };
+
+  /* The cache answers first, for everyone: Open Food Facts counts product
+   * reads PER ADDRESS, and this server is one address for every parent. */
+  /* Keyed on the canonical form — the longest, which is the thirteen-digit
+   * one — so a UPC-A and its EAN-13 twin share one entry. */
+  const key = forms.reduce(function (a, b) { return b.length > a.length ? b : a; }, forms[0]);
+  const connu = ProductCache.get(key);
+  if (connu) {
+    if (connu.hit) return { status: 200, body: connu.payload };
+    return { status: 404, body: absent(raw, forms, "cache") };
+  }
+
+  /* The budget stops us before the ban does: twelve a minute, under their
+   * fifteen: when it is spent, the answer is "try again shortly", not eight
+   * requests that will all be refused. */
+  if (!OffBudget.available()) {
+    return { status: 503, body: {
+    error: "product database unavailable",
+    retryAfterSeconds: OffBudget.secondsUntilFree(),
+    scanned: raw
+    } };
+  }
+
+  const champs = "product_name,product_name_fr,brands,ingredients_text_fr," +
+               "ingredients_text,allergens_tags,traces_tags,image_small_url";
+  const entetes = {
+    /* The fallback names a domain that resolves. The old one, ".example",
+     * gave Open Food Facts no one to contact before blocking an address. */
+    "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
+  };
+
+  /* Food only. The three sibling databases (beauty, pet food, products)
+   * hold nothing a child eats, and asking them cost three calls per
+   * unknown product against a budget of twelve a minute shared by every
+   * parent: two unknowns in a row and the next real product came back
+   * "busy". One call per form of the code, and the forms are ordered
+   * longest first — the thirteen-digit one is the canonical index. */
+  const plan = forms.slice().sort(function (a, b) { return b.length - a.length; })
+    .map(function (forme) { return { hote: "world.openfoodfacts.org", genre: "food", forme: forme }; });
+
+  let unavailable = false;
+  for (const step of plan) {
+    if (!OffBudget.take()) { unavailable = true; break; }
+    let r;
+    try {
+    r = await fetch("https://" + step.hote + "/api/v2/product/" + step.forme +
+                    "?fields=" + champs, { headers: entetes });
+    } catch (e) { unavailable = true; continue; }
+
+  /* "limited" is not "not found": a refused request comes back as a 429,
+     * a 503, or an HTML page. */
+    const type = (r.headers.get("content-type") || "").toLowerCase();
+    if (r.status === 429 || r.status >= 500 || type.indexOf("json") < 0) {
+    unavailable = true;
+    continue;
+    }
+    let d;
+    try { d = await r.json(); } catch (e) { unavailable = true; continue; }
+    if (!d || d.status !== 1 || !d.product) continue;
+
+    const p = d.product;
+    const payload = {
+    code: step.forme,
+    scanned: raw,
+    source: step.genre,
+    name: p.product_name_fr || p.product_name || null,
+    brand: p.brands || null,
+    ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
+    allergenTags: p.allergens_tags || [],
+    traceTags: p.traces_tags || [],
+    image: p.image_small_url || null,
+    assignment: "Data from Open Food Facts and its sibling databases, " +
+                "ODbL licence (opendatacommons.org/licenses/odbl/1-0)",
+    notice: "The database's own allergen tags are indicative — Bouchees " +
+            "re-derives everything from the ingredient list."
+    };
+    ProductCache.set(key, { hit: true, payload: payload });
+    return { status: 200, body: payload };
+  }
+
+  /* A miss is only a miss when every database actually answered. If one
+   * was refusing, say so rather than remember a "not found" that is not
+   * known to be true. */
+  if (unavailable) {
+    return { status: 503, body: {
+    error: "product database unavailable",
+    retryAfterSeconds: OffBudget.secondsUntilFree(),
+    scanned: raw
+    } };
+  }
+  ProductCache.set(key, { hit: false });
+  return { status: 404, body: absent(raw, forms, "live") };
+
+}
+
+function pageLegale(req, res, en, fr) {
+  const lang = String(req.headers["accept-language"] || "");
+  const page = /^\s*fr\b|,\s*fr\b/i.test(lang) && !/^\s*en\b/i.test(lang) ? fr : en;
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
+                       "Cache-Control": "public, max-age=3600", "Vary": "Accept-Language" });
+  res.end(page);
+}
+
 const routes = {
   /* Public: the pool's catalogue — every card, no body. */
   "GET /api/manifest": function (req, res, ctx) {
@@ -270,17 +403,15 @@ const routes = {
 
   /* Legal pages. Apple requires public, working URLs:
    * un lien mort fait rejeter la soumission. */
-  "GET /terms": function (req, res) {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
-                         "Cache-Control": "public, max-age=3600" });
-    res.end(CONDITIONS);
-  },
-
-  "GET /privacy": function (req, res) {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8",
-                         "Cache-Control": "public, max-age=3600" });
-    res.end(CONFIDENTIALITE);
-  },
+  /* Legal pages in both languages: /fr/... is explicit; the bare path
+   * follows Accept-Language, so a French phone lands on the French text.
+   * Vary tells caches the answer depends on that header. */
+  "GET /terms": function (req, res) { pageLegale(req, res, CONDITIONS, CONDITIONS_FR); },
+  "GET /privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE, CONFIDENTIALITE_FR); },
+  "GET /fr/terms": function (req, res) { pageLegale(req, res, CONDITIONS_FR, CONDITIONS_FR); },
+  "GET /fr/privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE_FR, CONFIDENTIALITE_FR); },
+  "GET /en/terms": function (req, res) { pageLegale(req, res, CONDITIONS, CONDITIONS); },
+  "GET /en/privacy": function (req, res) { pageLegale(req, res, CONFIDENTIALITE, CONFIDENTIALITE); },
 
   /* The safety tables: free, always, no account required. */
   "GET /api/safety": function (req, res) {
@@ -325,8 +456,8 @@ const routes = {
     catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
 
     const r = corps.rating === null
-      ? Ratings.removeRating(corps.recipe, ctx.account.email)
-      : Ratings.rate(corps.recipe, ctx.account.email, corps.rating);
+      ? Ratings.removeRating(corps.recipe, empreinteCourriel(ctx.account.email))
+      : Ratings.rate(corps.recipe, empreinteCourriel(ctx.account.email), corps.rating);
     if (!r.ok) return json(res, 400, { error: r.reason });
     json(res, 200, { ok: true, aggregate: r.aggregate });
   },
@@ -336,7 +467,7 @@ const routes = {
   "GET /api/ratings": function (req, res, ctx) {
     const ids = (ctx.url.searchParams.get("ids") || "").split(",").filter(Boolean);
     if (!ids.length) return json(res, 200, {});
-    json(res, 200, Ratings.aggregates(ids, ctx.account && ctx.account.email ? ctx.account.email : null));
+    json(res, 200, Ratings.aggregates(ids, ctx.account && ctx.account.email ? empreinteCourriel(ctx.account.email) : null));
   },
 
   /* The Top rated tab. This is how a recipe that left the window comes back:
@@ -455,110 +586,8 @@ const routes = {
   },
 
   "GET /api/product": async function (req, res, ctx) {
-        /* GS1-aware: a QR or a Data Matrix hands over a URL or an element string,
-     * and keeping only their digits gave a seventeen-digit key that nothing
-     * indexes. `digits` finds the GTIN inside, or says there is none. */
-    const raw = Barcode.digits(ctx.url.searchParams.get("code"));
-    if (!raw) {
-      return json(res, 400, { error: "no barcode in this code",
-                              scanned: String(ctx.url.searchParams.get("code") || "").slice(0, 80) });
-    }
-
-    const forms = Barcode.forms(raw);
-    if (!forms.length) return json(res, 400, { error: "invalid barcode" });
-
-        /* The cache answers first, for everyone: open Food Facts allows fifteen
-     * product reads a minute PER ADDRESS, and this server is one address for
-     * every parent using the app. */
-        /* Keyed on the canonical form — the longest, which is the thirteen-digit
-     * one — so a UPC-A and its EAN-13 twin share one entry. */
-    const key = forms.reduce(function (a, b) { return b.length > a.length ? b : a; }, forms[0]);
-    const connu = ProductCache.get(key);
-    if (connu) {
-      if (connu.hit) return json(res, 200, connu.payload);
-      return json(res, 404, absent(raw, forms, "cache"));
-    }
-
-        /* The budget stops us before the ban does: twelve a minute, under their
-     * fifteen: when it is spent, the answer is "try again shortly", not eight
-     * requests that will all be refused. */
-    if (!OffBudget.available()) {
-      return json(res, 503, {
-        error: "product database unavailable",
-        retryAfterSeconds: OffBudget.secondsUntilFree(),
-        scanned: raw
-      });
-    }
-
-    const champs = "product_name,product_name_fr,brands,ingredients_text_fr," +
-                   "ingredients_text,allergens_tags,traces_tags,image_small_url";
-    const entetes = {
-      /* The fallback names a domain that resolves. The old one, ".example",
-       * gave Open Food Facts no one to contact before blocking an address. */
-      "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
-    };
-
-    /* Food only. The three sibling databases (beauty, pet food, products)
-     * hold nothing a child eats, and asking them cost three calls per
-     * unknown product against a budget of twelve a minute shared by every
-     * parent: two unknowns in a row and the next real product came back
-     * "busy". One call per form of the code, and the forms are ordered
-     * longest first — the thirteen-digit one is the canonical index. */
-    const plan = forms.slice().sort(function (a, b) { return b.length - a.length; })
-      .map(function (forme) { return { hote: "world.openfoodfacts.org", genre: "food", forme: forme }; });
-
-    let unavailable = false;
-    for (const step of plan) {
-      if (!OffBudget.take()) { unavailable = true; break; }
-      let r;
-      try {
-        r = await fetch("https://" + step.hote + "/api/v2/product/" + step.forme +
-                        "?fields=" + champs, { headers: entetes });
-      } catch (e) { unavailable = true; continue; }
-
-            /* "limited" is not "not found": a refused request comes back as a 429,
-       * a 503, or an HTML page. */
-      const type = (r.headers.get("content-type") || "").toLowerCase();
-      if (r.status === 429 || r.status >= 500 || type.indexOf("json") < 0) {
-        unavailable = true;
-        continue;
-      }
-      let d;
-      try { d = await r.json(); } catch (e) { unavailable = true; continue; }
-      if (!d || d.status !== 1 || !d.product) continue;
-
-      const p = d.product;
-      const payload = {
-        code: step.forme,
-        scanned: raw,
-        source: step.genre,
-        name: p.product_name_fr || p.product_name || null,
-        brand: p.brands || null,
-        ingredientsText: p.ingredients_text_fr || p.ingredients_text || null,
-        allergenTags: p.allergens_tags || [],
-        traceTags: p.traces_tags || [],
-        image: p.image_small_url || null,
-        assignment: "Data from Open Food Facts and its sibling databases, " +
-                    "ODbL licence (opendatacommons.org/licenses/odbl/1-0)",
-        notice: "The database's own allergen tags are indicative — Bouchees " +
-                "re-derives everything from the ingredient list."
-      };
-      ProductCache.set(key, { hit: true, payload: payload });
-      return json(res, 200, payload);
-    }
-
-    /* A miss is only a miss when every database actually answered. If one
-     * was refusing, say so rather than remember a "not found" that is not
-     * known to be true. */
-    if (unavailable) {
-      return json(res, 503, {
-        error: "product database unavailable",
-        retryAfterSeconds: OffBudget.secondsUntilFree(),
-        scanned: raw
-      });
-    }
-    ProductCache.set(key, { hit: false });
-    json(res, 404, absent(raw, forms, "live"));
+    const r = await lookupProduct(ctx);
+    json(res, r.status, r.body);
   },
 
   /* Connexion volontairement minimale : un email, un token. Pas de mot de
@@ -571,6 +600,11 @@ const routes = {
     if (!ctx.insecureLogin) {
       return json(res, 503, { error: "sign-in is not available yet" });
     }
+    /* Five attempts a minute per address: sign-in creates accounts, and an
+     * unmetered route that creates records is a way to fill the disk. */
+    if (!limiteDebit("login:" + (req.socket.remoteAddress || "?"), 5)) {
+      return json(res, 429, { error: "too many attempts" });
+    }
     let corps;
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
     catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
@@ -579,7 +613,7 @@ const routes = {
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
     const token = jetonNeuf();
-    db.tokens[token] = { email: email, cree: Date.now() };
+    db.tokens[empreinteJeton(token)] = { email: email, cree: Date.now() };
     writeAccounts(db);
     json(res, 200, { token: token, email: email, subscribed: subscriptionActive(db.accounts[email]),
                      note: "En production, ce token s'envoie par email — il ne revient pas dans la réponse." });
@@ -587,7 +621,8 @@ const routes = {
 
   "POST /api/logout": async function (req, res, ctx) {
     const auth = (req.headers.authorization || "").replace(/^Bearer\s+/i, "").trim();
-    if (auth && ctx.db.tokens[auth]) { delete ctx.db.tokens[auth]; writeAccounts(ctx.db); }
+    const cle = auth ? empreinteJeton(auth) : "";
+    if (cle && ctx.db.tokens[cle]) { delete ctx.db.tokens[cle]; writeAccounts(ctx.db); }
     json(res, 200, { ok: true });
   },
 
@@ -596,7 +631,8 @@ const routes = {
   "POST /api/checkout": async function (req, res, ctx) {
     if (!ctx.account) return json(res, 401, { error: "sign-in required" });
     if (!process.env.STRIPE_CLE_SECRETE || !process.env.STRIPE_PRIX)
-      return json(res, 501, { error: "paiement non configuré", manque: ["STRIPE_CLE_SECRETE", "STRIPE_PRIX"] });
+      console.error("checkout: STRIPE_CLE_SECRETE or STRIPE_PRIX is not set");
+      return json(res, 503, { error: "checkout unavailable" });
     const origine = process.env.BOUCHEES_ORIGINE || ("http://localhost:" + PORT);
     try {
       const session = await creerSession({
@@ -614,7 +650,10 @@ const routes = {
   "POST /api/webhook/stripe": async function (req, res, ctx) {
     const raw = await rawBody(req);
     const sig = req.headers["stripe-signature"] || "";
-    if (!SECRET_WEBHOOK) return json(res, 500, { error: "STRIPE_WEBHOOK_SECRET non configuré" });
+    /* Refused, not "misconfigured": a 500 that names the missing variable
+     * hands a stranger the shape of the configuration. The reason is logged
+     * server-side only. */
+    if (!SECRET_WEBHOOK) { console.error("stripe webhook: STRIPE_WEBHOOK_SECRET is not set"); return json(res, 401, { error: "signature refused" }); }
     if (!verifierSignature(raw, sig, SECRET_WEBHOOK)) return json(res, 400, { error: "signature invalide" });
 
     let evt;
@@ -734,4 +773,5 @@ module.exports = { createServer: createServer, canReadBody: canReadBody,
                    subscriptionActive: subscriptionActive, routes: routes,
                    /* Exposed for the tests only. */
                    _ProductCache: ProductCache, _OffBudget: OffBudget,
-                   _MAX_BODY: MAX_BODY, _TOKEN_TTL_MS: TOKEN_TTL_MS };
+                   _MAX_BODY: MAX_BODY, _TOKEN_TTL_MS: TOKEN_TTL_MS,
+                   _empreinteJeton: empreinteJeton };

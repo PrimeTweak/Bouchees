@@ -186,10 +186,7 @@ struct RatingBlock: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 11) {
             Text("Your rating")
-                .font(.caption.weight(.semibold))
-                .textCase(.uppercase)
-                .kerning(1.2)
-                .foregroundStyle(.tertiary)
+                .eyebrow()
 
             HStack {
                 StarRating(note: summary?.myRating) { nouvelle in

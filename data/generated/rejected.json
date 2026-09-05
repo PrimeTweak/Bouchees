@@ -5,6 +5,1094 @@
       "n": 2,
       "ageMois": 9,
       "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "dates",
+      "passePartout": false,
+      "reason": "pool: 42 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-2",
+      "name": "Recette simulée 2",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "dates",
+      "passePartout": false,
+      "reason": "pool: 42 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-1",
+      "name": "Recette simulée 1",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 52 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-2",
+      "name": "Recette simulée 2",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 52 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-1",
+      "name": "Recette simulée 1",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "vedette": "sweet potato",
+      "passePartout": false,
+      "reason": "pool: 44 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-2",
+      "name": "Recette simulée 2",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "vedette": "sweet potato",
+      "passePartout": false,
+      "reason": "pool: 44 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-1",
+      "name": "Recette simulée 1",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "vedette": "turkey",
+      "passePartout": false,
+      "reason": "pool: 54 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-2",
+      "name": "Recette simulée 2",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "vedette": "turkey",
+      "passePartout": false,
+      "reason": "pool: 54 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-1",
+      "name": "Recette simulée 1",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "vedette": "banana",
+      "passePartout": false,
+      "reason": "pool: 46 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-2",
+      "name": "Recette simulée 2",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "vedette": "banana",
+      "passePartout": false,
+      "reason": "pool: 46 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-1",
+      "name": "Recette simulée 1",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "vedette": "cod",
+      "passePartout": false,
+      "reason": "pool: 56 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-2",
+      "name": "Recette simulée 2",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "vedette": "cod",
+      "passePartout": false,
+      "reason": "pool: 56 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-1",
+      "name": "Recette simulée 1",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "blueberries",
+      "passePartout": false,
+      "reason": "pool: 48 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-2",
+      "name": "Recette simulée 2",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "blueberries",
+      "passePartout": false,
+      "reason": "pool: 48 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-1",
+      "name": "Recette simulée 1",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "tofu",
+      "passePartout": false,
+      "reason": "pool: 58 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-2",
+      "name": "Recette simulée 2",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "vedette": "tofu",
+      "passePartout": false,
+      "reason": "pool: 58 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-1",
+      "name": "Recette simulée 1",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "vedette": "mango",
+      "passePartout": false,
+      "reason": "pool: 50 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-2",
+      "name": "Recette simulée 2",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "vedette": "mango",
+      "passePartout": false,
+      "reason": "pool: 50 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step",
+      "standard 1: chickpea flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-snack-1",
+      "name": "Recette simulée 1",
+      "category": "Snack",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "oat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "vedette": "chicken",
+      "passePartout": false,
+      "reason": "pool: 60 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-2",
+      "name": "Recette simulée 2",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "vedette": "chicken",
+      "passePartout": false,
+      "reason": "pool: 60 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: 3 steps; a recipe has six to ten, one action each",
+      "standard 1: wheat flour is never named in a step",
+      "standard 1: oat flour is never named in a step",
+      "standard 1: rice flour is never named in a step"
+    ],
+    "recette": {
+      "id": "simule-meal-1",
+      "name": "Recette simulée 1",
+      "category": "Meal",
+      "servings": "4 portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "wheat_flour",
+          "qty": 250,
+          "unit": "ml"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 125,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Écraser le premier ingrédient à la fourchette.",
+        "Incorporer les autres ingrédients et mélanger.",
+        "Servir tiède, à la texture qui convient à l'âge."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
         "Meal"
       ],
       "evite": [

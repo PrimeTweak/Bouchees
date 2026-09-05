@@ -62,10 +62,13 @@ enum Settings {
         return URL(string: "https://bouchees.onrender.com")!
     }
 
-    /// Served by the server itself — no separate site to maintain, and no dead
-    /// link at App Store review time.
-    static var terms: URL { serverBase.appendingPathComponent("terms") }
-    static var privacy: URL { serverBase.appendingPathComponent("privacy") }
+    /// The legal pages, served by the server in the app's language: the
+    /// path names it, since a Link does not send Accept-Language reliably.
+    private static var legalLang: String {
+        Bundle.main.preferredLocalizations.first?.hasPrefix("fr") == true ? "fr" : "en"
+    }
+    static var terms: URL { serverBase.appendingPathComponent(legalLang).appendingPathComponent("terms") }
+    static var privacy: URL { serverBase.appendingPathComponent(legalLang).appendingPathComponent("privacy") }
 
     /// Localised: the French build must read as French, not as a half-translated
     /// app. The key is the English text, as everywhere else.
@@ -174,7 +177,10 @@ final class LocalStore {
 
     func writeProfiles(_ profiles: [ChildProfile]) {
         guard let d = try? JSONEncoder().encode(profiles) else { return }
-        try? d.write(to: profilesFile, options: .atomic)
+        /* Complete protection: a child's first name and allergens stay
+         * unreadable while the phone is locked. Every read of this file
+         * happens in the foreground, after unlock. */
+        try? d.write(to: profilesFile, options: [.atomic, .completeFileProtection])
     }
 
     // Appearance — a single stored word, in UserDefaults rather than a file:

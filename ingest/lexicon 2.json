@@ -1,0 +1,720 @@
+{
+  "aliases": {
+    "wheat_flour": [
+      "farine",
+      "farine tout usage",
+      "farine blanche",
+      "all-purpose flour",
+      "flour",
+      "plain flour",
+      "ap flour",
+      "white flour"
+    ],
+    "oat_flour": [
+      "farine d'avoine",
+      "oat flour"
+    ],
+    "rolled_oats": [
+      "flocons d'avoine",
+      "gruau",
+      "avoine",
+      "rolled oats",
+      "oats",
+      "old-fashioned oats",
+      "quick oats"
+    ],
+    "wheat_pasta": [
+      "pates",
+      "spaghetti",
+      "penne",
+      "macaroni",
+      "fettuccine",
+      "pasta",
+      "coquilles",
+      "pates alphabet",
+      "alphabet pasta"
+    ],
+    "couscous": [
+      "couscous"
+    ],
+    "quinoa": [
+      "quinoa"
+    ],
+    "rice": [
+      "riz",
+      "riz blanc",
+      "riz cuit",
+      "rice",
+      "white rice",
+      "cooked rice",
+      "jasmine rice",
+      "riz arborio"
+    ],
+    "breadcrumbs": [
+      "chapelure",
+      "breadcrumbs",
+      "bread crumbs",
+      "panko"
+    ],
+    "flour_tortillas": [
+      "tortillas",
+      "tortillas de ble",
+      "flour tortillas",
+      "tortilla"
+    ],
+    "corn_tortillas": [
+      "tortillas de mais",
+      "corn tortillas"
+    ],
+    "egg": [
+      "oeuf",
+      "oeufs",
+      "egg",
+      "eggs",
+      "large egg",
+      "large eggs"
+    ],
+    "applesauce": [
+      "compote de pommes",
+      "compote",
+      "applesauce",
+      "apple sauce"
+    ],
+    "mashed_banana": [
+      "banane ecrasee",
+      "bananes ecrasees",
+      "puree de banane"
+    ],
+    "ground_flaxseed": [
+      "lin moulu",
+      "graines de lin moulues",
+      "ground flax",
+      "flaxseed meal",
+      "ground flaxseed"
+    ],
+    "chia_seeds": [
+      "chia",
+      "graines de chia",
+      "chia seeds"
+    ],
+    "cow_milk": [
+      "lait",
+      "lait entier",
+      "lait 2%",
+      "lait 3.25%",
+      "milk",
+      "whole milk",
+      "2% milk"
+    ],
+    "butter": [
+      "beurre",
+      "beurre non sale",
+      "butter",
+      "unsalted butter",
+      "salted butter"
+    ],
+    "heavy_cream": [
+      "creme 35",
+      "creme 35%",
+      "creme a cuisson",
+      "creme epaisse",
+      "heavy cream",
+      "whipping cream",
+      "heavy whipping cream"
+    ],
+    "cheddar": [
+      "cheddar",
+      "fromage cheddar",
+      "cheddar cheese",
+      "cheddar rape",
+      "shredded cheddar"
+    ],
+    "mozzarella": [
+      "mozzarella",
+      "fromage mozzarella",
+      "mozzarella cheese",
+      "shredded mozzarella"
+    ],
+    "parmesan": [
+      "parmesan",
+      "parmesan cheese",
+      "parmesan rape",
+      "grated parmesan"
+    ],
+    "plain_yogurt": [
+      "yogourt",
+      "yogourt nature",
+      "yogurt",
+      "plain yogurt"
+    ],
+    "greek_yogurt": [
+      "yogourt grec",
+      "greek yogurt",
+      "plain greek yogurt"
+    ],
+    "chicken": [
+      "poulet",
+      "poitrine de poulet",
+      "poitrines de poulet",
+      "hauts de cuisse",
+      "poulet hache",
+      "chicken",
+      "chicken breast",
+      "chicken breasts",
+      "chicken thighs",
+      "ground chicken",
+      "diced chicken"
+    ],
+    "ground_turkey": [
+      "dinde hachee",
+      "ground turkey"
+    ],
+    "white_fish": [
+      "poisson blanc",
+      "morue",
+      "aiglefin",
+      "tilapia",
+      "white fish",
+      "cod",
+      "haddock"
+    ],
+    "salmon": [
+      "saumon",
+      "filet de saumon",
+      "salmon",
+      "salmon fillet",
+      "salmon fillets"
+    ],
+    "shrimp": [
+      "crevette",
+      "crevettes",
+      "shrimp",
+      "prawns",
+      "cooked shrimp"
+    ],
+    "firm_tofu": [
+      "tofu",
+      "tofu ferme",
+      "firm tofu",
+      "extra-firm tofu"
+    ],
+    "lentils": [
+      "lentilles",
+      "lentilles cuites",
+      "lentils",
+      "cooked lentils"
+    ],
+    "chickpeas": [
+      "pois chiches",
+      "chickpeas",
+      "garbanzo beans"
+    ],
+    "soy_sauce": [
+      "sauce soya",
+      "sauce soja",
+      "soy sauce",
+      "low sodium soy sauce"
+    ],
+    "tamari": [
+      "tamari",
+      "sauce tamari",
+      "tamari sauce"
+    ],
+    "coconut_aminos": [
+      "aminos de coco",
+      "coconut aminos"
+    ],
+    "fish_sauce": [
+      "sauce de poisson",
+      "sauce poisson",
+      "fish sauce"
+    ],
+    "honey": [
+      "miel",
+      "honey"
+    ],
+    "maple_syrup": [
+      "sirop d'erable",
+      "sirop erable",
+      "maple syrup",
+      "pure maple syrup"
+    ],
+    "sugar": [
+      "sucre",
+      "sucre blanc",
+      "cassonade",
+      "sugar",
+      "granulated sugar",
+      "brown sugar",
+      "white sugar"
+    ],
+    "dates": [
+      "dattes",
+      "dattes denoyautees",
+      "dates",
+      "pitted dates",
+      "medjool dates"
+    ],
+    "banana": [
+      "banane",
+      "bananes",
+      "banana",
+      "bananas"
+    ],
+    "apple": [
+      "pomme",
+      "pommes",
+      "apple",
+      "apples"
+    ],
+    "mango": [
+      "mangue",
+      "mango",
+      "frozen mango"
+    ],
+    "blueberries": [
+      "bleuets",
+      "blueberries",
+      "myrtilles"
+    ],
+    "raisins": [
+      "raisins secs",
+      "raisins",
+      "sultanas"
+    ],
+    "dried_apricots": [
+      "abricots seches",
+      "abricots secs",
+      "dried apricots"
+    ],
+    "lemon_juice": [
+      "jus de citron",
+      "citron",
+      "lemon juice",
+      "juice of one lemon",
+      "lemon"
+    ],
+    "sweet_potato": [
+      "patate douce",
+      "patates douces",
+      "sweet potato",
+      "sweet potatoes"
+    ],
+    "butternut_squash": [
+      "courge musquee",
+      "courge butternut",
+      "puree de courge",
+      "butternut squash",
+      "squash puree"
+    ],
+    "carrot": [
+      "carotte",
+      "carottes",
+      "carrot",
+      "carrots",
+      "grated carrot",
+      "shredded carrots"
+    ],
+    "cucumber": [
+      "concombre",
+      "cucumber"
+    ],
+    "zucchini": [
+      "courgette",
+      "zucchini"
+    ],
+    "spinach": [
+      "epinards",
+      "spinach",
+      "baby spinach"
+    ],
+    "green_peas": [
+      "petits pois",
+      "pois verts",
+      "peas",
+      "green peas",
+      "frozen peas"
+    ],
+    "bell_pepper": [
+      "poivron",
+      "poivron rouge",
+      "bell pepper",
+      "red bell pepper",
+      "green bell pepper"
+    ],
+    "broccoli": [
+      "brocoli",
+      "broccoli",
+      "broccoli florets"
+    ],
+    "onion": [
+      "oignon",
+      "oignons",
+      "onion",
+      "yellow onion",
+      "green onions",
+      "oignons verts",
+      "echalote"
+    ],
+    "garlic": [
+      "ail",
+      "gousse d'ail",
+      "gousses d'ail",
+      "garlic",
+      "garlic clove",
+      "garlic cloves",
+      "cloves garlic",
+      "minced garlic"
+    ],
+    "crushed_tomatoes": [
+      "tomates broyees",
+      "tomates en des",
+      "tomates en conserve",
+      "crushed tomatoes",
+      "diced tomatoes",
+      "canned tomatoes",
+      "tomato sauce",
+      "sauce tomate"
+    ],
+    "dijon_mustard": [
+      "moutarde",
+      "moutarde de dijon",
+      "dijon mustard",
+      "mustard"
+    ],
+    "salt": [
+      "sel",
+      "sel de mer",
+      "salt",
+      "sea salt",
+      "kosher salt"
+    ],
+    "cinnamon": [
+      "cannelle",
+      "cannelle moulue",
+      "cinnamon",
+      "ground cinnamon"
+    ],
+    "vanilla": [
+      "vanille",
+      "extrait de vanille",
+      "vanilla",
+      "vanilla extract"
+    ],
+    "basil": [
+      "basilic",
+      "basilic frais",
+      "basil",
+      "fresh basil"
+    ],
+    "ginger": [
+      "gingembre",
+      "gingembre frais",
+      "ginger",
+      "fresh ginger",
+      "grated ginger"
+    ],
+    "baking_powder": [
+      "poudre a pate",
+      "levure chimique",
+      "baking powder"
+    ],
+    "baking_soda": [
+      "bicarbonate",
+      "bicarbonate de soude",
+      "baking soda"
+    ],
+    "nutritional_yeast": [
+      "levure alimentaire",
+      "nutritional yeast"
+    ],
+    "unsalted_broth": [
+      "bouillon",
+      "bouillon de poulet",
+      "bouillon de legumes",
+      "bouillon sans sel",
+      "chicken broth",
+      "vegetable broth",
+      "low sodium broth",
+      "chicken stock",
+      "vegetable stock"
+    ],
+    "water": [
+      "eau",
+      "water",
+      "eau chaude",
+      "warm water"
+    ],
+    "olive_oil": [
+      "huile d'olive",
+      "olive oil",
+      "extra virgin olive oil"
+    ],
+    "canola_oil": [
+      "huile de canola",
+      "huile vegetale",
+      "canola oil",
+      "vegetable oil",
+      "neutral oil"
+    ],
+    "dairy_free_margarine": [
+      "margarine sans lait",
+      "margarine vegetale",
+      "dairy-free margarine",
+      "vegan butter"
+    ],
+    "peanut_butter": [
+      "beurre d'arachide",
+      "beurre d'arachides",
+      "peanut butter",
+      "natural peanut butter"
+    ],
+    "sunflower_seed_butter": [
+      "beurre de tournesol",
+      "beurre de graines de tournesol",
+      "sunflower seed butter",
+      "sunbutter"
+    ],
+    "tahini": [
+      "tahini",
+      "beurre de sesame",
+      "sesame paste"
+    ],
+    "almond_butter": [
+      "beurre d'amande",
+      "almond butter"
+    ],
+    "walnuts": [
+      "noix de grenoble",
+      "noix",
+      "walnuts",
+      "chopped walnuts"
+    ],
+    "soy_beverage": [
+      "boisson de soya",
+      "lait de soya",
+      "soy milk",
+      "soy beverage"
+    ],
+    "oat_beverage": [
+      "boisson d'avoine",
+      "lait d'avoine",
+      "oat milk",
+      "oat beverage"
+    ],
+    "coconut_milk": [
+      "lait de coco",
+      "coconut milk",
+      "canned coconut milk"
+    ],
+    "cornstarch": [
+      "fecule de mais",
+      "fecule",
+      "cornstarch",
+      "corn starch"
+    ]
+  },
+  "descriptors": [
+    "de",
+    "d",
+    "du",
+    "des",
+    "of",
+    "the",
+    "a",
+    "an",
+    "en",
+    "et",
+    "and",
+    "ou",
+    "or",
+    "au",
+    "aux",
+    "to",
+    "non",
+    "sans",
+    "frais",
+    "fraiche",
+    "fraiches",
+    "fresh",
+    "surgele",
+    "surgeles",
+    "surgelee",
+    "surgelees",
+    "frozen",
+    "hache",
+    "hachee",
+    "haches",
+    "hachees",
+    "chopped",
+    "minced",
+    "diced",
+    "sliced",
+    "cubed",
+    "cubes",
+    "lanieres",
+    "morceaux",
+    "rape",
+    "rapee",
+    "rapes",
+    "rapees",
+    "grated",
+    "shredded",
+    "effiloche",
+    "effilochee",
+    "fondu",
+    "fondue",
+    "melted",
+    "ramolli",
+    "ramollie",
+    "softened",
+    "cuit",
+    "cuite",
+    "cuits",
+    "cuites",
+    "cooked",
+    "boiled",
+    "steamed",
+    "gros",
+    "grosse",
+    "grosses",
+    "large",
+    "petit",
+    "petite",
+    "petits",
+    "petites",
+    "small",
+    "medium",
+    "moyen",
+    "moyenne",
+    "mur",
+    "mure",
+    "mures",
+    "ripe",
+    "very",
+    "sale",
+    "salee",
+    "unsalted",
+    "sodium",
+    "low",
+    "reduced",
+    "faible",
+    "reduit",
+    "reduite",
+    "sucree",
+    "unsweetened",
+    "nature",
+    "plain",
+    "os",
+    "peau",
+    "boneless",
+    "skinless",
+    "divise",
+    "divided",
+    "facultatif",
+    "optional",
+    "gout",
+    "taste",
+    "finement",
+    "finely",
+    "roughly",
+    "grossierement",
+    "bien",
+    "well",
+    "beaten",
+    "battu",
+    "battus",
+    "lightly",
+    "legerement",
+    "packed",
+    "tassee",
+    "environ",
+    "about",
+    "approx",
+    "denoyautees",
+    "pitted",
+    "peeled",
+    "pele",
+    "pelee",
+    "extra",
+    "seche",
+    "sechee",
+    "dried",
+    "ground",
+    "moulu",
+    "moulue",
+    "moulues"
+  ],
+  "units": {
+    "volume_ml": {
+      "ml": 1,
+      "millilitre": 1,
+      "millilitres": 1,
+      "l": 1000,
+      "litre": 1000,
+      "litres": 1000,
+      "tasse": 250,
+      "tasses": 250,
+      "cup": 250,
+      "cups": 250,
+      "c. a soupe": 15,
+      "c. a s.": 15,
+      "cas": 15,
+      "cuillere a soupe": 15,
+      "cuilleres a soupe": 15,
+      "tbsp": 15,
+      "tablespoon": 15,
+      "tablespoons": 15,
+      "c. a the": 5,
+      "c. a t.": 5,
+      "cat": 5,
+      "cuillere a the": 5,
+      "cuilleres a the": 5,
+      "tsp": 5,
+      "teaspoon": 5,
+      "teaspoons": 5,
+      "pincee": 1,
+      "pincees": 1,
+      "pinch": 1,
+      "dash": 1
+    },
+    "poids_g": {
+      "g": 1,
+      "gramme": 1,
+      "grammes": 1,
+      "gram": 1,
+      "grams": 1,
+      "kg": 1000,
+      "oz": 28,
+      "ounce": 28,
+      "ounces": 28,
+      "lb": 454,
+      "lbs": 454,
+      "pound": 454,
+      "pounds": 454,
+      "livre": 454,
+      "livres": 454
+    },
+    "natural_units": [
+      "unite",
+      "unites",
+      "gousse",
+      "gousses",
+      "clove",
+      "cloves",
+      "boite",
+      "boites",
+      "can",
+      "cans",
+      "conserve",
+      "filet",
+      "filets",
+      "fillet",
+      "fillets",
+      "tranche",
+      "tranches",
+      "slice",
+      "slices"
+    ]
+  }
+}

@@ -1,9 +1,13 @@
 {
-  "build": 189,
-  "date": "2026-09-06",
+  "build": 192,
+  "date": "2026-09-07",
   "carries": [
-    "SCANNER — why products that once scanned stopped scanning. Three causes, all on the server, none in the app: (1) an unknown product cost five or six lookups — every form of the code, then three sibling databases that hold nothing a child eats — against a budget of twelve a minute shared by every parent, so two unknowns in a row and the next real product came back 'busy'; food only now, one call per form; (2) the product cache lived on Render's disk, which is wiped on every deploy, so every push forgot every product; a seed now ships in the repository, data/products-seen.json, loaded under the live cache and never expiring; (3) the disk cache was written every twenty scans — a server that saw nineteen never wrote; it writes within five seconds of a change",
-    "the cycle folds the products the live server found into the seed, through a route keyed on BOUCHEES_ADMIN_SECRET; proven on an instance: Render redeployed, disk empty, Open Food Facts offline — a seeded product answers in zero calls",
-    "no build: the app is unchanged"
+    "APP STORE. Apple's four subscription items are in the paywall (title, length, StoreKit price, Terms + Privacy links) with Restore; the StoreKit test configuration no longer ships in the bundle; the privacy manifest declares UserDefaults (CA92.1) and no collected data — the app has no sign-in screen; camera usage string in both languages; ATS default; iPhone only",
+    "LEGAL. Four TheMealDB/Spoonacular recipes are withheld — not deleted: data/withheld/, images/withheld/, ingest/withheld/ — and publish prunes their bodies from dist/. Terms and Privacy exist in French and English, served by language (/fr, /en, Accept-Language), with refunds via Apple, Québec governing law, the Law 25 person in charge, and the ODbL line. The contact address is BOUCHEES_CONTACT, the officer BOUCHEES_PRIVACY_OFFICER",
+    "DATA. Session tokens are stored hashed; ratings are keyed on a hash of the account; the iOS token lives in the keychain (migrated once from UserDefaults); profiles.json has complete file protection",
+    "ACCESS. Email bounded to 254 characters, five sign-in attempts a minute per address, Stripe answers 401 without naming the variable, checkout answers 503 without listing what is missing",
+    "QUALITY. priceLine has one source (Subscription); BackButton is one component; every eyebrow uses .eyebrow(); SearchScreen and ChildPickerSheet live under Screens/",
+    "from 190/191: single-ingredient labels get a verdict, the shopping aisle folds at the last tick, concurrent scans of one code share one lookup",
+    "not done, on purpose: splitting Onboarding, Scanner, AppState and the tests — after publication, one file per build"
   ]
 }

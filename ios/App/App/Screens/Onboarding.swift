@@ -110,10 +110,7 @@ private struct LiveDemoStep: View {
                     .padding(.bottom, 18)
 
                 Text("Nothing to sign up for. Works without a signal.")
-                    .scaledFont(Type.label)
-                    .foregroundStyle(Tone.brand)
-                    .textCase(.uppercase)
-                    .kerning(1.4)
+                    .eyebrow(Tone.brand)
 
                 Text("What does your child avoid?")
                     .scaledFont(Type.display)
@@ -409,20 +406,9 @@ private struct StepHeader: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Button(action: back) {
-                Image(systemName: "chevron.left")
-                    .scaledFont(Type.secondary, weight: .semibold)
-                    .foregroundStyle(Tone.text)
-                    .frame(width: 32, height: 32)
-            }
-            .buttonStyle(.plain)
-            .glass(Circle())
-            .accessibilityLabel(Text("Back"))
+            BackButton(action: back)
             Text(label)
-                .scaledFont(Type.label)
-                .foregroundStyle(Tone.brand)
-                .textCase(.uppercase)
-                .kerning(1.4)
+                .eyebrow(Tone.brand)
         }
     }
 }
@@ -448,10 +434,7 @@ private struct WhoStep: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("First name")
-                        .scaledFont(Type.label)
-                        .foregroundStyle(Tone.textTertiary)
-                        .textCase(.uppercase)
-                        .kerning(1.2)
+                        .eyebrow()
                     TextField("First name", text: $name)
                         .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.text)
@@ -466,10 +449,7 @@ private struct WhoStep: View {
                 .padding(.top, 22)
 
                 Text("Age")
-                    .scaledFont(Type.label)
-                    .foregroundStyle(Tone.textTertiary)
-                    .textCase(.uppercase)
-                    .kerning(1.2)
+                    .eyebrow()
                     .padding(.top, 22)
                     .padding(.bottom, 9)
 
@@ -691,12 +671,6 @@ private struct OfferStep: View {
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
     /// number the app invented.
-    private var priceLine: String? {
-        guard let price = app.subscription.displayPrice else { return nil }
-        let period = app.subscription.displayPeriod ?? String(localized: "month")
-        return String(format: String(localized: "7 days free, then %@/%@"), price, period)
-    }
-
     private var tally: AppState.ProfileTally { app.tally(for: draft) }
 
     var body: some View {
@@ -749,7 +723,7 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                if let priceLine {
+                if let priceLine = app.subscription.priceLine {
                     Text(priceLine)
                         .scaledFont(Type.secondary)
                         .foregroundStyle(Tone.textTertiary)

@@ -876,37 +876,44 @@ test("normaliser: an unknown ingredient stays unknown, never guessed", () => {
 
 const { importAll } = require(path.join(__dirname, "..", "ingest", "importer.js"));
 const importation = importAll();
+/* The importer's own tests run against the withheld fixtures (TheMealDB,
+ * Spoonacular) as a test bench: they exercise quarantine, curation and
+ * roles. Nothing from that folder reaches the catalogue. */
+const banc = importAll({
+  dossierSources: path.join(__dirname, "..", "ingest", "withheld"),
+  curation: Object.assign({}, lire2("ingest/curation.json"), lire2("ingest/withheld/curation-withheld.json"))
+});
 
-test("importer: ten recipes imported, three quarantined", () => {
-  assert.equal(importation.imported.length, 10);
-  assert.equal(importation.quarantine.length, 3);
+test("importer: the bench imports four and quarantines three", () => {
+  assert.equal(banc.imported.length, 4);
+  assert.equal(banc.quarantine.length, 3);
 });
 
 test("importer: one unknown line quarantines the WHOLE recipe", () => {
-  const q = importation.quarantine.find((x) => x.name === "Thai Green Curry");
+  const q = banc.quarantine.find((x) => x.name === "Thai Green Curry");
   assert.equal(q.reason, "lines non reconnues");
   assert(q.detail.some((d) => /galangal/i.test(d)));
 });
 
 test("importer: recognised but uncurated goes to quarantine", () => {
-  const q = importation.quarantine.find((x) => x.name === "Apple Cinnamon Baked Oatmeal");
+  const q = banc.quarantine.find((x) => x.name === "Apple Cinnamon Baked Oatmeal");
   assert.equal(q.reason, "curation manquante");
 });
 
 test("importer: every imported recipe carries a curated age and a source", () => {
-  for (const r of importation.imported) {
+  for (const r of banc.imported) {
     assert(Number.isInteger(r.minAgeMonths) && r.minAgeMonths >= 6, r.id);
     assert(r.source && r.source.source && r.source.license, r.id);
   }
 });
 
 test("importer: a curated role overrides the default one", () => {
-  const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
+  const r = banc.imported.find((x) => x.id === "vegetable-fried-rice");
   assert.equal(r.ingredients.find((i) => i.id === "egg").role, "protein");
 });
 
 test("end to end: fried rice without soy takes coconut aminos", () => {
-  const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
+  const r = banc.imported.find((x) => x.id === "vegetable-fried-rice");
   const res = Engine.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, data);
   assert.equal(res.ingredients.find((i) => i.id === "soy_sauce").to, "coconut_aminos");
 });
@@ -1793,20 +1800,23 @@ test("server: a body over the ceiling is refused with 413, not swallowed as bad 
   t.close();
 });
 
-test("server: a token older than the TTL no longer authenticates, a fresh one does, the old shape migrates", async () => {
+test("server: a token older than the TTL no longer authenticates, a fresh one does, and the store holds hashes only", async () => {
   const S0 = require("../server/server.js");
+  const h = S0._empreinteJeton;
   const t = await serveurDeTest({
     accounts: { "x@y.z": { email: "x@y.z", subscription: null } },
     tokens: {
-      vieux: { email: "x@y.z", cree: Date.now() - S0._TOKEN_TTL_MS - 1000 },
-      neuf: { email: "x@y.z", cree: Date.now() },
-      ancien: "x@y.z"
+      [h("vieux")]: { email: "x@y.z", cree: Date.now() - S0._TOKEN_TTL_MS - 1000 },
+      [h("neuf")]: { email: "x@y.z", cree: Date.now() },
+      /* A token written in clear, from before hashing, must NOT authenticate:
+       * a copy of the file is no longer a copy of every session. */
+      clair: { email: "x@y.z", cree: Date.now() }
     }
   });
   async function me(tok) { return (await t.call("GET", "/api/me", null, { authorization: "Bearer " + tok })).json.connecte; }
   assert.equal(await me("vieux"), false, "expired");
   assert.equal(await me("neuf"), true, "fresh");
-  assert.equal(await me("ancien"), true, "a bare-email entry from before is not a logout");
+  assert.equal(await me("clair"), false, "a clear-text token from before hashing still authenticates");
   t.close();
 });
 
@@ -1918,7 +1928,7 @@ test("wall: a free body goes to anyone, a paid body never leaves without a subsc
 test("wall: a subscriber reads every body", async () => {
   const t = await serveurDeTest({
     accounts: { "s@b.co": { email: "s@b.co", subscription: { status: "actif" } } },
-    tokens: { tok: { email: "s@b.co", cree: Date.now() } }
+    tokens: { [require("../server/server.js")._empreinteJeton("tok")]: { email: "s@b.co", cree: Date.now() } }
   });
   const cat = (await t.call("GET", "/api/catalogue")).json.catalogue;
   const paid = cat.find((c) => !c.free);
@@ -2105,10 +2115,14 @@ test("wall: a forged or unsigned receipt as bearer entitles nothing", async () =
 test("label: nothing to read is never safe", () => {
   /* A green verdict on no information is the worst answer an allergy app can
    * give. Empty, blank and unreadable text all have to say so. */
-  ["", "   ", "###@@@", "sucre"].forEach((t) => {
+  ["", "   ", "###@@@", "Ingredients:"].forEach((t) => {
     const r = evaluerEtiquette(t, ["milk"]);
     assert.notEqual(r.status, "safe", JSON.stringify(t) + " came back safe");
   });
+  /* One recognised ingredient, no allergen: that IS a clean label. The old
+   * list held "sucre" here, which pushed the threshold to two fragments and
+   * turned every single-ingredient product into "nothing to read". */
+  assert.equal(evaluerEtiquette("sucre", ["milk"]).status, "safe");
 });
 
 test("label: a may-contain warning is surfaced as caution, never hidden", () => {
@@ -2249,6 +2263,44 @@ test("scanner: the product seed ships in the repository and the cache answers fr
     assert(/^\d{8,14}$/.test(k), "seed key is not a barcode: " + k);
     assert(seed[k].ingredientsText !== undefined, "seed entry without ingredients: " + k);
   });
+});
+
+test("scanner: a single-ingredient label is a verdict, not unreadable", () => {
+  /* Quaker oats, "100% rolled oats", came back "Nothing to read"; the rule
+   * demanded two fragments. Peanuts alone is the verdict that matters. */
+  const oats = evaluerEtiquette("100% rolled oats", ["milk", "egg", "peanut"]);
+  assert.equal(oats.status, "safe", "oats alone: " + oats.status + " — " + oats.message);
+  const peanuts = evaluerEtiquette("Peanuts", ["peanut"]);
+  assert.equal(peanuts.status, "avoid", "peanuts alone: " + peanuts.status);
+  const heading = evaluerEtiquette("Ingredients:", ["milk"]);
+  assert.equal(heading.status, "unreadable", "a bare heading must stay unreadable: " + heading.status);
+  const empty = evaluerEtiquette("", ["milk"]);
+  assert.equal(empty.status, "unreadable", "empty text must stay unreadable");
+});
+
+test("server: twenty parents scanning the same product at once share one lookup", async () => {
+  /* A launch is everyone scanning the same box. Without sharing, twenty
+   * requests for one code spent the whole minute's budget on one product. */
+  const Srv = require(path.join(__dirname, "..", "server", "server.js"));
+  const http = require("http");
+  const fetchAvant = global.fetch;
+  let sorties = 0;
+  global.fetch = async () => {
+    sorties++;
+    await new Promise((r) => setTimeout(r, 30));
+    return { status: 200, headers: { get: () => "application/json" },
+             json: async () => ({ status: 1, product: { product_name: "Cheerios", ingredients_text: "Whole grain oats." } }) };
+  };
+  Srv._ProductCache._reset();
+  const srv = Srv.createServer();
+  await new Promise((r) => srv.listen(0, r));
+  const port = srv.address().port;
+  const un = () => new Promise((r) => http.get({ port, path: "/api/product?code=065633130111" }, (x) => { x.resume(); x.on("end", () => r(x.statusCode)); }));
+  const codes = await Promise.all(Array.from({ length: 20 }, un));
+  srv.close();
+  global.fetch = fetchAvant;
+  assert(codes.every((c) => c === 200), "a parent got " + codes.find((c) => c !== 200));
+  assert.equal(sorties, 1, "twenty identical scans made " + sorties + " outbound calls");
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

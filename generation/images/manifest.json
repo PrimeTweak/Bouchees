@@ -468,29 +468,6 @@
       "avertissements": []
     }
   },
-  "chicken-couscous": {
-    "fichier": "images/chicken-couscous-e0964b7bd23f.png",
-    "empreinte": "e0964b7bd23f",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T14:22:15.376Z",
-      "detectes": [
-        "couscous",
-        "chicken",
-        "carrot",
-        "onion"
-      ],
-      "reconnus": 5,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : the meat could be turkey rather than chicken, the pale chunks could be turnip or potato rather than onion"
-      ]
-    }
-  },
   "creamy-shrimp-and-pea-risotto": {
     "fichier": "images/creamy-shrimp-and-pea-risotto-e99de6a80299.png",
     "empreinte": "e99de6a80299",
@@ -604,49 +581,6 @@
       "avertissements": [
         "la vision hésite sur : walnut, cinnamon, oat, whole wheat flour, raisin"
       ]
-    }
-  },
-  "creamy-salmon-pasta": {
-    "fichier": "images/creamy-salmon-pasta-db395547b6e9.png",
-    "empreinte": "db395547b6e9",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T15:06:55.954Z",
-      "detectes": [
-        "spaghetti",
-        "salmon",
-        "cream sauce"
-      ],
-      "reconnus": 2,
-      "attendus": 6,
-      "avertissements": [
-        "la vision hésite sur : exact type of cream sauce (could include butter, parmesan, or bechamel)"
-      ]
-    }
-  },
-  "vegetable-fried-rice": {
-    "fichier": "images/vegetable-fried-rice-94a31c482bfc.png",
-    "empreinte": "94a31c482bfc",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T15:19:35.451Z",
-      "detectes": [
-        "rice",
-        "egg",
-        "pea",
-        "carrot"
-      ],
-      "reconnus": 3,
-      "attendus": 7,
-      "avertissements": []
     }
   },
   "coconut-rice-pudding-with-mango": {
@@ -867,28 +801,6 @@
       "attendus": 7,
       "avertissements": [
         "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified"
-      ]
-    }
-  },
-  "banana-oat-pancakes": {
-    "fichier": "images/banana-oat-pancakes-bf4c2dd36cae.png",
-    "empreinte": "bf4c2dd36cae",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-05T12:03:24.045Z",
-      "detectes": [
-        "oat",
-        "pancake"
-      ],
-      "reconnus": 1,
-      "attendus": 7,
-      "avertissements": [
-        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
-        "la vision hésite sur : exact flour type used in batter (oat flour, whole wheat, or mixed), possible seeds mixed into batter"
       ]
     }
   },

@@ -462,14 +462,6 @@ extension RecipesScreen {
     /// The App Store's own price, in the user's currency. Falls back to the
     /// trial wording alone when StoreKit has not answered — never to a
     /// number the app invented.
-    private var priceLine: String? {
-        /* Nothing when StoreKit has not answered: the button already says
-         * "7 days free", and a second line saying it again read as a bug. */
-        guard let price = app.subscription.displayPrice else { return nil }
-        let period = app.subscription.displayPeriod ?? String(localized: "month")
-        return String(format: String(localized: "7 days free, then %@/%@"), price, period)
-    }
-
     /* The subscription is the point of the app: it now comes right under the
      * week, as the only DARK block on a light page, so the eye lands on it. */
     @ViewBuilder
@@ -492,7 +484,7 @@ extension RecipesScreen {
                         .foregroundStyle(Tone.upsellText2)
                         .padding(.top, 5)
 
-                    if let priceLine {
+                    if let priceLine = app.subscription.priceLine {
                         Text(priceLine)
                             .scaledFont(Type.caption)
                             .foregroundStyle(Tone.upsellText2)

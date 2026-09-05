@@ -1,0 +1,28 @@
+ZIP COMPLET — build 192. C'est tout le dépôt : remplace le tien.
+
+  1. Dans Finder, déplace TOUT le contenu de ce dossier par-dessus ton
+     dépôt local (remplacer). Rien n'est perdu : les 4 recettes retirées
+     sont dans data/withheld/, leurs photos dans images/withheld/, leurs
+     sources dans ingest/withheld/.
+  2. GitHub Desktop : tu verras beaucoup de fichiers. Coche tout. Les
+     NOUVEAUX : ios/App/App/Services/Keychain.swift,
+     ios/App/App/Screens/SearchScreen.swift,
+     ios/App/App/Screens/ChildPickerSheet.swift, data/products-seen.json,
+     data/withheld/, images/withheld/, ingest/withheld/, APP-STORE.md.
+  3. Commit, Push. Un build.
+  4. Lis APP-STORE.md — ce sont les gestes qui restent, hors du code.
+
+CE QUE CE BUILD CHANGE — le détail est dans BUILD.json
+  APPLE   : .storekit hors du bundle ; manifeste de confidentialité juste ;
+            paywall vérifié contre la règle 3.1.2.
+  LÉGAL   : 4 recettes sans licence retirées (gardées en réserve) ; Terms
+            et Privacy en français ET en anglais, servies selon la langue,
+            avec remboursement, loi du Québec, responsable Loi 25, ODbL.
+  FUITES  : jetons hachés, notes par empreinte, jeton iOS dans le
+            trousseau, profils protégés.
+  ACCÈS   : courriel borné, login limité, Stripe 401.
+  QUALITÉ : priceLine unique, BackButton, eyebrow, deux écrans déplacés.
+  + 190/191 : gruau, épicerie, requêtes partagées.
+
+NON FAIT, volontairement : découper Onboarding, Scanner, AppState, tests.
+Après la publication, un fichier par build.

@@ -30,7 +30,11 @@ targets:
     - path: App/App/Screens
     - path: App/App/Services
     - path: App/App/Assets.xcassets
+    # The StoreKit test configuration is for the simulator only; listed as
+    # a source it was copied into the shipped app, naming products and
+    # prices to anyone who unzips the IPA.
     - path: App/App/Bouchees.storekit
+      buildPhase: none
     - path: App/App/PrivacyInfo.xcprivacy
     - path: App/App/Localization
       type: group

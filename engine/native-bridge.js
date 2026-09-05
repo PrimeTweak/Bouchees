@@ -191,7 +191,11 @@ var PONT = (function () {
     /* Nothing to read is not a clean label. An empty or near-empty text used
      * to answer "safe", which is the worst possible verdict in an allergy
      * app: a green light on no information. */
-    if (fragments(segments.ingredients).length < 2 && !liste.length) {
+    /* One ingredient is a list — oats, peanuts, rice, honey — and for a
+     * parent, "peanuts" alone is the verdict that matters most. Unreadable
+     * is for nothing at all: no fragment survived the heading and the
+     * percentages. */
+    if (fragments(segments.ingredients).length === 0 && !liste.length) {
       return JSON.stringify({
         status: "unreadable",
         allergensFound: [], mayContain: [], unknownIngredients: [],

@@ -261,6 +261,10 @@ struct ShoppingScreen: View {
         withAnimation(.soft(0.2)) {
             if checked.contains(item.id) { checked.remove(item.id) }
             else { checked.insert(item.id) }
+            /* A hand-opened aisle stayed open for the whole session, so the
+             * last tick never folded it. Ticking clears the hand-set answer:
+             * the aisle follows its own state again, and folds when done. */
+            aisleOpened[item.aisle] = nil
         }
         app.saveCheckedItems(checked)
     }

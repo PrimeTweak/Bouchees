@@ -20,6 +20,15 @@ final class Subscription {
     /// a promotion runs, or the price changes — and Apple refuses that.
     var displayPrice: String? { products.first?.displayPrice }
 
+    /// "7 days free, then $4.99/month" — one sentence for the week card and
+    /// the onboarding; nil until StoreKit answers, so no screen repeats the
+    /// trial line the button already carries.
+    var priceLine: String? {
+        guard let price = displayPrice else { return nil }
+        let period = displayPeriod ?? String(localized: "month")
+        return String(format: String(localized: "7 days free, then %@/%@"), price, period)
+    }
+
     /// The renewal period, spelled by StoreKit rather than by us.
     var displayPeriod: String? {
         guard let unit = products.first?.subscription?.subscriptionPeriod.unit else { return nil }
@@ -45,7 +54,13 @@ final class Subscription {
     static let identifiants = ["ca.bouchees.abo.mensuel", "ca.bouchees.abo.annuel"]
 
     init() {
-        serverToken = UserDefaults.standard.string(forKey: clefJeton)
+        /* The token moved to the keychain; one left in UserDefaults by an
+         * earlier build is carried over once, then wiped from there. */
+        if let ancien = UserDefaults.standard.string(forKey: clefJeton) {
+            Keychain.write(ancien, for: clefJeton)
+            UserDefaults.standard.removeObject(forKey: clefJeton)
+        }
+        serverToken = Keychain.read(clefJeton)
         email = UserDefaults.standard.string(forKey: clefCourriel)
         ecoute = Task { [weak self] in
             // Renewals and refunds arrive here, outside a purchase.
@@ -60,14 +75,14 @@ final class Subscription {
     func setToken(_ token: String, email adresse: String) {
         serverToken = token
         email = adresse
-        UserDefaults.standard.set(token, forKey: clefJeton)
+        Keychain.write(token, for: clefJeton)
         UserDefaults.standard.set(adresse, forKey: clefCourriel)
     }
 
     func clearToken() {
         serverToken = nil
         email = nil
-        UserDefaults.standard.removeObject(forKey: clefJeton)
+        Keychain.delete(clefJeton)
         UserDefaults.standard.removeObject(forKey: clefCourriel)
     }
 

@@ -127,3 +127,20 @@ struct EmptyState: View {
 
 // MARK: - Grid adaptative
 
+/// The way back on a screen that hides the system bar: a glass circle, ink
+/// chevron, the size the recipe page's toolbar gives its own.
+struct BackButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.left")
+                .scaledFont(Type.heading, weight: .semibold)
+                .foregroundStyle(Tone.text)
+                .frame(width: 36, height: 36)
+        }
+        .buttonStyle(.plain)
+        .glass(Circle())
+        .accessibilityLabel(Text("Back"))
+    }
+}
