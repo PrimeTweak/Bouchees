@@ -306,6 +306,10 @@ struct RecipesScreen: View {
                                 targeted: $targetedDay) { id in
                 if let r = app.recipeByID(id) { app.move(r, to: dayIndex) }
             })
+            /* The gap between days sits OUTSIDE both zones. Inside the header
+             * it belonged to the day below while the eye read it as the end
+             * of the day above — the very band aimed at when dragging up. */
+            .padding(.top, 13)
         }
     }
 
@@ -324,7 +328,7 @@ struct RecipesScreen: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, today ? 13 : Layout.gutter)
-        .padding(.top, today ? 11 : 19)
+        .padding(.top, today ? 11 : 6)
         .padding(.bottom, 2)
     }
 

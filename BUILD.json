@@ -1,8 +1,8 @@
 {
-  "build": 167,
+  "build": 168,
   "date": "2026-09-03",
   "carries": [
-    "today's block was the one drop target with no hover feedback, so a recipe dragged onto it looked refused even when it landed; it highlights like the other six days",
-    "today's drop zone was taken after its top padding, which stretched it ten points into the day above — the day a recipe dragged upward is aiming for; the zone is the block itself now"
+    "each day's header carried nineteen points of top padding INSIDE its drop zone: the eye read that band as the end of the day above, the code counted it as the start of the day below. Dragging down it made a day easier to hit; dragging up it was the band being aimed at, and the recipe landed back where it came from",
+    "the gap between days is now outside every zone — thirteen points that belong to no day — and each highlight hugs what the eye calls that day, which is also the strip that looked like an underline"
   ]
 }
