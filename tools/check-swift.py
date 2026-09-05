@@ -1023,7 +1023,68 @@ def check():
     problems += await_dans_autoclosure()
     problems += double_view_builder()
     problems += api_hors_sdk()
+    problems += vues_maison_introuvables()
+    problems += modificateur_orphelin()
     return problems, warnings
+
+
+def modificateur_orphelin():
+    """`private` or `static` left alone on a line, or followed by a comment:
+    a replacement that cut a declaration in two. The compiler reports it as
+    a duplicate modifier three lines later."""
+    out = []
+    for path in swift_files():
+        for i, line in enumerate(open(path, encoding="utf-8").read().split("\n"), 1):
+            if re.match(r"^\s*(?:private|fileprivate|internal|public|static|final)\s*(?://|/\*|$)", line):
+                out.append(f"{os.path.basename(path)}:{i}: a modifier with nothing after it — a declaration was cut in two")
+    return out
+
+
+def vues_maison_introuvables():
+    """A call like `StepHeader(label:…, back:…)` — capitalised, with at least
+    one argument label — that no file declares. Framework types take
+    labelled arguments too, so the names SwiftUI and Foundation ship are
+    listed; anything else must exist in the project. Blocking: a warning on
+    this went unread for three builds."""
+    fichiers = swift_files()
+    declares = set()
+    for path in fichiers:
+        declares |= set(re.findall(r"\b(?:struct|class|enum|actor|typealias|protocol)\s+([A-Z]\w+)",
+                                   open(path, encoding="utf-8").read()))
+    cadres = set("""Text Image Button VStack HStack ZStack LazyVStack LazyHStack LazyVGrid LazyHGrid GridItem
+        ScrollView List Section Group ForEach NavigationStack NavigationLink Spacer Divider Circle Capsule
+        Rectangle RoundedRectangle Color LinearGradient RadialGradient AngularGradient Path Toggle Picker
+        TextField SecureField Label ProgressView Link Menu EmptyView AnyView AnyShape GeometryReader
+        Task Date Calendar URL URLRequest URLSession JSONDecoder JSONEncoder Data String Int Double CGFloat
+        CGPoint CGSize CGRect Set Array Dictionary UUID UIImage UIColor UIFont UIImpactFeedbackGenerator
+        UINotificationFeedbackGenerator UIPanGestureRecognizer DragGesture TapGesture LongPressGesture
+        Animation Font Angle UnitPoint EdgeInsets Binding State NotificationCenter Locale TimeZone
+        DateFormatter NumberFormatter DateComponents UserDefaults Product Transaction AppStore
+        AttributedString CharacterSet IndexSet Range ClosedRange StrokeStyle Gradient Shadow
+        TabView Form Stepper Slider ContentUnavailableView ShareLink TextEditor DatePicker TimelineView
+        UNMutableNotificationContent UNCalendarNotificationTrigger UNNotificationRequest UNUserNotificationCenter
+        AVCaptureSession AVCaptureDevice AVCaptureVideoPreviewLayer AVCaptureMetadataOutput AVCaptureDeviceInput
+        Measurement UnitVolume UnitMass AnyShapeStyle Material ImageRenderer Symbol ProposedViewSize
+        Alert Sheet Toolbar ToolbarItem ToolbarItemGroup KeyboardShortcut EventModifiers
+        Tab TabSection Table TableColumn Chart NavigationSplitView Grid GridRow ViewThatFits
+        AsyncImage VideoPlayer Map Marker Annotation ColorPicker Gauge SearchField""".split())
+    out = []
+    for path in fichiers:
+        # Line comments first, without DOTALL — with it, the first // ate the
+        # rest of the file and the rule inspected nothing.
+        code = open(path, encoding="utf-8").read()
+        code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
+        code = re.sub(r"//[^\n]*", "", code)
+        code = re.sub(r'"(?:[^"\\]|\\.)*"', '""', code)
+        for m in re.finditer(r"(?<![\w.])([A-Z]\w+)\s*\(\s*\w+\s*:", code):
+            nom = m.group(1)
+            if nom in declares or nom in cadres:
+                continue
+            if nom.startswith(("UI", "NS", "CG", "CA", "AV", "SK", "UN", "CF", "OS")):
+                continue
+            ligne = code[:m.start()].count("\n") + 1
+            out.append(f"{os.path.basename(path)}:{ligne}: {nom}(…) is called but no file declares a type named {nom}")
+    return out
 
 
 def api_hors_sdk():

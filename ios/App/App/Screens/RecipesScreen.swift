@@ -645,8 +645,7 @@ private struct HorizontalPan: UIGestureRecognizerRepresentable {
     }
 }
 
-/// The week row: opening the recipe, and marking it cooked with a swipe.
-private /// What a row paints behind itself. Opaque, so the swipe pill stays hidden
+/// What a row paints behind itself. Opaque, so the swipe pill stays hidden
 /// behind the row; today's block sets it to its own field, so the block
 /// reads as one surface instead of a header with a hole under it.
 private struct RowCanvasKey: EnvironmentKey {
@@ -660,7 +659,8 @@ extension EnvironmentValues {
     }
 }
 
-struct CookedSwipe<Content: View>: View {
+/// The week row: opening the recipe, and marking it cooked with a swipe.
+private struct CookedSwipe<Content: View>: View {
     @Environment(\.rowCanvas) private var rowCanvas
     @Environment(AppState.self) private var app
     let recipe: Recipe
