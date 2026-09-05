@@ -1,14 +1,9 @@
 {
-  "build": 181,
-  "date": "2026-09-05",
+  "build": 182,
+  "date": "2026-09-06",
   "carries": [
-    "the demo card is compact: a 56-point thumbnail, the name, a verdict line and the swap rows. At hero size it pushed the allergen pad below the fold, and a tap's answer landed off screen — which read as nothing changing. All eleven allergens now sit under the thumb, and the answer appears just above them",
-    "the reason for a swap stays on the struck-out original: under the substitute, 'Contains: wheat' read as the substitute containing wheat — the opposite of what an allergy app must say",
-    "a way back from steps two, three and four, on the counter's own line; the draft lives in the flow, so going back loses neither the name nor the allergens",
-    "the child editor: the age is one control — the counter sets the months and the stage with its texture is read off it, one line under the counter; five stage cards above a counter offered the same value twice",
-    "the editor's allergen grid is gone: it selected in black while the onboarding selects in brand red with a tick, and its 'common' filter matched French ids the catalogue dropped at build 138, so all eleven showed anyway. Both screens use the one AllergenPad now",
-    "the checker no longer reads `return (a, b)` as a call to a deleted helper",
-    "build fix: StepHeader was called three times and declared nowhere. The script that was to insert it took a no-op branch and printed success anyway; the header is in, verified by re-reading the file rather than by the script's message",
-    "the checker had a rule for this, as a WARNING nobody read; it is a blocking rule now, scoped to labelled calls of undeclared types so it does not cry on Swift's own — and its comment stripper is fixed, since the first // used to swallow the rest of the file and the rule inspected nothing"
+    "the demo's subtitle promised what the photo cannot do: 'Tap one and watch' sent the eye to the picture, which never changes — a photo is made once per recipe, of the original, and eleven allergens would mean two thousand variants. It says 'Tap one — the recipe adapts', and the photo says 'original' the moment a swap is made, with one line stating it shows the dish before the swaps",
+    "the demo photo is 104 points, not 56: the food is what sells. The eleven allergens still sit above the button on an iPhone 15",
+    "About no longer stacks a second sheet over Settings: it is pushed inside the same sheet, with a chevron back. From the recipe page it still opens as a sheet, where it is the only one"
   ]
 }

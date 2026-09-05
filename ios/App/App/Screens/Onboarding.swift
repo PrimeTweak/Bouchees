@@ -120,7 +120,7 @@ private struct LiveDemoStep: View {
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
-                Text("Tap one and watch.")
+                Text("Tap one — the recipe adapts.")
                     .scaledFont(Type.body)
                     .foregroundStyle(Tone.textSecondary)
                     .padding(.top, 8)
@@ -185,17 +185,36 @@ private struct DemoCard: View {
      * tap's answer landed off screen. */
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                /* Big enough to see the food — it is what sells — with the
+                 * same "original" note as the hero once a swap is made. */
                 RecipeVisual(recipe: recipe, result: result, compact: true)
-                    .frame(width: 56, height: 56)
-                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                VStack(alignment: .leading, spacing: 4) {
+                    .frame(width: 104, height: 104)
+                    .overlay(alignment: .bottom) {
+                        if result.status == .adapted {
+                            Text("original")
+                                .scaledFont(Type.micro, weight: .medium)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 4)
+                                .background(.black.opacity(0.62))
+                        }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                VStack(alignment: .leading, spacing: 6) {
                     Text(recipe.name)
                         .scaledFont(Type.heading, weight: .semibold)
                         .foregroundStyle(Tone.text)
-                        .lineLimit(1)
+                        .lineLimit(2)
                     verdict
+                    if result.status == .adapted {
+                        Text("The photo shows the dish before the swaps.")
+                            .scaledFont(Type.micro)
+                            .foregroundStyle(Tone.text3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
+                .padding(.top, 4)
                 Spacer(minLength: 0)
             }
             if !swapped.isEmpty {

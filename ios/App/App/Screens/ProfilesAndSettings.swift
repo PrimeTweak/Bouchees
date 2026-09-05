@@ -108,7 +108,6 @@ struct SettingsScreen: View {
     @State private var editing: ChildProfile?
     @State private var hauteurReglages: CGFloat = 0
     @State private var reminderOn = WeeklyReminder.enabled
-    @State private var showAbout = false
     @State private var email = ""
     @State private var accountMessage: String?
 
@@ -345,14 +344,16 @@ struct SettingsScreen: View {
     /// the App Store ones will go too.
     private var footnotes: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button { showAbout = true } label: {
+            /* Pushed inside the settings sheet, not a second sheet on top:
+             * one sheet, two pages. The recipe page still opens About as a
+             * sheet, where it is the only one. */
+            NavigationLink { AboutScreen(pushed: true) } label: {
                 SettingRow(title: "About & notices", value: "")
             }
             .buttonStyle(.plain)
             .card()
         }
         .padding(.top, 20)
-        .sheet(isPresented: $showAbout) { AboutScreen() }
     }
 
     private func childSummary(_ p: ChildProfile) -> String {
@@ -710,11 +711,26 @@ struct SettingRow: View {
 /// The notices, in one place: safety, photos, data, licences.
 struct AboutScreen: View {
     @Environment(\.dismiss) private var dismiss
+    /// True when reached by a push, where the page needs its own way back.
+    var pushed = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
+                HStack(spacing: 10) {
+                    if pushed {
+                        Button { dismiss() } label: {
+                            Image(systemName: "chevron.left")
+                                .scaledFont(Type.secondary, weight: .semibold)
+                                .foregroundStyle(Tone.text)
+                                .frame(width: 32, height: 32)
+                        }
+                        .buttonStyle(.plain)
+                        .glass(Circle())
+                        .accessibilityLabel(Text("Back"))
+                    }
+                    Text("About").scaledFont(Type.display).foregroundStyle(Tone.text)
+                }
 
                 section("Safety", Settings.medicalDisclaimer)
                 section("Photos", String(localized: """
