@@ -1,10 +1,10 @@
 {
-  "build": 186,
+  "build": 187,
   "date": "2026-09-06",
   "carries": [
     "a row title showed through the child pill. The first fix widened the shared top field, which would have buried the Family and Shopping titles at 97 per cent — the field is restored byte for byte. The cause was the pill itself: regular glass refracts what scrolls beneath it. It gets a canvas backing under its glass, for this pill alone",
     "About pushed inside Settings showed two chevrons: the stack's own back button and the one drawn here. The system bar is hidden on About as on every other screen, and the chevron drawn is the same 36-point glass circle the recipe page uses, on its own line",
     "with StoreKit silent, the offer's price line fell back to '7 days free' right above a button saying 'Try 7 days free'; the line is omitted until the store answers, on the week and in the onboarding",
-    "today carried four marks — the word, a darker header, the wrapping field and a red rule; the rule is gone. The field does what a rule cannot: it wraps the meal and the snack together, which is what today is. The red was also the only brand colour in the list, where brand means action"
+    "today: the red rule is gone, and the field is what marks the day — but it only showed around the header, because every row paints an opaque canvas to hide the swipe pill behind it. Rows inside today's block now paint the day's own field through an environment value, so the block is one surface. The field is Tone.today, amber at 14 per cent over the canvas: warm sand, not grey, and a deep brown in the dark"
   ]
 }

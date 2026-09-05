@@ -277,8 +277,8 @@ struct RecipesScreen: View {
                 dayHeader(dayIndex, slot: slot, today: true)
                 dayBody(dayIndex, dishes: dishes, slot: slot)
             }
-            .background(Tone.text.opacity(0.04),
-                        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .environment(\.rowCanvas, Tone.today)
+            .background(Tone.today, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay { highlight(dayIndex) }
             /* The zone is the block itself: taken after the top padding it
              * reached ten points into the day above. */
@@ -646,7 +646,22 @@ private struct HorizontalPan: UIGestureRecognizerRepresentable {
 }
 
 /// The week row: opening the recipe, and marking it cooked with a swipe.
-private struct CookedSwipe<Content: View>: View {
+private /// What a row paints behind itself. Opaque, so the swipe pill stays hidden
+/// behind the row; today's block sets it to its own field, so the block
+/// reads as one surface instead of a header with a hole under it.
+private struct RowCanvasKey: EnvironmentKey {
+    static let defaultValue: Color = Tone.canvas
+}
+
+extension EnvironmentValues {
+    var rowCanvas: Color {
+        get { self[RowCanvasKey.self] }
+        set { self[RowCanvasKey.self] = newValue }
+    }
+}
+
+struct CookedSwipe<Content: View>: View {
+    @Environment(\.rowCanvas) private var rowCanvas
     @Environment(AppState.self) private var app
     let recipe: Recipe
     let cooked: Bool
@@ -684,7 +699,7 @@ private struct CookedSwipe<Content: View>: View {
 
     private var rowBody: some View {
         content
-            .background(Tone.canvas)
+            .background(rowCanvas)
             .offset(x: offset)
             .background(alignment: .trailing) {
                 if offset < -4 { pill }

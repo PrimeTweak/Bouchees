@@ -36,6 +36,10 @@ enum Tone {
 
     /// Hairlines. Barely there, and that is the point.
     static let hairline = dyn(light: 0xE9E3DB, dark: 0x2A2624, darkAlpha: 0.55)
+    /// Today's field on the week list: amber at 14 per cent over the canvas,
+    /// too diluted to mean "adapted", warm enough not to read as grey. Opaque,
+    /// because the rows inside paint it too.
+    static let today = dyn(light: 0xEFE3D4, dark: 0x281E12)
 
     // ---- text ----
 
