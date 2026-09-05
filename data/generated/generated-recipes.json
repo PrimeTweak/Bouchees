@@ -2582,5 +2582,1037 @@
       "license": "original content, written for Bouchees",
       "cookedByAHuman": false
     }
+  },
+  {
+    "id": "banana-oat-blender-bites",
+    "name": "Banana & Oat Blender Bites",
+    "category": "Snack",
+    "servings": "24 bites · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 240,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 160,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "sunflower_seed_butter",
+        "qty": 60,
+        "unit": "g",
+        "role": "fat"
+      },
+      {
+        "id": "applesauce",
+        "qty": 60,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and lightly grease a 24-cup mini-muffin tin with canola oil.",
+      "Combine mashed banana, unsweetened applesauce, sunflower seed butter, and vanilla extract in a large bowl.",
+      "Add rolled oats, cinnamon, and baking powder to the bowl.",
+      "Stir until a thick, uniform batter forms with no dry patches.",
+      "Spoon the batter evenly into all 24 cups of the mini-muffin tin.",
+      "Bake for 13 to 15 minutes, until the tops are set and lightly golden.",
+      "Let cool in the tin for 5 minutes, then turn out onto a wire rack.",
+      "Serve once fully cooled to a safe temperature. Store in an airtight container at room temperature for 2 days, or refrigerate for up to 5 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-sweet-potato-bowl",
+    "name": "Lentil and Sweet Potato Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "lentils",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 400,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 400,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "spinach",
+        "qty": 60,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      }
+    ],
+    "steps": [
+      "Peel and dice Sweet potato into 1 cm cubes; finely chop Onion and mince Garlic.",
+      "Cook Rice according to package directions; set aside and keep warm.",
+      "Heat Olive oil in a large saucepan over medium heat until shimmering.",
+      "Add Onion and Garlic; cook for 3 minutes, stirring, until softened.",
+      "Stir in Ground cumin and Turmeric; cook for 1 minute until fragrant.",
+      "Add Sweet potato, Crushed tomatoes, and Unsalted vegetable broth; stir to combine.",
+      "Bring to a boil, then reduce heat and simmer for 15 minutes, until sweet potato is fork-tender.",
+      "Stir in Cooked lentils and Spinach; cook for 2 minutes until spinach wilts.",
+      "Serve the lentil mixture over Rice. Keeps refrigerated up to 3 days; freeze portions up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "turkey-zucchini-rice-skillet",
+    "name": "Turkey and Zucchini Rice Skillet",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "ground_turkey",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "brown_rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "bell_pepper",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 200,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "oregano",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "paprika",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 125,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Cook Brown rice according to package directions; set aside.",
+      "Dice Zucchini and Bell pepper into small cubes; finely chop Onion and mince Garlic.",
+      "Heat Olive oil in a large 30 cm skillet over medium-high heat.",
+      "Add Onion and Garlic; cook for 2 minutes, stirring, until translucent.",
+      "Add Ground turkey; cook for 6 to 8 minutes, breaking it up, until no pink remains.",
+      "Stir in Dried oregano and Sweet paprika; cook for 1 minute until fragrant.",
+      "Add Zucchini, Bell pepper, Crushed tomatoes, and Unsalted chicken broth; stir to combine.",
+      "Simmer over medium heat for 8 minutes, until vegetables are tender and sauce thickens.",
+      "Serve over Brown rice. Refrigerate up to 3 days or freeze up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-sweet-potato-rice-bowl",
+    "name": "Lentil and Sweet Potato Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "water",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "lentils",
+        "qty": 250,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Peel the sweet potato and cut it into 1 cm cubes.",
+      "Combine rice and water in a medium saucepan over medium heat.",
+      "Bring to a boil, then reduce heat, cover and cook for 18 minutes until water is absorbed.",
+      "Warm olive oil in a large skillet over medium heat.",
+      "Add sweet potato cubes and cook for 8 minutes, stirring occasionally, until tender.",
+      "Stir in cooked lentils, cumin, and turmeric, mixing to coat evenly.",
+      "Pour in vegetable broth and simmer for 5 minutes until the mixture is saucy and fragrant.",
+      "Spoon lentil mixture over rice in bowls. Mash portions for babies under 9 months. Keeps refrigerated for 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "turkey-zucchini-quinoa-skillet",
+    "name": "Ground Turkey and Zucchini Quinoa Skillet",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "quinoa",
+        "qty": 180,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "water",
+        "qty": 360,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "ground_turkey",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 250,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 200,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "oregano",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Rinse quinoa under cold water, then combine with water in a saucepan over medium heat.",
+      "Bring to a boil, cover and cook for 15 minutes until quinoa is fluffy and water is absorbed.",
+      "Trim and dice zucchini into 1 cm pieces; slice cooked carrot into thin rounds.",
+      "Mince the garlic clove finely.",
+      "Warm olive oil in a large skillet over medium-high heat, then add ground turkey.",
+      "Cook turkey for 6 to 8 minutes, breaking it up, until no pink remains.",
+      "Add garlic, zucchini, carrot, oregano and crushed tomatoes to the skillet.",
+      "Simmer for 8 minutes, stirring occasionally, until vegetables are soft.",
+      "Serve turkey mixture over quinoa. Mash or blend for babies under 9 months. Keeps refrigerated for 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-chickpea-soft-cookies",
+    "name": "Banana and Chickpea Soft Cookies",
+    "category": "Snack",
+    "servings": "16 cookies · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 120,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 200,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 80,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "applesauce",
+        "qty": 60,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 3,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a large baking sheet with parchment paper.",
+      "Drain and rinse the cooked chickpeas, then mash them in a large bowl until mostly smooth.",
+      "Add the mashed banana and unsweetened applesauce to the bowl and stir to combine.",
+      "Mix in the vanilla extract and cinnamon until evenly distributed.",
+      "Add the oat flour and baking powder, then stir until a soft dough forms.",
+      "Drop rounded tablespoons of dough onto the baking sheet, pressing each into a flat round.",
+      "Bake for 14 to 16 minutes, until the cookies are set and lightly golden on the bottom.",
+      "Cool completely on the sheet before serving. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chicken-zucchini-rice-bowl",
+    "name": "Chicken and Zucchini Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "chicken",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 120,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Rinse the rice under cold water until the water runs clear.",
+      "Dice the chicken into small 1 cm pieces; slice the zucchini into thin half-moons.",
+      "Mince the garlic clove finely.",
+      "Heat the olive oil in a large saucepan over medium heat; add the garlic and stir for 20 seconds.",
+      "Add the chicken pieces and cook for 4 to 5 minutes, turning, until no pink remains.",
+      "Stir in the rice, sliced cooked carrot, zucchini, turmeric, and unsalted chicken broth.",
+      "Bring to a boil, then reduce heat to low, cover, and cook for 15 minutes until rice is tender.",
+      "Fluff with a fork and mash or chop the chicken to an age-appropriate texture before serving.",
+      "Yield: 4 family portions. Keep refrigerated for up to 2 days, or freeze in portions for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chicken-sweet-potato-rice-bowl",
+    "name": "Chicken and Sweet Potato Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "chicken",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "carrot",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 120,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "turmeric",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "water",
+        "qty": 600,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Cook Rice in 600 ml water in a covered saucepan over medium heat for 18 minutes, until all water is absorbed.",
+      "Peel and dice Sweet potato into 1 cm cubes; dice cooked Carrot to the same size.",
+      "Mince 2 cloves of Garlic finely.",
+      "Cut Chicken into small 1 cm pieces, removing any tendons.",
+      "Heat Olive oil in a large skillet over medium heat for 1 minute.",
+      "Add Garlic and Sweet potato; cook for 8 minutes, stirring often, until sweet potato is fork-tender.",
+      "Add Chicken pieces and Turmeric; cook for 6 to 7 minutes, until no pink remains.",
+      "Pour in Unsalted chicken broth and cooked Carrot; simmer for 3 minutes until sauce thickens slightly.",
+      "Spoon mixture over Rice; serve warm. Yields 4 family portions. Refrigerate leftovers up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "turkey-rice-bowl-with-sweet-potato",
+    "name": "Turkey and Sweet Potato Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "ground_turkey",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "turmeric",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 120,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Peel and dice Sweet potato into 1 cm cubes; finely dice Onion and mince Garlic.",
+      "Cook Rice according to package directions in a medium saucepan; set aside.",
+      "Heat Olive oil in a large skillet over medium heat, 180 °C (350 °F).",
+      "Add Onion and Garlic; cook 3 to 4 minutes, until softened and translucent.",
+      "Add Ground turkey; cook 5 to 6 minutes, breaking it apart, until no pink remains.",
+      "Stir in Sweet potato, Cumin, Turmeric, and Salt; stir well to coat.",
+      "Pour in Unsalted chicken broth; cover and cook 8 to 10 minutes, until Sweet potato is fork-tender.",
+      "Spoon Rice into bowls and top with the turkey and sweet potato mixture.",
+      "Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "salmon-lentil-spinach-bowl",
+    "name": "Salmon and Lentil Spinach Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "lentils",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "spinach",
+        "qty": 120,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "quinoa",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      }
+    ],
+    "steps": [
+      "Preheat oven to 200 °C (400 °F) and line a baking sheet with parchment paper.",
+      "Place Salmon skin-side down on the sheet; drizzle with 10 ml Olive oil and season with Salt.",
+      "Bake Salmon 12 to 14 minutes, until it flakes easily with a fork.",
+      "Meanwhile, rinse Quinoa and cook in 400 ml Water in a medium saucepan, 12 to 15 minutes, until fluffy.",
+      "Finely dice Onion and mince Garlic; cook in remaining Olive oil in a large skillet over medium heat, 3 minutes.",
+      "Add Cooked lentils to the skillet; stir and heat through for 2 minutes.",
+      "Add Spinach; cook 1 to 2 minutes, stirring, until wilted.",
+      "Stir in Lemon juice and Fresh dill; remove from heat.",
+      "Flake baked Salmon into large pieces and serve over Quinoa with the lentil and spinach mixture.",
+      "Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-zucchini-tomato-pasta",
+    "name": "Lentil, Zucchini and Tomato Pasta",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice_pasta",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "lentils",
+        "qty": 250,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 400,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 100,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "basil_dried",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "tomato_paste",
+        "qty": 30,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Dice the onion finely; mince the 2 garlic cloves; slice the zucchini into thin half-moons.",
+      "Cook the rice pasta in a large pot of boiling water for 8 minutes, until tender; drain and set aside.",
+      "Heat the olive oil in a large saucepan over medium heat.",
+      "Add the onion and cook for 3 minutes, stirring, until softened and translucent.",
+      "Add the minced garlic and the tomato paste; stir for 1 minute until fragrant.",
+      "Add the zucchini, the crushed tomatoes, and the dried basil; stir to combine.",
+      "Simmer over low-medium heat for 10 minutes, stirring occasionally, until the zucchini is tender.",
+      "Stir in the cooked lentils and heat for 2 minutes until warmed through.",
+      "Toss the sauce with the rice pasta. Yield: 4 family portions. Refrigerate leftovers up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "turkey-veggie-rice-bowl",
+    "name": "Ground Turkey and Vegetable Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 300,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "ground_turkey",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "zucchini",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "carrot",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "tamari",
+        "qty": 20,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "water",
+        "qty": 600,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "ginger_ground",
+        "qty": 2,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Rinse Rice under cold water, then combine with 600 ml Water in a medium saucepan.",
+      "Bring to a boil over high heat, then reduce to low; cover and cook 18 minutes until absorbed.",
+      "Peel and finely dice Onion; mince 2 cloves Garlic; dice Zucchini into 1 cm cubes.",
+      "Slice Carrot (cooked) into thin half-moons, about 3 mm thick.",
+      "Heat Olive oil in a large skillet over medium-high heat until shimmering.",
+      "Add Onion and Garlic; cook 3 minutes, stirring, until softened and fragrant.",
+      "Add Ground turkey; cook 6 to 8 minutes, breaking up with a spoon, until no pink remains.",
+      "Add Zucchini, Carrot (cooked), Ground ginger and Tamari sauce; stir and cook 4 minutes until vegetables are tender.",
+      "Spoon Rice into bowls and top with the turkey and vegetable mixture.",
+      "Serve immediately; refrigerate leftovers in an airtight container for up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-avocado-rice-cakes",
+    "name": "Banana & Avocado Rice Cakes",
+    "category": "Snack",
+    "servings": "12 small cakes · 4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "mashed_banana",
+        "qty": 150,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "mashed_avocado",
+        "qty": 100,
+        "unit": "g",
+        "role": "fat"
+      },
+      {
+        "id": "rice_flour",
+        "qty": 100,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g",
+        "role": "leavening"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and lightly brush a 12-cup mini muffin tin with canola oil.",
+      "Combine the mashed banana and mashed avocado in a large bowl and stir until smooth.",
+      "Pour in the coconut milk and stir to incorporate evenly into the banana mixture.",
+      "Add the rice flour and baking powder, stirring gently until just combined with no dry streaks.",
+      "Spoon the batter into the prepared tin, filling each cup about three-quarters full.",
+      "Bake for 15 to 17 minutes, until the tops spring back lightly when touched.",
+      "Cool in the tin for 5 minutes, then turn out onto a wire rack.",
+      "Serve at room temperature. Store in an airtight container for up to 2 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-05",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]

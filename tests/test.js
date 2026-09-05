@@ -2172,4 +2172,24 @@ test("standard: a duration alone satisfies rule 5, and taking off the heat is no
   assert(!e.some((x) => x.startsWith("standard 5")), "rule 5 refused a bake with a duration: " + JSON.stringify(e));
 });
 
+test("commission: no line repeats in a run, and every line has a hero ingredient", () => {
+  /* Eleven of fourteen rejections in one run were the same dish written
+   * again: the commission repeated its lines, and the model was never told
+   * what existed. */
+  const r = Trous.report(corpusComplet, data, { perRun: 20 });
+  const cles = r.commande.map((l) => l.categories[0] + "|" + l.ageMois + "|" + l.evite.join(",") + "|" + (l.vedette || ""));
+  assert.equal(new Set(cles).size, cles.length, "a commission line repeats: " + cles.join(" ; "));
+  const sansVedette = r.commande.filter((l) => !l.passePartout && l.reason.startsWith("pool:") && !l.vedette);
+  assert.equal(sansVedette.length, 0, "a pool line has no hero ingredient");
+});
+
+test("prompt: the model is told what already exists and what this run wrote", () => {
+  const ligne = { n: 2, ageMois: 9, categories: ["Meal"], evite: ["milk"], reason: "test", vedette: "lentils" };
+  const p = PromptRecette.construire(ligne, data, { existants: ["Turkey rice bowl"], ecritsCeTour: ["Salmon patties"] });
+  assert(/NOT AGAIN/.test(p), "no exclusion block");
+  assert(/Turkey rice bowl/.test(p), "the pool is not named");
+  assert(/Salmon patties/.test(p), "this run's drafts are not named");
+  assert(/Built around: lentils/.test(p), "no hero ingredient");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

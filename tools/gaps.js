@@ -166,15 +166,29 @@ function brief(classement, target) {
     const ages = [6, 6, 9, 9, 12, 24];
     const profils = [["milk", "egg"], ["milk", "egg", "wheat"], ["peanut", "tree_nut"],
                      ["milk", "egg", "peanut", "tree_nut"], ["wheat"], ["milk"]];
-    let i = 0;
-    while (reste > 0 && (deficit.Meal > 0 || deficit.Snack > 0)) {
+    /* A hero ingredient per line, drawn from what the catalogue allows at that
+     * age, rotating and never repeated in one run: it is the single strongest
+     * lever against the model writing the same dish twice. */
+    const vedettes = { Meal: ["lentils", "salmon", "chicken", "white beans", "tofu", "ground beef", "cod", "chickpeas",
+                              "turkey", "eggplant", "cauliflower", "peas", "quinoa", "zucchini", "black beans", "polenta"],
+                       Snack: ["pear", "avocado", "peach", "mango", "carrot", "blueberries", "apple", "banana",
+                               "raspberries", "sweet potato", "oats", "dates", "cucumber", "melon", "plum", "beet"] };
+    const prises = new Set();
+    let i = 0, tentatives = 0;
+    while (reste > 0 && (deficit.Meal > 0 || deficit.Snack > 0) && tentatives < 40) {
+      tentatives++;
       const cat = (i % 2 === 0 && deficit.Meal > 0) || deficit.Snack <= 0 ? "Meal" : "Snack";
       const profile = profils[(tour + i) % profils.length];
       const age = ages[(tour + i) % ages.length];
+      const vedette = vedettes[cat][(tour + i) % vedettes[cat].length];
+      const cle = cat + "|" + age + "|" + profile.join(",") + "|" + vedette;
+      i++;
+      if (prises.has(cle)) continue;          /* never the same line twice in a run */
+      prises.add(cle);
       const n = Math.min(reste, 2);
-      out.push({ n: n, ageMois: age, categories: [cat], evite: profile, passePartout: false,
+      out.push({ n: n, ageMois: age, categories: [cat], evite: profile, vedette: vedette, passePartout: false,
                  reason: "pool: " + deficit[cat] + " " + cat.toLowerCase() + "s still missing, youngest ages first" });
-      deficit[cat] -= n; reste -= n; i++;
+      deficit[cat] -= n; reste -= n;
     }
   }
   return out;

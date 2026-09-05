@@ -1,0 +1,3675 @@
+[
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 60 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-chickpea-flour-pancakes",
+      "name": "Banana & Chickpea Flour Pancakes",
+      "category": "Snack",
+      "servings": "12 small pancakes · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 120,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "soy_beverage",
+          "qty": 80,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 10,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Mash the banana thoroughly in a large bowl until no chunks remain.",
+        "Add the fortified soy beverage and canola oil to the banana and whisk together.",
+        "Stir in the chickpea flour, cinnamon, and baking powder until a smooth batter forms.",
+        "Heat a non-stick skillet over medium-low heat and lightly brush with a little canola oil.",
+        "Drop 1 tablespoon of batter per pancake into the skillet, making 3 to 4 at a time.",
+        "Cook for 2 to 3 minutes, until bubbles form on the surface and edges look set.",
+        "Flip each pancake and cook for 1 to 2 minutes more, until cooked through.",
+        "Transfer to a plate and repeat with the remaining batter. Serve warm or at room temperature. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 60 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 60,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until completely tender.",
+        "Mash the steamed sweet potato in a large bowl until smooth with no lumps.",
+        "Add the mashed banana and canola oil to the bowl and stir until combined.",
+        "Stir in the rolled oats, cinnamon, and baking powder until a soft dough forms.",
+        "Scoop tablespoon-sized portions and roll each gently into a ball.",
+        "Place the balls on the prepared baking sheet and flatten slightly with your palm.",
+        "Bake for 15 to 18 minutes, until firm to the touch and lightly golden on the bottom.",
+        "Cool completely on a wire rack before serving. Store in an airtight container in the fridge for up to 4 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 69 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : salmon-sweet-potato-patties"
+    ],
+    "recette": {
+      "id": "salmon-sweet-potato-patties",
+      "name": "Salmon and Sweet Potato Patties",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "salmon",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 40,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "green_onion",
+          "qty": 2,
+          "unit": "unit"
+        },
+        {
+          "id": "dill",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "salt",
+          "qty": 2,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Peel and cube the Sweet potato; boil in a medium saucepan for 12 minutes until fork-tender, then drain and mash.",
+        "Cook the Salmon in a non-stick skillet over medium heat for 4 minutes per side, until cooked through, then flake finely.",
+        "Thinly slice the Green onion and chop the Fresh dill.",
+        "In a large bowl, combine the mashed Sweet potato, flaked Salmon, Egg, Rice flour, Green onion, Fresh dill, Lemon juice, and Salt.",
+        "Mix until a firm, cohesive mixture forms, then shape into 12 patties about 1.5 cm thick.",
+        "Heat the Olive oil in a large non-stick skillet over medium heat until shimmering.",
+        "Cook the patties in batches for 3 to 4 minutes per side, until golden brown and heated through.",
+        "Transfer to a plate lined with paper towel. Yield: 12 patties · 4 family portions. Keeps refrigerated up to 2 days; reheat in a skillet before serving."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 69 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : turkey-veggie-rice-bowl"
+    ],
+    "recette": {
+      "id": "turkey-veggie-rice-bowl",
+      "name": "Ground Turkey and Vegetable Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_turkey",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "zucchini",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "carrot",
+          "qty": 2,
+          "unit": "unit"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "tamari",
+          "qty": 20,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "ginger_ground",
+          "qty": 2,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Rinse the Rice under cold water, then combine with 600 ml Water in a medium saucepan.",
+        "Bring to a boil over high heat, then cover and simmer on low for 18 minutes, until water is absorbed.",
+        "Peel and finely dice the Onion, mince the Garlic, and dice the Zucchini and Carrot (cooked) into small pieces.",
+        "Heat the Olive oil in a large skillet over medium heat until shimmering.",
+        "Add the Onion and Garlic and cook for 3 minutes, stirring, until softened.",
+        "Add the Ground turkey and cook for 6 to 8 minutes, breaking it apart, until no pink remains.",
+        "Add the Zucchini, Carrot (cooked), Ground ginger, and Tamari sauce; stir well.",
+        "Cook for 4 minutes over medium heat, stirring, until vegetables are tender.",
+        "Serve the turkey mixture over the cooked Rice. Yield: 4 family portions. Keeps refrigerated up to 3 days; reheat thoroughly before serving."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-chickpea-patties"
+    ],
+    "recette": {
+      "id": "sweet-potato-chickpea-patties",
+      "name": "Sweet Potato and Chickpea Patties",
+      "category": "Snack",
+      "servings": "12 patties · 4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 240,
+          "unit": "ml",
+          "role": "protein"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 60,
+          "unit": "ml",
+          "role": "flour"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "ml",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Peel and cube the Sweet potato, then boil in a medium pot for 12 minutes until fork-tender.",
+        "Drain and mash the Sweet potato in a large bowl until smooth.",
+        "Drain and rinse the Cooked chickpeas, then add them to the bowl and mash roughly, leaving some texture.",
+        "Add the Chickpea flour, Ground cumin, Turmeric, and Salt, then stir until a firm mixture forms.",
+        "Divide the mixture into 12 equal portions and shape each into a flat patty about 1 cm thick.",
+        "Heat the Olive oil in a large non-stick skillet over medium heat.",
+        "Cook the patties in batches for 3 to 4 minutes per side, until golden and crisp on the outside.",
+        "Transfer to a plate lined with paper towel. Serve warm. Store in the fridge for up to 3 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-oat-bites"
+    ],
+    "recette": {
+      "id": "banana-oat-bites",
+      "name": "Banana Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "rolled_oats",
+          "qty": 180,
+          "unit": "ml",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 2,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "blueberries",
+          "qty": 80,
+          "unit": "ml",
+          "role": "fruit"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+        "Peel and mash 2 ripe Bananas in a large bowl until smooth.",
+        "Crack the Egg into the bowl and stir to combine with the Mashed banana.",
+        "Add the Rolled oats, Cinnamon, and Vanilla extract to the bowl and stir until a thick batter forms.",
+        "Gently fold in the Blueberries without crushing them.",
+        "Drop heaped tablespoons of batter onto the prepared baking sheet, spacing them 3 cm apart.",
+        "Bake for 14 to 16 minutes, until the bites are set and golden on the bottom.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 71 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 1 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "turkey-zucchini-rice-bowl",
+      "name": "Turkey and Zucchini Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_turkey",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Combine the rice with 400 ml unsalted chicken broth in a medium saucepan; bring to a boil.",
+        "Reduce heat to low, cover, and cook for 18 minutes, until the rice is tender and the broth absorbed.",
+        "While the rice cooks, dice the onion finely and mince the two garlic cloves.",
+        "Grate the zucchini and the cooked carrot on the large holes of a box grater.",
+        "Heat the olive oil in a large skillet over medium heat and cook the onion for 3 minutes, until softened.",
+        "Add the garlic and ground turkey; cook for 5 to 6 minutes, breaking it up, until no pink remains.",
+        "Stir in the grated zucchini, grated carrot, turmeric, and crushed tomatoes.",
+        "Simmer uncovered for 5 minutes, until the sauce thickens slightly and the vegetables are tender.",
+        "Spoon the turkey and vegetable sauce over the rice and serve warm.",
+        "Refrigerate leftovers in an airtight container for up to 3 days, or freeze in portions for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 71 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : lentil-sweet-potato-patties"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-patties",
+      "name": "Lentil and Sweet Potato Patties",
+      "category": "Meal",
+      "servings": "16 patties · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "cumin",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+        "Peel the sweet potato and cut it into 2 cm cubes.",
+        "Steam the sweet potato cubes for 10 minutes, until completely soft, then mash smooth.",
+        "Stir the ground flaxseed into the water in a small bowl and let it sit for 5 minutes.",
+        "In a large bowl, combine the cooked lentils, mashed sweet potato, and flaxseed gel.",
+        "Add the chickpea flour, ground cumin, and one garlic clove finely minced; mix until a firm dough forms.",
+        "Divide the dough into 16 equal portions and flatten each into a 1.5 cm thick round patty.",
+        "Place the patties on the prepared sheet and brush the tops lightly with olive oil.",
+        "Bake for 18 to 20 minutes, flipping once halfway, until golden and firm to the touch.",
+        "Cool for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-chickpea-flour-pancakes",
+      "name": "Banana and Chickpea Flour Pancakes",
+      "category": "Snack",
+      "servings": "12 small pancakes · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 180,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 2,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "cow_milk",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 10,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Measure out the mashed banana into a large bowl and make sure it is well mashed with no large chunks.",
+        "Add the eggs and cow's milk to the banana and whisk until smooth and combined.",
+        "Stir in the chickpea flour and cinnamon until a lump-free batter forms.",
+        "Heat a non-stick skillet over medium heat, about 160 °C (320 °F), and brush lightly with canola oil.",
+        "Pour 2-tablespoon rounds of batter into the skillet, fitting 3 to 4 at a time.",
+        "Cook for 2 to 3 minutes until bubbles form on the surface and the edges look set.",
+        "Flip each pancake and cook for 1 to 2 minutes more until cooked through with no raw centre.",
+        "Transfer to a plate and repeat with the remaining batter. Serve warm. Store in the fridge for up to 2 days or freeze in a single layer for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato and Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until completely tender.",
+        "Mash the steamed sweet potato in a large bowl until smooth with no lumps.",
+        "Add the egg, canola oil, and cinnamon to the mashed sweet potato and stir to combine.",
+        "Fold in the rolled oats until a soft, scoopable dough forms.",
+        "Drop rounded tablespoons of dough onto the prepared baking sheet, spacing them 3 cm apart.",
+        "Bake for 15 to 18 minutes, until the bites are set and lightly golden on the bottom.",
+        "Cool on the pan for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 73 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : turkey-zucchini-quinoa-skillet"
+    ],
+    "recette": {
+      "id": "turkey-zucchini-quinoa-skillet",
+      "name": "Ground Turkey and Zucchini Quinoa Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_turkey",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 250,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "water",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Rinse Quinoa under cold water; combine with 400 ml Water in a saucepan, bring to a boil, then cover and simmer for 15 minutes on low heat.",
+        "Dice Onion finely; mince Garlic; slice Zucchini into thin half-moons.",
+        "Heat Canola oil in a large skillet over medium heat, 180 °C (350 °F).",
+        "Add Onion and Garlic to the skillet; cook for 3 minutes, stirring, until translucent.",
+        "Add Ground turkey; cook for 6 to 7 minutes, breaking it apart, until no pink remains.",
+        "Stir in Zucchini and Dried oregano; cook for 3 minutes, until the zucchini begins to soften.",
+        "Pour in Crushed tomatoes; stir and simmer for 5 minutes, until the sauce thickens slightly.",
+        "Add Spinach and stir for 1 minute, until just wilted.",
+        "Fluff the Quinoa with a fork and serve topped with the turkey mixture. Yield: 4 family portions. Refrigerate in an airtight container for up to 3 days, or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 73 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : lentil-sweet-potato-rice-bowl"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-rice-bowl",
+      "name": "Lentil and Sweet Potato Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 120,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 500,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Peel and dice Sweet potato into 1 cm cubes; slice Carrot (cooked) into thin rounds.",
+        "Rinse Rice under cold water in a fine-mesh sieve until the water runs clear.",
+        "Bring 600 ml Water to a boil in a medium saucepan; add Rice, cover, and cook on low heat for 18 minutes.",
+        "Heat Olive oil in a large skillet over medium heat, 180 °C (350 °F).",
+        "Add Sweet potato and Carrot (cooked) to the skillet; cook for 8 minutes, stirring often, until softened.",
+        "Stir in Ground cumin and Turmeric; cook for 1 minute, until fragrant.",
+        "Pour in Unsalted vegetable broth and Cooked lentils; simmer uncovered for 8 to 10 minutes, until the broth is mostly absorbed.",
+        "Remove from heat and drizzle with Lemon juice; stir gently to combine.",
+        "Spoon the lentil mixture over the cooked Rice to serve. Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 3 days, or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 66 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "applesauce",
+          "qty": 60,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until very tender.",
+        "Mash the steamed sweet potato in a large bowl until completely smooth.",
+        "Add the unsweetened applesauce and canola oil to the mashed sweet potato and stir to combine.",
+        "Stir in the rolled oats, cinnamon, and baking powder until a soft dough forms.",
+        "Scoop rounded tablespoons of dough onto the prepared baking sheet, flattening each gently.",
+        "Bake for 15 to 18 minutes, until the edges are set and the tops are lightly golden.",
+        "Cool on the pan for 5 minutes before serving. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 75 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : salmon-sweet-potato-patties"
+    ],
+    "recette": {
+      "id": "salmon-sweet-potato-patties",
+      "name": "Salmon and Sweet Potato Patties",
+      "category": "Meal",
+      "servings": "4 family portions · about 12 patties",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "salmon",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "gf_breadcrumbs",
+          "qty": 60,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "dill",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove"
+        },
+        {
+          "id": "salt",
+          "qty": 2,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 200 °C (400 °F); line a large baking sheet with parchment paper.",
+        "Peel Sweet potato and cut into chunks; steam or microwave 8 minutes until fork-tender, then mash.",
+        "Flake cooked Salmon into a large bowl, removing any bones and skin.",
+        "Mince 1 clove Garlic and chop Fresh dill finely.",
+        "Add mashed Sweet potato, Egg, Gluten-free breadcrumbs, Lemon juice, Garlic, Fresh dill and Salt to the bowl with Salmon.",
+        "Mix with a fork until combined; do not overwork the mixture.",
+        "Shape into 12 patties about 1.5 cm thick and place on the prepared baking sheet.",
+        "Brush each patty with Olive oil on top.",
+        "Bake 18 to 20 minutes, flipping once at 10 minutes, until golden and firm to the touch.",
+        "Serve warm; refrigerate leftovers in an airtight container for up to 2 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 58 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-chickpea-soft-cookies"
+    ],
+    "recette": {
+      "id": "banana-chickpea-soft-cookies",
+      "name": "Banana & Chickpea Soft Cookies",
+      "category": "Snack",
+      "servings": "16 cookies · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 150,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 120,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_soda",
+          "qty": 2,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a large baking sheet with parchment paper.",
+        "Drain and rinse the cooked chickpeas, then mash them in a large bowl until mostly smooth.",
+        "Add the mashed banana, canola oil, and vanilla extract to the bowl and stir well.",
+        "Add the oat flour, cinnamon, and baking soda and stir until a soft, sticky dough forms.",
+        "Drop rounded tablespoons of dough onto the prepared sheet, spacing them 4 cm apart.",
+        "Press each cookie gently to about 1 cm thick with the back of a damp spoon.",
+        "Bake for 12 to 14 minutes, until the cookies are set and lightly golden on the bottom.",
+        "Cool completely on the sheet before serving; cookies firm up as they cool.",
+        "Store in an airtight container for up to 3 days, or freeze in a single layer for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 58 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 60,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel the sweet potato, cut into chunks, and steam for 10 minutes until completely tender.",
+        "Mash the steamed sweet potato in a large bowl until smooth with no lumps.",
+        "Add the mashed banana and canola oil to the bowl and stir to combine.",
+        "Stir in the rolled oats, cinnamon, and baking powder until a soft dough forms.",
+        "Scoop tablespoon-sized portions onto the lined sheet, spacing them 3 cm apart.",
+        "Flatten each portion gently into a small round disc about 1 cm thick.",
+        "Bake for 14 to 16 minutes, until the bites are golden on the edges and firm to the touch.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 72 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : chicken-sweet-potato-rice-bowl"
+    ],
+    "recette": {
+      "id": "chicken-sweet-potato-rice-bowl",
+      "name": "Chicken and Sweet Potato Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chicken",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 1 cm cubes; peel and slice the cooked carrot.",
+        "Mince the garlic clove finely.",
+        "Cook the Rice in 600 ml of water over medium heat for 18 minutes, until tender.",
+        "Heat the olive oil in a large skillet over medium heat.",
+        "Add the minced garlic and the turmeric; stir for 1 minute until fragrant.",
+        "Add the chicken, cut into small pieces, and cook for 6 to 8 minutes until no pink remains.",
+        "Add the sweet potato cubes and the unsalted chicken broth; cover and simmer for 10 minutes until the sweet potato is fork-tender.",
+        "Stir in the cooked carrot and heat through for 2 minutes.",
+        "Spoon the chicken mixture over the rice. Yield: 4 family portions. Refrigerate leftovers up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 60 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-chia-rice-bars",
+      "name": "Banana & Chia Rice Bars",
+      "category": "Snack",
+      "servings": "12 bars · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 200,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 100,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chia_seeds",
+          "qty": 20,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 25,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "applesauce",
+          "qty": 60,
+          "unit": "ml",
+          "role": "sweetener"
+        },
+        {
+          "id": "vanilla",
+          "qty": 3,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_soda",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 175 °C (350 °F) and grease a 20 x 20 cm baking pan with a little coconut oil.",
+        "Combine the chia seeds with 60 ml of water in a small bowl; let sit for 5 minutes to gel.",
+        "Mix the mashed banana, unsweetened applesauce, coconut oil, and vanilla extract in a large bowl.",
+        "Stir in the chia seed gel until evenly distributed throughout the mixture.",
+        "Add the rice flour and baking soda; fold gently until a smooth batter forms.",
+        "Pour the batter into the prepared pan and spread it into an even layer.",
+        "Bake for 18 to 20 minutes, until the top is set and a toothpick inserted in the centre comes out clean.",
+        "Cool completely in the pan, then cut into 12 bars. Store in an airtight container in the fridge for up to 4 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 60 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 80,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until very tender.",
+        "Mash the cooked sweet potato in a large bowl until completely smooth.",
+        "Add the mashed banana and canola oil to the bowl; stir until combined.",
+        "Add the oat flour, cinnamon, and baking powder; stir into a soft dough.",
+        "Roll the dough into 18 small balls and place them on the prepared baking sheet.",
+        "Flatten each ball gently with the back of a spoon to form a thick round.",
+        "Bake for 15 to 18 minutes, until the edges are lightly golden and firm to the touch.",
+        "Cool completely on the sheet before serving. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 74 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 1 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "chicken-zucchini-rice-pasta",
+      "name": "Chicken and Zucchini Rice Pasta",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice_pasta",
+          "qty": 250,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chicken",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "basil_dried",
+          "qty": 3,
+          "unit": "g"
+        },
+        {
+          "id": "oregano",
+          "qty": 3,
+          "unit": "g"
+        },
+        {
+          "id": "water",
+          "qty": 1000,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Bring a large pot of water to a boil over high heat.",
+        "Finely dice the onion, mince the garlic, and slice the zucchini into thin half-moons.",
+        "Cut the chicken into small 1 cm pieces, removing any skin or bone.",
+        "Cook the rice pasta for the time indicated on the package; drain and set aside.",
+        "Warm the olive oil in a large skillet over medium heat for 1 minute.",
+        "Add the onion and garlic; cook for 3 minutes, stirring, until soft.",
+        "Add the chicken pieces; cook for 6 to 7 minutes, until no pink remains.",
+        "Stir in the zucchini, crushed tomatoes, dried basil, and dried oregano.",
+        "Simmer uncovered for 8 minutes, until zucchini is fully tender.",
+        "Toss with the drained rice pasta; cool slightly before serving. Refrigerate within 2 hours; keeps 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 74 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : lentil-sweet-potato-bowl"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-bowl",
+      "name": "Lentil and Sweet Potato Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "rice",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato and cooked carrot into 1 cm cubes.",
+        "Finely dice the onion and mince the garlic cloves.",
+        "Cook the rice in 400 ml water over medium heat for 18 minutes, until tender.",
+        "Warm the olive oil in a large saucepan over medium heat for 1 minute.",
+        "Add the onion and garlic; cook for 3 minutes, stirring, until softened.",
+        "Stir in the cumin and turmeric; cook for 1 minute until fragrant.",
+        "Add the sweet potato, cooked carrot, cooked lentils, and unsalted vegetable broth.",
+        "Simmer covered for 12 to 15 minutes, until sweet potato is very soft.",
+        "Mash the mixture lightly with a fork to a texture suitable for the youngest child.",
+        "Serve over the rice. Refrigerate leftovers within 2 hours; keeps 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-oat-blueberry-muffins"
+    ],
+    "recette": {
+      "id": "banana-oat-blueberry-muffins",
+      "name": "Banana, Oat and Blueberry Muffins",
+      "category": "Snack",
+      "servings": "12 muffins · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 240,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 160,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 2,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 45,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "maple_syrup",
+          "qty": 30,
+          "unit": "ml",
+          "role": "sweetener"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 6,
+          "unit": "g",
+          "role": "leavening"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 5,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "blueberries",
+          "qty": 120,
+          "unit": "g",
+          "role": "fruit"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a 12-cup muffin tin with paper liners.",
+        "Measure the mashed banana, eggs, canola oil, maple syrup, and vanilla extract into a large bowl.",
+        "Whisk the wet ingredients together until smooth and well combined.",
+        "Add the oat flour, rolled oats, baking powder, and cinnamon to the bowl.",
+        "Stir gently until just combined; do not overmix — a few lumps are fine.",
+        "Fold in the blueberries carefully with a spatula so they stay whole.",
+        "Divide the batter evenly among the 12 muffin cups, filling each about three-quarters full.",
+        "Bake for 18 to 20 minutes, until a toothpick inserted in the centre comes out clean.",
+        "Cool in the tin for 5 minutes, then transfer to a rack. Store in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-chickpea-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-chickpea-bites",
+      "name": "Sweet Potato and Chickpea Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then boil in a medium saucepan for 10 minutes until completely tender.",
+        "Drain and mash the sweet potato in a large bowl until smooth and lump-free.",
+        "Add the cooked chickpeas to the bowl and mash them roughly into the sweet potato.",
+        "Stir in the chickpea flour, egg, cumin, and salt until a firm, scoopable mixture forms.",
+        "Scoop heaped tablespoons of mixture and roll into 18 balls; place them on the prepared sheet.",
+        "Brush each ball lightly with olive oil using a pastry brush.",
+        "Bake for 18 to 20 minutes, until golden on the outside and firm to the touch.",
+        "Cool on the pan for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-chickpea-soft-cookies"
+    ],
+    "recette": {
+      "id": "banana-chickpea-soft-cookies",
+      "name": "Banana & Chickpea Soft Cookies",
+      "category": "Snack",
+      "servings": "16 cookies · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 180,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 100,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 3,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_soda",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment.",
+        "Mash ripe bananas in a large bowl until no large lumps remain.",
+        "Add the canola oil and vanilla extract to the bowl and stir well.",
+        "Add the chickpea flour, ground flaxseed, cinnamon, and baking soda and mix until a thick batter forms.",
+        "Let the batter rest for 3 minutes so the flaxseed absorbs moisture and thickens.",
+        "Drop tablespoon-sized mounds onto the prepared baking sheet, spacing 4 cm apart.",
+        "Flatten each mound lightly with a wet fingertip to about 1 cm thick.",
+        "Bake for 13 to 15 minutes, until the edges are set and the tops look dry.",
+        "Cool completely on the sheet before serving. Store in an airtight container for up to 3 days in the fridge or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "applesauce",
+          "qty": 60,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment.",
+        "Peel the sweet potato, cut into chunks, and steam for 10 minutes until fork-tender.",
+        "Mash the cooked sweet potato in a large bowl until completely smooth.",
+        "Add the unsweetened applesauce and canola oil to the bowl and stir to combine.",
+        "Add the rolled oats, cinnamon, and baking powder and stir until a soft dough forms.",
+        "Scoop tablespoon-sized portions onto the prepared baking sheet, spacing 3 cm apart.",
+        "Flatten each portion gently with the back of a spoon to about 1 cm thick.",
+        "Bake for 16 to 18 minutes, until set and lightly golden on the bottom.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container for up to 3 days in the fridge or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 78 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 1 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "lentil-zucchini-pasta",
+      "name": "Lentil and Zucchini Pasta",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "wheat_pasta",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "lentils",
+          "qty": 250,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "tomato_paste",
+          "qty": 30,
+          "unit": "g"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "parmesan",
+          "qty": 30,
+          "unit": "g",
+          "role": "dairy"
+        },
+        {
+          "id": "water",
+          "qty": 2000,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Bring 2 litres of Water to a boil in a large pot over high heat.",
+        "Peel and finely dice Onion; mince 2 cloves of Garlic; dice Zucchini into 1 cm cubes.",
+        "Heat Olive oil in a large skillet over medium heat for 1 minute.",
+        "Add Onion and Garlic; cook for 4 minutes, stirring, until softened and translucent.",
+        "Add Zucchini and Tomato paste; cook for 3 minutes, stirring occasionally.",
+        "Stir in Crushed tomatoes, cooked Lentils, and Dried oregano; simmer for 10 minutes over low heat.",
+        "Cook Wheat pasta in boiling water for 8 to 9 minutes, until tender; drain well.",
+        "Toss drained pasta into the skillet and stir to coat evenly with the sauce.",
+        "Divide into bowls and top with grated Parmesan. Yields 4 family portions. Refrigerate up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 66 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 7 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-chickpea-flour-pancake-fingers",
+      "name": "Banana & Chickpea Flour Pancake Fingers",
+      "category": "Snack",
+      "servings": "12 fingers · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 180,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Mash the banana thoroughly in a large bowl until no chunks remain.",
+        "Add the coconut milk and vanilla extract to the bowl and whisk together.",
+        "Stir in the chickpea flour and baking powder until a smooth batter forms.",
+        "Heat a non-stick skillet over medium-low heat and brush with canola oil.",
+        "Pour the batter into finger-shaped strips, about 8 cm long, onto the skillet.",
+        "Cook for 2 to 3 minutes per side, until set through and golden on each side.",
+        "Transfer to a plate and cool for 5 minutes before serving. Store in an airtight container in the fridge for up to 2 days, or freeze in a single layer for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 66 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "applesauce",
+          "qty": 60,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until completely tender.",
+        "Mash the cooked sweet potato in a large bowl until smooth with no lumps.",
+        "Add the unsweetened applesauce and canola oil to the bowl and stir to combine.",
+        "Add the oat flour, cinnamon, and baking powder and stir until a soft dough forms.",
+        "Scoop tablespoon-sized portions and roll into balls; place on the prepared baking sheet.",
+        "Bake for 14 to 16 minutes, until set on top and lightly golden on the bottom.",
+        "Cool completely on the sheet before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 80 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-mash",
+      "name": "Lentil and Sweet Potato Mash",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 200,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 250,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 2 cm cubes.",
+        "Slice the cooked carrot into rounds.",
+        "Warm the olive oil in a large saucepan over medium heat.",
+        "Add the cumin and turmeric; stir for 30 seconds until fragrant.",
+        "Add the sweet potato, cooked carrot, and cooked lentils to the pan.",
+        "Pour in the unsalted vegetable broth and bring to a gentle boil.",
+        "Reduce heat and simmer, covered, for 15 to 18 minutes until sweet potato is very tender.",
+        "Remove from heat and mash or blend to a texture suited to your baby.",
+        "Yield: 4 family portions. Refrigerate in an airtight container for up to 3 days, or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 60 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato and Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 60,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 10 minutes until completely tender.",
+        "Mash the steamed sweet potato in a large bowl until smooth with no lumps.",
+        "Add the mashed banana, canola oil, and cinnamon to the bowl.",
+        "Stir in the rolled oats until a soft, scoopable dough forms.",
+        "Scoop rounded tablespoons of dough onto the lined baking sheet, flattening each slightly.",
+        "Bake for 15 to 18 minutes, until the edges are golden and the centres feel set.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 76 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "lentil-zucchini-tomato-pasta",
+      "name": "Lentil and Zucchini Tomato Pasta",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice_pasta",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "basil_dried",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "water",
+          "qty": 2000,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Finely dice onion; mince garlic; trim and dice zucchini into small cubes.",
+        "Bring water to a boil in a large pot over high heat.",
+        "Cook rice pasta for the time shown on the package, then drain and set aside.",
+        "Heat olive oil in a large skillet over medium heat.",
+        "Add onion and cook for 3 minutes, stirring, until softened and translucent.",
+        "Add garlic and zucchini; cook for 4 minutes, until zucchini is tender.",
+        "Stir in crushed tomatoes, cooked lentils, oregano, and dried basil.",
+        "Simmer over low heat for 8 minutes, until sauce thickens slightly.",
+        "Add drained rice pasta to the skillet and toss to coat evenly.",
+        "Yield: 4 family portions. Refrigerate in an airtight container for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 76 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "chicken-sweet-potato-rice-bowl",
+      "name": "Chicken and Sweet Potato Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "chicken",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Peel and dice sweet potato into 1 cm cubes; slice cooked carrot into rounds.",
+        "Combine rice and water in a medium saucepan; bring to a boil over high heat.",
+        "Reduce heat to low, cover, and cook rice for 18 minutes, until water is absorbed.",
+        "Heat olive oil in a large skillet over medium heat.",
+        "Add diced sweet potato and cook for 8 minutes, stirring occasionally, until tender.",
+        "Cut chicken into small 1 cm pieces; add to the skillet with turmeric.",
+        "Pour in unsalted chicken broth and cook for 8 to 10 minutes, until no pink remains.",
+        "Stir in cooked carrot rounds and heat through for 2 minutes.",
+        "Spoon rice into bowls and top with the chicken and sweet potato mixture.",
+        "Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-chickpea-bites"
+    ],
+    "recette": {
+      "id": "banana-chickpea-bites",
+      "name": "Banana & Chickpea Soft Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 200,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "vanilla",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a large baking sheet with parchment paper.",
+        "Drain and rinse the cooked chickpeas, then mash them in a large bowl until mostly smooth.",
+        "Add the mashed banana, melted coconut oil, vanilla extract, and cinnamon to the bowl.",
+        "Sprinkle in the oat flour and baking powder, then stir until a soft, sticky dough forms.",
+        "Scoop 18 rounded tablespoons of dough onto the prepared baking sheet, spacing them 3 cm apart.",
+        "Gently flatten each portion to about 1.5 cm thick with the back of a damp spoon.",
+        "Bake for 14 to 16 minutes, until the tops are set and the edges are lightly golden.",
+        "Cool completely on the sheet — bites firm up as they cool. Store in an airtight container in the refrigerator for up to 3 days, or freeze for up to 6 weeks."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 62 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-patties"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-patties",
+      "name": "Sweet Potato & Oat Patties",
+      "category": "Snack",
+      "servings": "16 patties · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 40,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam for 12 minutes until completely tender.",
+        "Mash the cooked sweet potato in a large bowl until smooth and lump-free.",
+        "Stir the ground flaxseed into the water in a small cup; let stand 5 minutes to thicken.",
+        "Add the rolled oats, chickpea flour, cinnamon, canola oil, and flaxseed mixture to the bowl.",
+        "Mix with a fork until a soft, scoopable dough forms — no dry flour should remain.",
+        "Scoop 16 portions onto the prepared baking sheet and flatten each to about 1 cm thick.",
+        "Bake for 18 to 20 minutes, until the edges are golden and the centres feel firm.",
+        "Cool on the sheet for 5 minutes before serving. Refrigerate leftovers in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : banana-oat-blueberry-muffins"
+    ],
+    "recette": {
+      "id": "banana-oat-blueberry-muffins",
+      "name": "Banana, Oat and Blueberry Muffins",
+      "category": "Snack",
+      "servings": "12 muffins · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 240,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 160,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 2,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 45,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "maple_syrup",
+          "qty": 30,
+          "unit": "ml",
+          "role": "sweetener"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 5,
+          "unit": "g",
+          "role": "leavening"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 5,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "blueberries",
+          "qty": 120,
+          "unit": "g",
+          "role": "fruit"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a 12-cup muffin tin with paper liners.",
+        "Mash the bananas well in a large bowl until no large lumps remain.",
+        "Whisk the eggs, canola oil, maple syrup, and vanilla extract into the mashed banana.",
+        "Add the oat flour, rolled oats, baking powder, and cinnamon; stir until just combined.",
+        "Fold the blueberries gently into the batter, taking care not to crush them.",
+        "Divide the batter evenly among the 12 muffin cups, filling each about three-quarters full.",
+        "Bake for 20 to 22 minutes, until a toothpick inserted in the centre comes out clean.",
+        "Cool in the tin for 5 minutes, then transfer to a wire rack. Store in an airtight container at room temperature for 2 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "passePartout": false,
+      "reason": "pool: 64 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-chickpea-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-chickpea-bites",
+      "name": "Sweet Potato and Chickpea Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam or boil for 12 minutes until very tender.",
+        "Drain the cooked chickpeas and pat them dry with a clean cloth.",
+        "Mash the sweet potato and cooked chickpeas together in a large bowl until mostly smooth.",
+        "Add the chickpea flour, egg, olive oil, cumin, and salt; stir until a firm dough forms.",
+        "Roll the dough into 18 small balls and place them evenly on the prepared baking sheet.",
+        "Flatten each ball gently with your palm to about 1.5 cm thick.",
+        "Bake for 18 to 20 minutes, until golden on the edges and firm to the touch.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 66 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-patties"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-patties",
+      "name": "Sweet Potato & Oat Patties",
+      "category": "Snack",
+      "servings": "16 patties · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 40,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment.",
+        "Peel and cube sweet potato, then steam for 12 minutes until completely tender.",
+        "Mash the cooked sweet potato in a large bowl until smooth and lump-free.",
+        "Stir ground flaxseed into the water in a small cup; let sit 5 minutes to gel.",
+        "Add rolled oats, chickpea flour, cinnamon, and the flaxseed gel to the bowl.",
+        "Mix until a soft, scoopable dough forms; divide into 16 equal portions.",
+        "Shape each portion into a 1 cm thick round and place on the prepared sheet.",
+        "Brush the tops lightly with olive oil.",
+        "Bake for 18 to 20 minutes, until golden and firm to the touch.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 82 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 1 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "salmon-zucchini-rice-bowl",
+      "name": "Salmon and Zucchini Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "salmon",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 250,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "coconut_aminos",
+          "qty": 15,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Rinse the rice, then combine with water in a medium saucepan and bring to a boil.",
+        "Reduce heat to low, cover, and cook the rice for 18 minutes until water is absorbed.",
+        "While rice cooks, dice the zucchini into 1 cm pieces and slice the cooked carrot into thin rounds.",
+        "Remove any pin bones from the salmon and cut it into 3 cm chunks.",
+        "Heat olive oil in a large non-stick pan over medium heat and add finely minced garlic for 30 seconds.",
+        "Add the salmon chunks and cook for 4 to 5 minutes, turning once, until no pink remains.",
+        "Add the zucchini, cooked carrot, lemon juice, and coconut aminos; stir and cook for 3 minutes until zucchini softens.",
+        "Fluff the rice and divide into bowls, then spoon the salmon and vegetable mixture on top.",
+        "Serve warm. Refrigerate leftovers in an airtight container for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "passePartout": false,
+      "reason": "pool: 82 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : lentil-sweet-potato-patties"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-patties",
+      "name": "Lentil and Sweet Potato Patties",
+      "category": "Meal",
+      "servings": "16 patties · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+        "Peel and cube the sweet potato, then steam or boil for 10 minutes until completely soft.",
+        "Drain the sweet potato and mash it in a large bowl until smooth.",
+        "Add the cooked lentils, finely minced garlic, cumin, and turmeric to the bowl.",
+        "Add the egg and oat flour, then stir firmly until a thick, scoopable mixture forms.",
+        "Scoop 16 equal portions onto the lined baking sheet and flatten each to about 1.5 cm thick.",
+        "Brush the tops with olive oil and bake for 18 to 20 minutes, until golden and firm to the touch.",
+        "Cool for 5 minutes before serving. Refrigerate leftovers for up to 3 days, or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 68 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-chickpea-flour-pancakes",
+      "name": "Banana & Chickpea Flour Pancakes",
+      "category": "Snack",
+      "servings": "12 small pancakes · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "mashed_banana",
+          "qty": 200,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 100,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "soy_beverage",
+          "qty": 80,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_soda",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Mash the banana very smoothly in a large bowl until no lumps remain.",
+        "Add the fortified soy beverage and canola oil to the bowl and whisk together.",
+        "Add the chickpea flour, cinnamon, and baking soda and whisk until a smooth, thick batter forms.",
+        "Heat a non-stick skillet over medium-low heat and brush lightly with a little extra canola oil.",
+        "Drop 2-tablespoon portions of batter into the skillet to form small rounds, fitting 3 to 4 at a time.",
+        "Cook for 2 to 3 minutes, until small bubbles appear on the surface and the edges look set.",
+        "Flip each pancake and cook for a further 2 minutes, until cooked through with no raw batter visible.",
+        "Transfer to a plate and repeat with the remaining batter. Serve warm, cut into strips for easy baby grasping. Store cooled pancakes in an airtight container in the fridge for up to 2 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "passePartout": false,
+      "reason": "pool: 68 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : sweet-potato-oat-bites"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-bites",
+      "name": "Sweet Potato & Oat Bites",
+      "category": "Snack",
+      "servings": "18 bites · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 80,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+        "Peel and dice the sweet potato into small cubes, then steam for 10 minutes until very tender.",
+        "Mash the cooked sweet potato thoroughly in a large bowl until completely smooth.",
+        "Add the mashed banana and canola oil to the bowl and stir until combined.",
+        "Add the rolled oats, oat flour, cinnamon, and baking powder to the bowl and mix until a soft dough forms.",
+        "Scoop tablespoon-sized portions of dough and roll into 18 balls, then place on the prepared baking sheet.",
+        "Press each ball gently into a small round disc about 1.5 cm thick.",
+        "Bake for 15 to 18 minutes, until lightly golden on the edges and firm to the touch.",
+        "Cool on the sheet for 5 minutes, then transfer to a rack. Store in an airtight container for up to 3 days in the fridge or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 84 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 1 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "turkey-zucchini-rice-skillet",
+      "name": "Ground Turkey and Zucchini Rice Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "ground_turkey",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "rice",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "zucchini",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "tomato_paste",
+          "qty": 15,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Cook rice according to package directions using unsalted chicken broth instead of water.",
+        "Grate zucchini on a box grater; slice carrot (cooked) into thin half-moons.",
+        "Mince garlic finely; set aside with vegetables.",
+        "Heat olive oil in a large skillet over medium heat, 180 °C (350 °F).",
+        "Add ground turkey; cook for 6 to 8 minutes, breaking it up until no pink remains.",
+        "Add garlic, zucchini, and carrot (cooked); cook for 4 minutes until softened.",
+        "Stir in tomato paste and spinach; cook 2 minutes until spinach wilts completely.",
+        "Add cooked rice to the skillet; stir gently to combine everything evenly.",
+        "Yield: 4 family portions. Store refrigerated up to 3 days; freeze up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-05",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "passePartout": false,
+      "reason": "pool: 84 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "lentil-sweet-potato-puree-bowl",
+      "name": "Lentil and Sweet Potato Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 10,
+          "unit": "ml",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Peel and dice sweet potato into 2 cm cubes; slice carrot (cooked) into rounds.",
+        "Heat olive oil in a large saucepan over medium heat, 180 °C (350 °F).",
+        "Add cumin and turmeric to the pan; stir for 30 seconds until fragrant.",
+        "Add sweet potato and carrot (cooked) to the pan; stir to coat with spices.",
+        "Pour in unsalted vegetable broth; bring to a boil, then reduce to a simmer.",
+        "Cook for 15 minutes, until sweet potato is completely tender when pierced.",
+        "Add cooked lentils; stir and simmer for 5 more minutes until heated through.",
+        "Remove from heat; drizzle with lemon juice and mash to desired texture.",
+        "Yield: 4 family portions. Refrigerate for up to 3 days; freeze for up to 2 months."
+      ]
+    }
+  }
+]

@@ -75,7 +75,10 @@ async function cycleRecettes(data, options) {
   let drafts = [];
   let k = 0;
   for (const ligne of brief) {
-    const prompt = PromptRecette.construire(ligne, data);
+    const prompt = PromptRecette.construire(ligne, data, {
+      existants: corpus.map((x) => x.name || x.id),
+      ecritsCeTour: drafts.map((d) => d.rec.name || d.rec.id)
+    });
     process.stdout.write("  " + (++k) + "/" + brief.length + "  " + ligne.n + " " + ligne.categories[0].toLowerCase() +
                          " from " + ligne.ageMois + " months" + (ligne.evite.length ? ", no " + ligne.evite.join("/") : "") + " … ");
     try {

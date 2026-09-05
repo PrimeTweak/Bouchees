@@ -19,7 +19,12 @@ function tableIngredients(catalogue, ids) {
   }).join("\n");
 }
 
-function construire(ligne, data) {
+function construire(ligne, data, contexte) {
+  contexte = contexte || {};
+  /* What already exists, and what this very run has just written: the model
+   * was never told, so it reinvented the same sweet-potato bites three times
+   * in one run and eleven times against the pool. */
+  const dejaLa = (contexte.existants || []).concat(contexte.ecritsCeTour || []);
   const catalogue = data.catalogue;
   const base = data.base;
   const autorises = ingredientsAutorises(catalogue, ligne.evite);
@@ -45,6 +50,12 @@ function construire(ligne, data) {
 "  Minimum age: " + ligne.ageMois + " months",
 "  Must be free of: " + (nomsEvites.length ? nomsEvites.join(", ") : "no allergen constraint"),
 "  Why: " + ligne.reason,
+(ligne.vedette ? "  Built around: " + ligne.vedette + " — it is the main ingredient, in the name and in the dish." : ""),
+"",
+"NOT AGAIN — these already exist. Do not rewrite them under another name, do",
+"not vary them; each new recipe is a DIFFERENT dish with a different main",
+"ingredient and a different technique:",
+"  " + (dejaLa.length ? dejaLa.slice(-80).join(", ") : "(the pool is empty)"),
 "",
 "ABSOLUTE RULE",
 "  Use ONLY ingredient ids from the list below. No invented ingredient, no",
