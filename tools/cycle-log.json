@@ -1,100 +1,12 @@
 {
-  "le": "2026-09-05T02:10:14.992Z",
+  "le": "2026-09-05T02:23:12.703Z",
   "recettes": {
     "commandees": 20,
-    "redigees": 16,
-    "acceptees": 2,
-    "rejetees": [
-      {
-        "id": "salmon-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "lentil-sweet-potato-rice-bowl",
-        "erreurs": [
-          "id déjà utilisé : lentil-sweet-potato-rice-bowl"
-        ]
-      },
-      {
-        "id": "turkey-zucchini-quinoa-skillet",
-        "erreurs": [
-          "id déjà utilisé : turkey-zucchini-quinoa-skillet"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "banana-chickpea-flour-pancakes",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "lentil-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : lentil-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "turkey-zucchini-rice-bowl",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration or a doneness cue"
-        ]
-      },
-      {
-        "id": "banana-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : banana-oat-bites"
-        ]
-      },
-      {
-        "id": "sweet-potato-chickpea-patties",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-chickpea-patties"
-        ]
-      },
-      {
-        "id": "turkey-veggie-rice-bowl",
-        "erreurs": [
-          "id déjà utilisé : turkey-veggie-rice-bowl"
-        ]
-      },
-      {
-        "id": "salmon-sweet-potato-patties",
-        "erreurs": [
-          "id déjà utilisé : salmon-sweet-potato-patties"
-        ]
-      },
-      {
-        "id": "sweet-potato-oat-bites",
-        "erreurs": [
-          "id déjà utilisé : sweet-potato-oat-bites"
-        ]
-      },
-      {
-        "id": "banana-chickpea-flour-pancakes",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      }
-    ],
+    "redigees": 0,
+    "acceptees": 0,
+    "rejetees": [],
     "aRevoir": [],
-    "nouvelles": [
-      "turkey-veggie-rice-bowl",
-      "banana-avocado-rice-cakes"
-    ]
+    "nouvelles": []
   },
   "images": null
 }

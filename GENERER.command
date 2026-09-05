@@ -25,7 +25,10 @@ echo "  Les photos ne sont pas faites ici : PHOTOS.command, après."
 echo ""
 for i in $(seq 1 "$TOURS"); do
   echo "── tour $i ──"
-  node tools/cycle.js --recettes-seulement || { echo "  le tour $i a échoué ; on s'arrête ici"; break; }
+  node tools/cycle.js --recettes-seulement
+  code=$?
+  if [ "$code" = "2" ]; then echo ""; echo "  Plus de crédit : les autres tours n'auraient rien donné. On s'arrête."; break; fi
+  if [ "$code" != "0" ]; then echo "  le tour $i a échoué ; on s'arrête ici"; break; fi
 done
 
 echo ""

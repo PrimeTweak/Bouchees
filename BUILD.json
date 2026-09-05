@@ -1,10 +1,9 @@
 {
-  "build": 174,
+  "build": 175,
   "date": "2026-09-05",
   "carries": [
-    "the run's log said it: eleven of fourteen rejections were a dish the model had already written — three times sweet-potato-oat-bites in ONE run. Two causes, both mine: the commission repeated its lines because a six-profile rotation loops before ten lines, and the prompt never told the model what existed — the pool went to the validator, after the fact, never to the writer",
-    "the commission no longer repeats a line in a run, and each line carries a hero ingredient drawn from the catalogue in rotation: salmon at 24 months and white beans at 6 cannot both come back as sweet-potato patties",
-    "the prompt now names what exists and what this very run has just written, as a block the model must not rewrite",
-    "no build: the generation is Node"
+    "the run wrote nothing: every call was refused for lack of credit on the Anthropic account. That is billing, not code — but the code hammered thirty refusals across three tours before giving up: it now stops at the first, says what to do, and GENERER.command runs one tour instead of three",
+    "the commission log prints the hero ingredient, so two lines that share an age and a profile no longer look like duplicates",
+    "the photo report names the manifest entry whose file is missing instead of counting it, and no longer advises re-running the cycle — three tours had just proved that changes nothing"
   ]
 }

@@ -508,6 +508,7 @@
         "egg",
         "wheat"
       ],
+      "vedette": "ground beef",
       "passePartout": false,
       "reason": "pool: 74 meals still missing, youngest ages first"
     },
@@ -521,6 +522,7 @@
         "peanut",
         "tree_nut"
       ],
+      "vedette": "apple",
       "passePartout": false,
       "reason": "pool: 65 snacks still missing, youngest ages first"
     },
@@ -536,6 +538,7 @@
         "peanut",
         "tree_nut"
       ],
+      "vedette": "chickpeas",
       "passePartout": false,
       "reason": "pool: 72 meals still missing, youngest ages first"
     },
@@ -548,6 +551,7 @@
       "evite": [
         "wheat"
       ],
+      "vedette": "raspberries",
       "passePartout": false,
       "reason": "pool: 63 snacks still missing, youngest ages first"
     },
@@ -560,6 +564,7 @@
       "evite": [
         "milk"
       ],
+      "vedette": "eggplant",
       "passePartout": false,
       "reason": "pool: 70 meals still missing, youngest ages first"
     },
@@ -573,6 +578,7 @@
         "milk",
         "egg"
       ],
+      "vedette": "oats",
       "passePartout": false,
       "reason": "pool: 61 snacks still missing, youngest ages first"
     },
@@ -587,6 +593,7 @@
         "egg",
         "wheat"
       ],
+      "vedette": "peas",
       "passePartout": false,
       "reason": "pool: 68 meals still missing, youngest ages first"
     },
@@ -600,6 +607,7 @@
         "peanut",
         "tree_nut"
       ],
+      "vedette": "cucumber",
       "passePartout": false,
       "reason": "pool: 59 snacks still missing, youngest ages first"
     },
@@ -615,6 +623,7 @@
         "peanut",
         "tree_nut"
       ],
+      "vedette": "zucchini",
       "passePartout": false,
       "reason": "pool: 66 meals still missing, youngest ages first"
     },
@@ -627,6 +636,7 @@
       "evite": [
         "wheat"
       ],
+      "vedette": "plum",
       "passePartout": false,
       "reason": "pool: 57 snacks still missing, youngest ages first"
     }

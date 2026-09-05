@@ -64,6 +64,7 @@ async function cycleRecettes(data, options) {
   if (!brief.length) { console.log("  no gap under the thresholds — nothing to commission this month"); return log; }
   brief.forEach(function (c) {
     console.log("  " + c.n + " x " + c.categories[0].toLowerCase() + " from " + c.ageMois + " months" +
+                (c.vedette ? ", around " + c.vedette : "") +
       (c.passePartout ? " (works for everyone)" : " — no " + c.evite.join(", ")));
   });
   log.commandees = brief.reduce((s, c) => s + c.n, 0);
@@ -73,6 +74,7 @@ async function cycleRecettes(data, options) {
   console.log("  text engine: " + moteur.name + (moteur.name === "simule" ? "  (no API key — placeholder recipes)" : ""));
   const idsExistants = corpus.map((x) => x.id);
   let drafts = [];
+  let aSec = false;
   let k = 0;
   for (const ligne of brief) {
     const prompt = PromptRecette.construire(ligne, data, {
@@ -80,8 +82,10 @@ async function cycleRecettes(data, options) {
       ecritsCeTour: drafts.map((d) => d.rec.name || d.rec.id)
     });
     process.stdout.write("  " + (++k) + "/" + brief.length + "  " + ligne.n + " " + ligne.categories[0].toLowerCase() +
-                         " from " + ligne.ageMois + " months" + (ligne.evite.length ? ", no " + ligne.evite.join("/") : "") + " … ");
+                         " from " + ligne.ageMois + " months" + (ligne.evite.length ? ", no " + ligne.evite.join("/") : "") +
+                         (ligne.vedette ? ", around " + ligne.vedette : "") + " … ");
     try {
+      if (aSec) { console.log("skipped — no credit"); continue; }
       const output = await moteur.rediger(prompt);
       output.forEach(function (rec) {
         /* Ids are keys: ASCII, lowercase, hyphens. An accent the model
@@ -93,7 +97,19 @@ async function cycleRecettes(data, options) {
         drafts.push({ rec: rec, commande: ligne });
       });
       console.log(output.length + " written");
-    } catch (e) { console.log("failed: " + e.message); }
+    } catch (e) {
+      console.log("failed: " + e.message);
+      /* An empty balance refuses every call the same way: stop after the
+       * first rather than hammer thirty more, and say what to do. */
+      if (/credit balance|insufficient|billing/i.test(e.message)) {
+        aSec = true;
+        console.log("");
+        console.log("  NO CREDIT ON THE ANTHROPIC ACCOUNT");
+        console.log("  Every line would fail the same way. Add credits at");
+        console.log("  console.anthropic.com > Plans & Billing, then run again.");
+        log.sansCredit = true;
+      }
+    }
   }
   log.redigees = drafts.length;
   console.log("  " + drafts.length + " recipe(s) written");
@@ -333,6 +349,9 @@ async function principal() {
 
   let jr = null, ji = null;
   if (!a("--images-seulement")) jr = await cycleRecettes(data, options);
+  /* A run without credit is a failed run: exit non-zero so GENERER.command
+   * stops after one tour instead of three. */
+  if (jr && jr.sansCredit) process.exit(2);
   if (!a("--recettes-seulement")) ji = await cycleImages(data, options);
 
   if (!options.sec) {
@@ -371,18 +390,33 @@ async function principal() {
       : 0;
 
     let entries = 0;
+    /* Named, not just counted: a number that does not match tells you
+     * nothing about which recipe to look at. */
+    const orphelins = [];      /* manifest says done, file is not there */
+    const nonPubliees = [];    /* manifest says done, catalogue has no image */
     try {
       const man = JSON.parse(fsx.readFileSync(
         path.join(__dirname, "..", "generation", "images", "manifest.json"), "utf8"));
-      entries = Object.keys(man).filter(function (k) {
-        return man[k] && man[k].fichier && man[k].revisePar;
-      }).length;
+      Object.keys(man).forEach(function (k) {
+        const e = man[k];
+        if (!(e && e.fichier && e.revisePar)) return;
+        entries++;
+        if (!fsx.existsSync(path.join(folder, e.fichier))) orphelins.push(k + " -> " + e.fichier);
+      });
     } catch (e) { /* none yet */ }
 
     let publiees = 0;
     try {
-      JSON.parse(fsx.readFileSync(path.join(__dirname, "..", "dist", "catalogue.json"), "utf8"))
-        .forEach(function (c) { if (c.image) publiees++; });
+      const cat = JSON.parse(fsx.readFileSync(path.join(__dirname, "..", "dist", "catalogue.json"), "utf8"));
+      const avecImage = {};
+      cat.forEach(function (c) { if (c.image) { publiees++; avecImage[c.id] = 1; } });
+      try {
+        const man = JSON.parse(fsx.readFileSync(
+          path.join(__dirname, "..", "generation", "images", "manifest.json"), "utf8"));
+        Object.keys(man).forEach(function (k) {
+          if (man[k] && man[k].fichier && man[k].revisePar && !avecImage[k]) nonPubliees.push(k);
+        });
+      } catch (e) { /* none */ }
     } catch (e) { /* not published yet */ }
 
     console.log("");
@@ -404,14 +438,20 @@ async function principal() {
       console.log("");
       if (entries < surDisque) {
         console.log("  Des fichiers existent sans entree au manifeste : le cycle");
-        console.log("  a ete interrompu, ou la vision les a rejetes.");
+        console.log("  a ete interrompu, ou la vision les a rejetes. PHOTOS.command les reprend.");
       }
-      if (publiees < entries) {
-        console.log("  Le manifeste est en avance sur dist/ : relance le cycle");
-        console.log("  pour republier, sinon l'app ne saura pas quoi demander.");
+      if (orphelins.length) {
+        console.log("  Le manifeste declare une photo dont le FICHIER manque :");
+        orphelins.forEach(function (o) { console.log("    " + o); });
+        console.log("  Le fichier a ete efface ou jamais pousse. PHOTOS.command le refait.");
+      }
+      if (nonPubliees.length && !orphelins.length) {
+        console.log("  Une photo est prete mais la recette n'est pas dans le catalogue publie :");
+        nonPubliees.forEach(function (o) { console.log("    " + o); });
+        console.log("  La recette a ete retiree du bassin, ou n'y est pas encore. Rien a faire.");
       }
       console.log("");
-      console.log("  Ne pousse pas encore — l'app ne montrerait rien.");
+      console.log("  L'app affiche les photos qui existent ; celles-ci manqueront seulement.");
     }
   })();
 
