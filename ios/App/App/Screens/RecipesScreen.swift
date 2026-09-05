@@ -671,23 +671,32 @@ private struct CookedSwipe<Content: View>: View {
             }
     }
 
-    /// The row follows the finger with a little resistance past the threshold.
+    /// A dead zone before the row moves at all: a UIKit pan has no minimum
+    /// distance, so the row twitched on the two or three points of movement
+    /// that come with an ordinary tap.
+    private let zoneMorte: CGFloat = 12
+
+    /// The row follows the finger, and resists past the threshold rather than
+    /// stopping dead.
     private func suivre(_ x: CGFloat) {
-        guard x < 0 else { offset = 0; return }
-        offset = x < -seuil ? -seuil + (x + seuil) / 3 : x
+        let d = x + zoneMorte
+        guard d < 0 else { if offset != 0 { offset = 0 }; return }
+        offset = d < -seuil ? -seuil + (d + seuil) / 3 : d
     }
 
-    /// A spring on release, and a flick counts even when it is short.
+    /// Springs back on release; a quick flick counts even when it is short.
     private func relacher(_ x: CGFloat, _ vitesse: CGFloat) {
-        let commit = x < -seuil || vitesse < -600
-        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { offset = 0 }
+        let commit = offset < -seuil * 0.6 || (offset < -12 && vitesse < -700)
+        fermer()
         guard commit else { return }
         if cooked { app.unmarkCooked(recipe.id) } else { app.markCooked(recipe.id) }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
+    /// The same return everywhere, and silent under Reduce Motion like the
+    /// rest of the app.
     private func fermer() {
-        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { offset = 0 }
+        withAnimation(.soft(0.3)) { offset = 0 }
     }
 }
 

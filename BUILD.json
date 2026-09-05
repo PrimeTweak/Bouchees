@@ -1,9 +1,10 @@
 {
-  "build": 165,
+  "build": 166,
   "date": "2026-09-03",
   "carries": [
-    "the scroll froze because a SwiftUI DragGesture cannot decline a touch: it can only lose a fight it has already started, and every row was starting one. The swipe is now a UIKit pan through UIGestureRecognizerRepresentable, whose delegate refuses to begin unless the finger is moving more horizontally than vertically — so a scroll is never contended in the first place",
-    "below iOS 18 the row carries no swipe at all: a frozen list is worse than a missing shortcut",
-    "the row follows the finger directly, resists past the threshold, and springs back on release; a quick flick counts even when it is short"
+    "a UIKit pan has no minimum distance, so the row twitched on the two or three points of movement that come with an ordinary tap and then snapped back: nothing moves under twelve points now, and the travel is measured from there",
+    "the hand-written springs ignored Reduce Motion while the rest of the app honours it through Tone.soft; the row uses the same helper, so the return is silent when the setting is on",
+    "a rightward drag reset the offset with no animation at all, a hard jump; every return goes through one path",
+    "committing is judged on how far the ROW travelled rather than the finger, so the dead zone does not shift the threshold"
   ]
 }
