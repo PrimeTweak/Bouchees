@@ -1,0 +1,159 @@
+{
+  "_doc": "Curation register — the human gate of the pipeline. An external recipe is imported ONLY if it has an entry here: canonical id, minimum age, functional roles, and steps rewritten in our own words. No entry, no import.",
+  "partenaire-qc:creamy-shrimp-and-pea-risotto": {
+    "id": "creamy-shrimp-and-pea-risotto",
+    "name": "Creamy shrimp and pea risotto",
+    "category": "Meal",
+    "minAgeMonths": 12,
+    "roles": {
+      "unsalted_broth": "liquid",
+      "olive_oil": "fat"
+    },
+    "steps": [
+      "Soften the onion and garlic in the oil until translucent.",
+      "Add the rice and stir for 1 minute, then add the broth one ladle at a time, stirring.",
+      "In the last 5 minutes, add the peas and the shrimp.",
+      "Remove from the heat and stir in the parmesan."
+    ]
+  },
+  "partenaire-qc:soft-apricot-granola": {
+    "id": "soft-apricot-granola",
+    "name": "Soft apricot granola",
+    "category": "Breakfast",
+    "minAgeMonths": 12,
+    "roles": {
+      "ground_flaxseed": "binder"
+    },
+    "steps": [
+      "Mix the oats, flaxseed and cinnamon.",
+      "Pour in the maple syrup and oil, then coat well.",
+      "Spread on a baking sheet and bake at 150 °C for 20 minutes, stirring halfway.",
+      "Fold in the apricots once cooled."
+    ]
+  },
+  "partenaire-qc:mild-chicken-quesadillas": {
+    "id": "mild-chicken-quesadillas",
+    "name": "Mild chicken quesadillas",
+    "category": "Meal",
+    "minAgeMonths": 12,
+    "roles": {
+      "cheddar": "dairy",
+      "canola_oil": "fat"
+    },
+    "steps": [
+      "Spread the chicken, cheese and bell pepper over half of each tortilla.",
+      "Fold over and brown in a pan, 2 to 3 minutes per side.",
+      "Let cool slightly, then cut into narrow wedges."
+    ]
+  },
+  "partenaire-qc:tomato-alphabet-soup": {
+    "id": "tomato-alphabet-soup",
+    "name": "Tomato alphabet soup",
+    "category": "Meal",
+    "minAgeMonths": 9,
+    "roles": {
+      "olive_oil": "fat"
+    },
+    "steps": [
+      "Soften the onion and carrot in the oil for 5 minutes.",
+      "Add the tomatoes, broth and basil, then bring to a boil.",
+      "Add the pasta and cook according to the package.",
+      "Mash a few vegetables with a fork to thicken."
+    ]
+  },
+  "partenaire-qc:crispy-tofu-with-sweet-maple-sauce": {
+    "id": "crispy-tofu-with-sweet-maple-sauce",
+    "name": "Crispy tofu with sweet maple sauce",
+    "category": "Meal",
+    "minAgeMonths": 12,
+    "roles": {
+      "cornstarch": "binder",
+      "canola_oil": "fat"
+    },
+    "steps": [
+      "Pat the tofu dry and cube it, then coat in cornstarch.",
+      "Brown the cubes in the oil on all sides.",
+      "Mix the soy sauce, syrup, garlic and ginger, pour over and let it coat for 1 minute."
+    ]
+  },
+  "partenaire-qc:carrot-and-maple-muffins": {
+    "id": "carrot-and-maple-muffins",
+    "name": "Carrot and maple muffins",
+    "category": "Snack",
+    "minAgeMonths": 6,
+    "roles": {
+      "egg": "binder",
+      "applesauce": "binder",
+      "canola_oil": "fat",
+      "cow_milk": "liquid"
+    },
+    "steps": [
+      "Preheat the oven to 180 °C.",
+      "Mix the eggs, applesauce, oil and syrup.",
+      "Fold in the flour, baking powder and cinnamon, then the carrots.",
+      "Bake in muffin cups for 18 to 20 minutes."
+    ]
+  },
+  "spoonacular-demo:101": {
+    "id": "creamy-salmon-pasta",
+    "name": "Creamy salmon pasta",
+    "category": "Meal",
+    "minAgeMonths": 9,
+    "roles": {
+      "heavy_cream": "dairy",
+      "olive_oil": "fat"
+    },
+    "steps": [
+      "Cook the pasta according to the package.",
+      "Sear the salmon in the oil, then flake it with a fork.",
+      "Warm the cream with the garlic, then toss with the pasta, salmon and parmesan.",
+      "Cut the pasta short for the youngest children."
+    ]
+  },
+  "spoonacular-demo:102": {
+    "id": "banana-oat-pancakes",
+    "name": "Banana oat pancakes",
+    "category": "Breakfast",
+    "minAgeMonths": 6,
+    "roles": {
+      "egg": "binder",
+      "cow_milk": "liquid"
+    },
+    "steps": [
+      "Blend all the ingredients until smooth.",
+      "Cook small pancakes over medium heat, 2 minutes per side.",
+      "Serve in finger-width strips."
+    ]
+  },
+  "spoonacular-demo:103": {
+    "id": "vegetable-fried-rice",
+    "name": "Vegetable fried rice",
+    "category": "Meal",
+    "minAgeMonths": 9,
+    "roles": {
+      "egg": "protein",
+      "canola_oil": "fat"
+    },
+    "steps": [
+      "Scramble the eggs in the oil, then set aside.",
+      "Stir-fry the carrot and peas for 3 minutes.",
+      "Add the rice and soy sauce, return the eggs and heat through."
+    ]
+  },
+  "mealdb-demo:52850": {
+    "id": "chicken-couscous",
+    "name": "Chicken couscous",
+    "category": "Meal",
+    "minAgeMonths": 9,
+    "roles": {
+      "unsalted_broth": "liquid",
+      "olive_oil": "fat"
+    },
+    "steps": [
+      "Soften the onion and garlic in the oil.",
+      "Add the diced chicken and brown it.",
+      "Pour in the broth, add the carrot and simmer for 15 minutes.",
+      "Stir in the couscous, cover and let it swell for 5 minutes."
+    ]
+  }
+}
