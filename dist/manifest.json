@@ -1,11 +1,11 @@
 {
   "version": "2026-09-05",
   "safetyChecksum": "ba24096516d6",
-  "catalogueChecksum": "ea2d1646c901",
+  "catalogueChecksum": "87e35d7bd708",
   "rotationWeeks": 16,
   "counts": {
-    "Meal": 52,
-    "Snack": 62
+    "Meal": 55,
+    "Snack": 63
   },
   "target": {
     "Meal": 112,

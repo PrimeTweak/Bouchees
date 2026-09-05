@@ -350,5 +350,238 @@
       "license": "démonstration — contenu original de l'équipe, stockage permis",
       "confidence": "exacte"
     }
+  },
+  {
+    "id": "chicken-couscous",
+    "name": "Chicken couscous",
+    "category": "Meal",
+    "servings": "",
+    "minAgeMonths": 9,
+    "timeMinutes": null,
+    "ingredients": [
+      {
+        "id": "couscous",
+        "qty": 250,
+        "unit": "ml"
+      },
+      {
+        "id": "chicken",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "unsalted_broth",
+        "qty": 250,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "carrot",
+        "qty": 1,
+        "unit": "unit"
+      }
+    ],
+    "steps": [
+      "Soften the onion and garlic in the oil.",
+      "Add the diced chicken and brown it.",
+      "Pour in the broth, add the carrot and simmer for 15 minutes.",
+      "Stir in the couscous, cover and let it swell for 5 minutes."
+    ],
+    "source": {
+      "source": "mealdb-demo",
+      "externalId": "52850",
+      "url": "https://exemple.test/chicken-couscous",
+      "license": "original — written by the team as a demonstration of the adapter; not third-party data",
+      "confidence": "exacte"
+    }
+  },
+  {
+    "id": "creamy-salmon-pasta",
+    "name": "Creamy salmon pasta",
+    "category": "Meal",
+    "servings": "4 portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "wheat_pasta",
+        "qty": 224,
+        "unit": "g"
+      },
+      {
+        "id": "salmon",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "heavy_cream",
+        "qty": 250,
+        "unit": "ml",
+        "role": "dairy"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "parmesan",
+        "qty": 62.5,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Cook the pasta according to the package.",
+      "Sear the salmon in the oil, then flake it with a fork.",
+      "Warm the cream with the garlic, then toss with the pasta, salmon and parmesan.",
+      "Cut the pasta short for the youngest children."
+    ],
+    "source": {
+      "source": "spoonacular-demo",
+      "externalId": "101",
+      "url": "https://exemple.test/creamy-salmon-pasta",
+      "license": "original — written by the team as a demonstration of the adapter; not third-party data",
+      "confidence": "exacte"
+    }
+  },
+  {
+    "id": "banana-oat-pancakes",
+    "name": "Banana oat pancakes",
+    "category": "Snack",
+    "servings": "8 portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "banana",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 250,
+        "unit": "ml"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cow_milk",
+        "qty": 125,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2.5,
+        "unit": "ml"
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Blend all the ingredients until smooth.",
+      "Cook small pancakes over medium heat, 2 minutes per side.",
+      "Serve in finger-width strips."
+    ],
+    "source": {
+      "source": "spoonacular-demo",
+      "externalId": "102",
+      "url": "https://exemple.test/banana-oat-pancakes",
+      "license": "original — written by the team as a demonstration of the adapter; not third-party data",
+      "confidence": "à revoir (correspondances partielles)"
+    }
+  },
+  {
+    "id": "vegetable-fried-rice",
+    "name": "Vegetable fried rice",
+    "category": "Meal",
+    "servings": "4 portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 750,
+        "unit": "ml"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "protein"
+      },
+      {
+        "id": "green_peas",
+        "qty": 250,
+        "unit": "ml"
+      },
+      {
+        "id": "carrot",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "soy_sauce",
+        "qty": 30,
+        "unit": "ml"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      }
+    ],
+    "steps": [
+      "Scramble the eggs in the oil, then set aside.",
+      "Stir-fry the carrot and peas for 3 minutes.",
+      "Add the rice and soy sauce, return the eggs and heat through."
+    ],
+    "source": {
+      "source": "spoonacular-demo",
+      "externalId": "103",
+      "url": "https://exemple.test/veggie-fried-rice",
+      "license": "original — written by the team as a demonstration of the adapter; not third-party data",
+      "confidence": "exacte"
+    }
   }
 ]

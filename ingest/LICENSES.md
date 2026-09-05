@@ -1,47 +1,57 @@
-# Licences des sources — vérifié le 17 août 2026
+# Source licences — checked 17 August 2026, revised 7 September 2026
 
-Verdict court : **les deux API grand public envisagées interdisent notre modèle
-de stockage.** Le pipeline reste agnostique de la source; le corpus grandit par
-du contenu qu'on a le droit de garder.
+Short verdict: **both consumer APIs considered forbid our storage model.**
+The pipeline stays source-agnostic; the corpus grows with content we are
+allowed to keep.
 
 ## Spoonacular (spoonacular.com/food-api/terms)
 
-- Interdiction de copier ou stocker les données de l'API, **y compris les
-  données dérivées ou transformées** — ce qui décrit exactement notre
-  normalisation vers le catalogue canonique.
-- Cache limité à 1 heure, et seulement avec permission écrite préalable.
-- À la fin de l'abonnement : suppression de toutes les données obtenues.
-- Conclusion : incompatible avec l'architecture sans entente écrite spécifique.
+- No copying or storing of API data, **including derived or transformed
+  data** — which is exactly what normalisation into the canonical catalogue is.
+- Caching limited to one hour, and only with prior written permission.
+- At the end of the subscription: deletion of everything obtained.
+- Conclusion: incompatible with the architecture without a specific written
+  agreement.
 
 ## Edamam (developer.edamam.com, edamam.com/terms/api)
 
-- Requêtes déclenchées par un humain seulement; interdiction de collecter,
-  moissonner ou sauvegarder les données; affichage réservé à l'utilisateur qui
-  a fait la requête.
-- Cache permis seulement pour quelques macronutriments, dans le compte de
-  l'utilisateur final, derrière un mot de passe.
-- Badge d'attribution obligatoire sur toute utilisation.
-- Le contenu des recettes appartient de toute façon aux sites d'origine
-  (Edamam est un index) — donc même une entente ne réglerait pas les droits.
-- Conclusion : incompatible avec l'architecture.
+- Human-triggered requests only; no collecting, harvesting or saving; display
+  restricted to the user who made the request.
+- Caching allowed only for a few macronutrients, in the end user's own
+  account, behind a password.
+- Attribution badge mandatory on every use.
+- The recipe content belongs to the originating sites anyway (Edamam is an
+  index) — so even an agreement would not settle the rights.
+- Conclusion: incompatible with the architecture.
 
-## Pourquoi on ne « streame » pas au lieu de stocker
+## Why we do not stream instead of storing
 
-Le modèle « appeler l'API en direct et afficher sans stocker » serait conforme
-aux conditions, mais il est **incompatible avec notre modèle de sécurité** :
-une recette qu'on ne peut pas stocker ne peut pas passer par la quarantaine,
-la curation d'âge minimal et la re-dérivation des allergènes. Une recette non
-curée est une recette qu'on ne montre pas.
+"Call the API live and display without storing" would comply with the terms,
+but it is **incompatible with our safety model**: a recipe we cannot store
+cannot go through quarantine, minimum-age curation and allergen re-derivation.
+An uncurated recipe is a recipe we do not show.
 
-## Sources compatibles avec l'architecture
+## Sources compatible with the architecture
 
-1. **Contenu maison** : rédaction assistée par IA, validée par un humain,
-   stockée et versionnée (c'est le corpus témoin actuel).
-2. **Sources sous licence libre** (domaine public, Creative Commons permettant
-   la modification) — l'adaptateur `generique` les reçoit telles quelles.
-3. **Entente de licence directe** avec un éditeur de contenu (le champ
-   `licence` de chaque source trace ce droit).
+1. **In-house content**: drafted with AI assistance, validated by a human,
+   stored and versioned (the current corpus).
+2. **Freely licensed sources** (public domain, Creative Commons allowing
+   modification) — the `generique` adapter takes them as they are.
+3. **A direct licence agreement** with a content publisher (each source's
+   `license` field records that right).
 
-Les fichiers de `ingest/sources/` sont des **gabarits rédigés par l'équipe**
-conformes aux schémas réels (spoonacular, TheMealDB, générique) : ils prouvent
-les adaptateurs sans stocker de données de tiers.
+## The fixtures in `ingest/sources/`
+
+`mealdb-fixture.json` and `spoonacular-fixture.json` are **templates written
+by the team** in the shape of those APIs: they prove the adapters without
+storing any third-party data. Their URLs point at `exemple.test`, their
+`source` is `mealdb-demo` / `spoonacular-demo`, and their `license` field says
+so in plain words.
+
+Two rules follow from the September revision, both enforced in code:
+
+- An adapter never invents a licence. The old default — "see the provider's
+  terms" — labelled team-written templates as third-party data, and a legal
+  audit nearly withheld four original recipes on that label alone.
+- A document without a `license` field is quarantined by the importer, exactly
+  like one without curation. No stated right to store, no import.

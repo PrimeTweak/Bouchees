@@ -876,44 +876,37 @@ test("normaliser: an unknown ingredient stays unknown, never guessed", () => {
 
 const { importAll } = require(path.join(__dirname, "..", "ingest", "importer.js"));
 const importation = importAll();
-/* The importer's own tests run against the withheld fixtures (TheMealDB,
- * Spoonacular) as a test bench: they exercise quarantine, curation and
- * roles. Nothing from that folder reaches the catalogue. */
-const banc = importAll({
-  dossierSources: path.join(__dirname, "..", "ingest", "withheld"),
-  curation: Object.assign({}, lire2("ingest/curation.json"), lire2("ingest/withheld/curation-withheld.json"))
-});
 
-test("importer: the bench imports four and quarantines three", () => {
-  assert.equal(banc.imported.length, 4);
-  assert.equal(banc.quarantine.length, 3);
+test("importer: ten recipes imported, three quarantined", () => {
+  assert.equal(importation.imported.length, 10);
+  assert.equal(importation.quarantine.length, 3);
 });
 
 test("importer: one unknown line quarantines the WHOLE recipe", () => {
-  const q = banc.quarantine.find((x) => x.name === "Thai Green Curry");
+  const q = importation.quarantine.find((x) => x.name === "Thai Green Curry");
   assert.equal(q.reason, "lines non reconnues");
   assert(q.detail.some((d) => /galangal/i.test(d)));
 });
 
 test("importer: recognised but uncurated goes to quarantine", () => {
-  const q = banc.quarantine.find((x) => x.name === "Apple Cinnamon Baked Oatmeal");
+  const q = importation.quarantine.find((x) => x.name === "Apple Cinnamon Baked Oatmeal");
   assert.equal(q.reason, "curation manquante");
 });
 
 test("importer: every imported recipe carries a curated age and a source", () => {
-  for (const r of banc.imported) {
+  for (const r of importation.imported) {
     assert(Number.isInteger(r.minAgeMonths) && r.minAgeMonths >= 6, r.id);
     assert(r.source && r.source.source && r.source.license, r.id);
   }
 });
 
 test("importer: a curated role overrides the default one", () => {
-  const r = banc.imported.find((x) => x.id === "vegetable-fried-rice");
+  const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
   assert.equal(r.ingredients.find((i) => i.id === "egg").role, "protein");
 });
 
 test("end to end: fried rice without soy takes coconut aminos", () => {
-  const r = banc.imported.find((x) => x.id === "vegetable-fried-rice");
+  const r = importation.imported.find((x) => x.id === "vegetable-fried-rice");
   const res = Engine.adapterRecette(r, { allergens: ["soy"], ageMois: 12 }, data);
   assert.equal(res.ingredients.find((i) => i.id === "soy_sauce").to, "coconut_aminos");
 });
@@ -2301,6 +2294,20 @@ test("server: twenty parents scanning the same product at once share one lookup"
   global.fetch = fetchAvant;
   assert(codes.every((c) => c === 200), "a parent got " + codes.find((c) => c !== 200));
   assert.equal(sorties, 1, "twenty identical scans made " + sorties + " outbound calls");
+});
+
+test("importer: a document with no licence field is quarantined, never imported", () => {
+  /* The adapters used to default to "see the provider's terms", which
+   * labelled team-written templates as third-party data and nearly cost
+   * four recipes at the legal audit. */
+  const doc = lire2("ingest/sources/mealdb-fixture.json");
+  const sans = Object.assign({}, doc); delete sans.license;
+  const tmp = path.join(require("os").tmpdir(), "bouchees-nolicence-" + process.pid);
+  fs.mkdirSync(tmp, { recursive: true });
+  fs.writeFileSync(path.join(tmp, "mealdb-fixture.json"), JSON.stringify(sans));
+  const r = importAll({ dossierSources: tmp });
+  assert.equal(r.imported.length, 0, "imported without a licence");
+  assert(r.quarantine.some((q) => q.reason === "licence manquante"), r.quarantine.map((q) => q.reason).join(","));
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

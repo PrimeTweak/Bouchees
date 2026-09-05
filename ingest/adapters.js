@@ -46,7 +46,9 @@ function spoonacular(doc) {
       lines: (r.extendedIngredients || []).map(function (i) { return i.original; }),
       steps: steps,
       url: r.sourceUrl || null,
-      license: doc.license || "voir conditions spoonacular"
+      /* No default: a document without a licence field is refused by the
+       * importer, never labelled as if it were third-party data. */
+      license: doc.license || null
     };
   });
 }
@@ -71,7 +73,7 @@ function mealdb(doc) {
       lines: lines,
       steps: String(m.strInstructions || "").split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean),
       url: m.strSource || null,
-      license: doc.license || "voir conditions themealdb"
+      license: doc.license || null
     };
   });
 }

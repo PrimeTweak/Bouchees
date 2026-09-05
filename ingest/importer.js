@@ -38,6 +38,13 @@ function importAll(options) {
         });
         return;
       }
+      /* No licence, no import: a recipe whose right to be stored is not
+       * stated is quarantined, exactly like one without curation. */
+      if (!brute.license) {
+        quarantine.push({ key: key, name: brute.originalName, reason: "licence manquante",
+                          detail: ["The source document states no licence for storing this recipe."] });
+        return;
+      }
       const cur = curation[key];
       if (!cur) {
         quarantine.push({
