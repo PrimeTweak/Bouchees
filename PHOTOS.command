@@ -26,6 +26,13 @@ fi
 # Asked once and kept in .env, which git ignores. Without it the vision check
 # has no verdict, and a missing verdict REJECTS the image — so a run without a
 # key generates ten photos and files none of them.
+# Both key files, whichever exists: cle-api.txt is what GENERER reads, .env
+# is what this script wrote on its first run. A secret in one and not the
+# other used to be reported as missing.
+if [ -f cle-api.txt ]; then
+  # Tolerant of "NAME = value": the shell itself is not.
+  set -a; . <(sed -E 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*/\1=/' cle-api.txt); set +a
+fi
 if [ -f .env ]; then
   set -a; . ./.env; set +a
 fi

@@ -15,7 +15,10 @@ if [ ! -f cle-api.txt ]; then
   read -n 1 -p "  Appuie sur une touche pour fermer."
   exit 1
 fi
-set -a; source cle-api.txt; set +a
+set -a; . <(sed -E 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*/\1=/' cle-api.txt); set +a
+if [ -f .env ]; then
+  set -a; . ./.env; set +a
+fi
 
 TOURS="${1:-3}"
 echo ""

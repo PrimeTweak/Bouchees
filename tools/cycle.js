@@ -31,7 +31,7 @@ function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
  * without it, or offline, the step is skipped and says so. */
 async function pullProductsSeen() {
   const secret = process.env.BOUCHEES_ADMIN_SECRET;
-  if (!secret) { console.log("  products seen: no BOUCHEES_ADMIN_SECRET in cle-api.txt — skipped"); return; }
+  if (!secret) { console.log("  products seen: BOUCHEES_ADMIN_SECRET is not set (cle-api.txt or .env) — skipped"); return; }
   const base = process.env.BOUCHEES_SERVER || "https://bouchees.onrender.com";
   const fichier = path.join(__dirname, "..", "data", "products-seen.json");
   let seed = {};

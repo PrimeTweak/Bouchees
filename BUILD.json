@@ -1,9 +1,10 @@
 {
-  "build": 193,
+  "build": 194,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
     "a prompt outside the convention now sets its own recipe aside, by name, and the rest are photographed; one drifted prompt no longer stops the run",
-    "no build: tooling only"
+    "no build: tooling only",
+    "PHOTOS.command read only .env and GENERER.command only cle-api.txt, so a secret placed in one was reported missing by the other — with a message naming the wrong file. Both commands read both files, tolerate spaces around '=', and the message names the variable, not a file"
   ]
 }
