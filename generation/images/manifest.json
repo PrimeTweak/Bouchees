@@ -2339,5 +2339,27 @@
         "la vision hésite sur : seasoning or spices not visually distinguishable, possible onion mixed into the base"
       ]
     }
+  },
+  "soft-banana-oat-patties": {
+    "fichier": "images/soft-banana-oat-patties-cb75225afdad.png",
+    "empreinte": "cb75225afdad",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T17:44:28.386Z",
+      "detectes": [
+        "oat",
+        "banana",
+        "apple"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : exact fruit or sweetener mixed inside the patties (banana, apple, or both)"
+      ]
+    }
   }
 }
