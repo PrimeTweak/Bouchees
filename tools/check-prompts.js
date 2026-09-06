@@ -65,11 +65,11 @@ corpus.forEach(function (recipe) {
       "batch, each item too small to see");
   }
 
-  /* 4. The framing states a distance. */
-  const cadrage = parts.find(function (x) {
-    return /close|overhead|eye-level|angle/i.test(x);
-  }) || "";
-  if (!/close|30 cm|tight|very close/i.test(cadrage)) {
+  /* 4. The framing states a distance. It is the fourth part, by
+   * construction; finding it by keyword took "flatbread tri-ANGLE-s", the
+   * dish itself, for the framing, and stopped a whole run of photos. */
+  const cadrage = parts[3] || "";
+  if (!/\b(close|30 cm|tight|very close)\b/i.test(cadrage)) {
     problems.push(name + ": the framing states no distance (\"" +
       cadrage.slice(0, 46) + "\") — the model then shows everything the " +
       "prompt names, and the prompt names a surface");
@@ -132,8 +132,13 @@ if (problems.length) {
   console.error("See docs/PROMPT-CONVENTION.md — every rule there exists");
   console.error("because something drifted.");
   console.error("");
+  /* The offending ids, for the cycle: it skips those recipes and still
+   * photographs the rest, instead of stopping a hundred photos for one. */
+  const fautives = Array.from(new Set(problems.map(function (p) { return p.split(": ")[0]; })));
+  fs.writeFileSync(path.join(__dirname, "prompts-outside-convention.json"), JSON.stringify(fautives) + "\n");
   process.exit(1);
 }
+try { fs.unlinkSync(path.join(__dirname, "prompts-outside-convention.json")); } catch (e) { /* none */ }
 
 console.log("Prompts follow the convention — " + corpus.length +
   " recipes, 7 parts each, no contradictions.");

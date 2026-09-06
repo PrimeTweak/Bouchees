@@ -1,16 +1,9 @@
 {
-  "build": 192,
-  "date": "2026-09-07",
+  "build": 193,
+  "date": "2026-09-06",
   "carries": [
-    "APP STORE. Apple's four subscription items are in the paywall (title, length, StoreKit price, Terms + Privacy links) with Restore; the StoreKit test configuration no longer ships in the bundle; the privacy manifest declares UserDefaults (CA92.1) and no collected data — the app has no sign-in screen; camera usage string in both languages; ATS default; iPhone only",
-    "LEGAL. The four 'TheMealDB / Spoonacular' recipes are team-written templates in those APIs' shape — exemple.test URLs, source mealdb-demo — mislabelled by an adapter default that read 'see the provider's terms'. They stay in the catalogue with a truthful licence; adapters no longer invent a licence, and the importer quarantines a document that states none. Terms and Privacy exist in French and English, served by language, with refunds via Apple, Québec governing law, the Law 25 person in charge and the ODbL line; contact and officer come from BOUCHEES_CONTACT / BOUCHEES_PRIVACY_OFFICER",
-    "DATA. Session tokens are stored hashed; ratings are keyed on a hash of the account; the iOS token lives in the keychain (migrated once from UserDefaults); profiles.json has complete file protection",
-    "ACCESS. Email bounded to 254 characters, five sign-in attempts a minute per address, Stripe answers 401 without naming the variable, checkout answers 503 without listing what is missing",
-    "QUALITY. priceLine has one source (Subscription); BackButton is one component; every eyebrow uses .eyebrow(); SearchScreen and ChildPickerSheet live under Screens/",
-    "from 190/191: single-ingredient labels get a verdict, the shopping aisle folds at the last tick, concurrent scans of one code share one lookup",
-    "not done, on purpose: splitting Onboarding, Scanner, AppState and the tests — after publication, one file per build",
-    "every identifier in the JavaScript files touched by this build is English — hashToken, hashEmail, legalPage, inFlight, accountFromRequest, validToken, rateLimit, normaliseEmail, loadCorpus, keepRejected, pullProductsSeen, TERMS_EN/FR, PRIVACY_EN/FR and the rest: forty-five renamed across forty-one files, JSON keys untouched. The engine, generation, vision and ingest modules still carry French names from before; that is its own chantier, after publication",
-    "the repository's documentation is English: docs/APP-STORE.md merges and replaces ios/APP-STORE-REVIEW.md (which described a test account, a collected e-mail and a file that no longer exist); ingest/LICENSES.md is translated and records why adapters no longer invent a licence",
-    "the test runner ran every async test at once; two server tests that each replace global.fetch overlapped on CI, and one test's 'not found' stub answered the other's scans — 'a parent got 404'. Async tests now run one after another; reproduced word for word on the old runner under load, green on the new one. The product cache also cancels its deferred write when its server closes"
+    "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
+    "a prompt outside the convention now sets its own recipe aside, by name, and the rest are photographed; one drifted prompt no longer stops the run",
+    "no build: tooling only"
   ]
 }

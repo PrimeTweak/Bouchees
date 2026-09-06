@@ -2316,4 +2316,16 @@ test("importer: a document with no licence field is quarantined, never imported"
   assert(r.quarantine.some((q) => q.reason === "licence manquante"), r.quarantine.map((q) => q.reason).join(","));
 });
 
+test("prompts: a dish named triangles is not mistaken for the framing", () => {
+  /* The checker found the framing by keyword and matched "angle" inside
+   * "flatbread triangles", then reported the dish as a framing with no
+   * distance — and a hundred photos stopped for it. */
+  const Images = require(path.join(__dirname, "..", "generation", "images.js"));
+  const construire = Images.promptPour || Images.construirePrompt || Images.prompt;
+  const r = { id: "flatbread-triangles", name: "Sweet potato coconut flatbread triangles", category: "Snack",
+              servings: "8 triangles", ingredients: [{ id: "sweet_potato" }, { id: "wheat_flour" }], steps: [] };
+  const parts = construire(r, data).positif.split(". ");
+  assert(/\b(close|30 cm|tight|very close)\b/i.test(parts[3]), "the fourth part is not the framing: " + parts[3]);
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

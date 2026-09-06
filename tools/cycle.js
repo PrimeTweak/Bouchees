@@ -204,15 +204,19 @@ async function cycleImages(data, options) {
   const mVision = options.moteurVision || Vision.choisir();
     /* The convention, before any image is paid for: reading the prompts takes
    * milliseconds. */
+  /* A prompt outside the convention sets its recipe aside, by name; the
+   * rest are photographed. One drifted prompt used to stop a hundred. */
+  let ecartees = [];
   try {
     require("child_process").execFileSync(process.execPath,
       [path.join(__dirname, "check-prompts.js")], { stdio: "inherit" });
   } catch (e) {
+    try { ecartees = JSON.parse(fs.readFileSync(path.join(__dirname, "prompts-outside-convention.json"), "utf8")); }
+    catch (e2) { ecartees = []; }
     console.log("");
-    console.log("  ARRET — des prompts sortent de la convention.");
-    console.log("  Rien n'a ete genere. Corrige, puis relance.");
+    console.log("  " + ecartees.length + " recipe(s) set aside until their prompt is fixed: " + ecartees.join(", "));
+    console.log("  The others are photographed.");
     console.log("");
-    process.exit(1);
   }
 
   console.log("  image engine: " + mImage.name + (mImage.name === "simule" ? "  (no engine — placeholder files)" : ""));
@@ -244,7 +248,8 @@ async function cycleImages(data, options) {
   if (!options.sec) fs.mkdirSync(folder, { recursive: true });
 
   title("7 · Generation and verification");
-  for (const p of steps.slice(0, limit)) {
+  const aFaire = steps.filter(function (p) { return ecartees.indexOf(p.id) < 0; });
+  for (const p of aFaire.slice(0, limit)) {
     const recipe = corpus.find((r) => r.id === p.id);
     let img;
         /* SQUARE, and that is the whole point: fLUX schnell is trained square,

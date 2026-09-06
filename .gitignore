@@ -44,3 +44,6 @@ cle-api.txt
 # Render's disk cache of products; the seed that ships is data/products-seen.json
 server/product-cache.json
 server/product-cache.json.*.tmp
+
+# Written by check-prompts for the cycle; never committed
+tools/prompts-outside-convention.json
