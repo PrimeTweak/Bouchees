@@ -1,10 +1,13 @@
 {
-  "build": 194,
+  "build": 195,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
     "a prompt outside the convention now sets its own recipe aside, by name, and the rest are photographed; one drifted prompt no longer stops the run",
     "no build: tooling only",
-    "PHOTOS.command read only .env and GENERER.command only cle-api.txt, so a secret placed in one was reported missing by the other — with a message naming the wrong file. Both commands read both files, tolerate spaces around '=', and the message names the variable, not a file"
+    "PHOTOS.command read only .env and GENERER.command only cle-api.txt, so a secret placed in one was reported missing by the other — with a message naming the wrong file. Both commands read both files, tolerate spaces around '=', and the message names the variable, not a file",
+    "the free list is fourteen meals and fourteen snacks, as publishing.json's own note asked for and no one applied: seven free meals over a fourteen-day window brought every dish back exactly seven days later, which is why last week read as a copy of this one. A test holds the count",
+    "under the week, for a parent without a subscription: the first rows of last week, real recipes fading towards the offer card, not tappable — the eye reads there is more instead of meeting a wall",
+    "three free recipes still have no photo (sweet-potato-and-chicken-puree, pasta-in-rose-sauce-with-chicken, baked-fish-nuggets); they are hand-rewritten to the standard and stay free. PHOTOS.command takes them, along with the other sixty"
   ]
 }

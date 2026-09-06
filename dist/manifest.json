@@ -1,31 +1,44 @@
 {
   "version": "2026-09-06",
   "safetyChecksum": "ba24096516d6",
-  "catalogueChecksum": "7fe9cc106f43",
+  "catalogueChecksum": "af9070ba1fe9",
   "rotationWeeks": 16,
   "counts": {
-    "Meal": 70,
-    "Snack": 89
+    "Meal": 55,
+    "Snack": 63
   },
   "target": {
     "Meal": 112,
     "Snack": 112
   },
   "free": [
+    "apple-and-date-cinnamon-sauce",
     "apple-cinnamon-oatmeal",
     "baked-fish-nuggets",
     "banana-bread",
+    "banana-oat-blender-muffins",
     "banana-oat-muffins",
+    "banana-oat-pancakes",
+    "carrot-and-maple-muffins",
+    "chicken-and-broccoli-rice",
+    "chicken-couscous",
+    "coconut-rice-pudding-with-mango",
+    "creamy-salmon-pasta",
     "date-energy-bites",
     "fluffy-pancakes",
     "lentil-and-carrot-patties",
+    "lentil-squash-and-carrot-puree",
+    "lentil-sweet-potato-patties",
+    "lentil-sweet-potato-rice-bowl",
     "mac-and-cheese-with-hidden-squash",
+    "mango-banana-smoothie",
     "mini-vegetable-frittatas",
     "oatmeal-raisin-cookies",
     "pasta-in-rose-sauce-with-chicken",
     "silky-hummus",
     "squash-and-coconut-soup",
     "sweet-potato-and-chicken-puree",
-    "turkey-and-apple-meatballs"
+    "turkey-and-apple-meatballs",
+    "white-bean-and-tomato-stew"
   ]
 }

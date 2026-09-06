@@ -2328,4 +2328,17 @@ test("prompts: a dish named triangles is not mistaken for the framing", () => {
   assert(/\b(close|30 cm|tight|very close)\b/i.test(parts[3]), "the fourth part is not the framing: " + parts[3]);
 });
 
+test("free window: fourteen meals and fourteen snacks, so two weeks never repeat", () => {
+  /* Seven free meals for a fourteen-day window meant every dish came back
+   * exactly seven days later — last week read as a copy of this one. */
+  const pub = read("publishing.json");
+  const cat = read("../dist/catalogue.json");
+  const free = cat.filter((c) => pub.free.indexOf(c.id) !== -1);
+  const meals = free.filter((c) => c.category === "Meal").length;
+  const snacks = free.filter((c) => c.category === "Snack").length;
+  assert(meals >= 14, meals + " free meals for a " + 14 + "-day window");
+  assert(snacks >= 14, snacks + " free snacks for a " + 14 + "-day window");
+  assert.equal(free.length, pub.free.length, "a free id names no published recipe");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

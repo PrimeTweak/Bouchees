@@ -102,6 +102,21 @@ final class AppState {
         return [p.meal, p.snack].compactMap { id in id.flatMap { recipeByID($0) } }
     }
 
+    /// The first recipes of last week, for the glimpse above the offer.
+    func pastWeekGlimpse(_ limit: Int) -> [Recipe] {
+        let start = weekStart(-1)
+        let week = picks(week: -1)
+        var out: [Recipe] = []
+        for d in 0..<7 {
+            guard let p = week[start + d] else { continue }
+            for id in [p.meal, p.snack].compactMap({ $0 }) {
+                if let r = recipeByID(id), !out.contains(where: { $0.id == r.id }) { out.append(r) }
+                if out.count >= limit { return out }
+            }
+        }
+        return out
+    }
+
     /// The current week, with the plan's moves.
     func recipes(on day: Int) -> [Recipe] {
         plan.recipes(on: day).compactMap { recipeByID($0) }
