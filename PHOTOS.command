@@ -29,13 +29,19 @@ fi
 # Both key files, whichever exists: cle-api.txt is what GENERER reads, .env
 # is what this script wrote on its first run. A secret in one and not the
 # other used to be reported as missing.
-if [ -f cle-api.txt ]; then
-  # Tolerant of "NAME = value": the shell itself is not.
-  set -a; . <(sed -E 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*/\1=/' cle-api.txt); set +a
-fi
-if [ -f .env ]; then
-  set -a; . ./.env; set +a
-fi
+# Both key files, whichever exists. Tolerant of what a text editor adds: a
+# UTF-8 BOM, Windows line endings, spaces around "=", a leading "export".
+charger_cles() {
+  [ -f "$1" ] || return 0
+  set -a
+  # tr strips the BOM's three bytes wherever sed's escapes differ by platform.
+  . <(tr -d '\357\273\277\r' < "$1" |
+      sed -E -e 's/^[[:space:]]*export[[:space:]]+//' \
+             -e 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*/\1=/')
+  set +a
+}
+charger_cles cle-api.txt
+charger_cles .env
 
 if [ -z "$ANTHROPIC_API_KEY" ]; then
   echo "  IL MANQUE TA CLE ANTHROPIC"

@@ -31,7 +31,21 @@ function title(t) { console.log("\n" + t + "\n" + "─".repeat(t.length)); }
  * without it, or offline, the step is skipped and says so. */
 async function pullProductsSeen() {
   const secret = process.env.BOUCHEES_ADMIN_SECRET;
-  if (!secret) { console.log("  products seen: BOUCHEES_ADMIN_SECRET is not set (cle-api.txt or .env) — skipped"); return; }
+  if (!secret) {
+    /* Names the files actually read and what was found in them, so a BOM or
+     * a stray space is visible instead of guessed at. */
+    const vus = ["cle-api.txt", ".env"].map(function (f) {
+      const chemin = path.join(__dirname, "..", f);
+      if (!fs.existsSync(chemin)) return f + ": absent";
+      const noms = fs.readFileSync(chemin, "utf8").replace(/^\uFEFF/, "").split(/\r?\n/)
+        .map(function (l) { return (l.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/) || [])[1]; })
+        .filter(Boolean);
+      return f + ": " + (noms.length ? noms.join(", ") : "no NAME=value line");
+    });
+    console.log("  products seen: BOUCHEES_ADMIN_SECRET not in the environment — skipped");
+    vus.forEach(function (v) { console.log("    " + v); });
+    return;
+  }
   const base = process.env.BOUCHEES_SERVER || "https://bouchees.onrender.com";
   const fichier = path.join(__dirname, "..", "data", "products-seen.json");
   let seed = {};
