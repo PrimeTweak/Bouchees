@@ -1,5 +1,1836 @@
 [
   {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 37 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "quinoa-black-bean-sweet-potato-skillet",
+      "name": "Quinoa, Black Bean and Sweet Potato Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 360,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "id": "black_beans",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "paprika",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Peel the sweet potato and cut into 1 cm cubes; peel and dice the onion; mince the 2 garlic cloves.",
+        "Rinse 180 g of quinoa under cold water using a fine-mesh sieve.",
+        "Heat 15 ml of olive oil in a large skillet over medium heat; cook onion and garlic for 3 minutes until softened.",
+        "Add sweet potato cubes, paprika and cumin; stir to coat and cook for 4 minutes.",
+        "Pour in 360 ml of unsalted vegetable broth and 200 ml of crushed tomatoes; stir well.",
+        "Stir in rinsed quinoa; bring the mixture to a boil over medium-high heat.",
+        "Cover, reduce heat to low and cook for 18 minutes until quinoa is fluffy and sweet potato is tender.",
+        "Stir in 240 g of drained cooked black beans; cook uncovered for 2 minutes until warmed through.",
+        "Divide into bowls; the skillet yields 4 family portions.",
+        "Store leftovers in an airtight container in the fridge for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "dates",
+      "passePartout": false,
+      "reason": "pool: 25 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "date-and-tahini-oat-bars",
+      "name": "Date and Tahini Oat Bars",
+      "category": "Snack",
+      "servings": "16 bars · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "dates",
+          "qty": 200,
+          "unit": "g",
+          "role": "sweetener"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "tahini",
+          "qty": 60,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 3,
+          "unit": "ml",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+        "Place the pitted dates and water in a small saucepan over medium heat for 5 minutes, until dates are very soft.",
+        "Mash the softened dates with a fork into a smooth paste; set aside.",
+        "In a large bowl, combine the rolled oats, cinnamon, tahini, coconut oil, and vanilla extract.",
+        "Add the date paste to the oat mixture and stir until everything is evenly coated.",
+        "Press the mixture firmly and evenly into the prepared pan using the back of a spoon.",
+        "Bake for 15 to 18 minutes, until the top is golden and the edges are set.",
+        "Cool completely in the pan before cutting into 16 bars. Store in an airtight container for up to 4 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 39 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 7 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "cauliflower-chickpea-coconut-curry",
+      "name": "Cauliflower and Chickpea Coconut Curry",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "cauliflower",
+          "qty": 500,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Start the rice: combine Rice and Water in a medium saucepan, bring to a boil, then simmer covered for 18 minutes.",
+        "Cut Cauliflower into small bite-sized florets; dice Onion finely; mince Garlic and peel and grate fresh Ginger.",
+        "Heat Olive oil in a large deep skillet over medium heat until shimmering.",
+        "Add Onion and cook for 3 to 4 minutes, stirring often, until softened and translucent.",
+        "Add Garlic, Ginger, Turmeric, and Ground cumin; stir for 1 minute until fragrant.",
+        "Add Cauliflower florets and drained Cooked chickpeas; stir to coat evenly with the spices.",
+        "Pour in Coconut milk and Crushed tomatoes; stir, then bring to a gentle simmer.",
+        "Cover and cook for 12 to 15 minutes, until Cauliflower is fork-tender and sauce has thickened slightly.",
+        "Serve curry over rice. Yield: 4 family portions. Refrigerate leftovers up to 3 days or freeze up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "sweet potato",
+      "passePartout": false,
+      "reason": "pool: 27 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "sweet-potato-oat-mini-patties",
+      "name": "Sweet Potato Oat Mini Patties",
+      "category": "Snack",
+      "servings": "16 patties · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chickpea_flour",
+          "qty": 30,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment paper.",
+        "Peel the sweet potato, cut into chunks, and steam for 12 minutes until very tender.",
+        "Mash the steamed sweet potato in a large bowl until completely smooth with no lumps.",
+        "Add the rolled oats, chickpea flour, ground flaxseed, and cinnamon to the bowl.",
+        "Stir until a firm, cohesive dough forms; let rest 3 minutes so the oats absorb moisture.",
+        "Scoop 1 tablespoon of dough per patty and press into flat rounds on the lined baking sheet.",
+        "Brush the tops lightly with olive oil.",
+        "Bake for 18 to 20 minutes, flipping once halfway, until golden and firm to the touch.",
+        "Cool on the sheet for 5 minutes before serving. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "turkey",
+      "passePartout": false,
+      "reason": "pool: 41 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "turkey-and-lentil-butternut-squash-soup",
+      "name": "Turkey and Lentil Butternut Squash Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 35,
+      "ingredients": [
+        {
+          "id": "ground_turkey",
+          "qty": 250,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "lentils",
+          "qty": 150,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "butternut_squash",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger_ground",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 750,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Peel and dice the butternut squash into 1.5 cm cubes; finely dice the onion and garlic.",
+        "Heat the olive oil in a large pot over medium heat.",
+        "Add the onion and garlic; cook for 3 minutes, until soft and lightly golden.",
+        "Add the ground turkey; cook for 5 minutes, stirring, until no pink remains.",
+        "Stir in the ground ginger and cumin and cook for 1 minute, until fragrant.",
+        "Add the butternut squash, cooked lentils, and unsalted vegetable broth; stir to combine.",
+        "Bring to a boil, then reduce heat and simmer for 18 minutes, until the squash is very tender.",
+        "Stir in the spinach and cook for 2 minutes, until wilted.",
+        "Use a spoon to partially mash some squash for a thicker texture; cool before serving. Makes 4 family portions; refrigerate for up to 3 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "turkey",
+      "passePartout": false,
+      "reason": "pool: 41 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 7 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "turkey-and-carrot-coconut-rice-skillet",
+      "name": "Turkey and Carrot Coconut Rice Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "ground_turkey",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "carrot",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rice",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 200,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Peel and finely dice the onion and garlic; peel and dice the cooked carrot into small cubes.",
+        "Heat the olive oil in a large deep skillet over medium heat.",
+        "Add the onion and garlic; cook for 3 minutes, until softened and translucent.",
+        "Add the ground turkey; cook for 5 minutes, breaking it up, until no pink remains.",
+        "Stir in the turmeric, then add the rice and mix to coat each grain.",
+        "Pour in the coconut milk and unsalted broth; stir to combine.",
+        "Add the diced carrot, bring to a gentle boil, then cover and reduce heat to low.",
+        "Cook for 15 minutes, until the rice is tender and the liquid is absorbed.",
+        "Remove from heat and rest, covered, for 3 minutes before serving. Makes about 4 family portions; refrigerate leftovers for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "cod",
+      "passePartout": false,
+      "reason": "pool: 43 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "cod-and-carrot-quinoa-patties",
+      "name": "Cod and Carrot Quinoa Patties",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "white_fish",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "quinoa",
+          "qty": 185,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "ground_flaxseed",
+          "qty": 20,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove"
+        },
+        {
+          "id": "dill",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Cook quinoa in 375 ml water over medium heat for 12 minutes, until absorbed; spread to cool slightly.",
+        "Mix ground flaxseed with 45 ml water in a small bowl; rest for 5 minutes to form a gel.",
+        "Steam or poach white fish (cod, haddock) for 5 to 6 minutes, until fully opaque; flake finely with a fork.",
+        "Grate cooked carrot finely; mince garlic; chop fresh dill.",
+        "Combine flaked fish, cooked quinoa, grated carrot, garlic, dill, lemon juice and flaxseed gel in a large bowl.",
+        "Shape mixture into 12 round patties, about 1.5 cm thick, pressing firmly so they hold.",
+        "Heat olive oil in a large non-stick skillet over medium heat; cook patties in batches for 3 to 4 minutes per side, until golden.",
+        "Transfer to a plate lined with paper towel to drain briefly before serving. Yield: 12 patties · 4 family portions. Refrigerate for up to 2 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "cod",
+      "passePartout": false,
+      "reason": "pool: 43 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "cod-and-sweet-potato-coconut-chowder",
+      "name": "Cod and Sweet Potato Coconut Chowder",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "white_fish",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 350,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "leek",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "dill",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Peel and dice sweet potato into 1 cm cubes; slice leek into thin rounds; mince garlic.",
+        "Heat olive oil in a large saucepan over medium heat for 1 minute.",
+        "Add leek and garlic; cook for 3 to 4 minutes, stirring, until softened.",
+        "Add diced sweet potato, turmeric, coconut milk and unsalted vegetable broth; stir to combine.",
+        "Bring to a gentle boil, then reduce heat and simmer for 12 to 14 minutes, until sweet potato is very tender.",
+        "Cut white fish (cod, haddock) into 3 cm chunks; add to the pan.",
+        "Simmer for 5 to 6 minutes, until fish is opaque and flakes easily.",
+        "Stir in lemon juice and fresh dill; remove from heat.",
+        "For babies under 9 months, blend portions to a smooth purée before serving. Yield: 4 family portions. Refrigerate for up to 2 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "tofu",
+      "passePartout": false,
+      "reason": "pool: 45 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "tofu-and-sweet-potato-coconut-curry",
+      "name": "Tofu and Sweet Potato Coconut Curry",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "firm_tofu",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 1.5 cm cubes; mince the onion, garlic, and fresh ginger.",
+        "Cook the rice in a medium saucepan according to packet directions; keep warm.",
+        "Drain and press the firm tofu between two plates for 10 minutes, then cut into 2 cm cubes.",
+        "Heat the coconut oil in a large deep skillet over medium heat until shimmering.",
+        "Add the onion and cook for 3 minutes, stirring, until softened and translucent.",
+        "Stir in the garlic, ginger, turmeric, and cumin; cook for 1 minute until fragrant.",
+        "Add the sweet potato, crushed tomatoes, and coconut milk; stir to combine.",
+        "Simmer over medium-low heat for 12 minutes, until the sweet potato is fork-tender.",
+        "Nestle the firm tofu cubes into the curry and cook for 5 minutes, until heated through.",
+        "Stir in the spinach and cook for 1 minute until wilted; serve over rice. Keeps refrigerated for 3 days or frozen for 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "melon",
+      "passePartout": false,
+      "reason": "pool: 32 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "melon-avocado-rice-cake-rounds",
+      "name": "Melon & Avocado Rice Cake Rounds",
+      "category": "Snack",
+      "servings": "12 rounds · 4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "melon",
+          "qty": 300,
+          "unit": "g",
+          "role": "fruit"
+        },
+        {
+          "id": "mashed_avocado",
+          "qty": 120,
+          "unit": "g",
+          "role": "fat"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chia_seeds",
+          "qty": 15,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "water",
+          "qty": 45,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 5,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 10,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Peel and seed the melon, then cut 12 thin rounds about 5 mm thick using a round cutter.",
+        "Stir the chia seeds into the water in a small bowl and rest for 5 minutes to form a gel.",
+        "Mix the rice flour and chia gel together in a medium bowl until a soft dough forms.",
+        "Preheat a non-stick pan over medium heat and brush lightly with canola oil.",
+        "Press small rounds of dough into the pan and cook for 3 minutes per side, until golden.",
+        "Transfer the rice cakes to a wire rack and let them cool for 5 minutes.",
+        "Stir the lemon juice into the mashed avocado in a small bowl until smooth.",
+        "Spread a thin layer of mashed avocado onto each rice cake.",
+        "Top each cake with one melon round and serve. Store assembled rounds in the fridge for up to 1 day; plain rice cakes keep in an airtight box for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 44 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "quinoa-chicken-spinach-bowl",
+      "name": "Quinoa, Chicken and Spinach Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "chicken",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Rinse 200 g of quinoa under cold water until the water runs clear.",
+        "Combine quinoa and 400 ml of water in a medium saucepan over medium heat; bring to a boil.",
+        "Reduce heat to low, cover, and cook for 15 minutes, until all water is absorbed.",
+        "Meanwhile, heat 15 ml of olive oil in a large skillet over medium heat.",
+        "Add 1 minced garlic clove and 350 g of chicken cut into small pieces; cook 8 to 10 minutes, until no pink remains.",
+        "Add 150 g of cooked carrot, sliced into small rounds, and 80 g of spinach; stir for 2 minutes, until spinach wilts.",
+        "Stir in 2 g of cumin and 15 ml of lemon juice; cook 1 minute more.",
+        "Spoon cooked quinoa into bowls and top with the chicken and vegetable mixture.",
+        "Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 46 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "cauliflower-lentil-coconut-soup",
+      "name": "Cauliflower and Lentil Coconut Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "cauliflower",
+          "qty": 500,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 200,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Cut cauliflower into small florets; peel and dice the onion; mince the garlic.",
+        "Heat olive oil in a large pot over medium heat.",
+        "Add onion and garlic; cook for 3 to 4 minutes, until softened and fragrant.",
+        "Stir in turmeric and cumin; cook for 1 minute, stirring constantly.",
+        "Add cauliflower florets, cooked lentils, coconut milk, and unsalted vegetable broth.",
+        "Bring to a boil, then reduce heat and simmer for 15 minutes, until cauliflower is very tender.",
+        "Remove from heat and blend the soup until completely smooth using an immersion blender.",
+        "Ladle into bowls and cool to a safe temperature before serving. Yields about 1.5 litres · 4 family portions. Refrigerate for up to 3 days or freeze in portions for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "tofu",
+      "passePartout": false,
+      "reason": "pool: 52 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 7 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "tofu-and-sweet-potato-coconut-curry",
+      "name": "Tofu and Sweet Potato Coconut Curry",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "tofu",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel and dice sweet potato into 1 cm cubes; dice onion finely; mince garlic and ginger.",
+        "Drain firm tofu and press between two plates for 10 minutes, then cut into 1 cm cubes.",
+        "Rinse rice under cold water, then combine with 600 ml water in a medium saucepan.",
+        "Bring rice to a boil over high heat, reduce to low, cover, and cook for 18 minutes until tender.",
+        "Heat coconut oil in a large skillet over medium heat; cook onion for 3 minutes until softened.",
+        "Add garlic, ginger, turmeric, and cumin; stir for 1 minute until fragrant.",
+        "Add sweet potato, crushed tomatoes, and coconut milk; stir to combine and bring to a simmer.",
+        "Cover and cook for 12 minutes over medium-low heat until sweet potato is fork-tender.",
+        "Add tofu cubes and stir gently; cook uncovered for 5 minutes until tofu is heated through.",
+        "Serve over rice; yields about 4 family portions — refrigerate leftovers up to 3 days or freeze up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 51 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "quinoa-chicken-spinach-bowl",
+      "name": "Quinoa, Chicken and Spinach Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "chicken",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Rinse 200 g of Quinoa under cold water in a fine-mesh sieve.",
+        "Combine Quinoa and 400 ml of Water in a medium saucepan; bring to a boil over high heat.",
+        "Reduce heat to low, cover, and simmer for 15 minutes until Water is absorbed.",
+        "Peel and finely dice Onion; mince 2 cloves of Garlic; dice Chicken into 1 cm cubes.",
+        "Heat Olive oil in a large skillet over medium heat; cook Onion and Garlic for 3 minutes until soft.",
+        "Add Chicken and 60 ml of Unsalted chicken broth; cook for 6 to 8 minutes, stirring, until no pink remains.",
+        "Stir in Spinach, Ground cumin, and Turmeric; cook for 2 minutes until Spinach wilts.",
+        "Remove from heat and drizzle with Lemon juice; stir to combine.",
+        "Divide cooked Quinoa among bowls and spoon Chicken and Spinach mixture over top.",
+        "Serve warm. Store leftovers in an airtight container in the refrigerator for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 53 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 7 runs past the ceiling of twenty-six words",
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "cauliflower-and-chicken-quinoa-bowl",
+      "name": "Cauliflower and Chicken Quinoa Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "cauliflower",
+          "qty": 350,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chicken",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "quinoa",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 360,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "paprika",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "green_onion",
+          "qty": 2,
+          "unit": "unit"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+        "Cut the cauliflower into small florets and cut the chicken into 2 cm pieces.",
+        "Peel and dice the onion; mince the garlic.",
+        "Toss the cauliflower florets and chicken pieces with olive oil, turmeric, and paprika in a large bowl.",
+        "Spread everything on the prepared baking sheet in a single layer.",
+        "Roast for 20 to 22 minutes, until the chicken is cooked through and the cauliflower is golden at the edges.",
+        "Meanwhile, combine the quinoa and unsalted vegetable broth in a medium saucepan; bring to a boil, then cover and simmer for 12 to 14 minutes, until the liquid is absorbed.",
+        "Drizzle the lemon juice over the roasted cauliflower and chicken and toss gently.",
+        "Divide the quinoa into bowls, top with the roasted mixture, and garnish with sliced green onion; yields 4 family portions. Refrigerate leftovers in an airtight container for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "cauliflower",
+      "passePartout": false,
+      "reason": "pool: 53 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "cauliflower-and-lentil-coconut-curry",
+      "name": "Cauliflower and Lentil Coconut Curry",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "cauliflower",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "water",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel and finely dice the onion, mince the garlic, and grate the fresh ginger.",
+        "Cut the cauliflower into small florets, about 2 cm each.",
+        "Heat the coconut oil in a large saucepan over medium heat.",
+        "Add the onion and cook for 3 to 4 minutes, stirring, until softened and translucent.",
+        "Add the garlic, ginger, turmeric, and cumin; stir for 1 minute until fragrant.",
+        "Add the cauliflower florets, cooked lentils, crushed tomatoes, coconut milk, and water; stir to combine.",
+        "Bring to a simmer, then cover and cook for 15 to 18 minutes, until the cauliflower is very tender when pierced.",
+        "Mash a few florets against the pot wall to thicken the sauce slightly.",
+        "Serve over rice or with soft bread; yields about 4 family portions. Store in an airtight container in the refrigerator for up to 3 days, or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "turkey",
+      "passePartout": false,
+      "reason": "pool: 55 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "turkey-and-butternut-squash-quinoa-bowl",
+      "name": "Turkey and Butternut Squash Quinoa Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 35,
+      "ingredients": [
+        {
+          "id": "ground_turkey",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "butternut_squash",
+          "qty": 350,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "paprika",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 200 °C (400 °F); line a baking sheet with parchment paper.",
+        "Peel and dice butternut squash into 2 cm cubes; peel and slice carrot into thin rounds.",
+        "Toss butternut squash and carrot with olive oil and paprika; spread on prepared baking sheet.",
+        "Roast for 20 to 22 minutes, until squash is golden and tender when pierced.",
+        "Meanwhile, rinse quinoa; combine with unsalted chicken broth in a medium saucepan and bring to a boil.",
+        "Reduce heat, cover, and simmer for 12 to 15 minutes until liquid is absorbed; fluff with a fork.",
+        "Finely dice onion and mince garlic; cook in a skillet over medium heat with a drizzle of olive oil for 3 minutes.",
+        "Add ground turkey and cinnamon; cook for 6 to 7 minutes, stirring, until cooked through with no pink remaining.",
+        "Divide quinoa into bowls; top with turkey mixture and roasted vegetables. Refrigerate leftovers for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "banana",
+      "passePartout": false,
+      "reason": "pool: 49 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "banana-avocado-rice-cake-bites",
+      "name": "Banana Avocado Soft Rice Cake Bites",
+      "category": "Snack",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 20,
+      "ingredients": [
+        {
+          "id": "banana",
+          "qty": 2,
+          "unit": "unit",
+          "role": "fruit"
+        },
+        {
+          "id": "mashed_avocado",
+          "qty": 120,
+          "unit": "g",
+          "role": "fat"
+        },
+        {
+          "id": "rice_flour",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "egg",
+          "qty": 1,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a baking sheet with parchment paper.",
+        "Peel and mash 2 bananas in a large bowl until very smooth.",
+        "Add mashed avocado and the egg to the bowl; stir until combined.",
+        "Add rice flour, baking powder, and cinnamon; stir just until a soft dough forms.",
+        "Brush the lined baking sheet lightly with canola oil.",
+        "Drop the dough by heaped tablespoons onto the sheet, spacing 3 cm apart.",
+        "Flatten each mound gently with the back of a spoon to about 1 cm thick.",
+        "Bake for 14 to 16 minutes, until set and lightly golden on the edges.",
+        "Cool on the sheet for 5 minutes before serving. Makes about 16 bites · 4 family portions. Keeps in an airtight container at room temperature for 2 days, or refrigerated for up to 4 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "cod",
+      "passePartout": false,
+      "reason": "pool: 57 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "baked-cod-with-zucchini-and-tomato",
+      "name": "Baked Cod with Zucchini and Tomato",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "white_fish",
+          "qty": 500,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 2,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 3,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "basil_dried",
+          "qty": 3,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F); lightly oil a 23 x 33 cm baking dish.",
+        "Cook the rice in a medium saucepan according to package directions; keep warm.",
+        "Slice the zucchini into half-moons; finely dice the onion; mince the garlic.",
+        "Heat 15 ml olive oil in a skillet over medium heat; cook the onion for 3 minutes until soft.",
+        "Add the garlic, oregano and basil_dried; stir for 30 seconds, then add the crushed tomatoes.",
+        "Simmer the tomato sauce for 5 minutes; pour into the prepared baking dish with the zucchini.",
+        "Lay the white fish (cod, haddock) fillets on top; drizzle with the remaining 15 ml olive oil.",
+        "Bake for 16 to 18 minutes, until the fish is opaque and flakes easily with a fork.",
+        "Drizzle the lemon juice over the fish straight from the oven.",
+        "Serve over rice; 4 family portions; keeps refrigerated up to 2 days, fish best eaten the same day."
+      ]
+    }
+  },
+  {
     "date": "2026-09-05",
     "commande": {
       "n": 2,

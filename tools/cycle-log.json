@@ -1,79 +1,85 @@
 {
-  "le": "2026-09-05T02:37:27.679Z",
+  "le": "2026-09-06T00:27:32.509Z",
   "recettes": {
     "commandees": 20,
     "redigees": 20,
     "acceptees": 11,
     "rejetees": [
       {
-        "id": "green-pea-and-white-fish-coconut-curry",
+        "id": "tofu-and-sweet-potato-coconut-curry",
         "erreurs": [
-          "standard 6: step 3 runs past the ceiling of twenty-six words"
+          "standard 5: step 2 cooks without a duration or a doneness cue"
         ]
       },
       {
-        "id": "cucumber-chickpea-sunflower-bites",
+        "id": "cod-and-sweet-potato-coconut-chowder",
         "erreurs": [
-          "standard 6: step 10 runs past the ceiling of twenty-six words"
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
         ]
       },
       {
-        "id": "polenta-chicken-vegetable-bowl",
+        "id": "cod-and-carrot-quinoa-patties",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "turkey-and-carrot-coconut-rice-skillet",
+        "erreurs": [
+          "standard 5: step 7 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "turkey-and-lentil-butternut-squash-soup",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "sweet-potato-oat-mini-patties",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "cauliflower-chickpea-coconut-curry",
+        "erreurs": [
+          "standard 5: step 7 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "date-and-tahini-oat-bars",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "quinoa-black-bean-sweet-potato-skillet",
         "erreurs": [
           "standard 5: step 6 cooks without a duration or a doneness cue"
         ]
-      },
+      }
+    ],
+    "aRevoir": [
       {
-        "id": "salmon-quinoa-spinach-skillet",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words",
-          "standard 5: step 5 cooks without a duration or a doneness cue"
-        ]
-      },
-      {
-        "id": "salmon-coconut-curry-with-sweet-potato",
-        "erreurs": [
-          "standard 5: step 1 cooks without a duration or a doneness cue"
-        ]
-      },
-      {
-        "id": "peach-oat-soft-bars",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "peach-coconut-chia-cups",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "cucumber-avocado-rice-cake-bites",
-        "erreurs": [
-          "cuisson au four sans température indiquée"
-        ]
-      },
-      {
-        "id": "polenta-lentil-tomato-bake",
-        "erreurs": [
-          "beaucoup trop de liquide pour la farine (4.8×) — la pâte ne tiendra pas"
+        "id": "tofu-and-broccoli-quinoa-stir-fry",
+        "avertissements": [
+          "« sesame_seeds » demande une préparation particulière à 12 mois : Whole seeds are a choking hazard before 4 years; use tahini or grind them"
         ]
       }
     ],
-    "aRevoir": [],
     "nouvelles": [
-      "green-pea-and-chicken-pasta-skillet",
-      "zucchini-chicken-quinoa-skillet",
-      "zucchini-white-bean-tomato-skillet",
-      "plum-chia-oat-soft-bars",
-      "plum-coconut-yogurt-swirl-cups",
-      "pear-ricotta-rice-cakes",
-      "pear-coconut-chia-pudding-cups",
-      "white-bean-and-spinach-rice-skillet",
-      "white-bean-and-sweet-potato-coconut-curry",
-      "carrot-oat-mini-muffins",
-      "carrot-ricotta-rice-cakes"
+      "tofu-and-broccoli-quinoa-stir-fry",
+      "blueberry-chia-coconut-freezer-bites",
+      "blueberry-banana-oat-muffins",
+      "banana-coconut-quinoa-bites",
+      "banana-blended-chia-mango-cups",
+      "sweet-potato-coconut-chia-cups",
+      "cauliflower-lentil-tomato-skillet",
+      "date-carrot-and-coconut-bites",
+      "quinoa-chicken-spinach-coconut-bowl",
+      "melon-coconut-yogurt-swirl-cups",
+      "melon-chia-quinoa-bites"
     ]
   },
   "images": null
