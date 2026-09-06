@@ -74,8 +74,16 @@ async function demander(chemin) {
   const path = require("path");
   const fs = require("fs");
   const racine = path.join(__dirname, "..");
-  const recipes = JSON.parse(fs.readFileSync(
-    path.join(racine, "data/recipes.json"), "utf8"));
+  /* The whole corpus, as the cycle counts it: reading data/recipes.json
+   * alone announced "3 images on 25 recipes" while the cycle went on to
+   * make 56 of 149 — the generated ones were invisible here. */
+  const recipes = ["data/recipes.json", "data/imported/imported-recipes.json",
+                   "data/generated/generated-recipes.json"].reduce(function (out, f) {
+    try {
+      const d = JSON.parse(fs.readFileSync(path.join(racine, f), "utf8"));
+      return out.concat(Array.isArray(d) ? d : (d.recipes || d.imported || d.generated || []));
+    } catch (e) { return out; }
+  }, []);
   let manifeste = {};
   try {
     manifeste = JSON.parse(fs.readFileSync(

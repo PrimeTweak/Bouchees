@@ -2362,4 +2362,14 @@ test("keys: a BOM, CRLF, export or spaces never hide a key", () => {
   assert.deepEqual(lire("# a note\n\nA=1\n"), ["A=1"], "comments and blanks");
 });
 
+test("preflight: its image count matches the cycle's, on the same corpus", () => {
+  /* The pre-flight read data/recipes.json alone and announced "3 images on
+   * 25 recipes" while the cycle went on to make 56 of 149. */
+  const Images = require(path.join(__dirname, "..", "generation", "images.js"));
+  const manifeste = read("../generation/images/manifest.json");
+  const attendu = Images.aGenerer(corpusComplet, data, manifeste).length;
+  const vu = corpusComplet.filter((r) => !manifeste[r.id]).length;
+  assert.equal(vu, attendu, "pre-flight would say " + vu + ", the cycle makes " + attendu);
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
