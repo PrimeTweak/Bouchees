@@ -522,9 +522,12 @@ private struct WeekTile: View {
                     .foregroundStyle(selected ? Tone.canvas.opacity(0.5) : Tone.text3)
                     .lineLimit(1)
             } else {
+                /* What the tab offers, not what it forbids: two days are
+                 * open to read there, and the card below names the rest. */
                 HStack(spacing: 3) {
-                    Image(systemName: "lock.fill").scaledFont(Type.micro)
-                    Text("\(slot.count)").scaledFont(Type.micro, weight: .semibold)
+                    Image(systemName: "eye").scaledFont(Type.micro)
+                    Text(String(format: String(localized: "2 of %lld"), slot.count))
+                        .scaledFont(Type.micro, weight: .semibold)
                 }
                 .foregroundStyle(selected ? Tone.canvas.opacity(0.62) : Tone.text3)
             }

@@ -18,10 +18,16 @@ const data = {
   base: read("data/base.json")
 };
 
+/* The whole corpus. The imported recipes were never checked here, so their
+ * prompts went to the image engine unread — ten of them, on a run of a
+ * hundred and fifty. */
 let corpus = read("data/recipes.json");
-try {
-  corpus = corpus.concat(read("data/generated/generated-recipes.json"));
-} catch (e) { /* none yet */ }
+["data/imported/imported-recipes.json", "data/generated/generated-recipes.json"].forEach(function (f) {
+  try {
+    const d = read(f);
+    corpus = corpus.concat(Array.isArray(d) ? d : (d.recipes || d.imported || d.generated || []));
+  } catch (e) { /* none yet */ }
+});
 
 const problems = [];
 const LIMITE = 500;

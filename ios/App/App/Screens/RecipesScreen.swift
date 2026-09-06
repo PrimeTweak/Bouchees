@@ -35,11 +35,9 @@ struct RecipesScreen: View {
                 /* After the value, not before it: the card sat between the
                  * week heading and the rail: a title, then an offer, then
                  * only what the title announced. */
-                /* Last week fading into the offer: real recipes, dimming
-                 * towards the card, so a parent sees there is more instead
-                 * of a wall. Only on the current week, unsubscribed. */
-                if !app.subscribed && app.selectedWeek == 0 { pastGlimpse }
-                if app.currentSlot.unlocked { upsell }
+                /* The offer closes every tab: under a whole free week, or
+                 * under the two days a locked week shows. */
+                upsell
                 disclaimer
             }
             .padding(.bottom, 16)
@@ -251,7 +249,10 @@ struct RecipesScreen: View {
     }
 
     /// The seven days, always: the red rule marks today, not a truncation.
-    private func days(for slot: WeekSlot) -> [Int] { Array(0..<7) }
+    /* The current week is whole; a past or future week shows two days and
+     * lets the third fade into the offer. A subscriber sees all seven. */
+    private var glimpseOnly: Bool { app.selectedWeek != 0 && !app.subscribed }
+    private func days(for slot: WeekSlot) -> [Int] { glimpseOnly ? Array(0..<3) : Array(0..<7) }
 
     /// Every week shows its days; a locked recipe shows its name and its
     /// verdict from the catalogue, and opens the paywall.
@@ -259,7 +260,17 @@ struct RecipesScreen: View {
         let slot = app.currentSlot
         return LazyVStack(spacing: 0) {
             ForEach(days(for: slot), id: \.self) { dayIndex in
-                daySection(dayIndex, slot: slot)
+                if glimpseOnly && dayIndex == 2 {
+                    daySection(dayIndex, slot: slot)
+                        .mask(LinearGradient(stops: [.init(color: .black, location: 0),
+                                                     .init(color: .black.opacity(0.45), location: 0.5),
+                                                     .init(color: .clear, location: 1)],
+                                             startPoint: .top, endPoint: .bottom))
+                        .allowsHitTesting(false)
+                        .padding(.bottom, -26)
+                } else {
+                    daySection(dayIndex, slot: slot)
+                }
             }
         }
     }
@@ -468,41 +479,6 @@ extension RecipesScreen {
     /// number the app invented.
     /* The subscription is the point of the app: it now comes right under the
      * week, as the only DARK block on a light page, so the eye lands on it. */
-    /// The first four rows of last week, veiled towards the bottom. They are
-    /// not tappable: the eye reads them, the offer answers them.
-    @ViewBuilder
-    private var pastGlimpse: some View {
-        let past = app.pastWeekGlimpse(4)
-        if past.count >= 2 {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Last week").eyebrow().padding(.horizontal, Layout.gutter).padding(.top, 22).padding(.bottom, 4)
-                ForEach(Array(past), id: \.id) { r in
-                    HStack(spacing: 12) {
-                        if let res = app.resultFor(r) ?? app.liteResult(for: r) {
-                            RecipeVisual(recipe: r, result: res, compact: true)
-                                .frame(width: Layout.thumb, height: Layout.thumb)
-                                .clipShape(RoundedRectangle(cornerRadius: Layout.thumbRadius, style: .continuous))
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(r.name).scaledFont(Type.body, weight: .semibold).foregroundStyle(Tone.text).lineLimit(1)
-                            Text(r.subtitle).scaledFont(Type.secondary).foregroundStyle(Tone.text2).lineLimit(1)
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.horizontal, Layout.gutter)
-                    .padding(.vertical, 7)
-                }
-            }
-            .mask(LinearGradient(stops: [.init(color: .black, location: 0),
-                                         .init(color: .black, location: 0.34),
-                                         .init(color: .black.opacity(0.35), location: 0.68),
-                                         .init(color: .clear, location: 1)],
-                                 startPoint: .top, endPoint: .bottom))
-            .allowsHitTesting(false)
-            .padding(.bottom, -34)
-        }
-    }
-
     @ViewBuilder
     private var upsell: some View {
         let locked = app.recipes.filter { !$0.hasBody }.count

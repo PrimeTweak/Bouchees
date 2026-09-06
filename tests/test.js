@@ -1970,6 +1970,18 @@ function run(seed,days,gap){const h={};for(let d=0;d<days;d++)h[d]=pick(seed,d,c
     Object.values(A).forEach((p) => { assert(free.has(p.meal) && free.has(p.snack)); });
   });
 
+  test("weeks: the two days a locked week previews repeat nothing from the current week", () => {
+    /* A parent flips to last week and to next week; the four recipes each
+     * preview shows must not be the ones already on this week's list. */
+    const A = run(12345n, 21, 112);
+    const jour = (d) => [A[d].meal, A[d].snack].filter(Boolean);
+    const courante = new Set([].concat(...[7, 8, 9, 10, 11, 12, 13].map(jour)));
+    const passee = [].concat(...[0, 1].map(jour));
+    const prochaine = [].concat(...[14, 15].map(jour));
+    const chevauche = passee.concat(prochaine).filter((id) => courante.has(id));
+    assert.equal(chevauche.length, 0, "previewed and already on this week: " + chevauche.join(", "));
+  });
+
   test("sequence: past the free window, a recipe waits the whole pool before returning", () => {
     const A = run(12345n, 200, 112); const meals = Object.values(A).map((p) => p.meal);
     const nMeals = cat.filter((c) => c.category === "Meal").length;
@@ -2370,6 +2382,17 @@ test("preflight: its image count matches the cycle's, on the same corpus", () =>
   const attendu = Images.aGenerer(corpusComplet, data, manifeste).length;
   const vu = corpusComplet.filter((r) => !manifeste[r.id]).length;
   assert.equal(vu, attendu, "pre-flight would say " + vu + ", the cycle makes " + attendu);
+});
+
+test("prompts: the checker reads the same corpus the cycle photographs", () => {
+  /* It read data/recipes.json and the generated ones, never the imported:
+   * ten prompts went to the image engine unread. */
+  const { execFileSync } = require("child_process");
+  const out = execFileSync(process.execPath,
+    [path.join(__dirname, "..", "tools", "check-prompts.js")], { encoding: "utf8" });
+  const vues = Number((out.match(/(\d+) recipes/) || [])[1]);
+  assert.equal(vues, corpusComplet.length,
+               "the checker read " + vues + " prompts, the cycle photographs " + corpusComplet.length);
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
