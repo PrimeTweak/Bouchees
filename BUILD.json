@@ -1,5 +1,5 @@
 {
-  "build": 196,
+  "build": 197,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -9,6 +9,6 @@
     "the free list is fourteen meals and fourteen snacks, as publishing.json's own note asked for and no one applied: seven free meals over a fourteen-day window brought every dish back exactly seven days later, which is why last week read as a copy of this one. A test holds the count",
     "under the week, for a parent without a subscription: the first rows of last week, real recipes fading towards the offer card, not tappable — the eye reads there is more instead of meeting a wall",
     "three free recipes still have no photo (sweet-potato-and-chicken-puree, pasta-in-rose-sauce-with-chicken, baked-fish-nuggets); they are hand-rewritten to the standard and stay free. PHOTOS.command takes them, along with the other sixty",
-    "the key files are read through one loader that tolerates what a text editor leaves behind: a UTF-8 BOM — three invisible bytes TextEdit adds, which made the shell skip the first line entirely — Windows line endings, a leading export, spaces around the equals sign, quoted values. Six shapes tested, all six load. And when the secret is still missing, the cycle names each key file and lists the variable names it found there, so the cause is read rather than guessed"
+    "the key files were SOURCED, which executes them: a UTF-8 BOM — three invisible bytes TextEdit adds — made the first line a failing command and aborted the file, so a key sitting right there read as missing. Worse, build 195 made PHOTOS.command read cle-api.txt BEFORE .env, so a BOM there hid the key that had always worked. tools/read-keys.py parses both files as data, decoded with utf-8-sig; a value already set is never overwritten. Six shapes tested — BOM, CRLF, export, spaces, quotes, plain — and the split case that broke the run"
   ]
 }

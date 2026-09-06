@@ -15,16 +15,16 @@ if [ ! -f cle-api.txt ]; then
   read -n 1 -p "  Appuie sur une touche pour fermer."
   exit 1
 fi
-# Both key files, whichever exists. Tolerant of what a text editor adds: a
-# UTF-8 BOM, Windows line endings, spaces around "=", a leading "export".
+# Both key files, whichever exists. read-keys.py parses them as data — a
+# UTF-8 BOM used to abort the whole file when the shell sourced it. A value
+# already set is never overwritten by a later file.
 charger_cles() {
   [ -f "$1" ] || return 0
-  set -a
-  # tr strips the BOM's three bytes wherever sed's escapes differ by platform.
-  . <(tr -d '\357\273\277\r' < "$1" |
-      sed -E -e 's/^[[:space:]]*export[[:space:]]+//' \
-             -e 's/^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*/\1=/')
-  set +a
+  while IFS='=' read -r nom valeur; do
+    [ -n "$nom" ] || continue
+    eval "actuelle=\$$nom"
+    [ -n "$actuelle" ] || export "$nom=$valeur"
+  done < <(python3 tools/read-keys.py "$1")
 }
 charger_cles cle-api.txt
 charger_cles .env

@@ -2341,4 +2341,25 @@ test("free window: fourteen meals and fourteen snacks, so two weeks never repeat
   assert.equal(free.length, pub.free.length, "a free id names no published recipe");
 });
 
+test("keys: a BOM, CRLF, export or spaces never hide a key", () => {
+  /* The shell sourced these files, so it EXECUTED them: a UTF-8 BOM turned
+   * the first line into a failing command and aborted the whole file, and a
+   * key sitting right there read as missing. */
+  const os = require("os");
+  const { execFileSync } = require("child_process");
+  const lire = (bytes) => {
+    const f = path.join(os.tmpdir(), "bouchees-keys-" + process.pid + ".txt");
+    fs.writeFileSync(f, bytes);
+    const out = execFileSync("python3", [path.join(__dirname, "..", "tools", "read-keys.py"), f], { encoding: "utf8" });
+    fs.unlinkSync(f);
+    return out.trim().split("\n").filter(Boolean);
+  };
+  assert.deepEqual(lire(Buffer.from("\uFEFFA=1\nB=2\n")), ["A=1", "B=2"], "BOM");
+  assert.deepEqual(lire("A=1\r\nB=2\r\n"), ["A=1", "B=2"], "CRLF");
+  assert.deepEqual(lire("export A=1\n"), ["A=1"], "export");
+  assert.deepEqual(lire("A = 1\n"), ["A=1"], "spaces");
+  assert.deepEqual(lire("A=\"two words\"\n"), ["A=two words"], "quotes");
+  assert.deepEqual(lire("# a note\n\nA=1\n"), ["A=1"], "comments and blanks");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
