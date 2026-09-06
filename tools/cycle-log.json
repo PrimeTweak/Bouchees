@@ -1,59 +1,52 @@
 {
-  "le": "2026-09-06T11:56:01.558Z",
+  "le": "2026-09-06T23:16:53.193Z",
   "recettes": null,
   "images": {
-    "generees": 104,
-    "acceptees": 48,
+    "generees": 56,
+    "acceptees": 10,
     "rejetees": [
       {
         "id": "sweet-potato-and-chicken-puree",
-        "reason": "the image shows \"butter\" while the recipe contains no milk ; the image shows \"almond\" while the recipe contains no tree nuts ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk",
         "detectes": [
           "sweet potato",
           "butter",
-          "almond",
-          "syrup"
+          "olive oil"
         ],
         "fichier": "images/rejected/sweet-potato-and-chicken-puree.png"
       },
       {
         "id": "pasta-in-rose-sauce-with-chicken",
-        "reason": "the vision is unsure and names \"tuna\" — the recipe contains no fish",
+        "reason": "the image shows \"tuna\" while the recipe contains no fish ; the vision is unsure and names \"tuna\" — the recipe contains no fish",
         "detectes": [
           "spaghetti",
           "tomato",
+          "onion",
           "chicken",
-          "onion"
+          "tuna"
         ],
         "fichier": "images/rejected/pasta-in-rose-sauce-with-chicken.png"
       },
       {
         "id": "salmon-and-sweet-potato-cakes",
-        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the vision is unsure and names \"breadcrumb\" — the recipe contains no wheat and triticale",
+        "reason": "the image shows \"egg\" while the recipe contains no eggs ; the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
         "detectes": [
           "salmon",
-          "green onion",
           "sweet potato",
+          "scallion",
+          "green onion",
+          "egg",
           "breadcrumb"
         ],
         "fichier": "images/rejected/salmon-and-sweet-potato-cakes.png"
-      },
-      {
-        "id": "soft-banana-oat-patties",
-        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the recipe is Soft banana oat patties but the image shows two oat cakes — the dish does not match ; only one ingredient recognised out of 5 and the dish was not identified as Soft banana oat patties",
-        "detectes": [
-          "oat",
-          "breadcrumb"
-        ],
-        "fichier": "images/rejected/soft-banana-oat-patties.png"
       },
       {
         "id": "creamy-mango-oatmeal",
         "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
           "oat",
-          "mango",
           "chia seed",
+          "mango",
           "milk"
         ],
         "fichier": "images/rejected/creamy-mango-oatmeal.png"
@@ -68,10 +61,11 @@
       },
       {
         "id": "salmon-lentil-vegetable-patties",
-        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
+        "reason": "the image shows \"couscous\" while the recipe contains no wheat and triticale ; the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the vision is unsure and names \"couscous\" — the recipe contains no wheat and triticale",
         "detectes": [
           "lentil",
           "zucchini",
+          "couscous",
           "carrot",
           "salmon",
           "breadcrumb"
@@ -80,7 +74,7 @@
       },
       {
         "id": "banana-oat-bites",
-        "reason": "the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk ; only one ingredient recognised out of 6 and the dish was not identified as Banana Oat Bites",
+        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk ; only one ingredient recognised out of 6 and the dish was not identified as Banana Oat Bites",
         "detectes": [
           "oat",
           "blueberry"
@@ -94,32 +88,20 @@
           "lentil",
           "zucchini",
           "salmon",
-          "rice",
           "breadcrumb"
         ],
         "fichier": "images/rejected/salmon-lentil-veggie-patties.png"
       },
       {
         "id": "baked-salmon-with-sweet-potato-and-broccoli",
-        "reason": "the image shows \"cream sauce\" while the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk ; the vision is unsure and names \"cheese\" — the recipe contains no milk",
+        "reason": "the image shows \"cream sauce\" while the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk ; the vision is unsure and names \"couscous\" — the recipe contains no wheat and triticale",
         "detectes": [
           "salmon",
           "sweet potato",
           "broccoli",
-          "cream sauce",
-          "herb"
+          "cream sauce"
         ],
         "fichier": "images/rejected/baked-salmon-with-sweet-potato-and-broccoli.png"
-      },
-      {
-        "id": "sunflower-banana-oat-bites",
-        "reason": "the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
-        "detectes": [
-          "oat",
-          "raisin",
-          "sunflower seed"
-        ],
-        "fichier": "images/rejected/sunflower-banana-oat-bites.png"
       },
       {
         "id": "sweet-potato-chickpea-mini-patties",
@@ -127,7 +109,9 @@
         "detectes": [
           "chickpea",
           "carrot",
+          "pea",
           "lentil",
+          "spinach",
           "breadcrumb"
         ],
         "fichier": "images/rejected/sweet-potato-chickpea-mini-patties.png"
@@ -146,133 +130,98 @@
         "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale",
         "detectes": [
           "chickpea",
-          "herb",
-          "breadcrumb"
+          "carrot",
+          "pea",
+          "breadcrumb",
+          "spice"
         ],
         "fichier": "images/rejected/chickpea-sweet-potato-mini-patties.png"
       },
       {
         "id": "banana-chickpea-energy-balls",
-        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts",
+        "reason": "the image shows \"peanut butter chip\" while the recipe contains no peanuts ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk",
         "detectes": [
           "oat",
-          "peanut butter",
-          "honey",
-          "sunflower seed"
+          "peanut butter chip",
+          "honey"
         ],
         "fichier": "images/rejected/banana-chickpea-energy-balls.png"
       },
       {
         "id": "banana-chickpea-bites",
-        "reason": "only one ingredient recognised out of 7 and the dish was not identified as Banana & Chickpea Soft Bites",
+        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts ; the vision is unsure and names \"breadcrumb\" — the recipe contains no wheat and triticale ; only one ingredient recognised out of 7 and the dish was not identified as Banana & Chickpea Soft Bites",
         "detectes": [
           "oat",
-          "chickpea",
           "brown sugar",
-          "butterscotch chip",
-          "macadamia nut"
+          "peanut butter",
+          "chickpea",
+          "coconut",
+          "honey"
         ],
         "fichier": "images/rejected/banana-chickpea-bites.png"
       },
       {
         "id": "banana-oat-blender-bites",
-        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts",
         "detectes": [
           "oat",
-          "flaxseed",
+          "sunflower seed",
           "peanut butter",
           "honey",
-          "sunflower seed"
+          "coconut"
         ],
         "fichier": "images/rejected/banana-oat-blender-bites.png"
       },
       {
         "id": "banana-chickpea-soft-cookies",
-        "reason": "the image shows \"peanut butter chip\" while the recipe contains no peanuts ; the image shows \"butter\" while the recipe contains no milk ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the recipe is Banana and Chickpea Soft Cookies but the image shows three patties — the dish does not match ; only one ingredient recognised out of 7 and the dish was not identified as Banana and Chickpea Soft Cookies",
         "detectes": [
           "oat",
-          "peanut butter chip",
-          "butter",
-          "brown sugar",
-          "flour"
+          "chickpea",
+          "breadcrumb"
         ],
         "fichier": "images/rejected/banana-chickpea-soft-cookies.png"
       },
       {
-        "id": "banana-avocado-rice-cakes",
-        "reason": "the vision is unsure and names \"edamame\" — the recipe contains no soy",
-        "detectes": [
-          "avocado",
-          "pea",
-          "rice",
-          "onion"
-        ],
-        "fichier": "images/rejected/banana-avocado-rice-cakes.png"
-      },
-      {
-        "id": "raspberry-oat-soft-bars",
-        "reason": "the image shows \"butter\" while the recipe contains no milk",
-        "detectes": [
-          "oat",
-          "raspberry",
-          "butter",
-          "sugar"
-        ],
-        "fichier": "images/rejected/raspberry-oat-soft-bars.png"
-      },
-      {
         "id": "oat-and-apple-breakfast-bites",
-        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "reason": "only one ingredient recognised out of 7 and the dish was not identified as Apple Cinnamon Oat Bites",
         "detectes": [
           "oat",
-          "cinnamon",
-          "banana",
-          "peanut butter",
-          "honey"
+          "baked dough"
         ],
         "fichier": "images/rejected/oat-and-apple-breakfast-bites.png"
       },
       {
-        "id": "pea-and-chicken-rice-bowl",
-        "reason": "the vision is unsure and names \"tuna\" — the recipe contains no fish ; the vision is unsure and names \"fish\" — the recipe contains no fish",
-        "detectes": [
-          "rice",
-          "green pea",
-          "carrot",
-          "chicken"
-        ],
-        "fichier": "images/rejected/pea-and-chicken-rice-bowl.png"
-      },
-      {
         "id": "pear-oat-soft-bites",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "reason": "the image shows \"peanut butter\" while the recipe contains no peanuts ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk",
         "detectes": [
           "oat",
           "apple",
-          "sugar",
+          "peanut butter",
+          "honey",
           "cinnamon"
         ],
         "fichier": "images/rejected/pear-oat-soft-bites.png"
       },
       {
         "id": "pear-chia-compote-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
+        "reason": "the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
-          "chia seed",
           "pear",
-          "milk",
-          "apple"
+          "chia seed",
+          "coconut milk",
+          "syrup"
         ],
         "fichier": "images/rejected/pear-chia-compote-cups.png"
       },
       {
         "id": "carrot-coconut-chia-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk",
+        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
           "chia seed",
-          "pumpkin puree",
-          "oat",
-          "milk"
+          "sweet potato",
+          "milk",
+          "oat"
         ],
         "fichier": "images/rejected/carrot-coconut-chia-cups.png"
       },
@@ -289,7 +238,7 @@
       },
       {
         "id": "apple-coconut-chia-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
           "chia seed",
           "apple",
@@ -299,27 +248,18 @@
       },
       {
         "id": "green-pea-and-chicken-pasta-skillet",
-        "reason": "the vision is unsure and names \"tuna\" — the recipe contains no fish ; the vision is unsure and names \"fish\" — the recipe contains no fish",
+        "reason": "the vision is unsure and names \"pasta\" — the recipe contains no wheat and triticale ; the vision is unsure and names \"tuna\" — the recipe contains no fish",
         "detectes": [
-          "orzo",
           "pea",
+          "rice",
           "chicken",
           "onion"
         ],
         "fichier": "images/rejected/green-pea-and-chicken-pasta-skillet.png"
       },
       {
-        "id": "plum-chia-oat-soft-bars",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
-        "detectes": [
-          "oat",
-          "brown sugar"
-        ],
-        "fichier": "images/rejected/plum-chia-oat-soft-bars.png"
-      },
-      {
         "id": "plum-coconut-yogurt-swirl-cups",
-        "reason": "the image shows \"yogurt\" while the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk",
+        "reason": "the image shows \"yogurt\" while the recipe contains no milk",
         "detectes": [
           "plum",
           "yogurt"
@@ -330,32 +270,22 @@
         "id": "pear-coconut-chia-pudding-cups",
         "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
-          "pear",
           "chia seed",
-          "milk"
+          "milk",
+          "pear"
         ],
         "fichier": "images/rejected/pear-coconut-chia-pudding-cups.png"
       },
       {
         "id": "carrot-oat-mini-muffins",
-        "reason": "the image shows \"walnut\" while the recipe contains no tree nuts ; the image shows \"whole wheat flour\" while the recipe contains no wheat and triticale ; the vision is unsure and names \"walnut\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"whole wheat flour\" while the recipe contains no wheat and triticale ; the image shows \"dried apricot\" while the recipe contains no sulphites",
         "detectes": [
           "oat",
           "carrot",
-          "walnut",
-          "whole wheat flour"
+          "whole wheat flour",
+          "dried apricot"
         ],
         "fichier": "images/rejected/carrot-oat-mini-muffins.png"
-      },
-      {
-        "id": "carrot-ricotta-rice-cakes",
-        "reason": "the vision is unsure and names \"tofu\" — the recipe contains no soy",
-        "detectes": [
-          "rice",
-          "carrot",
-          "egg"
-        ],
-        "fichier": "images/rejected/carrot-ricotta-rice-cakes.png"
       },
       {
         "id": "banana-coconut-chia-pudding-cups",
@@ -364,28 +294,18 @@
           "chia seed",
           "milk",
           "oat",
-          "tapioca pearl"
+          "banana"
         ],
         "fichier": "images/rejected/banana-coconut-chia-pudding-cups.png"
       },
       {
-        "id": "sweet-potato-coconut-bliss-bites",
-        "reason": "the image shows \"sesame seed\" while the recipe contains no sesame ; the vision is unsure and names \"butter\" — the recipe contains no milk ; only one ingredient recognised out of 7 and the dish was not identified as Sweet Potato and Coconut Bliss Bites",
-        "detectes": [
-          "oat",
-          "pumpkin",
-          "sesame seed"
-        ],
-        "fichier": "images/rejected/sweet-potato-coconut-bliss-bites.png"
-      },
-      {
         "id": "sweet-potato-lentil-coconut-bites",
-        "reason": "the image shows \"breadcrumb\" while the recipe contains no wheat and triticale ; the vision is unsure and names \"couscous\" — the recipe contains no wheat and triticale ; the vision is unsure and names \"breadcrumbs\" — the recipe contains no wheat and triticale",
+        "reason": "the vision is unsure and names \"couscous\" — the recipe contains no wheat and triticale",
         "detectes": [
-          "lentil",
           "sweet potato",
-          "rice",
-          "breadcrumb"
+          "lentil",
+          "quinoa",
+          "bean"
         ],
         "fichier": "images/rejected/sweet-potato-lentil-coconut-bites.png"
       },
@@ -395,53 +315,55 @@
         "detectes": [
           "oat",
           "dried cranberry",
+          "date",
           "peanut butter",
-          "honey",
-          "date"
+          "honey"
         ],
         "fichier": "images/rejected/date-and-oat-energy-balls.png"
       },
       {
         "id": "date-banana-coconut-soft-bites",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "reason": "the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk",
         "detectes": [
           "oat",
           "date",
           "raisin",
-          "nut"
+          "coconut flake",
+          "nut butter"
         ],
         "fichier": "images/rejected/date-banana-coconut-soft-bites.png"
       },
       {
         "id": "melon-chia-coconut-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; the image shows \"cream\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk",
+        "reason": "the image shows \"cream sauce\" while the recipe contains no milk ; the image shows \"parmesan\" while the recipe contains no milk ; the vision is unsure and names \"parmesan\" — the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk ; the vision is unsure and names \"bechamel\" — the recipe contains no milk ; no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Melon and Chia Coconut Cups",
         "detectes": [
-          "rice",
-          "melon",
-          "cantaloupe",
-          "milk",
-          "cream"
+          "gnocchi",
+          "cream sauce",
+          "parmesan",
+          "black pepper",
+          "pumpkin",
+          "butternut squash"
         ],
         "fichier": "images/rejected/melon-chia-coconut-cups.png"
       },
       {
         "id": "melon-oat-soft-bars",
-        "reason": "the recipe is Melon and Oat Soft Bars but the image shows a bowl of oatmeal — the dish does not match ; only one ingredient recognised out of 8 and the dish was not identified as Melon and Oat Soft Bars",
+        "reason": "the recipe is Melon and Oat Soft Bars but the image shows a bowl of oats — the dish does not match ; only one ingredient recognised out of 8 and the dish was not identified as Melon and Oat Soft Bars",
         "detectes": [
-          "oat",
-          "apple"
+          "rolled oat",
+          "brown sugar"
         ],
         "fichier": "images/rejected/melon-oat-soft-bars.png"
       },
       {
         "id": "beet-and-oat-soft-bites",
-        "reason": "only one ingredient recognised out of 7 and the dish was not identified as Beet & Oat Soft Bites",
+        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk ; only one ingredient recognised out of 7 and the dish was not identified as Beet & Oat Soft Bites",
         "detectes": [
           "oat",
           "berry",
           "raspberry",
-          "blueberry",
-          "chocolate chip"
+          "blackberry",
+          "blueberry"
         ],
         "fichier": "images/rejected/beet-and-oat-soft-bites.png"
       },
@@ -449,15 +371,15 @@
         "id": "blueberry-chia-coconut-yogurt-cups",
         "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
         "detectes": [
-          "chia seed",
           "blueberry",
+          "chia seed",
           "milk"
         ],
         "fichier": "images/rejected/blueberry-chia-coconut-yogurt-cups.png"
       },
       {
         "id": "blueberry-oat-coconut-soft-bites",
-        "reason": "only one ingredient recognised out of 7 and the dish was not identified as Blueberry Oat Coconut Soft Bites",
+        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk ; only one ingredient recognised out of 7 and the dish was not identified as Blueberry Oat Coconut Soft Bites",
         "detectes": [
           "oat",
           "blueberry"
@@ -466,46 +388,42 @@
       },
       {
         "id": "banana-coconut-oat-flatbread",
-        "reason": "the image shows \"butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the recipe is Banana & Coconut Oat Flatbread but the image shows a bowl of crumble — the dish does not match ; only one ingredient recognised out of 6 and the dish was not identified as Banana & Coconut Oat Flatbread",
+        "reason": "the vision is unsure and names \"milk\" — the recipe contains no milk ; the recipe is Banana & Coconut Oat Flatbread but the image shows a bowl of oatmeal — the dish does not match ; only one ingredient recognised out of 6 and the dish was not identified as Banana & Coconut Oat Flatbread",
         "detectes": [
           "oat",
           "flour",
-          "butter",
           "sugar"
         ],
         "fichier": "images/rejected/banana-coconut-oat-flatbread.png"
       },
       {
         "id": "sweet-potato-coconut-flatbread-triangles",
-        "reason": "the image shows \"pita bread\" while the recipe contains no wheat and triticale",
+        "reason": "the image shows \"pita bread\" while the recipe contains no wheat and triticale ; the image shows \"cheese\" while the recipe contains no milk ; the vision is unsure and names \"cheddar\" — the recipe contains no milk ; the vision is unsure and names \"cheese\" — the recipe contains no milk ; the recipe is Sweet Potato Coconut Flatbread Triangles but the image shows a bowl of pita wedges — the dish does not match ; no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Sweet Potato Coconut Flatbread Triangles",
         "detectes": [
-          "flatbread",
           "pita bread",
-          "pumpkin filling",
-          "sweet potato filling"
+          "cheese",
+          "flatbread"
         ],
         "fichier": "images/rejected/sweet-potato-coconut-flatbread-triangles.png"
       },
       {
         "id": "date-and-coconut-bliss-bites",
-        "reason": "the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"sesame seed\" while the recipe contains no sesame ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"butter\" — the recipe contains no milk",
         "detectes": [
           "oat",
-          "dried cranberry",
-          "sunflower seed",
-          "nut butter",
-          "honey"
+          "date",
+          "sesame seed"
         ],
         "fichier": "images/rejected/date-and-coconut-bliss-bites.png"
       },
       {
         "id": "date-and-mango-chia-pudding-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; only one ingredient recognised out of 6 and the dish was not identified as Date and Mango Chia Pudding Cups",
+        "reason": "the image shows \"milk\" while the recipe contains no milk",
         "detectes": [
+          "chia seed",
           "milk",
           "raisin",
-          "tapioca pearl",
-          "rice",
+          "mango",
           "banana"
         ],
         "fichier": "images/rejected/date-and-mango-chia-pudding-cups.png"
@@ -524,8 +442,8 @@
         "id": "tofu-and-broccoli-quinoa-stir-fry",
         "reason": "the vision is unsure and names \"couscous\" — the recipe contains no wheat and triticale",
         "detectes": [
-          "broccoli",
           "tofu",
+          "broccoli",
           "carrot",
           "quinoa"
         ],
@@ -533,83 +451,63 @@
       },
       {
         "id": "blueberry-chia-coconut-freezer-bites",
-        "reason": "the image shows \"cream\" while the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk",
+        "reason": "the image shows \"yogurt\" while the recipe contains no milk ; the vision is unsure and names \"yogurt\" — the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk",
         "detectes": [
           "blueberry",
           "chia seed",
           "coconut",
-          "rice flour",
-          "white chocolate",
-          "cream"
+          "rice",
+          "yogurt"
         ],
         "fichier": "images/rejected/blueberry-chia-coconut-freezer-bites.png"
       },
       {
         "id": "banana-coconut-quinoa-bites",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "reason": "the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
         "detectes": [
           "quinoa",
-          "coconut",
-          "date",
+          "millet",
           "oat",
-          "nut"
+          "date",
+          "coconut",
+          "nut butter",
+          "seed"
         ],
         "fichier": "images/rejected/banana-coconut-quinoa-bites.png"
       },
       {
         "id": "sweet-potato-coconut-chia-cups",
-        "reason": "the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"milk\" while the recipe contains no milk ; the vision is unsure and names \"milk\" — the recipe contains no milk",
         "detectes": [
-          "chia seed",
           "sweet potato",
-          "coconut milk",
-          "oat"
+          "chia seed",
+          "milk",
+          "coconut milk"
         ],
         "fichier": "images/rejected/sweet-potato-coconut-chia-cups.png"
       },
       {
         "id": "date-carrot-and-coconut-bites",
-        "reason": "the image shows \"almond flour\" while the recipe contains no tree nuts ; the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts",
+        "reason": "the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk ; the vision is unsure and names \"almond\" — the recipe contains no tree nuts ; the vision is unsure and names \"peanut\" — the recipe contains no peanuts",
         "detectes": [
-          "carrot",
           "oat",
-          "almond flour",
-          "nut butter"
+          "carrot",
+          "nut butter",
+          "date",
+          "coconut"
         ],
         "fichier": "images/rejected/date-carrot-and-coconut-bites.png"
       },
       {
-        "id": "quinoa-chicken-spinach-coconut-bowl",
-        "reason": "the vision is unsure and names \"tuna\" — the recipe contains no fish ; the vision is unsure and names \"fish\" — the recipe contains no fish",
-        "detectes": [
-          "quinoa",
-          "spinach",
-          "chicken",
-          "onion"
-        ],
-        "fichier": "images/rejected/quinoa-chicken-spinach-coconut-bowl.png"
-      },
-      {
         "id": "melon-coconut-yogurt-swirl-cups",
-        "reason": "the image shows \"milk\" while the recipe contains no milk ; only one ingredient recognised out of 5 and the dish was not identified as Melon and Coconut Yogurt Swirl Cups",
+        "reason": "the vision is unsure and names \"milk\" — the recipe contains no milk ; the vision is unsure and names \"cream\" — the recipe contains no milk",
         "detectes": [
-          "oat",
-          "milk",
-          "chia seed"
+          "chia seed",
+          "coconut milk",
+          "papaya",
+          "melon"
         ],
         "fichier": "images/rejected/melon-coconut-yogurt-swirl-cups.png"
-      },
-      {
-        "id": "melon-chia-quinoa-bites",
-        "reason": "the image shows \"nut butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk",
-        "detectes": [
-          "quinoa",
-          "oat",
-          "date",
-          "nut butter",
-          "coconut"
-        ],
-        "fichier": "images/rejected/melon-chia-quinoa-bites.png"
       }
     ]
   }

@@ -2361,5 +2361,207 @@
         "la vision hésite sur : exact fruit or sweetener mixed inside the patties (banana, apple, or both)"
       ]
     }
+  },
+  "sunflower-banana-oat-bites": {
+    "fichier": "images/sunflower-banana-oat-bites-502c9939df03.png",
+    "empreinte": "502c9939df03",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T18:30:38.780Z",
+      "detectes": [
+        "oat",
+        "raisin"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : sunflower seed, honey or syrup as binder"
+      ]
+    }
+  },
+  "banana-avocado-rice-cakes": {
+    "fichier": "images/banana-avocado-rice-cakes-b20f35a29021.png",
+    "empreinte": "b20f35a29021",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T19:21:40.554Z",
+      "detectes": [
+        "avocado"
+      ],
+      "reconnus": 1,
+      "attendus": 6,
+      "avertissements": [
+        "only one ingredient recognised out of 6 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : possible added ingredients such as lime juice, salt, or garlic not visually distinguishable"
+      ]
+    }
+  },
+  "raspberry-oat-soft-bars": {
+    "fichier": "images/raspberry-oat-soft-bars-2567f5f47904.png",
+    "empreinte": "2567f5f47904",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T19:27:59.783Z",
+      "detectes": [
+        "oat",
+        "raspberry"
+      ],
+      "reconnus": 1,
+      "attendus": 9,
+      "avertissements": [
+        "only one ingredient recognised out of 9 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : possible honey or sugar binder not clearly visible, possible cranberry mixed with raspberries"
+      ]
+    }
+  },
+  "pea-and-chicken-rice-bowl": {
+    "fichier": "images/pea-and-chicken-rice-bowl-0815536fd7d0.png",
+    "empreinte": "0815536fd7d0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T19:40:43.470Z",
+      "detectes": [
+        "rice",
+        "pea",
+        "carrot",
+        "chicken"
+      ],
+      "reconnus": 5,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : chicken could be turkey or another white meat"
+      ]
+    }
+  },
+  "plum-chia-oat-soft-bars": {
+    "fichier": "images/plum-chia-oat-soft-bars-0d2fda6e3bfa.png",
+    "empreinte": "0d2fda6e3bfa",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T20:25:13.651Z",
+      "detectes": [
+        "oat",
+        "jam",
+        "brown sugar",
+        "flour"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : type of jam (strawberry, raspberry, or other red fruit), possible cinnamon or spice in the dough"
+      ]
+    }
+  },
+  "carrot-ricotta-rice-cakes": {
+    "fichier": "images/carrot-ricotta-rice-cakes-44967396e2a0.png",
+    "empreinte": "44967396e2a0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T20:50:33.154Z",
+      "detectes": [
+        "rice",
+        "carrot"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : seasoning or spices mixed into the rice, possible onion"
+      ]
+    }
+  },
+  "sweet-potato-coconut-bliss-bites": {
+    "fichier": "images/sweet-potato-coconut-bliss-bites-9d26ef674f53.png",
+    "empreinte": "9d26ef674f53",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T21:03:13.863Z",
+      "detectes": [
+        "oat",
+        "pumpkin",
+        "sweet potato"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : pumpkin or sweet potato (orange filling unclear)"
+      ]
+    }
+  },
+  "quinoa-chicken-spinach-coconut-bowl": {
+    "fichier": "images/quinoa-chicken-spinach-coconut-bowl-13d2bba7d0cc.png",
+    "empreinte": "13d2bba7d0cc",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T23:04:10.206Z",
+      "detectes": [
+        "quinoa",
+        "spinach",
+        "chicken",
+        "pork",
+        "scallion",
+        "onion"
+      ],
+      "reconnus": 4,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : chicken or pork (cooked meat pieces are ambiguous), scallion or chive (green stems)"
+      ]
+    }
+  },
+  "melon-chia-quinoa-bites": {
+    "fichier": "images/melon-chia-quinoa-bites-5fd9a48acbaf.png",
+    "empreinte": "5fd9a48acbaf",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-06T23:16:51.997Z",
+      "detectes": [
+        "quinoa",
+        "apple",
+        "orange",
+        "mango"
+      ],
+      "reconnus": 1,
+      "attendus": 6,
+      "avertissements": [
+        "only one ingredient recognised out of 6 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : exact fruit filling (could be apple, apricot, or another pale fruit), fruit in background (mango, orange, or peach uncertain)"
+      ]
+    }
   }
 }
