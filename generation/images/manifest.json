@@ -2701,5 +2701,27 @@
         "la vision hésite sur : fruit could be nectarine instead of plum, swirl could be fruit coulis or syrup"
       ]
     }
+  },
+  "banana-coconut-chia-pudding-cups": {
+    "fichier": "images/banana-coconut-chia-pudding-cups-22e69b5dd534.png",
+    "empreinte": "22e69b5dd534",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T20:25:36.679Z",
+      "detectes": [
+        "chia seed",
+        "milk"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "la vision hésite sur : type of milk (dairy, coconut, or plant-based)"
+      ]
+    }
   }
 }
