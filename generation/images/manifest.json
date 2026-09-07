@@ -2723,5 +2723,350 @@
         "la vision hésite sur : type of milk (dairy, coconut, or plant-based)"
       ]
     }
+  },
+  "salmon-and-sweet-potato-cakes": {
+    "fichier": "images/salmon-and-sweet-potato-cakes-88c499f7e3ec.png",
+    "empreinte": "88c499f7e3ec",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T21:01:24.253Z",
+      "detectes": [
+        "salmon",
+        "scallion",
+        "sweet potato",
+        "breadcrumb"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"breadcrumb\"; the recipe holds a look-alike",
+        "la vision hésite sur : exact fish type (could be tuna or other fish), binding agent (egg or mayonnaise), exact herb (could be parsley instead of scallion)"
+      ]
+    }
+  },
+  "creamy-mango-oatmeal": {
+    "fichier": "images/creamy-mango-oatmeal-48861b854eb8.png",
+    "empreinte": "48861b854eb8",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T21:07:46.502Z",
+      "detectes": [
+        "oat",
+        "chia seed",
+        "mango",
+        "milk"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "la vision hésite sur : mango (could be pineapple or another yellow fruit), milk (could be plant-based milk or cream)"
+      ]
+    }
+  },
+  "salmon-lentil-veggie-patties": {
+    "fichier": "images/salmon-lentil-veggie-patties-b34d30537ad7.png",
+    "empreinte": "b34d30537ad7",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T21:26:48.874Z",
+      "detectes": [
+        "lentil",
+        "zucchini",
+        "carrot",
+        "salmon",
+        "breadcrumb",
+        "grain",
+        "rice"
+      ],
+      "reconnus": 4,
+      "attendus": 11,
+      "avertissements": [
+        "vision named \"breadcrumb\"; the recipe holds a look-alike",
+        "la vision hésite sur : grain type (rice or quinoa or bulgur), salmon or other fish, possible egg as binder, possible onion or shallot"
+      ]
+    }
+  },
+  "banana-chickpea-energy-balls": {
+    "fichier": "images/banana-chickpea-energy-balls-ec650f80161b.png",
+    "empreinte": "ec650f80161b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T21:45:57.752Z",
+      "detectes": [
+        "oat",
+        "peanut butter",
+        "honey",
+        "chickpea",
+        "nut"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"peanut butter\"; the recipe holds a look-alike",
+        "la vision hésite sur : chickpea or macadamia nut (round pale element visible on some balls), honey or maple syrup as binder (not directly visible but suggested by texture), possible flaxseed or sunflower seed mixed in"
+      ]
+    }
+  },
+  "banana-oat-blender-bites": {
+    "fichier": "images/banana-oat-blender-bites-f9d2924029fb.png",
+    "empreinte": "f9d2924029fb",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T21:58:41.052Z",
+      "detectes": [
+        "oat",
+        "peanut butter",
+        "honey",
+        "coconut"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "vision named \"peanut butter\"; the recipe holds a look-alike",
+        "vision hedged on \"almond\"; the recipe holds a look-alike",
+        "la vision hésite sur : honey or maple syrup as binder, coconut flour or almond flour in interior, possible protein powder in mixture"
+      ]
+    }
+  },
+  "banana-chickpea-soft-cookies": {
+    "fichier": "images/banana-chickpea-soft-cookies-e67e2d6ed7a2.png",
+    "empreinte": "e67e2d6ed7a2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:04:59.929Z",
+      "detectes": [
+        "oat",
+        "raisin"
+      ],
+      "reconnus": 0,
+      "attendus": 7,
+      "avertissements": [
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "la vision hésite sur : chocolate chip or raisin"
+      ]
+    }
+  },
+  "pear-oat-soft-bites": {
+    "fichier": "images/pear-oat-soft-bites-265352b2b6b5.png",
+    "empreinte": "265352b2b6b5",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:11:21.891Z",
+      "detectes": [
+        "oat",
+        "apple",
+        "cinnamon",
+        "flour",
+        "sugar"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "vision hedged on \"almond\"; the recipe holds a look-alike",
+        "la vision hésite sur : cinnamon (visible as specks but not certain), apple (visible as soft chunks inside, could be pear), sugar (granular texture visible in cross-section, could be semolina or almond flour)"
+      ]
+    }
+  },
+  "apple-oat-soft-bars": {
+    "fichier": "images/apple-oat-soft-bars-a7572c9ed35f.png",
+    "empreinte": "a7572c9ed35f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:24:06.614Z",
+      "detectes": [
+        "oat",
+        "brown sugar",
+        "butter",
+        "flour"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "vision named \"butter\"; the recipe holds a look-alike",
+        "la vision hésite sur : possible apple or pear filling visible in the interior layer, possible honey or syrup as binder, possible cinnamon or spice mixed in"
+      ]
+    }
+  },
+  "apple-coconut-chia-cups": {
+    "fichier": "images/apple-coconut-chia-cups-74db0a988911.png",
+    "empreinte": "74db0a988911",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:30:27.970Z",
+      "detectes": [
+        "chia seed",
+        "apple",
+        "milk"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "la vision hésite sur : type of milk (dairy or plant-based), possible sweetener or spice not visually distinguishable"
+      ]
+    }
+  },
+  "green-pea-and-chicken-pasta-skillet": {
+    "fichier": "images/green-pea-and-chicken-pasta-skillet-475b73e630b7.png",
+    "empreinte": "475b73e630b7",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:36:49.817Z",
+      "detectes": [
+        "orzo",
+        "green pea",
+        "chicken",
+        "onion"
+      ],
+      "reconnus": 3,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : chicken could be turkey, onion could be leek or fennel"
+      ]
+    }
+  },
+  "pear-coconut-chia-pudding-cups": {
+    "fichier": "images/pear-coconut-chia-pudding-cups-3efc2992a447.png",
+    "empreinte": "3efc2992a447",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:43:10.469Z",
+      "detectes": [
+        "chia seed",
+        "milk",
+        "pear",
+        "oat"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "la vision hésite sur : liquid base could be coconut milk or regular milk, possible brown sugar crumbles on the plate"
+      ]
+    }
+  },
+  "carrot-oat-mini-muffins": {
+    "fichier": "images/carrot-oat-mini-muffins-cd0abf4ac39e.png",
+    "empreinte": "cd0abf4ac39e",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:49:29.949Z",
+      "detectes": [
+        "oat",
+        "carrot"
+      ],
+      "reconnus": 2,
+      "attendus": 9,
+      "avertissements": [
+        "la vision hésite sur : possible nuts or seeds mixed into batter, possible whole wheat flour, possible raisin"
+      ]
+    }
+  },
+  "sweet-potato-lentil-coconut-bites": {
+    "fichier": "images/sweet-potato-lentil-coconut-bites-e1e78c7c90ef.png",
+    "empreinte": "e1e78c7c90ef",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T22:55:51.965Z",
+      "detectes": [
+        "lentil",
+        "sweet potato",
+        "quinoa",
+        "grain"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "vision hedged on \"couscous\"; the recipe holds a look-alike",
+        "la vision hésite sur : exact grain type (quinoa or couscous or bulgur), lentil variety (green or brown), possible spices not visually distinct"
+      ]
+    }
+  },
+  "blueberry-chia-coconut-yogurt-cups": {
+    "fichier": "images/blueberry-chia-coconut-yogurt-cups-08a3eaacce70.png",
+    "empreinte": "08a3eaacce70",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T23:33:55.856Z",
+      "detectes": [
+        "blueberry",
+        "chia seed",
+        "milk",
+        "yogurt"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "vision named \"yogurt\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"yogurt\"; the recipe holds a look-alike",
+        "la vision hésite sur : unclear whether the liquid base is milk, coconut milk, or yogurt, the frozen or fresh nature of the blueberries inside the bars is uncertain"
+      ]
+    }
   }
 }
