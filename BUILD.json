@@ -1,5 +1,5 @@
 {
-  "build": 201,
+  "build": 202,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -13,6 +13,7 @@
     "the prompt checker read data/recipes.json and the generated ones, never the imported: ten prompts reached the image engine unread, which is the 159-against-149 gap in the log. It reads the whole corpus, and a test pins its count to the cycle's",
     "the three week tabs, for a parent without a subscription: this week is whole and every recipe opens, ending with the offer; a past or future week shows two full days, lets a third fade into the offer, and its tab says '2 of 14' instead of a padlock — what it offers rather than what it forbids. The glimpse that sat under the current week is gone: it read as an eighth day and repeated dishes shown three centimetres above",
     "measured before touching it: the two previewed days never repeat the current week — the 112-day rotation already separates them — so nothing filters them after the fact and the sequence stays deterministic. A test holds it",
-    "46 of 56 photos were rejected — four in five. Not bad images: the vision named the right ingredient with the commonest word it had. Coconut milk read as 'milk' on 26 of them, sunflower seed butter as 'peanut butter', chickpea flour as 'breadcrumb', quinoa as 'couscous'. The check now knows what the recipe holds: a word is cleared only when THAT word is a look-alike of THAT recipe's own ingredient — matched as a pair, never by family, so real cheese on a coconut-milk soup still fails. Seven cases proven, three of them real intruders"
+    "46 of 56 photos were rejected — four in five. Not bad images: the vision named the right ingredient with the commonest word it had. Coconut milk read as 'milk' on 26 of them, sunflower seed butter as 'peanut butter', chickpea flour as 'breadcrumb', quinoa as 'couscous'. The check now knows what the recipe holds: a word is cleared only when THAT word is a look-alike of THAT recipe's own ingredient — matched as a pair, never by family, so real cheese on a coconut-milk soup still fails. Seven cases proven, three of them real intruders",
+    "three rejected photos, opened one by one, settled it: the image model does not drift — it produced exactly the recipe each time — and the vision names TEXTURES. A pan-seared crust as 'breadcrumb' with certainty, rolled oats as 'walnut' with certainty, chia as 'almond' as a hedge. Confidence predicts nothing, so a hedge and a sighting are now judged alike: cleared when the recipe holds a look-alike, rejected when it does not. Never cleared: a whole nut, a shellfish, a piece of fish — no texture explains those. Twelve cases proven, five of them real intruders, and every photo published on a resemblance is logged; tools/photos-sur-sosie.js lists them and the cycle points at it"
   ]
 }

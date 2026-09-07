@@ -2395,6 +2395,39 @@ test("prompts: the checker reads the same corpus the cycle photographs", () => {
                "the checker read " + vues + " prompts, the cycle photographs " + corpusComplet.length);
 });
 
+test("vision: a whole nut is never cleared by a look-alike", async () => {
+  /* Rolled oats read as "walnut" and are cleared; whole walnut halves are
+   * what this check exists to catch and no texture explains them. */
+  const muffins = parId["carrot-and-maple-muffins"] || parId["banana-oat-muffins"];
+  const flocons = await Vision.verifier(Buffer.from("x"), muffins, data,
+    { moteur: visionQuiVoit(["carrot", "walnut"]) });
+  const entiere = await Vision.verifier(Buffer.from("x"), muffins, data,
+    { moteur: visionQuiVoit(["carrot", "whole walnut halves"]) });
+  assert.equal(entiere.ok, false, "whole walnut halves passed");
+  const crevette = await Vision.verifier(Buffer.from("x"), muffins, data,
+    { moteur: visionQuiVoit(["carrot", "shrimp"]) });
+  assert.equal(crevette.ok, false, "a shrimp passed");
+  void flocons;
+});
+
+test("vision: a hedge is treated like a sighting — the model's confidence predicts nothing", async () => {
+  /* Three rejected photos, opened one by one, showed the model naming
+   * textures: a pan-seared crust as "breadcrumb" with certainty, chia as
+   * "almond" as a hedge. Both are cleared by a look-alike, neither by
+   * itself. */
+  const soupe = parId["squash-and-coconut-soup"];
+  const nomsSoupe = soupe.ingredients.map((u) => data.catalogue[u.id].name);
+  const avec = (r, noms, doutes) => Vision.verifier(Buffer.from("x"), r, data,
+    { moteur: { name: "test", disponible: () => true,
+                decrire: async () => JSON.stringify({ aliments: noms, lisible: true,
+                                                      incertitudes: doutes, plat: r.name }) } });
+  const doute = await avec(soupe, nomsSoupe, ["could be butter"]);
+  assert.equal(doute.ok, true, "a hedge on a look-alike still rejected: " + doute.erreurs.join(" / "));
+  const galettes = parId["lentil-and-carrot-patties"];
+  const sansSosie = await avec(galettes, galettes.ingredients.map((u) => data.catalogue[u.id].name), ["could be shrimp"]);
+  assert.equal(sansSosie.ok, false, "a hedge naming shellfish with no look-alike passed");
+});
+
 test("vision: a look-alike the recipe holds is not an intruder, a real one still is", async () => {
   /* Coconut milk photographs as milk, sunflower seed butter as peanut
    * butter, chickpea flour as breadcrumb: 46 of 56 photos were thrown out

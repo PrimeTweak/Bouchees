@@ -229,20 +229,36 @@ function comparer(description, recipe, data) {
    * with the commonest word it had; the check used to call that an intruder
    * and threw out four photos in five. */
   /* Pairs, not families: what the vision NAMED, and what the recipe holds
-   * that photographs like it. Clearing a whole family would have let real
-   * cheese through on a coconut-milk soup. */
+   * that photographs like it. Three rejected photos, opened one by one,
+   * showed the same thing: the model names TEXTURES — a pan-seared crust
+   * as "breadcrumb", rolled oats as "walnut", chia as "almond" — and its
+   * confidence predicts nothing, so a hedge and a certainty are treated
+   * alike here. */
   const SOSIES = [
-    { vu: /^milk$|^cream$|^cream sauce$|^butter$|^yogh?urt$/, tenu: /coconut (milk|cream|yogh?urt|butter)|oat milk|rice milk|soy (milk|beverage|yogh?urt)/ },
-    { vu: /^peanut butter|^nut butter|peanut butter chip/, tenu: /sunflower seed butter|tahini|almond butter/ },
-    { vu: /^breadcrumbs?$|^couscous$|^pita bread$|^pasta$|whole wheat flour/, tenu: /rice flour|oat flour|chickpea flour|quinoa|rolled oats|buckwheat|polenta|millet|corn ?starch/ },
-    { vu: /^sesame seeds?$/, tenu: /sunflower seed|pumpkin seed|chia seed|hemp seed/ }
+    { vu: /^milk$|^cream$|^cream sauce$|^butter$|^yogh?urt$/,
+      tenu: /coconut (milk|cream|yogh?urt|butter)|oat (milk|beverage)|rice milk|soy (milk|beverage|yogh?urt)|applesauce/ },
+    { vu: /^peanuts?$|^peanut butter|^nut butter|peanut butter chip/,
+      tenu: /sunflower seed butter|tahini|pumpkin seed butter/ },
+    { vu: /^breadcrumbs?$|^couscous$|^pita bread$|^pasta$|^cookie$|^cracker$|whole wheat flour|semolina/,
+      tenu: /rice flour|oat flour|chickpea flour|quinoa|rolled oats|buckwheat|polenta|millet|corn ?starch|gluten-free breadcrumbs|rice pasta|sweet potato/ },
+    { vu: /^sesame seeds?$|^poppy seeds?$/, tenu: /sunflower seed|pumpkin seed|chia seed|hemp seed|rolled oats/ },
+    /* Nut words on a seed or oat texture: rolled oats read as "walnut",
+     * chia as "almond". A WHOLE nut is excluded below and never cleared. */
+    { vu: /^almonds?$|^walnuts?$|^cashews?$|^pecans?$|^hazelnuts?$/,
+      tenu: /rolled oats|oat flour|chia seed|sunflower seed|pumpkin seed|hemp seed/ }
   ];
+
+  /* Never cleared by a look-alike: a whole nut, a shellfish, a piece of
+   * fish are what this check exists to catch, and no texture explains them. */
+  const JAMAIS_BLANCHI = /whole (wal|pe|hazel|al)|nut halves|nut pieces|shrimp|prawn|crab|lobster|mussel|scallop|clam|oyster|fish fillet|tuna|salmon fillet|anchovy/;
+
   const ingredientsDeLaRecette = (recipe.ingredients || [])
     .map(function (u) { return String(((catalogue[u.id] || {}).name) || u.id).toLowerCase(); })
     .join(" | ");
   /* True when THIS word is a look-alike of something the recipe holds. */
   function sosieDe(mot) {
     const m = String(mot).toLowerCase().trim();
+    if (JAMAIS_BLANCHI.test(m)) return false;
     return SOSIES.some(function (p) { return p.vu.test(m) && p.tenu.test(ingredientsDeLaRecette); });
   }
 
@@ -269,7 +285,7 @@ function comparer(description, recipe, data) {
       if (mot.length < 4) return;
       famillesDe(mot).forEach(function (famille) {
         if (presentes.indexOf(famille) !== -1) return;
-        if (sosieDe(mot)) return;
+        if (sosieDe(mot)) { avertissements.push("vision hedged on \"" + mot + "\"; the recipe holds a look-alike"); return; }
         const name = data.base.allergens.find(function (a) { return a.id === famille; });
         const msg = "the vision is unsure and names \"" + mot + "\" — the recipe contains no " +
           (name ? name.name.toLowerCase() : famille);
