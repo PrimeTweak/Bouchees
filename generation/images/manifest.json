@@ -2563,5 +2563,143 @@
         "la vision hésite sur : exact fruit filling (could be apple, apricot, or another pale fruit), fruit in background (mango, orange, or peach uncertain)"
       ]
     }
+  },
+  "salmon-lentil-vegetable-patties": {
+    "fichier": "images/salmon-lentil-vegetable-patties-9bcba41dbddf.png",
+    "empreinte": "9bcba41dbddf",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T18:12:01.229Z",
+      "detectes": [
+        "salmon",
+        "lentil",
+        "zucchini",
+        "breadcrumb"
+      ],
+      "reconnus": 3,
+      "attendus": 10,
+      "avertissements": [
+        "vision named \"breadcrumb\"; the recipe holds a look-alike",
+        "la vision hésite sur : exact fish species (could be trout rather than salmon), type of lentil (green or brown)"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-mini-patties": {
+    "fichier": "images/sweet-potato-chickpea-mini-patties-559f09c22503.png",
+    "empreinte": "559f09c22503",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T18:37:29.601Z",
+      "detectes": [
+        "chickpea",
+        "carrot",
+        "sweet potato"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : exact binding ingredient of the patty crust (breadcrumb, flour, or semolina), possible herbs or spices mixed inside"
+      ]
+    }
+  },
+  "chickpea-sweet-potato-mini-patties": {
+    "fichier": "images/chickpea-sweet-potato-mini-patties-cb7c9a91ee55.png",
+    "empreinte": "cb7c9a91ee55",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T18:50:16.260Z",
+      "detectes": [
+        "chickpea",
+        "carrot",
+        "breadcrumb",
+        "sweet potato"
+      ],
+      "reconnus": 4,
+      "attendus": 9,
+      "avertissements": [
+        "vision named \"breadcrumb\"; the recipe holds a look-alike",
+        "la vision hésite sur : exact binding ingredient (egg, flaxseed, flour), exact spices used, possible lentil mixed with chickpea"
+      ]
+    }
+  },
+  "oat-and-apple-breakfast-bites": {
+    "fichier": "images/oat-and-apple-breakfast-bites-08309d5b726b.png",
+    "empreinte": "08309d5b726b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T19:22:06.019Z",
+      "detectes": [
+        "oat",
+        "apple",
+        "cinnamon"
+      ],
+      "reconnus": 4,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : cinnamon (visible as brown speckling, inferred from color and texture), possible banana or date as binder (not clearly visible)"
+      ]
+    }
+  },
+  "carrot-coconut-chia-cups": {
+    "fichier": "images/carrot-coconut-chia-cups-e25959211be0.png",
+    "empreinte": "e25959211be0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T19:41:10.928Z",
+      "detectes": [
+        "oat",
+        "chia seed",
+        "carrot",
+        "milk"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "la vision hésite sur : the orange element could be carrot or sweet potato or pumpkin, liquid base could be water instead of milk"
+      ]
+    }
+  },
+  "plum-coconut-yogurt-swirl-cups": {
+    "fichier": "images/plum-coconut-yogurt-swirl-cups-f877ec500b2a.png",
+    "empreinte": "f877ec500b2a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-07T20:06:34.424Z",
+      "detectes": [
+        "plum",
+        "yogurt"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"yogurt\"; the recipe holds a look-alike",
+        "la vision hésite sur : fruit could be nectarine instead of plum, swirl could be fruit coulis or syrup"
+      ]
+    }
   }
 }
