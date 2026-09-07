@@ -2395,4 +2395,21 @@ test("prompts: the checker reads the same corpus the cycle photographs", () => {
                "the checker read " + vues + " prompts, the cycle photographs " + corpusComplet.length);
 });
 
+test("vision: a look-alike the recipe holds is not an intruder, a real one still is", async () => {
+  /* Coconut milk photographs as milk, sunflower seed butter as peanut
+   * butter, chickpea flour as breadcrumb: 46 of 56 photos were thrown out
+   * for describing the right ingredient with the commonest word. */
+  const soupe = parId["squash-and-coconut-soup"];
+  const ok = await Vision.verifier(Buffer.from("x"), soupe, data,
+    { moteur: visionQuiVoit(["squash", "milk"]) });
+  assert.equal(ok.ok, true, "coconut milk seen as milk: " + ok.erreurs.join(" / "));
+  /* Clearing the whole family would have let real dairy through. */
+  const fromage = await Vision.verifier(Buffer.from("x"), soupe, data,
+    { moteur: visionQuiVoit(["squash", "cheese"]) });
+  assert.equal(fromage.ok, false, "real cheese passed on a coconut-milk soup");
+  const noix = await Vision.verifier(Buffer.from("x"), soupe, data,
+    { moteur: visionQuiVoit(["squash", "walnut"]) });
+  assert.equal(noix.ok, false, "a real walnut passed");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

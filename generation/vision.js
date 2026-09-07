@@ -223,11 +223,36 @@ function comparer(description, recipe, data) {
   const seen = description.aliments.map(normaliser);
   const presentes = Engine.analyserAllergenes(recipe, catalogue);
 
+  /* What the recipe holds that LOOKS like the thing a vision names: coconut
+   * milk photographs as milk, sunflower seed butter as peanut butter,
+   * chickpea flour as breadcrumb. The model described the right ingredient
+   * with the commonest word it had; the check used to call that an intruder
+   * and threw out four photos in five. */
+  /* Pairs, not families: what the vision NAMED, and what the recipe holds
+   * that photographs like it. Clearing a whole family would have let real
+   * cheese through on a coconut-milk soup. */
+  const SOSIES = [
+    { vu: /^milk$|^cream$|^cream sauce$|^butter$|^yogh?urt$/, tenu: /coconut (milk|cream|yogh?urt|butter)|oat milk|rice milk|soy (milk|beverage|yogh?urt)/ },
+    { vu: /^peanut butter|^nut butter|peanut butter chip/, tenu: /sunflower seed butter|tahini|almond butter/ },
+    { vu: /^breadcrumbs?$|^couscous$|^pita bread$|^pasta$|whole wheat flour/, tenu: /rice flour|oat flour|chickpea flour|quinoa|rolled oats|buckwheat|polenta|millet|corn ?starch/ },
+    { vu: /^sesame seeds?$/, tenu: /sunflower seed|pumpkin seed|chia seed|hemp seed/ }
+  ];
+  const ingredientsDeLaRecette = (recipe.ingredients || [])
+    .map(function (u) { return String(((catalogue[u.id] || {}).name) || u.id).toLowerCase(); })
+    .join(" | ");
+  /* True when THIS word is a look-alike of something the recipe holds. */
+  function sosieDe(mot) {
+    const m = String(mot).toLowerCase().trim();
+    return SOSIES.some(function (p) { return p.vu.test(m) && p.tenu.test(ingredientsDeLaRecette); });
+  }
+
   /* 1. An allergen ABSENT from the recipe must not appear in the image.
    *    This is the check that really matters. */
   seen.forEach(function (aliment, i) {
     famillesDe(aliment).forEach(function (famille) {
       if (presentes.indexOf(famille) !== -1) return;
+      /* The recipe holds a look-alike: the vision named it, not an intruder. */
+      if (sosieDe(description.aliments[i])) { avertissements.push("vision named \"" + description.aliments[i] + "\"; the recipe holds a look-alike"); return; }
       const name = data.base.allergens.find(function (a) { return a.id === famille; });
       const msg = "the image shows \"" + description.aliments[i] + "\" while the recipe contains no " +
         (name ? name.name.toLowerCase() : famille);
@@ -244,6 +269,7 @@ function comparer(description, recipe, data) {
       if (mot.length < 4) return;
       famillesDe(mot).forEach(function (famille) {
         if (presentes.indexOf(famille) !== -1) return;
+        if (sosieDe(mot)) return;
         const name = data.base.allergens.find(function (a) { return a.id === famille; });
         const msg = "the vision is unsure and names \"" + mot + "\" — the recipe contains no " +
           (name ? name.name.toLowerCase() : famille);
