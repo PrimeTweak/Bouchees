@@ -134,25 +134,6 @@
       ]
     }
   },
-  "oatmeal-raisin-cookies": {
-    "fichier": "images/oatmeal-raisin-cookies-b0f94efd28b1.png",
-    "empreinte": "b0f94efd28b1",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T10:42:17.736Z",
-      "detectes": [
-        "oat",
-        "raisin"
-      ],
-      "reconnus": 2,
-      "attendus": 8,
-      "avertissements": []
-    }
-  },
   "mini-vegetable-frittatas": {
     "fichier": "images/mini-vegetable-frittatas-bbc198f62d4a.png",
     "empreinte": "bbc198f62d4a",
@@ -583,28 +564,6 @@
       ]
     }
   },
-  "coconut-rice-pudding-with-mango": {
-    "fichier": "images/coconut-rice-pudding-with-mango-b4cc825e83cc.png",
-    "empreinte": "b4cc825e83cc",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T15:25:55.888Z",
-      "detectes": [
-        "rice",
-        "coconut",
-        "corn"
-      ],
-      "reconnus": 2,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : toasted coconut or browned sugar crust, corn or pineapple pieces"
-      ]
-    }
-  },
   "apple-and-date-cinnamon-sauce": {
     "fichier": "images/apple-and-date-cinnamon-sauce-cda50745aea1.png",
     "empreinte": "cda50745aea1",
@@ -626,29 +585,6 @@
       "attendus": 5,
       "avertissements": [
         "la vision hésite sur : kidney bean or date (the dark oval pieces could be medjool dates or cooked kidney beans), the brown sauce could be caramel, apple butter, or a spiced syrup, cinnamon is inferred from color but not confirmed"
-      ]
-    }
-  },
-  "lentil-squash-and-carrot-puree": {
-    "fichier": "images/lentil-squash-and-carrot-puree-cb7c553dbab0.png",
-    "empreinte": "cb7c553dbab0",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T15:38:43.779Z",
-      "detectes": [
-        "lentil",
-        "butternut squash",
-        "carrot",
-        "sweet potato"
-      ],
-      "reconnus": 3,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : butternut squash or sweet potato (orange cubes could be either), carrot (some orange pieces may be carrot rather than squash)"
       ]
     }
   },
@@ -823,28 +759,6 @@
       "attendus": 8,
       "avertissements": [
         "la vision hésite sur : exact spices used, possible sweet potato or squash in mixture, exact herb (parsley or cilantro)"
-      ]
-    }
-  },
-  "sweet-potato-chickpea-bites": {
-    "fichier": "images/sweet-potato-chickpea-bites-879764e73295.png",
-    "empreinte": "879764e73295",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-05T12:41:38.862Z",
-      "detectes": [
-        "chickpea",
-        "cornbread",
-        "sweet potato"
-      ],
-      "reconnus": 3,
-      "attendus": 8,
-      "avertissements": [
-        "la vision hésite sur : the yellow crumb base could be cornbread or chickpea-based cake, orange interior could be sweet potato or pumpkin, small round toppings identified as chickpeas but could be macadamia nuts"
       ]
     }
   },
@@ -1582,29 +1496,6 @@
       ]
     }
   },
-  "plum-chia-yogurt-cups": {
-    "fichier": "images/plum-chia-yogurt-cups-27ce0dfd5cd1.png",
-    "empreinte": "27ce0dfd5cd1",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T04:56:11.759Z",
-      "detectes": [
-        "plum",
-        "chia seed",
-        "yogurt",
-        "oat"
-      ],
-      "reconnus": 3,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : the white base could be yogurt, milk, or cream, fruit could be plum or nectarine"
-      ]
-    }
-  },
   "zucchini-chickpea-tomato-skillet": {
     "fichier": "images/zucchini-chickpea-tomato-skillet-c38931f90b66.png",
     "empreinte": "c38931f90b66",
@@ -1975,29 +1866,6 @@
       ]
     }
   },
-  "quinoa-lentil-sweet-potato-skillet": {
-    "fichier": "images/quinoa-lentil-sweet-potato-skillet-c840c2fd1ca2.png",
-    "empreinte": "c840c2fd1ca2",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T08:26:00.238Z",
-      "detectes": [
-        "quinoa",
-        "lentil",
-        "sweet potato",
-        "tomato"
-      ],
-      "reconnus": 5,
-      "attendus": 12,
-      "avertissements": [
-        "la vision hésite sur : could be butternut squash instead of sweet potato, tomato may be crushed canned tomato or fresh diced tomato"
-      ]
-    }
-  },
   "black-bean-and-sweet-potato-coconut-bowl": {
     "fichier": "images/black-bean-and-sweet-potato-coconut-bowl-b67b6e47c43b.png",
     "empreinte": "b67b6e47c43b",
@@ -2130,29 +1998,6 @@
       "attendus": 9,
       "avertissements": [
         "la vision hésite sur : fish variety (cod, halibut, or monkfish), onion or garlic"
-      ]
-    }
-  },
-  "banana-sunflower-quinoa-bites": {
-    "fichier": "images/banana-sunflower-quinoa-bites-4974cdc95d8f.png",
-    "empreinte": "4974cdc95d8f",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T09:48:47.518Z",
-      "detectes": [
-        "quinoa",
-        "millet",
-        "oat"
-      ],
-      "reconnus": 1,
-      "attendus": 7,
-      "avertissements": [
-        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
-        "la vision hésite sur : exact grain mix uncertain — could include millet, amaranth, or other small grains alongside quinoa, possible binding ingredient not visible"
       ]
     }
   },
@@ -2849,28 +2694,6 @@
         "vision named \"peanut butter\"; the recipe holds a look-alike",
         "vision hedged on \"almond\"; the recipe holds a look-alike",
         "la vision hésite sur : honey or maple syrup as binder, coconut flour or almond flour in interior, possible protein powder in mixture"
-      ]
-    }
-  },
-  "banana-chickpea-soft-cookies": {
-    "fichier": "images/banana-chickpea-soft-cookies-e67e2d6ed7a2.png",
-    "empreinte": "e67e2d6ed7a2",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T22:04:59.929Z",
-      "detectes": [
-        "oat",
-        "raisin"
-      ],
-      "reconnus": 0,
-      "attendus": 7,
-      "avertissements": [
-        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
-        "la vision hésite sur : chocolate chip or raisin"
       ]
     }
   },

@@ -14,6 +14,7 @@ const Validator = require("../generation/recipe-validator.js");
 const Coherence = require("../generation/coherence.js");
 const Images = require("../generation/images.js");
 const Vision = require("../generation/vision.js");
+const Cadrage = require("./cadrage.js");
 const MoteursTexte = require("../generation/text-engines.js");
 const MoteursImage = require("../generation/image-engines.js");
 
@@ -302,6 +303,24 @@ async function cycleImages(data, options) {
     await new Promise(function (r) { setTimeout(r, 3000); });
 
     let verdict = await Vision.verifier(img.octets, recipe, data, { moteur: mVision, typeMime: "image/png" });
+
+    /* Framing, before anything else is judged: the hero shows the square
+     * under a title covering its lower third, so a dish that starts below
+     * DEPART_MAX sits inside the title and reads as a bowl rim. */
+    if (verdict.ok) {
+      const tmp = path.join(require("os").tmpdir(), "bouchees-cadrage-" + process.pid + ".png");
+      fs.writeFileSync(tmp, img.octets);
+      try {
+        const m = Cadrage.mesurer(tmp);
+        if (m.sujetHaut >= Cadrage.DEPART_MAX) {
+          verdict = { ok: false, moteur: verdict.moteur, le: verdict.le, detectes: [], reconnus: [], attendus: [],
+                      avertissements: [],
+                      erreurs: ["the dish starts at " + m.sujetHaut.toFixed(2) + " of the height, below " +
+                                Cadrage.DEPART_MAX + " — the hero's title would cover it"] };
+        }
+      } catch (e) { /* unreadable png: the vision verdict already stands */ }
+      try { fs.unlinkSync(tmp); } catch (e) { /* gone */ }
+    }
 
         /* One retry when the render itself failed, not when the content is wrong. */
     const rendudRate = !verdict.ok && verdict.erreurs.some(function (e) {

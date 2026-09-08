@@ -130,7 +130,7 @@ function all(root, files) {
   return tally;
 }
 
-module.exports = { thumbnail, all, SIZE };
+module.exports = { thumbnail, all, SIZE, decode, scale };
 
 if (require.main === module) {
   const root = path.join(__dirname, "..");

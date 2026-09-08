@@ -44,15 +44,21 @@ const IMPERFECTIONS = [
   "crumbs beside it",
   "uneven browning across the top",
   "a spoon left beside it",
-  "the dish slightly off-centre"
+  /* Sideways only. "Off-centre" alone put dishes low in the square, where
+   * the hero's title covers them — eight photos were lost to it. */
+  "the dish a little to one side"
 ];
 
+
 /* Close: every framing now states the distance, and every one is close. */
+/* Each framing states the distance AND where the dish sits: the hero shows
+ * the square under a title covering its lower third, so a dish placed low
+ * is swallowed by it. Checked after the fact by tools/cadrage.js. */
 const CADRAGES = [
-  "close-up filling the frame, camera about 30 cm away",
-  "three-quarter angle from 40 degrees, very close",
-  "tight overhead crop, the dish filling most of the frame",
-  "low eye-level, close enough to see the crumb"
+  "close-up from 30 cm, the dish high in frame",
+  "three-quarter from 40 degrees, very close, the dish high in frame",
+  "tight overhead crop, the dish filling the upper two thirds",
+  "low eye-level, close to the crumb, the dish high in frame"
 ];
 
 /* Warm and directional, all three: the model got opposite instructions, and

@@ -2445,4 +2445,43 @@ test("vision: a look-alike the recipe holds is not an intruder, a real one still
   assert.equal(noix.ok, false, "a real walnut passed");
 });
 
+test("framing: the two photos judged good pass, the two judged bad do not", () => {
+  /* The threshold is set from four labelled photos, not from a guess:
+   * creamy-salmon-pasta at 0.202 and chicken-couscous at 0.343 read well;
+   * lentil-squash-purée at 0.495 and coconut-rice-pudding at 0.551 are
+   * covered by the hero's title. */
+  const Cadrage = require(path.join(__dirname, "..", "tools", "cadrage.js"));
+  const images = path.join(__dirname, "..", "images");
+  const trouve = (base) => {
+    const f = fs.readdirSync(images).find((x) => x.startsWith(base + "-") && x.endsWith(".png"));
+    return f ? path.join(images, f) : null;
+  };
+  const bonnes = ["creamy-salmon-pasta", "chicken-couscous"];
+  bonnes.forEach((b) => {
+    const f = trouve(b);
+    if (!f) return;
+    assert(!Cadrage.tropBas(f), b + " was judged good but the threshold rejects it");
+  });
+  /* The rejected ones live in images/rejected/ now. */
+  const rejets = path.join(images, "rejected");
+  if (fs.existsSync(rejets)) {
+    ["lentil-squash-and-carrot-puree", "coconut-rice-pudding-with-mango"].forEach((b) => {
+      const f = fs.readdirSync(rejets).find((x) => x.startsWith(b + "-"));
+      if (!f) return;
+      assert(Cadrage.tropBas(path.join(rejets, f)), b + " was judged bad but the threshold keeps it");
+    });
+  }
+});
+
+test("prompts: every framing says where the dish sits", () => {
+  /* Without it the model places the dish freely, and a low one is
+   * swallowed by the hero's title. */
+  const Images = require(path.join(__dirname, "..", "generation", "images.js"));
+  corpusComplet.slice(0, 40).forEach((r) => {
+    const cadrage = Images.promptPour(r, data).positif.split(". ")[3];
+    assert(/\b(high in frame|upper two thirds|upper third)\b/i.test(cadrage),
+           r.id + ": framing says nothing about placement — " + cadrage);
+  });
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

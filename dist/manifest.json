@@ -1,7 +1,7 @@
 {
-  "version": "2026-09-06",
+  "version": "2026-09-08",
   "safetyChecksum": "ba24096516d6",
-  "catalogueChecksum": "a55c534822fe",
+  "catalogueChecksum": "a56e8a841a11",
   "rotationWeeks": 16,
   "counts": {
     "Meal": 70,

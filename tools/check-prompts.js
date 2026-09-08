@@ -81,6 +81,14 @@ corpus.forEach(function (recipe) {
       "prompt names, and the prompt names a surface");
   }
 
+  /* 4b. The framing also states WHERE the dish sits. The hero shows the
+   * square under a title covering its lower third; a dish placed low is
+   * swallowed by it, and eight photos were lost that way. */
+  if (!/\b(high in frame|upper two thirds|upper third)\b/i.test(cadrage)) {
+    problems.push(name + ": the framing does not say where the dish sits (\"" +
+      cadrage.slice(0, 44) + "\") — the hero's title covers the lower third");
+  }
+
   /* 5. A surface is named. */
   if (!parts.some(function (x) { return /^on a /i.test(x); })) {
     problems.push(name + ": no surface — with the room banned and nothing " +
