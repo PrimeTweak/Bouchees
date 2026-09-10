@@ -2891,5 +2891,315 @@
         "la vision hésite sur : unclear whether the liquid base is milk, coconut milk, or yogurt, the frozen or fresh nature of the blueberries inside the bars is uncertain"
       ]
     }
+  },
+  "oatmeal-raisin-cookies": {
+    "fichier": "images/oatmeal-raisin-cookies-b0f94efd28b1.png",
+    "empreinte": "b0f94efd28b1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T00:39:11.185Z",
+      "detectes": [
+        "oat",
+        "raisin"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": []
+    }
+  },
+  "lentil-squash-and-carrot-puree": {
+    "fichier": "images/lentil-squash-and-carrot-puree-cb7c553dbab0.png",
+    "empreinte": "cb7c553dbab0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T00:51:53.975Z",
+      "detectes": [
+        "lentil",
+        "carrot",
+        "butternut squash",
+        "sweet potato"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : butternut squash or sweet potato (the orange cubes could be either)"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-bites": {
+    "fichier": "images/sweet-potato-chickpea-bites-879764e73295.png",
+    "empreinte": "879764e73295",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T01:04:36.254Z",
+      "detectes": [
+        "chickpea",
+        "semolina",
+        "cornmeal"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "la vision hésite sur : exact grain base (semolina, cornmeal, or chickpea flour), binding agent (egg, oil), possible spices or seasoning"
+      ]
+    }
+  },
+  "baked-salmon-with-sweet-potato-and-broccoli": {
+    "fichier": "images/baked-salmon-with-sweet-potato-and-broccoli-2e1b0ffe4649.png",
+    "empreinte": "2e1b0ffe4649",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T01:17:16.481Z",
+      "detectes": [
+        "salmon",
+        "sweet potato",
+        "broccoli",
+        "rice"
+      ],
+      "reconnus": 4,
+      "attendus": 10,
+      "avertissements": [
+        "vision hedged on \"couscous\"; the recipe holds a look-alike",
+        "la vision hésite sur : rice or couscous or quinoa as the grain base"
+      ]
+    }
+  },
+  "banana-chickpea-bites": {
+    "fichier": "images/banana-chickpea-bites-4fbffbd1d2d8.png",
+    "empreinte": "4fbffbd1d2d8",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T01:30:01.730Z",
+      "detectes": [
+        "chickpea",
+        "breadcrumb"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "vision named \"breadcrumb\"; the recipe holds a look-alike",
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
+        "la vision hésite sur : exact binding ingredient inside balls (potato, flour, or other starch), type of coating (breadcrumb or semolina)"
+      ]
+    }
+  },
+  "plum-chia-yogurt-cups": {
+    "fichier": "images/plum-chia-yogurt-cups-27ce0dfd5cd1.png",
+    "empreinte": "27ce0dfd5cd1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T01:42:47.880Z",
+      "detectes": [
+        "chia seed",
+        "plum",
+        "milk",
+        "peach"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "la vision hésite sur : plum or nectarine, cow milk or plant-based milk"
+      ]
+    }
+  },
+  "pear-chia-compote-cups": {
+    "fichier": "images/pear-chia-compote-cups-c7652249e9ea.png",
+    "empreinte": "c7652249e9ea",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T01:49:09.442Z",
+      "detectes": [
+        "chia seed",
+        "pear",
+        "syrup"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "la vision hésite sur : liquid base could be tea, broth, or sugar syrup, fruit chunks could be pear or jicama"
+      ]
+    }
+  },
+  "quinoa-lentil-sweet-potato-skillet": {
+    "fichier": "images/quinoa-lentil-sweet-potato-skillet-c840c2fd1ca2.png",
+    "empreinte": "c840c2fd1ca2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T02:08:13.007Z",
+      "detectes": [
+        "lentil",
+        "quinoa",
+        "sweet potato",
+        "tomato"
+      ],
+      "reconnus": 5,
+      "attendus": 12,
+      "avertissements": [
+        "la vision hésite sur : exact seasoning or spices not visible, liquid base unclear"
+      ]
+    }
+  },
+  "date-and-coconut-bliss-bites": {
+    "fichier": "images/date-and-coconut-bliss-bites-454b024618c6.png",
+    "empreinte": "454b024618c6",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T02:59:05.337Z",
+      "detectes": [
+        "oat",
+        "raisin",
+        "sunflower seed",
+        "peanut butter",
+        "honey"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "vision named \"peanut butter\"; the recipe holds a look-alike",
+        "vision hedged on \"peanut\"; the recipe holds a look-alike",
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "la vision hésite sur : peanut butter (could be another nut butter), honey (could be another liquid sweetener such as maple syrup), raisin (could be another dried fruit such as cranberry or date)"
+      ]
+    }
+  },
+  "date-and-mango-chia-pudding-cups": {
+    "fichier": "images/date-and-mango-chia-pudding-cups-03ad4e401b5d.png",
+    "empreinte": "03ad4e401b5d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T03:05:26.537Z",
+      "detectes": [
+        "chia seed",
+        "mango",
+        "raisin",
+        "coconut milk",
+        "milk"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "la vision hésite sur : the liquid base could be coconut milk or regular milk, dark pieces could be raisins or dates"
+      ]
+    }
+  },
+  "tofu-and-broccoli-quinoa-stir-fry": {
+    "fichier": "images/tofu-and-broccoli-quinoa-stir-fry-c7eaeaede56f.png",
+    "empreinte": "c7eaeaede56f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T03:18:09.018Z",
+      "detectes": [
+        "tofu",
+        "broccoli",
+        "carrot",
+        "quinoa"
+      ],
+      "reconnus": 4,
+      "attendus": 12,
+      "avertissements": []
+    }
+  },
+  "sweet-potato-coconut-chia-cups": {
+    "fichier": "images/sweet-potato-coconut-chia-cups-3e9b091175cd.png",
+    "empreinte": "3e9b091175cd",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T03:37:12.874Z",
+      "detectes": [
+        "sweet potato",
+        "chia seed",
+        "coconut milk",
+        "cream"
+      ],
+      "reconnus": 3,
+      "attendus": 6,
+      "avertissements": [
+        "vision named \"cream\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "la vision hésite sur : coconut milk or regular cream, possible mashed squash instead of sweet potato"
+      ]
+    }
+  },
+  "melon-coconut-yogurt-swirl-cups": {
+    "fichier": "images/melon-coconut-yogurt-swirl-cups-00439f5b19f8.png",
+    "empreinte": "00439f5b19f8",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-08T03:49:51.070Z",
+      "detectes": [
+        "chia seed",
+        "yogurt",
+        "melon",
+        "cream"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "vision named \"yogurt\"; the recipe holds a look-alike",
+        "vision named \"cream\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"yogurt\"; the recipe holds a look-alike",
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "la vision hésite sur : the orange fruit could be cantaloupe, papaya, or peach, the white base could be coconut milk, yogurt, or dairy cream"
+      ]
+    }
   }
 }
