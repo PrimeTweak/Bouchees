@@ -485,14 +485,16 @@ extension RecipesScreen {
         if locked > 0 && !app.subscribed {
             Button { showPaywall = true } label: {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Weeks ahead").eyebrow(Tone.brand)
+                    Text("With a subscription").eyebrow(Tone.brand)
 
-                    Text(String(format: String(localized: "%lld more recipes"), locked))
+                    /* Not a count of the pool: the subscription gives a week
+                     * at a time, and a number read as a library to browse. */
+                    Text("Fourteen new recipes every Monday")
                         .scaledFont(Type.heading, weight: .bold)
                         .foregroundStyle(Tone.upsellText)
                         .padding(.top, 7)
 
-                    Text(String(format: String(localized: "A meal and a snack every day, adapted to %@"),
+                    Text(String(format: String(localized: "Last week stays open, and everything you save stays yours — all adapted to %@"),
                                 profile.firstName))
                         .scaledFont(Type.caption)
                         .foregroundStyle(Tone.upsellText2)

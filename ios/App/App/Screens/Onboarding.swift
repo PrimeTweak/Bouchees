@@ -485,7 +485,10 @@ private struct WhoStep: View {
          * to reach the last two age cards, and the footer is translucent by
          * design, so they read as being under the button. */
         .scrollDismissesKeyboard(.immediately)
+        /* No footer while the keyboard is up: the button is disabled until an
+         * age is picked anyway, and it sat over the last two age cards. */
         .safeAreaInset(edge: .bottom) {
+            if !focused {
             VStack(spacing: 9) {
                 Button(action: next) {
                     Text(draft.ageMonths == 0
@@ -508,6 +511,7 @@ private struct WhoStep: View {
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 12)
             .softFooter()
+            }
         }
         /* The keyboard no longer opens on its own: it covered three of the
          * five age cards, and the age is the more important choice. */
@@ -711,8 +715,6 @@ private struct OfferStep: View {
                     .foregroundStyle(Tone.text2)
                     .padding(.top, 10)
 
-                FreeForever()
-                    .padding(.top, 20)
 
                 VStack(spacing: 0) {
                     Perk(title: "This week and last week",
@@ -743,7 +745,16 @@ private struct OfferStep: View {
                  * a trap, and it avoids the subscriber who cancels on day 8
                  * feeling tricked. */
                 Button(action: finish) {
-                    Text("Continue with the free recipes")
+                    VStack(spacing: 3) {
+                        Text("Continue with the free recipes")
+                        /* Stated where the parent can still say no, and in
+                         * the present tense: a perpetual promise on a screen
+                         * that sells is a debt, not an argument. */
+                        Text("The engine and the scanner are free, with or without a subscription.")
+                            .scaledFont(Type.micro)
+                            .foregroundStyle(Tone.textTertiary)
+                            .multilineTextAlignment(.center)
+                    }
                         .scaledFont(Type.body)
                         .foregroundStyle(Tone.textSecondary)
                         .frame(maxWidth: .infinity)
@@ -778,27 +789,6 @@ private struct OfferStep: View {
     }
 }
 
-private struct FreeForever: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(spacing: 7) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(Tone.yes)
-                Text("Free, forever")
-                    .scaledFont(Type.body, weight: .semibold)
-                    .foregroundStyle(Tone.yes)
-            }
-            Text("The first recipes, the adaptation engine, and the product scanner. We never sell the answer to \"can my child eat this\".")
-                .scaledFont(Type.secondary)
-                .foregroundStyle(Tone.textSecondary)
-        }
-        .padding(15)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Tone.yesWash, in: RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: Layout.cardRadius, style: .continuous)
-            .strokeBorder(Tone.yes.opacity(0.3), lineWidth: 1))
-    }
-}
 
 private struct Perk: View {
     let title: LocalizedStringKey
