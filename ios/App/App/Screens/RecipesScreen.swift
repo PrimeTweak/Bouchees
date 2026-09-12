@@ -252,7 +252,9 @@ struct RecipesScreen: View {
     /* The current week is whole; a past or future week shows two days and
      * lets the third fade into the offer. A subscriber sees all seven. */
     private var glimpseOnly: Bool { app.selectedWeek != 0 && !app.subscribed }
-    private func days(for slot: WeekSlot) -> [Int] { glimpseOnly ? Array(0..<3) : Array(0..<7) }
+    private func days(for slot: WeekSlot) -> [Int] {
+        glimpseOnly ? Array(0..<WeekPlan.glimpseDays) : Array(0..<7)
+    }
 
     /// Every week shows its days; a locked recipe shows its name and its
     /// verdict from the catalogue, and opens the paywall.
@@ -260,7 +262,7 @@ struct RecipesScreen: View {
         let slot = app.currentSlot
         return LazyVStack(spacing: 0) {
             ForEach(days(for: slot), id: \.self) { dayIndex in
-                if glimpseOnly && dayIndex == 2 {
+                if glimpseOnly && dayIndex == WeekPlan.glimpseDays - 1 {
                     daySection(dayIndex, slot: slot)
                         .mask(LinearGradient(stops: [.init(color: .black, location: 0),
                                                      .init(color: .black.opacity(0.45), location: 0.5),

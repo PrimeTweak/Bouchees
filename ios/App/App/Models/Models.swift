@@ -492,6 +492,11 @@ struct ShoppingQuantity: Codable, Hashable, Sendable {
 /// recipe ids — not a list, because a day can hold two things and another
 /// none.
 struct WeekPlan: Codable, Equatable {
+    /// Days a locked week previews: the last one fades into the offer. One
+    /// number, so the fetch and the display can never disagree — they did,
+    /// and the day that was shown but not fetched read as a padlock.
+    static let glimpseDays = 3
+
     /// Monday is 0. Matches the ISO week the batch is named after.
     var days: [Int: [String]]
 

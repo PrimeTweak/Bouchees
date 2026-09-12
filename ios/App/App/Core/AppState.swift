@@ -495,9 +495,12 @@ final class AppState {
         let semaines = subscribed ? [-1, 0] : [0]
         var needed: [String] = semaines
             .flatMap { picks(week: $0).values.flatMap { [$0.meal, $0.snack] } }.compactMap { $0 }
-        /* The two days each locked week previews, for everyone. */
+        /* Every day a locked week SHOWS, not one less: the rail previews
+         * three — two whole and one fading — and fetching two left the third
+         * without a body, which reads as a padlock. */
         needed += [-1, 1].flatMap { w in
-            (0..<2).compactMap { d in picks(week: w)[weekStart(w) + d] }.flatMap { [$0.meal, $0.snack] }
+            (0..<WeekPlan.glimpseDays).compactMap { d in picks(week: w)[weekStart(w) + d] }
+                .flatMap { [$0.meal, $0.snack] }
         }.compactMap { $0 }
         needed += saved.recipes.map(\.id)
         if subscribed { needed += topRated.map(\.id) }

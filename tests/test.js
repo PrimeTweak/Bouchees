@@ -2515,4 +2515,19 @@ test("ratings: the ranking is per age band and capped at fifteen", () => {
   assert.equal(R.bande(undefined), null, "a rating with no age must not land in a band");
 });
 
+test("weeks: the app fetches every day a locked week shows, never one less", () => {
+  /* The rail previews three days of a locked week; the fetch asked for two,
+   * and the third had no body — which reads as a padlock on a day the
+   * parent was told he could see. One constant now drives both. */
+  const fs2 = require("fs");
+  const p = (f) => path.join(__dirname, "..", "ios", "App", "App", f);
+  const models = fs2.readFileSync(p("Models/Models.swift"), "utf8");
+  const state = fs2.readFileSync(p("Core/AppState.swift"), "utf8");
+  const screen = fs2.readFileSync(p("Screens/RecipesScreen.swift"), "utf8");
+  assert(/static let glimpseDays = \d+/.test(models), "glimpseDays is not declared");
+  assert(state.includes("WeekPlan.glimpseDays"), "the fetch does not use glimpseDays");
+  assert(screen.includes("WeekPlan.glimpseDays"), "the display does not use glimpseDays");
+  assert(!/Array\(0\.\.<3\)/.test(screen), "the display still hard-codes three days");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
