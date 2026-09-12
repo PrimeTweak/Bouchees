@@ -3867,5 +3867,28 @@
         "the vision hesitates on : white crumbly interior could be desiccated coconut, almond flour, or oats — cannot distinguish with certainty"
       ]
     }
+  },
+  "ground-beef-and-sweet-potato-coconut-curry": {
+    "fichier": "images/ground-beef-and-sweet-potato-coconut-curry-3a97ac4c3dd3.png",
+    "empreinte": "3a97ac4c3dd3",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T20:05:08.016Z",
+      "detectes": [
+        "ground meat",
+        "sweet potato",
+        "spinach",
+        "onion"
+      ],
+      "reconnus": 5,
+      "attendus": 10,
+      "avertissements": [
+        "the vision hesitates on : ground meat could be beef, pork, or turkey, orange cubes could be sweet potato or butternut squash"
+      ]
+    }
   }
 }

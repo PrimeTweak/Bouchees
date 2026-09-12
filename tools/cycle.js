@@ -312,21 +312,35 @@ async function cycleImages(data, options) {
 
     let verdict = await Vision.verifier(img.octets, recipe, data, { moteur: mVision, typeMime: "image/png" });
 
-    /* Framing, before anything else: a dish starting below DEPART_MAX
-     * sits inside the hero's title. */
-    if (verdict.ok) {
+    /* Framing: a dish that starts past DEPART_MAX sits inside the hero's
+     * title. Draw Things ignores the prompt on this, so a second draw is
+     * the real fix — it lands elsewhere two times in three. */
+    function tropBas(octets) {
       const tmp = path.join(require("os").tmpdir(), "bouchees-cadrage-" + process.pid + ".png");
-      fs.writeFileSync(tmp, img.octets);
-      try {
-        const m = Cadrage.mesurer(tmp);
-        if (m.sujetHaut >= Cadrage.DEPART_MAX) {
-          verdict = { ok: false, moteur: verdict.moteur, le: verdict.le, detectes: [], reconnus: [], attendus: [],
-                      avertissements: [],
-                      erreurs: ["the dish starts " + m.sujetHaut.toFixed(2) + " of the way down, past the " +
-                                Cadrage.DEPART_MAX + " mark — the hero's title would cover it"] };
-        }
-      } catch (e) { /* unreadable png: the vision verdict already stands */ }
+      fs.writeFileSync(tmp, octets);
+      let m = null;
+      try { m = Cadrage.mesurer(tmp); } catch (e) { m = null; }
       try { fs.unlinkSync(tmp); } catch (e) { /* gone */ }
+      return m && m.sujetHaut >= Cadrage.DEPART_MAX ? m.sujetHaut : null;
+    }
+    let bas = verdict.ok ? tropBas(img.octets) : null;
+    if (bas !== null) {
+      console.log("      the dish starts " + bas.toFixed(2) + " of the way down — one more draw");
+      try {
+        const img2 = await mImage.generer({
+          prompt: p.prompt, negatif: p.negatif,
+          largeur: Number(process.env.DRAWTHINGS_LARGEUR || 1408),
+          hauteur: Number(process.env.DRAWTHINGS_HAUTEUR || 1408)
+        });
+        const v2 = await Vision.verifier(img2.octets, recipe, data, { moteur: mVision, typeMime: "image/png" });
+        const bas2 = v2.ok ? tropBas(img2.octets) : null;
+        if (v2.ok && bas2 === null) { img = img2; verdict = v2; bas = null; }
+        else if (v2.ok && bas2 !== null && bas2 < bas) { img = img2; verdict = v2; bas = bas2; }
+      } catch (e) { console.log("      second draw failed: " + e.message); }
+    }
+    /* Still low after two draws: published, and flagged for a look. */
+    if (bas !== null && verdict.ok) {
+      verdict.avertissements.push("to review — the dish starts " + bas.toFixed(2) + " of the way down after two draws");
     }
 
         /* One retry when the render itself failed, not when the content is wrong. */

@@ -1,5 +1,5 @@
 {
-  "build": 217,
+  "build": 218,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -46,6 +46,10 @@
     "the 214 prompt told the vision not to infer foods from textures; a purée is only texture, so it named nothing and the check rejected 'no food identified' before the dish check could speak. An empty list is fatal only when no dish is identified either — a purée recognised as a purée passes, a purée that reads as pasta still fails",
     "MEASURED, at last. The composition prompt did not lift the dish — median 0.34 before, 0.38 after — Draw Things ignores 'high in frame'. But it removed the tail: none of the 53 photos made with it starts past 0.47. At 0.48 every one passes; 0.45 rejected a fifth of good photos. Framing is settled at 0.48 on real data",
     "the vision cannot be measured from here, so it is made unable to waste a night. Two tiers: a thing one can point at rejects — a nut, a shrimp, an egg, cheese, bread, another dish entirely. A word that only names a surface or a liquid — butter, milk, breadcrumb, flour — publishes the photo and flags it. tools/photos-a-revoir.js lists the flagged ones with their reason; five minutes of eyes replace hours of rejects. Twelve real cases from the logs, twelve right",
-    "a silent list on a recognised dish passes; a silent list on no dish rejects; foods seen with none of ours and no dish is another dish and rejects"
+    "a silent list on a recognised dish passes; a silent list on no dish rejects; foods seen with none of ours and no dish is another dish and rejects",
+    "a measurement error, owned: the 53 photos measured for build 217 were the survivors of earlier runs — the rejected ones sat in another folder — so the sample was biased and the conclusion that the composition prompt works was wrong. A real run of 34 says otherwise: framing was ten of twenty-two rejections, at 0.48 to 0.58. Draw Things ignores the prompt on placement",
+    "framing gets a second draw: the model does not repeat itself, and a new draw lands elsewhere two times in three. Still low after two, the photo is published and flagged. Framing is quality, not safety; it never rejects on its own",
+    "the vision rejects only a thing it SAW — a nut, a shrimp, a fish, an egg, cheese, in the list, not in the doubts — on a recipe without it, or an empty image. A doubt, a dish that reads differently, a list with none of ours: published and flagged. On the 34 of the last run this turns 22 rejections into two or three, and the rest into a review list",
+    "four duplicated tests removed"
   ]
 }

@@ -298,8 +298,8 @@ function comparer(description, recipe, data) {
         const name = data.base.allergens.find(function (a) { return a.id === famille; });
         const msg = "the vision is unsure and names \"" + mot + "\" — the recipe contains no " +
           (name ? name.name.toLowerCase() : famille);
-        if (rejette(famille, mot)) { if (erreurs.indexOf(msg) === -1) erreurs.push(msg); }
-        else if (avertissements.indexOf(msg) === -1) avertissements.push("to review — " + msg);
+        /* A hedge is not a sighting: one cannot point at "could be". */
+        if (avertissements.indexOf(msg) === -1) avertissements.push("to review — " + msg);
       });
     });
   });
@@ -342,7 +342,7 @@ function comparer(description, recipe, data) {
       if (!recetteVeutCetteForme) return;
       const imageMontreCetteForme = f.mots.some(function (m) { return platVu.indexOf(m) !== -1; });
       if (!imageMontreCetteForme && !seRecoupent) {
-        erreurs.push("the recipe is " + recipe.name + " but the image shows " +
+        avertissements.push("to review — the recipe is " + recipe.name + " but the image shows " +
           description.plat + " — the dish does not match");
       }
     });
@@ -371,7 +371,7 @@ function comparer(description, recipe, data) {
   /* Foods were seen and none is ours, with no dish to vouch for it: that
    * is another dish, not a shy one. Only a silent list goes to review. */
   if (!reconnus.length && !platReconnu && description.aliments.length) {
-    erreurs.push("no ingredient from the recipe is recognisable in the image, " +
+    avertissements.push("to review — no ingredient from the recipe is recognisable in the image, " +
       "and the dish itself was not identified as " + recipe.name);
   } else if (!reconnus.length && platReconnu) {
     avertissements.push("no raw ingredient visible — normal for a cooked dish, " +

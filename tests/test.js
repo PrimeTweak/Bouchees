@@ -1289,12 +1289,12 @@ test("vision: a choking risk rejects the image, allergen or not", async () => {
   assert(/étouffement/.test(v.erreurs.join(" ")));
 });
 
-test("vision: an image of a different dish is rejected", async () => {
+test("vision: an image of a different dish goes to review", async () => {
   const r = parId["squash-and-coconut-soup"];
   const v = await Vision.verifier(Buffer.from("x"), r, data,
     { moteur: visionQuiVoit(["spaghetti", "meatballs"]) });
-  assert.equal(v.ok, false);
-  assert(/recognisable/.test(v.erreurs.join(" ")));
+  assert.equal(v.ok, true, "should publish for review");
+  assert(v.avertissements.some((m) => /to review/.test(m)), "not flagged");
 });
 
 test("manifest: an automatic review with no vision verdict publishes nothing", () => {
@@ -1517,7 +1517,8 @@ test("vision: a cooked dish need not show its raw ingredients", async () => {
 
   const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
     { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
-  assert.equal(rien.ok, false);
+  assert.equal(rien.ok, true, "should publish for review");
+  assert(rien.avertissements.some((m) => /to review/.test(m)), "not flagged");
 });
 
 test("images: the prompt stays short and names the cooked state", () => {
@@ -1536,8 +1537,8 @@ test("vision: the DISH must match, not only the ingredients", async () => {
 
   const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a bowl of oats with a raw egg") });
-  assert.equal(gruau.ok, false, "a bowl of oats is not muffins");
-  assert(/does not match/.test(gruau.erreurs.join(" ")));
+  assert.equal(gruau.ok, true, "should publish for review");
+  assert(gruau.avertissements.some((m) => /to review/.test(m)), "not flagged");
 
   const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a tray of muffins") });
@@ -1552,7 +1553,8 @@ test("vision: the shape comes from the servings field too", async () => {
 
   const bol = await Vision.verifier(Buffer.from("x"), pain, data,
     { moteur: voit("a bowl of porridge") });
-  assert.equal(bol.ok, false, "1 loaf ne se sert pas dans un bol");
+  assert.equal(bol.ok, true, "should publish for review");
+  assert(bol.avertissements.some((m) => /to review/.test(m)), "not flagged");
 
   const miche = await Vision.verifier(Buffer.from("x"), pain, data,
     { moteur: voit("a sliced loaf on a board") });
@@ -1589,62 +1591,6 @@ test("vision: a hedge on a texture word goes to review; a hedge on a thing rejec
   assert.equal(v.ok, true, "a butter hedge should publish for review: " + v.erreurs.join(" / "));
   assert(v.avertissements.some((m) => /to review/.test(m)), "not flagged for review");
 });
-
-test("vision: a cooked dish need not show its raw ingredients", async () => {
-  const crepes = parId["fluffy-pancakes"];
-  const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
-    decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
-
-  const cuit = await Vision.verifier(Buffer.from("x"), crepes, data,
-    { moteur: voit(["pancakes", "plate", "butter"], "a stack of pancakes") });
-  assert.equal(cuit.ok, true, cuit.erreurs.join(" / "));
-  assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
-    "l'absence d'ingredient brut must be notée, pas fatale");
-
-  const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
-    { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
-  assert.equal(rien.ok, false);
-});
-
-test("images: the prompt stays short and names the cooked state", () => {
-  const p = Images.promptPour(parId["fluffy-pancakes"], data).positif;
-  assert(p.length < 500, "prompt trop long : " + p.length + " characters");
-  assert(/cooked and ready to eat/.test(p),
-    "l'état cuit must be dit, sinon FLUX étale les ingredients crus");
-  assert(p.toLowerCase().startsWith("homemade fluffy pancakes"));
-});
-
-test("vision: the DISH must match, not only the ingredients", async () => {
-  const muffins = parId["banana-oat-muffins"];
-  const voit = (plat) => ({ nom: "test", disponible: () => true,
-    decrire: async () => JSON.stringify({
-      aliments: ["banana", "oats", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
-
-  const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
-    { moteur: voit("a bowl of oats with a raw egg") });
-  assert.equal(gruau.ok, false, "a bowl of oats is not muffins");
-  assert(/does not match/.test(gruau.erreurs.join(" ")));
-
-  const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
-    { moteur: voit("a tray of muffins") });
-  assert.equal(vrais.ok, true, vrais.erreurs.join(" / "));
-});
-
-test("vision: the shape comes from the servings field too", async () => {
-  const pain = parId["banana-bread"];
-  const voit = (plat) => ({ nom: "test", disponible: () => true,
-    decrire: async () => JSON.stringify({
-      aliments: ["banana", "wheat flour", "egg"], plat: plat, lisible: true, incertitudes: [] }) });
-
-  const bol = await Vision.verifier(Buffer.from("x"), pain, data,
-    { moteur: voit("a bowl of porridge") });
-  assert.equal(bol.ok, false, "1 loaf ne se sert pas dans un bol");
-
-  const miche = await Vision.verifier(Buffer.from("x"), pain, data,
-    { moteur: voit("a sliced loaf on a board") });
-  assert.equal(miche.ok, true, miche.erreurs.join(" / "));
-});
-
 
 const Barcode2 = require(path.join(__dirname, "..", "engine", "barcode.js"));
 
@@ -2344,7 +2290,7 @@ test("vision: a whole nut is never cleared by a look-alike", async () => {
   void flocons;
 });
 
-test("vision: a hedge is treated like a sighting — the model's confidence predicts nothing", async () => {
+test("vision: a hedge never rejects; a look-alike passes clean, the rest goes to review", async () => {
   /* Three rejected photos, opened one by one, showed the model naming a
    * textures: pan-seared crust as "breadcrumb" with certainty, chia as "almond" as a hedge. */
   const soupe = parId["squash-and-coconut-soup"];
@@ -2357,7 +2303,8 @@ test("vision: a hedge is treated like a sighting — the model's confidence pred
   assert.equal(doute.ok, true, "a hedge on a look-alike still rejected: " + doute.erreurs.join(" / "));
   const galettes = parId["lentil-and-carrot-patties"];
   const sansSosie = await avec(galettes, galettes.ingredients.map((u) => data.catalogue[u.id].name), ["could be shrimp"]);
-  assert.equal(sansSosie.ok, false, "a hedge naming shellfish with no look-alike passed");
+  assert.equal(sansSosie.ok, true, "a hedge is not a sighting: it should publish for review");
+  assert(sansSosie.avertissements.some((m) => /to review/.test(m)), "the shrimp hedge was not flagged");
 });
 
 test("vision: a look-alike the recipe holds is not an intruder, a real one still is", async () => {
