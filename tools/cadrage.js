@@ -10,12 +10,15 @@ const Thumbs = require("./thumbs.js");
 /* 0.70 of the peak keeps the dish and drops the faint texture of the cloth
  * around it — the veil covers that without harm. */
 const SEUIL_COEUR = 0.70;
-const SEUIL_SUJET = 0.35;
+/* 0.55, not 0.35: a blurred counter edge or a bright window reaches a third
+ * of the peak and was read as the start of the dish — the white bean stew
+ * measured 0.146 while its bowl actually begins at 0.50. */
+const SEUIL_SUJET = 0.55;
 
 /* Where the subject may start, as a fraction of the height. Set from two
  * photos judged good (0.202, 0.343) and two judged bad (0.495, 0.551);
- * 0.48 keeps everything between, including silky-hummus at 0.434. */
-const DEPART_MAX = 0.48;
+ * 0.45 separates them: the white bean stew, judged bad, measures 0.495. */
+const DEPART_MAX = 0.45;
 
 function profil(chemin) {
   const img = Thumbs.scale(Thumbs.decode(fs.readFileSync(chemin)), 200);

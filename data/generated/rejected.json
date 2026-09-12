@@ -3,6 +3,3028 @@
     "date": "2026-09-12",
     "commande": {
       "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "chicken",
+      "passePartout": false,
+      "reason": "pool: 6 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "chicken-lentil-spinach-tomato-bake",
+      "name": "Chicken, Lentil and Spinach Tomato Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 35,
+      "ingredients": [
+        {
+          "id": "chicken",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "lentils",
+          "qty": 200,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "tomato_paste",
+          "qty": 30,
+          "unit": "ml"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 190 °C (375 °F) and lightly grease a 23 x 33 cm baking dish with olive oil.",
+        "Dice onion finely, mince garlic, and cut chicken into 2 cm bite-sized pieces.",
+        "Combine crushed tomatoes, tomato paste, cumin, and dried oregano in a large bowl; stir well.",
+        "Add chicken pieces, cooked lentils, and diced onion and garlic to the bowl; stir to coat evenly.",
+        "Fold in spinach leaves until they are distributed throughout the mixture.",
+        "Pour the mixture into the prepared baking dish and spread into an even layer.",
+        "Bake for 25 to 28 minutes, until chicken is fully cooked through with no pink remaining and the top is lightly set.",
+        "Remove from oven and let rest for 5 minutes before serving. Yields approximately 8 portions · 4 family portions. Refrigerate up to 3 days or freeze up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "chicken",
+      "passePartout": false,
+      "reason": "pool: 6 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 7 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "chicken-butternut-squash-coconut-soup",
+      "name": "Chicken and Butternut Squash Coconut Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "chicken",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "butternut_squash",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 250,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger_ground",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Peel and cube butternut squash into 2 cm pieces; dice onion finely; mince garlic.",
+        "Cut chicken into 2 cm chunks and set aside on a clean plate.",
+        "Heat olive oil in a large pot over medium heat for 1 minute.",
+        "Add onion and garlic; cook for 3 minutes, stirring, until onion is soft and translucent.",
+        "Stir in ground ginger and turmeric; cook for 30 seconds until fragrant.",
+        "Add butternut squash, chicken, coconut milk, and unsalted chicken broth; stir to combine.",
+        "Bring to a gentle boil, then reduce heat and simmer for 18 to 20 minutes, until squash is very tender and chicken is cooked through with no pink remaining.",
+        "Remove from heat and blend with an immersion blender until smooth and creamy.",
+        "Ladle into bowls and serve warm. Yields about 1.4 litres · 4 family portions. Refrigerate up to 3 days or freeze up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "salmon",
+      "passePartout": false,
+      "reason": "pool: 8 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "salmon-butternut-squash-coconut-soup",
+      "name": "Salmon and Butternut Squash Coconut Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "salmon",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "butternut_squash",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "pinch"
+        }
+      ],
+      "steps": [
+        "Peel and dice butternut squash into 2 cm cubes; dice onion, mince garlic and fresh ginger.",
+        "Heat olive oil in a large saucepan over medium heat.",
+        "Add onion and cook for 3 minutes until softened, stirring occasionally.",
+        "Stir in garlic, ginger, and turmeric; cook for 1 minute until fragrant.",
+        "Add butternut squash, coconut milk, and vegetable broth; bring to a gentle boil.",
+        "Reduce heat and simmer for 12 minutes, until squash is completely tender.",
+        "Cut salmon into 3 cm chunks; add to the simmering soup.",
+        "Cook for 5 minutes until salmon is opaque and flakes easily.",
+        "Stir in lemon juice and salt; ladle into bowls. Refrigerate leftovers up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "polenta",
+      "passePartout": false,
+      "reason": "pool: 12 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 1: cornmeal is never named in a step",
+      "standard 5: step 3 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "polenta-salmon-spinach-bake",
+      "name": "Polenta, Salmon and Spinach Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "polenta",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 750,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "salmon",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "zucchini",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        },
+        {
+          "id": "nutritional_yeast",
+          "qty": 20,
+          "unit": "g",
+          "role": "dairy"
+        },
+        {
+          "id": "dill",
+          "qty": 3,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 200 °C (400 °F); lightly oil a 20 x 20 cm baking dish with olive oil.",
+        "Trim the zucchini and slice into thin rounds; mince the garlic cloves.",
+        "Bring the unsalted vegetable broth to a boil in a medium saucepan; whisk in the polenta in a steady stream.",
+        "Reduce heat to low; stir in the coconut milk and nutritional yeast, cook for 5 minutes, until thick and smooth.",
+        "Stir the minced garlic, sliced zucchini, and spinach into the polenta; pour the mixture into the prepared baking dish.",
+        "Lay the salmon fillets on top; drizzle with the remaining olive oil and lemon juice, then scatter fresh dill over the top.",
+        "Bake for 18 to 20 minutes, until the salmon flakes easily when pressed gently with a fork.",
+        "Remove from the oven; let the bake rest for 5 minutes before cutting into portions.",
+        "Yield: 4 family portions. Refrigerate leftovers covered for up to 2 days; do not freeze."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "polenta",
+      "passePartout": false,
+      "reason": "pool: 12 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 1: cornmeal is never named in a step",
+      "standard 5: step 7 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "polenta-ground-turkey-tomato-bowl",
+      "name": "Polenta and Ground Turkey Tomato Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "polenta",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 750,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "ground_turkey",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "tomato_paste",
+          "qty": 30,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Peel and finely dice the onion; mince the garlic cloves.",
+        "Heat olive oil in a large skillet over medium heat.",
+        "Add the diced onion and minced garlic; cook for 3 to 4 minutes, until soft and translucent.",
+        "Add the ground turkey; cook for 6 to 8 minutes, breaking it up, until no pink remains.",
+        "Stir in the tomato paste, crushed tomatoes, and dried oregano; simmer for 8 minutes, until slightly thickened.",
+        "Add the spinach; stir for 1 to 2 minutes, until wilted, then remove the skillet from heat.",
+        "Meanwhile, bring water to a boil in a medium saucepan; whisk in the polenta in a steady stream.",
+        "Reduce heat to low; stir in the coconut milk and cook for 5 minutes, stirring often, until smooth and thick.",
+        "Spoon the polenta into bowls and top with the turkey tomato sauce.",
+        "Yield: 4 family portions. Refrigerate leftovers in an airtight container for up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "black beans",
+      "passePartout": false,
+      "reason": "pool: 14 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : black-bean-and-zucchini-tomato-skillet"
+    ],
+    "recette": {
+      "id": "black-bean-and-zucchini-tomato-skillet",
+      "name": "Black Bean and Zucchini Tomato Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 25,
+      "ingredients": [
+        {
+          "id": "black_beans",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "quinoa",
+          "qty": 170,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "bell_pepper",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "paprika",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 350,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Rinse the quinoa under cold water; dice the zucchini into 1 cm pieces; dice the onion and bell pepper; mince the garlic.",
+        "Cook the quinoa in 350 ml unsalted vegetable broth in a small saucepan for 12 to 14 minutes, until absorbed; set aside.",
+        "Heat the olive oil in a large skillet over medium heat.",
+        "Add the onion, bell pepper, and garlic; cook for 3 to 4 minutes, stirring, until softened.",
+        "Add the zucchini, cumin, and paprika; stir and cook for 3 minutes, until the zucchini begins to soften.",
+        "Pour in the crushed tomatoes; stir to combine and simmer for 5 minutes, until the sauce thickens slightly.",
+        "Add the drained cooked black beans; stir and cook for 2 minutes, until heated through.",
+        "Spoon the quinoa into bowls and top with the black bean and zucchini mixture. Yields 4 family portions; refrigerate leftovers up to 3 days or freeze up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "black beans",
+      "passePartout": false,
+      "reason": "pool: 14 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words",
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "black-bean-and-sweet-potato-coconut-mash-bowl",
+      "name": "Black Bean and Sweet Potato Coconut Mash Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "black_beans",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 500,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 180,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "water",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 10,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 2 cm cubes; peel and finely dice the onion; mince the garlic.",
+        "Heat the olive oil in a large saucepan over medium heat.",
+        "Add the onion and garlic; cook for 3 to 4 minutes, stirring, until softened and translucent.",
+        "Add the sweet potato cubes, cumin, and turmeric; stir to coat evenly.",
+        "Pour in the coconut milk and water; bring to a gentle simmer.",
+        "Cover and cook for 12 to 15 minutes, until the sweet potato is fork-tender.",
+        "Add the drained cooked black beans; stir and cook uncovered for 3 minutes, until heated through.",
+        "Remove from heat; roughly mash with a fork until mostly smooth with some texture.",
+        "Stir in the lemon juice and serve in bowls. Yields about 4 family portions; keep leftovers refrigerated up to 3 days or freeze up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 18 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "quinoa-sweet-potato-carrot-coconut-mash-bowl",
+      "name": "Quinoa, Sweet Potato and Carrot Coconut Mash Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "id": "carrot",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 250,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 350,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "hemp_hearts",
+          "qty": 20,
+          "unit": "g",
+          "role": "protein"
+        }
+      ],
+      "steps": [
+        "Rinse quinoa under cold running water in a fine-mesh sieve; set aside.",
+        "Peel and dice the sweet potato into 2 cm cubes; slice the cooked carrot into rounds.",
+        "Mince the garlic clove; peel and grate the fresh ginger.",
+        "Heat coconut oil in a large saucepan over medium heat.",
+        "Add the garlic and ginger; cook for 1 minute, until fragrant.",
+        "Add the sweet potato, cooked carrot, turmeric, quinoa, coconut milk and unsalted vegetable broth; stir well.",
+        "Bring to a boil, cover, and reduce heat to low; cook for 18 to 20 minutes, until quinoa is cooked and sweet potato is fork-tender.",
+        "Mash the mixture gently with a fork or blend to the texture suited to your child's age.",
+        "Spoon into bowls and sprinkle hemp hearts over each portion. Yield: 4 family portions. Refrigerate for up to 3 days or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "quinoa",
+      "passePartout": false,
+      "reason": "pool: 18 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "quinoa-lentil-spinach-coconut-bowl",
+      "name": "Quinoa, Lentil and Spinach Coconut Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 200,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "water",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Rinse quinoa under cold water in a fine-mesh sieve; drain well and set aside.",
+        "Peel and finely dice the onion; mince the garlic cloves.",
+        "Heat olive oil in a large saucepan over medium heat.",
+        "Add the diced onion and minced garlic; cook for 3 to 4 minutes, until softened and translucent.",
+        "Stir in turmeric and cumin; cook for 30 seconds, until fragrant.",
+        "Add the rinsed quinoa, cooked lentils, coconut milk and water; stir to combine.",
+        "Bring to a boil, then reduce heat to low; simmer for 15 minutes, until quinoa is tender and liquid is mostly absorbed.",
+        "Stir in the spinach; cook for 2 minutes, until fully wilted.",
+        "Divide into bowls and mash or blend portions to the texture suited to your child's age. Yield: 4 family portions. Refrigerate for up to 3 days or freeze for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "peas",
+      "passePartout": false,
+      "reason": "pool: 20 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "green-pea-and-white-bean-coconut-soup",
+      "name": "Green Pea and White Bean Coconut Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "green_peas",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "white_beans",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "ginger_ground",
+          "qty": 1,
+          "unit": "g"
+        },
+        {
+          "id": "salt",
+          "qty": 1,
+          "unit": "g"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 10,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Dice the onion and mince the 2 garlic cloves. Rinse and drain 240 g cooked white beans.",
+        "Heat 15 ml olive oil in a large pot over medium heat.",
+        "Cook the diced onion for 4 minutes, stirring, until softened and translucent.",
+        "Add the minced garlic, 2 g turmeric, and 1 g ground ginger; stir for 1 minute.",
+        "Pour in 400 ml coconut milk and 300 ml unsalted vegetable broth; bring to a gentle boil.",
+        "Add 400 g green peas and the drained white beans; simmer for 8 minutes over medium-low heat.",
+        "Stir in 60 g spinach and cook 2 minutes, until fully wilted.",
+        "Remove from heat and blend with an immersion blender to a smooth, creamy texture.",
+        "Stir in 10 ml lemon juice and 1 g salt; taste and adjust seasoning.",
+        "Ladle into bowls. Yields 4 family portions; refrigerate up to 3 days or freeze up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "eggplant",
+      "passePartout": false,
+      "reason": "pool: 22 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : eggplant-lentil-tomato-skillet"
+    ],
+    "recette": {
+      "id": "eggplant-lentil-tomato-skillet",
+      "name": "Eggplant and Lentil Tomato Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "eggplant",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel and dice the eggplant into 1 cm cubes; finely chop the onion and mince the garlic.",
+        "Heat olive oil in a large skillet over medium heat.",
+        "Add the onion and cook for 3 to 4 minutes, until softened and translucent.",
+        "Add the garlic, cumin, and turmeric; stir for 30 seconds until fragrant.",
+        "Add the eggplant cubes and cook for 5 minutes, stirring occasionally, until slightly golden.",
+        "Pour in the crushed tomatoes and vegetable broth; stir to combine.",
+        "Add the cooked lentils and stir gently to mix through the sauce.",
+        "Reduce heat to low and simmer for 10 minutes, until eggplant is very tender.",
+        "Mash slightly with the back of a spoon for a texture suitable for 9 months.",
+        "Serve warm. Keeps refrigerated for 3 days or frozen for up to 2 months. Yields 4 family portions."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "chicken",
+      "passePartout": false,
+      "reason": "pool: 22 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "beaucoup trop de liquide pour la farine (2.7×) — la pâte ne tiendra pas"
+    ],
+    "recette": {
+      "id": "chicken-zucchini-rice-bake",
+      "name": "Chicken and Zucchini Rice Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 45,
+      "ingredients": [
+        {
+          "id": "chicken",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "id": "rice",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 480,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml"
+        },
+        {
+          "id": "onion",
+          "qty": 80,
+          "unit": "g"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 3,
+          "unit": "ml"
+        },
+        {
+          "id": "paprika",
+          "qty": 2,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 190 °C (375 °F); lightly grease a 23 x 33 cm baking dish with olive oil.",
+        "Dice onion finely, mince garlic, and grate zucchini; set all aside.",
+        "Cut chicken into 2 cm pieces and spread evenly across the baking dish.",
+        "Scatter onion, garlic, and grated zucchini over the chicken.",
+        "Sprinkle oregano and paprika evenly over the dish.",
+        "Pour unsalted broth and crushed tomatoes over everything, then stir in rice.",
+        "Cover dish tightly with foil and bake for 30 minutes.",
+        "Remove foil and bake for a further 10 minutes, until rice is tender and chicken is fully cooked with no pink.",
+        "Let stand 5 minutes before serving; store leftovers in an airtight container in the fridge for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "cod",
+      "passePartout": false,
+      "reason": "pool: 18 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "cod-and-leek-polenta-bake",
+      "name": "Cod and Leek Polenta Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 35,
+      "ingredients": [
+        {
+          "id": "white_fish",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "polenta",
+          "qty": 150,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "water",
+          "qty": 200,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "leek",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "nutritional_yeast",
+          "qty": 20,
+          "unit": "g",
+          "role": "dairy"
+        },
+        {
+          "id": "dill",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F); lightly grease a 20 x 20 cm baking dish with olive oil.",
+        "Slice the leek into thin rounds, mince the garlic, and roughly chop the spinach.",
+        "Warm 10 ml of olive oil in a medium skillet over medium heat; sauté the leek and garlic for 4 minutes until soft.",
+        "Add the spinach to the skillet; stir for 1 minute until just wilted, then remove from heat.",
+        "Bring the coconut milk and water to a simmer in a saucepan; whisk in the cornmeal (polenta) gradually.",
+        "Cook the polenta over low heat for 5 minutes, stirring constantly, until thick; stir in the nutritional yeast.",
+        "Spread the polenta evenly into the prepared baking dish; scatter the leek and spinach mixture on top.",
+        "Cut the white fish (cod, haddock) into 5 cm portions; lay them over the vegetables and drizzle with remaining olive oil.",
+        "Bake for 18 to 20 minutes, until the fish flakes easily and the top is lightly golden.",
+        "Drizzle with lemon juice and scatter fresh dill over the dish before serving; yields 4 family portions. Refrigerate up to 2 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "cod",
+      "passePartout": false,
+      "reason": "pool: 18 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 5 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "cod-and-carrot-coconut-milk-soup",
+      "name": "Cod and Carrot Coconut Milk Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "white_fish",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "carrot",
+          "qty": 250,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 200,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 1,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato and cooked carrot into 1 cm cubes; finely dice the onion and mince the garlic.",
+        "Heat olive oil in a large saucepan over medium heat until shimmering.",
+        "Add the onion and garlic; cook for 3 to 4 minutes, stirring, until softened.",
+        "Stir in the turmeric, sweet potato, and carrot; coat well with the oil.",
+        "Pour in the coconut milk and unsalted vegetable broth; bring to a gentle boil.",
+        "Reduce heat to low; simmer for 12 minutes, until the sweet potato is completely tender.",
+        "Cut the white fish (cod, haddock) into 3 cm chunks and nestle into the simmering soup.",
+        "Cook for 5 to 6 minutes, until the fish flakes easily and is opaque throughout.",
+        "Stir in the lemon juice, then blend the soup until smooth with an immersion blender.",
+        "Serve warm; yields about 1.5 litres — 4 family portions. Refrigerate up to 2 days or freeze up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "blueberries",
+      "passePartout": false,
+      "reason": "pool: 2 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "blueberry-chia-quinoa-breakfast-bars",
+      "name": "Blueberry and Quinoa Chia Bars",
+      "category": "Snack",
+      "servings": "16 bars · 4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "quinoa",
+          "qty": 185,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 80,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "chia_seeds",
+          "qty": 20,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "blueberries",
+          "qty": 150,
+          "unit": "g",
+          "role": "fruit"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 120,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "maple_syrup",
+          "qty": 30,
+          "unit": "ml",
+          "role": "sweetener"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "vanilla",
+          "qty": 5,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+        "Cook quinoa in 375 ml water for 12 minutes, until the water is fully absorbed; let cool slightly.",
+        "In a large bowl, stir together the cooked quinoa, rolled oats, chia seeds, cinnamon, and baking powder.",
+        "Add mashed banana, maple syrup, melted coconut oil, and vanilla extract to the bowl.",
+        "Stir the mixture until evenly combined; fold in the blueberries gently so they stay mostly whole.",
+        "Press the mixture evenly into the prepared pan using the back of a damp spoon.",
+        "Bake for 22 to 25 minutes, until the top is set and golden at the edges.",
+        "Cool completely in the pan before cutting into 16 bars. Store in an airtight container in the fridge for up to 4 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "tofu",
+      "passePartout": false,
+      "reason": "pool: 20 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "tofu-spinach-polenta-bake",
+      "name": "Tofu and Spinach Polenta Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "tofu",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "polenta",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "water",
+          "qty": 700,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "spinach",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 20,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "nutritional_yeast",
+          "qty": 30,
+          "unit": "g",
+          "role": "dairy"
+        },
+        {
+          "id": "oregano",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "basil_dried",
+          "qty": 0.5,
+          "unit": "tsp"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F); lightly oil a 23 x 13 cm baking dish.",
+        "Dice the onion finely and mince the garlic; drain and crumble the firm tofu into coarse chunks.",
+        "Heat the olive oil in a large skillet over medium heat; add the onion and cook for 3 minutes until softened.",
+        "Add the garlic, crumbled firm tofu, oregano, and dried basil; cook for 4 minutes, stirring occasionally.",
+        "Stir in the crushed tomatoes and fresh spinach; cook for 2 minutes until the spinach wilts.",
+        "Meanwhile, bring the water to a boil in a medium saucepan; whisk in the cornmeal (polenta) gradually.",
+        "Stir the polenta over low heat for 4 to 5 minutes until thick and pulling away from the sides.",
+        "Remove polenta from heat and stir in the nutritional yeast until combined.",
+        "Spread the polenta evenly in the prepared dish; spoon the tofu and spinach mixture over the top.",
+        "Bake for 15 minutes, until the edges are set and the top is lightly golden. Serves 4; keeps refrigerated for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "tofu",
+      "passePartout": false,
+      "reason": "pool: 20 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "tofu-sweet-potato-coconut-milk-soup",
+      "name": "Tofu and Sweet Potato Coconut Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "tofu",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 400,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger",
+          "qty": 1,
+          "unit": "tsp"
+        },
+        {
+          "id": "turmeric",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "lime",
+          "qty": 0.5,
+          "unit": "unit"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 2 cm cubes; dice the onion finely; mince the garlic and grate the ginger.",
+        "Drain the firm tofu and cut it into 1 cm cubes; pat dry with a clean cloth.",
+        "Heat the coconut oil in a large saucepan over medium heat.",
+        "Add the onion and cook for 3 to 4 minutes, stirring, until softened and translucent.",
+        "Stir in the garlic, ginger, and turmeric; cook for 1 minute until fragrant.",
+        "Add the sweet potato cubes, coconut milk, and unsalted vegetable broth; bring to a gentle boil.",
+        "Reduce heat and simmer for 12 to 15 minutes, until the sweet potato is fork-tender.",
+        "Stir in the firm tofu cubes and cook for 3 more minutes, until heated through.",
+        "Squeeze in the lime juice and stir gently to combine.",
+        "Ladle into bowls; serve warm. Keeps refrigerated for up to 3 days or frozen for 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "lentils",
+      "passePartout": false,
+      "reason": "pool: 24 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "lentil-and-spinach-coconut-rice-bowl",
+      "name": "Lentil and Spinach Coconut Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 100,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 200,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 300,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "ginger",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        }
+      ],
+      "steps": [
+        "Cook the rice according to package directions; set aside and keep warm.",
+        "Finely dice the onion, mince the garlic, and grate the ginger.",
+        "Heat the coconut oil in a large skillet over medium heat until melted.",
+        "Add the onion; cook for 3 minutes, stirring, until softened.",
+        "Add the garlic, ginger, and turmeric; stir for 1 minute, until fragrant.",
+        "Pour in the coconut milk and unsalted vegetable broth; stir to combine.",
+        "Add the cooked lentils; simmer for 5 minutes, until the sauce thickens slightly.",
+        "Stir in the spinach; cook for 2 minutes, until completely wilted.",
+        "Spoon the lentil and spinach mixture over the rice in bowls. Cool before serving. Makes 4 family portions. Refrigerate for up to 3 days or freeze lentil mixture separately for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "lentils",
+      "passePartout": false,
+      "reason": "pool: 24 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "lentil-and-sweet-potato-tomato-soup",
+      "name": "Lentil and Sweet Potato Tomato Soup",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "lentils",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "turmeric",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 500,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel and dice the sweet potato into 1 cm cubes; finely dice the onion and mince the garlic.",
+        "Heat the olive oil in a large pot over medium heat until shimmering.",
+        "Add the onion and garlic; cook for 3 minutes, until softened and translucent.",
+        "Stir in the cumin and turmeric; cook for 1 minute, until fragrant.",
+        "Add the sweet potato, cooked lentils, crushed tomatoes, and unsalted vegetable broth.",
+        "Bring to a boil, then reduce heat and simmer for 15 minutes, until sweet potato is completely tender.",
+        "Use an immersion blender to blend the soup to a smooth or semi-smooth consistency for younger eaters.",
+        "Ladle into bowls; cool to a safe eating temperature before serving. Makes about 1.6 litres · 4 family portions. Refrigerate for up to 3 days or freeze in portions for up to 2 months."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "black beans",
+      "passePartout": false,
+      "reason": "pool: 26 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 4 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "black-bean-and-spinach-polenta-bake",
+      "name": "Black Bean and Spinach Polenta Bake",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "polenta",
+          "qty": 180,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 700,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "black_beans",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 250,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "paprika",
+          "qty": 3,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "mozzarella",
+          "qty": 80,
+          "unit": "g",
+          "role": "dairy"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 200 °C (400 °F) and lightly grease a 20 x 20 cm baking dish with olive oil.",
+        "Dice onion finely and mince garlic, then sauté in remaining olive oil in a saucepan over medium heat for 3 minutes.",
+        "Add crushed tomatoes, cooked black beans, spinach, and sweet paprika to the pan; stir and cook 4 minutes until spinach wilts.",
+        "Pour unsalted vegetable broth into a second saucepan and bring to a boil over high heat.",
+        "Whisk cornmeal (polenta) gradually into the boiling broth, then reduce heat and stir constantly for 5 minutes until thick.",
+        "Spread the polenta evenly into the prepared baking dish as a base layer.",
+        "Spoon the black bean and spinach mixture over the polenta in an even layer.",
+        "Scatter grated mozzarella over the top.",
+        "Bake for 15 to 18 minutes, until bubbling and golden on top. Makes 1 bake · 4 family portions. Refrigerate up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "raspberries",
+      "passePartout": false,
+      "reason": "pool: 11 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "beaucoup trop de liquide pour la farine (25.0×) — la pâte ne tiendra pas",
+      "cuisson au four sans température indiquée"
+    ],
+    "recette": {
+      "id": "raspberry-coconut-yogurt-bark",
+      "name": "Raspberry Coconut Yogurt Bark",
+      "category": "Snack",
+      "servings": "16 pieces · 4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 15,
+      "ingredients": [
+        {
+          "id": "coconut_yogurt",
+          "qty": 375,
+          "unit": "ml",
+          "role": "dairy"
+        },
+        {
+          "id": "raspberries",
+          "qty": 150,
+          "unit": "g",
+          "role": null
+        },
+        {
+          "id": "chia_seeds",
+          "qty": 15,
+          "unit": "ml",
+          "role": "binder"
+        },
+        {
+          "id": "maple_syrup",
+          "qty": 15,
+          "unit": "ml",
+          "role": null
+        },
+        {
+          "id": "vanilla",
+          "qty": 5,
+          "unit": "ml",
+          "role": null
+        }
+      ],
+      "steps": [
+        "Line a 23 x 33 cm baking sheet with parchment paper.",
+        "Stir Coconut yogurt, Maple syrup, and Vanilla extract together in a medium bowl until smooth.",
+        "Fold Chia seeds into the yogurt mixture and let stand 5 minutes.",
+        "Spread the yogurt mixture evenly onto the prepared sheet, about 1 cm thick.",
+        "Scatter Raspberries evenly across the surface, pressing them gently into the yogurt.",
+        "Freeze for at least 4 hours, until fully solid.",
+        "Lift the parchment and break the bark into roughly 16 pieces on a clean board.",
+        "Serve immediately, straight from the freezer. Keep frozen in an airtight container for up to 4 weeks."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "plum",
+      "passePartout": false,
+      "reason": "pool: 5 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "plum-ricotta-polenta-cups",
+      "name": "Plum and Ricotta Polenta Cups",
+      "category": "Snack",
+      "servings": "12 cups · 4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "plum",
+          "qty": 4,
+          "unit": "unit",
+          "role": "fruit"
+        },
+        {
+          "id": "polenta",
+          "qty": 120,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ricotta",
+          "qty": 150,
+          "unit": "g",
+          "role": "dairy"
+        },
+        {
+          "id": "egg",
+          "qty": 2,
+          "unit": "unit",
+          "role": "binder"
+        },
+        {
+          "id": "cow_milk",
+          "qty": 120,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 190 °C (375 °F) and grease a 12-cup mini muffin tin with Coconut oil.",
+        "Halve and pit 4 Plums, then cut each half into thin slices.",
+        "In a large bowl, whisk together Ricotta, 2 Eggs, Cow's milk, Coconut oil, and Vanilla extract.",
+        "Add Cornmeal (polenta), Baking powder, and Cinnamon to the bowl and stir until smooth.",
+        "Divide the batter evenly among the 12 cups, filling each about two-thirds full.",
+        "Press 2 to 3 Plum slices gently onto the top of each cup.",
+        "Bake for 18 to 20 minutes, until the cups are set in the centre and golden at the edges.",
+        "Cool in the tin for 5 minutes, then transfer to a rack. Store in the refrigerator for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 12,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "wheat"
+      ],
+      "hero": "plum",
+      "passePartout": false,
+      "reason": "pool: 5 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "plum-oat-soft-bars",
+      "name": "Plum and Oat Soft Bars",
+      "category": "Snack",
+      "servings": "16 bars · 4 family portions",
+      "minAgeMonths": 12,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "plum",
+          "qty": 3,
+          "unit": "unit",
+          "role": "fruit"
+        },
+        {
+          "id": "rolled_oats",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 120,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vanilla",
+          "qty": 2,
+          "unit": "ml",
+          "role": "seasoning"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 4,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 180 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+        "Halve and pit 3 Plums, then dice them finely into small pieces.",
+        "In a large bowl, combine Rolled oats, Oat flour, Cinnamon, and Baking powder.",
+        "Add Mashed banana, melted Coconut oil, and Vanilla extract to the bowl.",
+        "Stir until a thick, uniform dough forms, then fold in the diced Plum pieces.",
+        "Press the mixture evenly into the prepared pan using the back of a spoon.",
+        "Bake for 20 to 22 minutes, until the top is set and the edges are lightly golden.",
+        "Cool completely in the pan, then slice into 16 bars. Store in an airtight container in the refrigerator for up to 4 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "zucchini",
+      "passePartout": false,
+      "reason": "pool: 22 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : zucchini-chicken-quinoa-skillet"
+    ],
+    "recette": {
+      "id": "zucchini-chicken-quinoa-skillet",
+      "name": "Zucchini and Chicken Quinoa Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "zucchini",
+          "qty": 250,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "chicken",
+          "qty": 300,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "quinoa",
+          "qty": 180,
+          "unit": "ml",
+          "role": "flour"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 360,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "oregano",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "paprika",
+          "qty": 1,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Dice the onion finely and mince the garlic; cut the zucchini into 1 cm half-moons.",
+        "Cut the chicken into small 1.5 cm pieces.",
+        "Rinse the quinoa under cold water in a fine-mesh strainer.",
+        "Heat olive oil in a large skillet over medium heat and cook the onion for 3 minutes until softened.",
+        "Add the garlic and chicken pieces; cook for 5 minutes, stirring, until no pink remains.",
+        "Stir in the zucchini, oregano, and paprika; cook for 2 minutes.",
+        "Add the rinsed quinoa, crushed tomatoes, and vegetable broth; stir to combine.",
+        "Bring to a gentle boil, then reduce heat to low, cover, and cook for 15 minutes until quinoa is tender.",
+        "Stir in the spinach and let it wilt for 1 to 2 minutes off the heat.",
+        "Serve warm; refrigerate leftovers in an airtight container for up to 3 days."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "hero": "peas",
+      "passePartout": false,
+      "reason": "pool: 24 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words",
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "green-pea-and-ground-turkey-quinoa-skillet",
+      "name": "Green Pea and Ground Turkey Quinoa Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "green_peas",
+          "qty": 250,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "ground_turkey",
+          "qty": 350,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "spinach",
+          "qty": 80,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "paprika",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Rinse the quinoa under cold water; set aside. Peel and finely dice the onion and mince the garlic.",
+        "Heat the olive oil in a large skillet over medium heat until shimmering.",
+        "Add the onion and cook for 4 minutes, stirring, until softened.",
+        "Add the garlic, cumin, and paprika; stir and cook for 1 minute until fragrant.",
+        "Add the ground turkey and cook for 6 to 7 minutes, breaking it apart, until no pink remains.",
+        "Stir in the quinoa and unsalted chicken broth; bring to a boil, then reduce to a simmer.",
+        "Cover and cook for 14 to 15 minutes, until the quinoa is fluffy and liquid is absorbed.",
+        "Stir in the green peas and spinach; cook uncovered for 3 minutes until peas are tender and spinach is wilted.",
+        "Drizzle with lemon juice and stir to combine. Yields 4 family portions. Refrigerate in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "hero": "peas",
+      "passePartout": false,
+      "reason": "pool: 24 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 9 runs past the ceiling of twenty-six words",
+      "standard 5: step 6 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "green-pea-and-lentil-coconut-bowl",
+      "name": "Green Pea and Lentil Coconut Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "green_peas",
+          "qty": 300,
+          "unit": "g",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 200,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "ginger",
+          "qty": 1,
+          "unit": "tsp"
+        },
+        {
+          "id": "turmeric",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "cumin",
+          "qty": 0.5,
+          "unit": "tsp"
+        },
+        {
+          "id": "coconut_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "lemon_juice",
+          "qty": 15,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Cook the rice in 600 ml water over medium heat for 18 minutes, until tender and water is absorbed.",
+        "Peel and finely dice the onion; mince the garlic and grate the ginger.",
+        "Heat the coconut oil in a large saucepan over medium heat until shimmering.",
+        "Add the onion and cook for 4 to 5 minutes, stirring, until softened and translucent.",
+        "Stir in the garlic, ginger, turmeric, and cumin; cook for 1 minute until fragrant.",
+        "Pour in the coconut milk and unsalted vegetable broth; bring to a gentle simmer.",
+        "Add the cooked lentils and green peas; simmer for 8 to 10 minutes until peas are tender.",
+        "Remove from heat and stir in the lemon juice.",
+        "Spoon the lentil and pea coconut mixture over the rice; serve warm. Yields 4 family portions. Cool completely and refrigerate in an airtight container for up to 3 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "milk",
+        "egg"
+      ],
+      "hero": "oats",
+      "passePartout": false,
+      "reason": "pool: 9 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 5: step 2 cooks without a duration or a doneness cue"
+    ],
+    "recette": {
+      "id": "apple-oat-steamed-cups",
+      "name": "Apple and Oat Steamed Cups",
+      "category": "Snack",
+      "servings": "12 cups · 4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rolled_oats",
+          "qty": 160,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "oat_beverage",
+          "qty": 180,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "applesauce",
+          "qty": 120,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "mashed_banana",
+          "qty": 80,
+          "unit": "g",
+          "role": "binder"
+        },
+        {
+          "id": "apple",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 2,
+          "unit": "ml"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 5,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Peel and finely grate the apple into a small bowl; set aside.",
+        "Fill a large pot with 5 cm of water and bring to a simmer over medium heat.",
+        "Place 12 silicone muffin cups into a steamer basket that fits the pot.",
+        "In a large bowl, combine the rolled oats, fortified oat beverage, and baking powder.",
+        "Stir in the unsweetened applesauce, mashed banana, cinnamon, and grated apple.",
+        "Spoon the mixture evenly into the 12 silicone cups, filling each about three-quarters full.",
+        "Set the steamer basket over the simmering water and cover tightly with a lid.",
+        "Steam for 18 to 20 minutes, until the cups are set and spring back when pressed.",
+        "Remove from the steamer and cool for 5 minutes before unmoulding.",
+        "Serve warm or at room temperature; refrigerate leftovers for up to 3 days or freeze for 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 24,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk"
+      ],
+      "hero": "eggplant",
+      "passePartout": false,
+      "reason": "pool: 26 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "id déjà utilisé : eggplant-lentil-tomato-skillet"
+    ],
+    "recette": {
+      "id": "eggplant-lentil-tomato-skillet",
+      "name": "Eggplant and Lentil Tomato Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 24,
+      "timeMinutes": 35,
+      "ingredients": [
+        {
+          "id": "eggplant",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "lentils",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 400,
+          "unit": "ml",
+          "role": "vegetable"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit",
+          "role": "vegetable"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove",
+          "role": "seasoning"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 30,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "paprika",
+          "qty": 5,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "vegetable_broth",
+          "qty": 125,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "salt",
+          "qty": 2,
+          "unit": "g",
+          "role": "seasoning"
+        }
+      ],
+      "steps": [
+        "Dice the eggplant into 1 cm cubes and mince the onion and garlic cloves.",
+        "Heat the olive oil in a large skillet over medium heat.",
+        "Add the minced onion and cook for 3 to 4 minutes, until softened and translucent.",
+        "Add the minced garlic, cumin, and paprika; stir for 1 minute until fragrant.",
+        "Add the diced eggplant and cook for 6 to 7 minutes, stirring often, until lightly golden.",
+        "Pour in the crushed tomatoes and vegetable broth; stir to combine.",
+        "Add the cooked lentils and salt; stir well to incorporate everything.",
+        "Reduce heat to low and simmer for 10 to 12 minutes, until the eggplant is very tender and the sauce has thickened.",
+        "Serve warm over rice or with soft bread. Keeps refrigerated for 3 days; reheat gently with a splash of water."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 9,
+      "categories": [
+        "Snack"
+      ],
+      "evite": [
+        "peanut",
+        "tree_nut"
+      ],
+      "hero": "apple",
+      "passePartout": false,
+      "reason": "pool: 13 snacks still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "apple-chickpea-coconut-bites",
+      "name": "Apple and Chickpea Coconut Bites",
+      "category": "Snack",
+      "servings": "4 family portions",
+      "minAgeMonths": 9,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "apple",
+          "qty": 1,
+          "unit": "unit",
+          "role": "fruit"
+        },
+        {
+          "id": "chickpeas",
+          "qty": 240,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "oat_flour",
+          "qty": 60,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "coconut_milk",
+          "qty": 60,
+          "unit": "ml",
+          "role": "liquid"
+        },
+        {
+          "id": "cinnamon",
+          "qty": 1,
+          "unit": "g",
+          "role": "seasoning"
+        },
+        {
+          "id": "canola_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "baking_powder",
+          "qty": 3,
+          "unit": "g",
+          "role": "leavening"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 190 °C (375 °F) and line a baking sheet with parchment paper.",
+        "Peel, core, and finely grate the apple; press gently in a clean cloth to remove excess moisture.",
+        "In a large bowl, mash cooked chickpeas thoroughly with a fork until nearly smooth.",
+        "Add oat flour, coconut milk, canola oil, cinnamon, and baking powder to the mashed chickpeas; stir well.",
+        "Fold in the grated apple until evenly combined.",
+        "Scoop rounded tablespoons of batter onto the prepared baking sheet, spacing them 3 cm apart.",
+        "Bake for 18 to 20 minutes, until firm to the touch and lightly golden on the bottom.",
+        "Cool on the sheet for 5 minutes before serving; yields 20 bites · 4 family portions. Store in an airtight container in the refrigerator for up to 3 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "hero": "ground beef",
+      "passePartout": false,
+      "reason": "pool: 30 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "ground-beef-and-sweet-potato-quinoa-skillet",
+      "name": "Ground Beef and Sweet Potato Quinoa Skillet",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "ground_beef",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "sweet_potato",
+          "qty": 2,
+          "unit": "unit"
+        },
+        {
+          "id": "quinoa",
+          "qty": 200,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "spinach",
+          "qty": 60,
+          "unit": "g"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "paprika",
+          "qty": 3,
+          "unit": "g"
+        },
+        {
+          "id": "ginger_ground",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "unsalted_broth",
+          "qty": 400,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Peel Sweet potato and cut into 1 cm cubes; finely dice Onion; mince Garlic.",
+        "Rinse Quinoa under cold Water in a fine mesh strainer for 30 seconds.",
+        "Heat Olive oil in a large skillet over medium heat for 1 minute.",
+        "Add Onion and Garlic; cook for 3 minutes, stirring, until softened.",
+        "Add Lean ground beef; cook for 6 minutes, breaking it apart, until no pink remains.",
+        "Stir in Sweet potato, Paprika and Ground ginger; cook for 2 minutes, coating well.",
+        "Pour in Unsalted chicken broth and Quinoa; stir, cover, and simmer over low heat for 15 minutes, until quinoa is cooked and sweet potato is tender.",
+        "Stir in Spinach; cook uncovered for 2 minutes, until wilted. Yields 4 family portions. Refrigerate cooled leftovers for up to 2 days or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
+      "ageMois": 6,
+      "categories": [
+        "Meal"
+      ],
+      "evite": [
+        "milk",
+        "egg",
+        "wheat"
+      ],
+      "hero": "ground beef",
+      "passePartout": false,
+      "reason": "pool: 30 meals still missing, youngest ages first"
+    },
+    "erreurs": [
+      "standard 6: step 8 runs past the ceiling of twenty-six words"
+    ],
+    "recette": {
+      "id": "ground-beef-and-zucchini-rice-bowl",
+      "name": "Ground Beef and Zucchini Rice Bowl",
+      "category": "Meal",
+      "servings": "4 family portions",
+      "minAgeMonths": 6,
+      "timeMinutes": 30,
+      "ingredients": [
+        {
+          "id": "rice",
+          "qty": 300,
+          "unit": "g",
+          "role": "flour"
+        },
+        {
+          "id": "ground_beef",
+          "qty": 400,
+          "unit": "g",
+          "role": "protein"
+        },
+        {
+          "id": "zucchini",
+          "qty": 2,
+          "unit": "unit"
+        },
+        {
+          "id": "onion",
+          "qty": 1,
+          "unit": "unit"
+        },
+        {
+          "id": "garlic",
+          "qty": 2,
+          "unit": "clove"
+        },
+        {
+          "id": "crushed_tomatoes",
+          "qty": 200,
+          "unit": "ml"
+        },
+        {
+          "id": "olive_oil",
+          "qty": 15,
+          "unit": "ml",
+          "role": "fat"
+        },
+        {
+          "id": "cumin",
+          "qty": 3,
+          "unit": "g"
+        },
+        {
+          "id": "turmeric",
+          "qty": 2,
+          "unit": "g"
+        },
+        {
+          "id": "water",
+          "qty": 600,
+          "unit": "ml",
+          "role": "liquid"
+        }
+      ],
+      "steps": [
+        "Cook Rice in 600 ml Water in a saucepan over medium heat for 18 minutes, until tender and water is absorbed.",
+        "Peel and finely dice Onion; mince Garlic; slice Zucchini into thin half-moons.",
+        "Heat Olive oil in a large skillet over medium-high heat for 1 minute.",
+        "Add Onion and Garlic; cook for 3 minutes, stirring, until softened and translucent.",
+        "Add Lean ground beef; cook for 6 to 8 minutes, breaking it apart, until no pink remains.",
+        "Stir in Zucchini, Cumin and Turmeric; cook for 3 minutes, until zucchini is just tender.",
+        "Pour in Crushed tomatoes; stir and simmer for 5 minutes, until sauce thickens slightly.",
+        "Spoon beef mixture over cooked Rice; serve in bowls. Yields 4 family portions. Store cooled leftovers in an airtight container in the refrigerator for up to 2 days, or freeze for up to 1 month."
+      ]
+    }
+  },
+  {
+    "date": "2026-09-12",
+    "commande": {
+      "n": 2,
       "ageMois": 12,
       "categories": [
         "Snack"

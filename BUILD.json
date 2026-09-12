@@ -1,5 +1,5 @@
 {
-  "build": 205,
+  "build": 206,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -21,6 +21,10 @@
     "the access model now matches what the subscription actually gives. A subscriber used to download all 159 bodies and search reached every one of them — the app was a browsable database. It downloads this week, last week for a subscriber, the two days each locked week previews, whatever is saved, and the top fifteen; search sees exactly those and nothing else",
     "the ranking is per age band (6, 9, 12, 24, 48 months) and capped at fifteen: a parent of a nine-month-old sees what other parents of nine-month-olds cooked. The band is recorded with each rating; entries from before carry none and stay out",
     "six texts promised things the product does not do: '7 new recipes every week' (they are fourteen), '523 recipes a year from now' with a growth chart that drew an accumulating library, 'Every past week, kept' when only the week before exists, 'Nothing disappears once it is unlocked' when nothing is unlocked for life, and a monthly-batch sentence left over from an older model. The chart is gone and the three benefits say what is true",
-    "the onboarding draft starts with no age at all. It defaulted to nine months, so a parent could walk past the one choice that decides every choking alert and every servable recipe; the button now says 'Choose an age' and stays inactive. The first name is typed at display size instead of 13 points, and the keyboard no longer opens by itself over three of the five age cards"
+    "the onboarding draft starts with no age at all. It defaulted to nine months, so a parent could walk past the one choice that decides every choking alert and every servable recipe; the button now says 'Choose an age' and stays inactive. The first name is typed at display size instead of 13 points, and the keyboard no longer opens by itself over three of the five age cards",
+    "the mystery of 'FOR MY' is solved and it was mine: the draft profile carried the placeholder name 'My child', firstName takes the first word, and the typed name was only copied into the draft at the very end. Step four greeted 'For My', then 'For' with nothing once the draft started blank. The draft takes the name from the first keystroke",
+    "step two: scrolling now dismisses the keyboard — with it up there was no room to reach the last two age cards and the footer is translucent by design, so they read as sitting under the button. And once a stage is picked, the settings' own month counter appears under it: a stage is a band, the alerts are set month by month",
+    "step four carries what Apple requires on a screen that sells: price, period and renewal in one sentence, then Restore, Terms and Privacy. It had none of them",
+    "the framing metric had a false positive and a photo found it: the white bean stew measured 0.146 while its bowl begins at 0.50 — a blurred counter edge reached a third of the peak and was read as the dish. The subject threshold is 0.55 of the peak instead of 0.35, and the four labelled photos now separate cleanly: 0.237 and 0.364 good, 0.495, 0.571 and 0.576 bad. DEPART_MAX is 0.45; at that setting 29 photos start too low, not 8 — the list is with François, nothing was moved"
   ]
 }

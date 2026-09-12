@@ -437,6 +437,10 @@ private struct WhoStep: View {
                         .eyebrow()
                     TextField("First name", text: $name)
                         .scaledFont(Type.display, weight: .semibold)
+                        /* The draft carries the name from the first keystroke:
+                         * it used to be filled only at the very end, so step 4
+                         * read the placeholder and greeted "For My". */
+                        .onChange(of: name) { _, v in draft.name = v.trimmingCharacters(in: .whitespaces) }
                         .foregroundStyle(Tone.text)
                         .focused($focused)
                         .submitLabel(.next)
@@ -463,10 +467,24 @@ private struct WhoStep: View {
                         }
                     }
                 }
+
+                /* The exact month, once a stage is picked: the same counter
+                 * the settings use. A stage is a band; the alerts are set
+                 * month by month. */
+                if draft.ageMonths > 0 {
+                    Text("Exact age").eyebrow()
+                        .padding(.top, 20)
+                        .padding(.bottom, 8)
+                    AgePicker(ageMonths: $draft.ageMonths)
+                }
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 16)
         }
+        /* Scrolling puts the keyboard away: with it up there is no room left
+         * to reach the last two age cards, and the footer is translucent by
+         * design, so they read as being under the button. */
+        .scrollDismissesKeyboard(.immediately)
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 9) {
                 Button(action: next) {
@@ -733,11 +751,25 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                if let priceLine = app.subscription.priceLine {
-                    Text(priceLine)
-                        .scaledFont(Type.secondary)
-                        .foregroundStyle(Tone.textTertiary)
+                /* Price, period and renewal in one sentence, then the three
+                 * links Apple requires on a screen that sells. */
+                Text(app.subscription.priceLine
+                     ?? String(localized: "7 days free, then a monthly subscription."))
+                    .scaledFont(Type.secondary)
+                    .foregroundStyle(Tone.text2)
+                    .multilineTextAlignment(.center)
+                Text("Renews automatically. Cancel any time in your Apple account, at least 24 hours before the period ends.")
+                    .scaledFont(Type.micro)
+                    .foregroundStyle(Tone.textTertiary)
+                    .multilineTextAlignment(.center)
+                HStack(spacing: 16) {
+                    Button("Restore") { Task { await app.subscription.restore() } }
+                    Link("Terms", destination: Settings.terms)
+                    Link("Privacy", destination: Settings.privacy)
                 }
+                .scaledFont(Type.micro)
+                .foregroundStyle(Tone.textTertiary)
+                .padding(.top, 2)
             }
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 10)
@@ -745,8 +777,6 @@ private struct OfferStep: View {
         }
     }
 }
-
-/// Honest arithmetic: today, and the same corpus a year out at seven a week.
 
 private struct FreeForever: View {
     var body: some View {

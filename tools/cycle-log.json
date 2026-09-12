@@ -1,116 +1,110 @@
 {
-  "le": "2026-09-12T00:15:07.247Z",
+  "le": "2026-09-12T00:28:02.055Z",
   "recettes": {
     "commandees": 20,
     "redigees": 20,
-    "acceptees": 6,
+    "acceptees": 9,
     "rejetees": [
       {
-        "id": "polenta-chicken-spinach-bowl",
+        "id": "eggplant-lentil-tomato-skillet",
         "erreurs": [
-          "standard 1: cornmeal is never named in a step",
-          "standard 5: step 6 cooks without a duration or a doneness cue"
+          "id déjà utilisé : eggplant-lentil-tomato-skillet"
         ]
       },
       {
-        "id": "polenta-lentil-tomato-bake",
+        "id": "green-pea-and-white-bean-coconut-soup",
         "erreurs": [
-          "standard 1: cornmeal is never named in a step"
+          "standard 5: step 5 cooks without a duration or a doneness cue"
         ]
       },
       {
-        "id": "pear-and-oat-mini-muffins",
+        "id": "quinoa-lentil-spinach-coconut-bowl",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "quinoa-sweet-potato-carrot-coconut-mash-bowl",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
+      },
+      {
+        "id": "black-bean-and-sweet-potato-coconut-mash-bowl",
         "erreurs": [
           "standard 6: step 9 runs past the ceiling of twenty-six words",
-          "standard 2: the oven is preheated before anything bakes"
+          "standard 5: step 5 cooks without a duration or a doneness cue"
         ]
       },
       {
-        "id": "pear-and-ricotta-soft-bites",
+        "id": "black-bean-and-zucchini-tomato-skillet",
         "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words",
-          "standard 2: the oven is preheated before anything bakes"
+          "id déjà utilisé : black-bean-and-zucchini-tomato-skillet"
         ]
       },
       {
-        "id": "salmon-sweet-potato-coconut-curry",
+        "id": "polenta-ground-turkey-tomato-bowl",
+        "erreurs": [
+          "standard 1: cornmeal is never named in a step",
+          "standard 5: step 7 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "polenta-salmon-spinach-bake",
+        "erreurs": [
+          "standard 1: cornmeal is never named in a step",
+          "standard 5: step 3 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "salmon-butternut-squash-coconut-soup",
+        "erreurs": [
+          "standard 5: step 5 cooks without a duration or a doneness cue"
+        ]
+      },
+      {
+        "id": "chicken-butternut-squash-coconut-soup",
         "erreurs": [
           "standard 6: step 7 runs past the ceiling of twenty-six words"
         ]
       },
       {
-        "id": "peach-ricotta-quinoa-cups",
-        "erreurs": [
-          "standard 6: step 10 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "white-bean-and-leek-potato-soup",
-        "erreurs": [
-          "ingrédient hors catalogue : « thyme » — inventé par le modèle"
-        ]
-      },
-      {
-        "id": "carrot-lentil-coconut-patties",
+        "id": "chicken-lentil-spinach-tomato-bake",
         "erreurs": [
           "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "ground-beef-and-sweet-potato-rice-skillet",
-        "erreurs": [
-          "standard 5: step 7 cooks without a duration or a doneness cue"
-        ]
-      },
-      {
-        "id": "apple-cinnamon-oat-soft-bars",
-        "erreurs": [
-          "standard 6: step 9 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "apple-ricotta-quinoa-cups",
-        "erreurs": [
-          "standard 6: step 9 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "chickpea-and-zucchini-tomato-rice-bowl",
-        "erreurs": [
-          "standard 6: step 9 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "raspberry-ricotta-quinoa-bites",
-        "erreurs": [
-          "standard 6: step 8 runs past the ceiling of twenty-six words"
-        ]
-      },
-      {
-        "id": "raspberry-coconut-yogurt-bark",
-        "erreurs": [
-          "beaucoup trop de liquide pour la farine (30.0×) — la pâte ne tiendra pas",
-          "cuisson au four sans température indiquée"
         ]
       }
     ],
     "aRevoir": [
       {
-        "id": "salmon-lentil-tomato-bake",
+        "id": "salmon-sweet-potato-coconut-patties",
         "avertissements": [
-          "unité inhabituelle sur paprika : tsp",
-          "unité inhabituelle sur oregano : tsp",
-          "unité inhabituelle sur dill : tbsp"
+          "unité inhabituelle sur salt : pinch"
+        ]
+      },
+      {
+        "id": "eggplant-ground-turkey-rice-bake",
+        "avertissements": [
+          "pâte très liquide (2.0×) — à revoir"
+        ]
+      },
+      {
+        "id": "lentil-spinach-tomato-rice-bake",
+        "avertissements": [
+          "pâte très liquide (2.1×) — à revoir"
         ]
       }
     ],
     "nouvelles": [
-      "salmon-lentil-tomato-bake",
-      "peach-avocado-chia-smash-cups",
-      "white-bean-and-ground-turkey-tomato-bake",
-      "carrot-coconut-milk-soft-bites",
-      "ground-beef-and-lentil-tomato-bowl",
-      "chickpea-and-sweet-potato-coconut-curry"
+      "eggplant-ground-turkey-rice-bake",
+      "oat-and-apple-baked-fingers",
+      "oat-and-banana-stovetop-porridge-bites",
+      "green-pea-and-chicken-quinoa-bowl",
+      "zucchini-chickpea-coconut-soup",
+      "zucchini-ground-beef-quinoa-skillet",
+      "lentil-sweet-potato-coconut-soup",
+      "lentil-spinach-tomato-rice-bake",
+      "salmon-sweet-potato-coconut-patties"
     ]
   },
   "images": null

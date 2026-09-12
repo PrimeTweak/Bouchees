@@ -11046,5 +11046,2200 @@
       "license": "original content, written for Bouchees",
       "cookedByAHuman": false
     }
+  },
+  {
+    "id": "apple-cinnamon-ricotta-toast-fingers",
+    "name": "Apple and Ricotta Toast Fingers",
+    "category": "Snack",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "bread",
+        "qty": 4,
+        "unit": "slice",
+        "role": "flour"
+      },
+      {
+        "id": "ricotta",
+        "qty": 120,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "apple",
+        "qty": 2,
+        "unit": "unit",
+        "role": "fruit"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 1,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Peel and core 2 apples, then grate them finely on a box grater.",
+      "Heat canola oil in a medium non-stick pan over medium heat.",
+      "Add the grated apple and cinnamon; cook for 5 to 6 minutes, stirring often, until soft and no liquid remains.",
+      "Toast 4 slices of whole wheat bread until golden, then cut each slice into 3 fingers.",
+      "Spread ricotta evenly over each toast finger, about 1 tablespoon per finger.",
+      "Spoon the warm cooked apple over the ricotta, dividing it evenly.",
+      "Serve immediately; yields 12 fingers · 4 family portions. Refrigerate leftovers for up to 1 day."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-and-carrot-coconut-patties",
+    "name": "Chickpea and Carrot Coconut Patties",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "carrot",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "turmeric",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+      "Drain and rinse the cooked chickpeas, then pat them dry with a clean cloth.",
+      "Mash the cooked chickpeas in a large bowl until mostly smooth with some texture remaining.",
+      "Finely grate the cooked carrot and mince the garlic clove; add both to the bowl.",
+      "Add the chickpea flour, coconut milk, ground cumin, and turmeric; stir until a firm dough forms.",
+      "Shape the mixture into 12 equal patties, each about 1.5 cm thick, and place on the lined sheet.",
+      "Brush the tops of the patties lightly with olive oil.",
+      "Bake for 20 to 22 minutes, flipping once at 11 minutes, until golden and firm to the touch.",
+      "Cool for 5 minutes before serving. Yield: 12 patties · 4 family portions. Refrigerate for up to 3 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-and-zucchini-tomato-rice-bowl",
+    "name": "Chickpea and Zucchini Tomato Rice Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "zucchini",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 400,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "paprika",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Rinse the rice under cold water; cook it in the unsalted vegetable broth in a medium saucepan over medium heat for 18 minutes, until tender.",
+      "Dice the onion and mince the garlic; cut the zucchini into small 1 cm cubes.",
+      "Heat the olive oil in a large skillet over medium heat for 1 minute.",
+      "Add the diced onion and minced garlic; cook for 3 to 4 minutes, stirring, until softened.",
+      "Stir in the ground cumin and sweet paprika; cook for 30 seconds until fragrant.",
+      "Add the zucchini cubes and cook for 3 minutes, stirring occasionally, until slightly tender.",
+      "Pour in the crushed tomatoes and drained cooked chickpeas; stir to combine.",
+      "Simmer over medium-low heat for 8 to 10 minutes, until the sauce thickens and the zucchini is soft.",
+      "Stir in the lemon juice and serve the chickpea mixture over the cooked rice. Yield: 4 family portions. Refrigerate for up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "raspberry-ricotta-rice-flour-mini-pancakes",
+    "name": "Raspberry Ricotta Mini Pancakes",
+    "category": "Snack",
+    "servings": "20 mini pancakes · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "rice_flour",
+        "qty": 120,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "ricotta",
+        "qty": 125,
+        "unit": "ml",
+        "role": "dairy"
+      },
+      {
+        "id": "egg",
+        "qty": 2,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cow_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 5,
+        "unit": "ml",
+        "role": null
+      },
+      {
+        "id": "raspberries",
+        "qty": 120,
+        "unit": "g",
+        "role": null
+      },
+      {
+        "id": "vanilla",
+        "qty": 5,
+        "unit": "ml",
+        "role": null
+      },
+      {
+        "id": "canola_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Mash Raspberries roughly with a fork in a small bowl, leaving some chunks.",
+      "Whisk Eggs, Ricotta, Cow's milk, and Vanilla extract together in a large bowl.",
+      "Add Rice flour and Baking powder to the bowl and stir until a smooth batter forms.",
+      "Fold the mashed Raspberries gently into the batter.",
+      "Heat Canola oil in a large non-stick skillet over medium heat, about 175 °C (350 °F).",
+      "Drop tablespoon-sized rounds of batter into the pan, spacing them 3 cm apart.",
+      "Cook for 2 to 3 minutes per side, until golden and set through, working in batches.",
+      "Transfer to a plate and cool slightly before serving. Keep refrigerated for up to 3 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "eggplant-chickpea-quinoa-bowl",
+    "name": "Eggplant and Chickpea Quinoa Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 40,
+    "ingredients": [
+      {
+        "id": "eggplant",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "quinoa",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "red_pepper",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 45,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "turmeric",
+        "qty": 4,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "cumin",
+        "qty": 4,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "salt",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a large baking sheet with parchment paper.",
+      "Cut the eggplant and red bell pepper into 2 cm cubes; dice the onion and mince the garlic.",
+      "Toss the eggplant, red bell pepper, and onion with 30 ml of olive oil, turmeric, cumin, and salt on the baking sheet.",
+      "Roast for 22 to 25 minutes, until the eggplant is golden and tender.",
+      "Meanwhile, rinse the quinoa and combine with the vegetable broth in a medium saucepan over medium-high heat.",
+      "Bring to a boil, then reduce heat to low, cover, and cook for 14 to 15 minutes, until liquid is absorbed.",
+      "Heat the remaining 15 ml of olive oil in a small pan over medium heat; cook the minced garlic for 1 minute.",
+      "Add the cooked chickpeas to the garlic pan and warm for 3 minutes, stirring.",
+      "Divide the quinoa into bowls; top with the roasted vegetables, chickpeas, and a drizzle of lemon juice.",
+      "Serve warm. Keeps refrigerated for 3 days; store components separately for best texture."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "banana-oat-coconut-bars",
+    "name": "Banana, Oat and Coconut Soft Bars",
+    "category": "Snack",
+    "servings": "16 bars · 4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 80,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "coconut_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "ground_flaxseed",
+        "qty": 15,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 175 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+      "Melt the coconut oil gently in a small saucepan over low heat, then remove from heat.",
+      "In a large bowl, combine the rolled oats, ground flaxseed, cinnamon, and vanilla extract.",
+      "Add the mashed banana, coconut milk, and melted coconut oil to the oat mixture.",
+      "Stir until the mixture is evenly combined and holds together when pressed.",
+      "Transfer the mixture into the prepared pan and press firmly into an even layer.",
+      "Bake for 20 to 22 minutes, until the top is golden and the edges are set.",
+      "Cool completely in the pan before lifting out using the parchment paper.",
+      "Cut into 16 bars with a sharp knife.",
+      "Refrigerate in an airtight container for up to 4 days or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "cucumber-cream-cheese-rice-rounds",
+    "name": "Cucumber and Cream Cheese Rice Rounds",
+    "category": "Snack",
+    "servings": "20 rounds · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "water",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "cucumber",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "ricotta",
+        "qty": 120,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "dill",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 5,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Combine Rice and Water in a medium saucepan over medium heat.",
+      "Bring to a boil, then reduce heat and simmer for 15 minutes, until water is absorbed.",
+      "Spread the cooked Rice onto a lined tray and press into a 1 cm-thick layer; let cool 10 minutes.",
+      "Wash and peel the Cucumber; slice into 20 rounds, each about 1 cm thick.",
+      "In a small bowl, stir the Ricotta, Fresh dill, and Lemon juice together until smooth.",
+      "Cut the cooled rice layer into 20 small rounds using a 4 cm round cutter.",
+      "Spoon about 1 teaspoon of the Ricotta mixture onto each rice round.",
+      "Top each round with one Cucumber slice and press gently to secure.",
+      "Store in an airtight container in the fridge for up to 2 days; serve cold."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "cucumber-chickpea-smash-cups",
+    "name": "Cucumber and Chickpea Smash Cups",
+    "category": "Snack",
+    "servings": "16 cups · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "cucumber",
+        "qty": 2,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "mashed_avocado",
+        "qty": 80,
+        "unit": "g",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 10,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 1,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "dill",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Drain and rinse the Cooked chickpeas, then pat dry with a clean towel.",
+      "In a medium bowl, combine Cooked chickpeas, Mashed avocado, Lemon juice, Olive oil, and Ground cumin.",
+      "Mash the mixture with a fork until mostly smooth with some small chunks remaining.",
+      "Wash the Cucumbers and slice each into 16 rounds, each about 2 cm thick.",
+      "Use a small spoon to hollow a shallow well in the centre of each Cucumber round.",
+      "Spoon about 1 teaspoon of the chickpea smash into each Cucumber cup.",
+      "Scatter Fresh dill over the filled cups to finish.",
+      "Arrange on a plate and serve immediately, or refrigerate for up to 1 day in an airtight container."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "zucchini-lentil-coconut-patties",
+    "name": "Zucchini and Lentil Coconut Patties",
+    "category": "Meal",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "zucchini",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "lentils",
+        "qty": 240,
+        "unit": "ml",
+        "role": "protein"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 200 °C (400 °F) and line a baking sheet with parchment paper.",
+      "Grate the zucchini coarsely, then squeeze firmly in a clean towel to remove excess water.",
+      "Mince the garlic clove finely.",
+      "In a large bowl, mash the cooked lentils with a fork until mostly smooth.",
+      "Add the grated zucchini, minced garlic, chickpea flour, coconut milk, cumin, and turmeric to the bowl.",
+      "Stir until the mixture holds together; if too wet, add 15 g more chickpea flour.",
+      "Shape into 16 small patties, about 4 cm wide, and place on the lined baking sheet.",
+      "Brush the tops lightly with olive oil.",
+      "Bake for 20 to 22 minutes, flipping once at 12 minutes, until golden and firm.",
+      "Cool for 5 minutes before serving; refrigerate leftovers for up to 3 days or freeze for 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "black-bean-and-corn-quesadillas",
+    "name": "Black Bean and Corn Quesadillas",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 25,
+    "ingredients": [
+      {
+        "id": "black_beans",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "corn",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "red_pepper",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "cheddar",
+        "qty": 100,
+        "unit": "g",
+        "role": "dairy"
+      },
+      {
+        "id": "corn_tortillas",
+        "qty": 8,
+        "unit": "unit",
+        "role": "flour"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lime",
+        "qty": 1,
+        "unit": "unit",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Dice red bell pepper into small pieces and set aside.",
+      "In a bowl, mash cooked black beans roughly with a fork, leaving some texture.",
+      "Stir corn kernels, diced red bell pepper, ground cumin, and lime juice into the mashed black beans.",
+      "Grate cheddar finely and sprinkle half over four corn tortillas.",
+      "Spread the black bean mixture evenly over the cheese-topped tortillas, then top each with remaining cheddar.",
+      "Press a second corn tortilla firmly on top of each filled tortilla.",
+      "Heat canola oil in a large non-stick pan over medium heat, about 180 °C (350 °F).",
+      "Cook each quesadilla for 2 to 3 minutes per side, until golden and cheese is melted.",
+      "Cut into small wedges before serving. Makes 32 wedges · 4 family portions. Refrigerate leftovers up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "beet-and-lentil-patties",
+    "name": "Beet and Lentil Pan Patties",
+    "category": "Snack",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "beet",
+        "qty": 200,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "lentils",
+        "qty": 240,
+        "unit": "ml",
+        "role": "protein"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Peel and coarsely grate 200 g of beet; squeeze out excess moisture using a clean cloth.",
+      "Mince 1 garlic clove finely.",
+      "In a large bowl, mash the cooked lentils with a fork until mostly smooth.",
+      "Add the grated beet, minced garlic, cumin, lemon juice, oat flour, and egg to the bowl.",
+      "Stir firmly until a uniform dough forms that holds its shape when pressed.",
+      "Divide into 16 equal portions and flatten each into a round patty about 1 cm thick.",
+      "Heat olive oil in a large non-stick skillet over medium heat, 180 °C (350 °F).",
+      "Cook the patties in batches for 3 to 4 minutes per side, until firm and golden.",
+      "Transfer to a plate lined with paper towel and cool slightly before serving.",
+      "Store leftovers in an airtight container in the fridge for up to 3 days, or freeze for 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "beet-and-apple-quinoa-bites",
+    "name": "Beet and Apple Quinoa Bites",
+    "category": "Snack",
+    "servings": "20 bites · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "beet",
+        "qty": 150,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "apple",
+        "qty": 1,
+        "unit": "unit",
+        "role": "fruit"
+      },
+      {
+        "id": "quinoa",
+        "qty": 180,
+        "unit": "ml",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "chickpea_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 15,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "coconut_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 190 °C (375 °F) and line a large baking sheet with parchment paper.",
+      "Cook quinoa in 360 ml water over medium heat for 12 minutes; spread on a plate to cool.",
+      "Peel and finely grate the beet and the apple; squeeze out excess liquid with a clean cloth.",
+      "In a large bowl, combine the cooled quinoa, grated beet, and grated apple.",
+      "Add the egg, chickpea flour, cinnamon, maple syrup, and melted coconut oil.",
+      "Mix firmly until the mixture holds together when pressed between two fingers.",
+      "Scoop 20 equal portions onto the prepared baking sheet and press each into a round 2 cm thick.",
+      "Bake for 18 to 20 minutes, until the edges are set and the tops feel firm to the touch.",
+      "Cool on the sheet for 5 minutes before serving; bites firm up further as they cool.",
+      "Keep in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "avocado-banana-chia-smash-cups",
+    "name": "Avocado and Banana Chia Smash Cups",
+    "category": "Snack",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 10,
+    "ingredients": [
+      {
+        "id": "avocado",
+        "qty": 2,
+        "unit": "unit",
+        "role": "fat"
+      },
+      {
+        "id": "banana",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 15,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 30,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Halve and pit 2 Avocados, then scoop the flesh into a medium bowl.",
+      "Peel and break 1 Banana into chunks; add to the bowl with the avocado.",
+      "Smash avocado and banana together with a fork until mostly smooth.",
+      "Stir in 15 ml Lemon juice to keep the colour bright.",
+      "Add 30 ml Coconut milk and stir until the mixture is creamy.",
+      "Sprinkle in 15 g Chia seeds and stir well to combine.",
+      "Let the mixture sit for 5 minutes so the chia seeds begin to thicken it.",
+      "Spoon into 4 small cups or bowls and serve immediately. Refrigerate leftovers in an airtight container for up to 1 day."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "avocado-mango-coconut-chia-cups",
+    "name": "Avocado and Mango Coconut Chia Cups",
+    "category": "Snack",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "avocado",
+        "qty": 2,
+        "unit": "unit",
+        "role": "fat"
+      },
+      {
+        "id": "mango",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 20,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "lime",
+        "qty": 10,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Peel and dice 1 Mango; place pieces in a blender and blend until smooth.",
+      "Halve and pit 2 Avocados; scoop flesh into a medium bowl and mash with a fork.",
+      "Pour the mango purée over the mashed avocado and stir to combine.",
+      "Add 60 ml Coconut milk and 10 ml Lime juice; stir until creamy.",
+      "Sprinkle in 20 g Chia seeds and stir well.",
+      "Let the mixture stand for 8 minutes, stirring once, until slightly thickened.",
+      "Spoon evenly into 4 small cups. Refrigerate in airtight containers for up to 1 day; stir before serving."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chicken-sweet-potato-coconut-patties",
+    "name": "Chicken and Sweet Potato Coconut Patties",
+    "category": "Meal",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chicken",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 200,
+        "unit": "g"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "garlic",
+        "qty": 1,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "ml"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      }
+    ],
+    "steps": [
+      "Peel and dice sweet potato into 2 cm cubes; boil in a medium saucepan for 12 minutes, until very tender.",
+      "Drain sweet potato and mash with coconut milk in a large bowl until smooth.",
+      "Mince garlic and add to the bowl with cumin and turmeric; stir to combine.",
+      "Pulse chicken in a food processor until finely ground, then add to the bowl.",
+      "Add oat flour and egg; mix until a soft, uniform dough forms.",
+      "Shape dough into 16 patties, each about 1.5 cm thick and 5 cm wide.",
+      "Heat canola oil in a large non-stick skillet over medium heat.",
+      "Cook patties in batches for 4 to 5 minutes per side, until golden and cooked through with no pink inside.",
+      "Serve warm; refrigerate leftovers in an airtight container for up to 3 days, or freeze for up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "mango-chia-coconut-freezer-bites",
+    "name": "Mango Chia Coconut Freezer Bites",
+    "category": "Snack",
+    "servings": "16 bites · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "mango",
+        "qty": 300,
+        "unit": "g",
+        "role": "fruit"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 120,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 30,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_yogurt",
+        "qty": 60,
+        "unit": "ml",
+        "role": "dairy"
+      },
+      {
+        "id": "vanilla",
+        "qty": 2,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Peel and dice mango into chunks, then place in a blender.",
+      "Add coconut milk, coconut yogurt, and vanilla extract to the blender.",
+      "Blend until completely smooth, about 30 seconds.",
+      "Pour mixture into a large bowl and stir in chia seeds.",
+      "Let the mixture rest for 10 minutes, stirring once, until slightly thickened.",
+      "Spoon evenly into a 16-cup silicone mini-muffin tray.",
+      "Freeze for at least 3 hours, until fully set and firm throughout.",
+      "Pop bites out and serve slightly thawed for 2 minutes. Keep frozen up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "mango-oat-soft-bars",
+    "name": "Mango Oat Soft Bars",
+    "category": "Snack",
+    "servings": "12 bars · 4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "mango",
+        "qty": 250,
+        "unit": "g",
+        "role": "fruit"
+      },
+      {
+        "id": "rolled_oats",
+        "qty": 150,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "oat_flour",
+        "qty": 60,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 120,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g",
+        "role": "leavening"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+      "Peel and finely dice mango into small pieces, no larger than 1 cm.",
+      "In a large bowl, combine rolled oats, oat flour, cinnamon, and baking powder.",
+      "Add mashed banana and melted coconut oil to the bowl and stir until a soft dough forms.",
+      "Fold diced mango gently into the dough until evenly distributed.",
+      "Press dough firmly and evenly into the prepared pan using the back of a spoon.",
+      "Bake for 18 to 20 minutes, until the top is golden and the edges pull away from the pan.",
+      "Cool completely in the pan, then slice into 12 bars. Keep refrigerated up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "blueberry-avocado-chia-smash-cups",
+    "name": "Blueberry and Avocado Chia Smash Cups",
+    "category": "Snack",
+    "servings": "4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 15,
+    "ingredients": [
+      {
+        "id": "blueberries",
+        "qty": 200,
+        "unit": "g",
+        "role": "fruit"
+      },
+      {
+        "id": "avocado",
+        "qty": 1,
+        "unit": "unit",
+        "role": "fat"
+      },
+      {
+        "id": "chia_seeds",
+        "qty": 20,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 120,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "maple_syrup",
+        "qty": 15,
+        "unit": "ml",
+        "role": "sweetener"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 10,
+        "unit": "ml",
+        "role": "seasoning"
+      },
+      {
+        "id": "vanilla",
+        "qty": 3,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Warm the blueberries in a small saucepan over medium heat for 4 to 5 minutes, stirring, until they burst and release their juices.",
+      "Remove from heat and smash the blueberries lightly with a fork; stir in lemon juice and maple syrup.",
+      "In a medium bowl, whisk together coconut milk, chia seeds, and vanilla extract until combined.",
+      "Let the chia mixture rest for 8 minutes, stirring once halfway through, until slightly thickened.",
+      "Halve and pit the avocado, then scoop the flesh into a bowl and mash until smooth.",
+      "Spoon the mashed avocado evenly into 4 small cups or jars as the base layer.",
+      "Spoon the chia coconut layer over the avocado, then top each cup with the warm blueberry smash.",
+      "Serve immediately, or cover and refrigerate for up to 24 hours; stir gently before serving."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-and-roasted-red-pepper-quinoa-bowl",
+    "name": "Chickpea and Roasted Red Pepper Quinoa Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "quinoa",
+        "qty": 180,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "red_pepper",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "spinach",
+        "qty": 60,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "turmeric",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 360,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "water",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 220 °C (425 °F) and line a baking sheet with parchment paper.",
+      "Halve and deseed 2 red bell peppers, then place them cut side down on the prepared sheet.",
+      "Roast the red bell peppers for 20 minutes, until the skins are blistered and soft.",
+      "Meanwhile, rinse 180 g of quinoa and combine it with 360 ml of vegetable broth in a medium saucepan.",
+      "Bring to a boil, then cover and simmer over low heat for 15 minutes, until the liquid is absorbed.",
+      "Warm 30 ml of olive oil in a large skillet over medium heat, then add 400 g of cooked chickpeas, cumin, and turmeric.",
+      "Cook the chickpeas for 5 to 6 minutes, stirring occasionally, until lightly golden.",
+      "Add 60 g of spinach and 60 ml of water to the skillet; cook for 2 minutes until wilted.",
+      "Peel and roughly chop the roasted red bell peppers, then stir them into the chickpea mixture with 15 ml of lemon juice.",
+      "Divide the quinoa among bowls, spoon the chickpea mixture on top, and serve warm. Refrigerate leftovers up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "chickpea-and-butternut-squash-coconut-soup",
+    "name": "Chickpea and Butternut Squash Coconut Soup",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "chickpeas",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "butternut_squash",
+        "qty": 500,
+        "unit": "g"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 480,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "ginger",
+        "qty": 5,
+        "unit": "g"
+      },
+      {
+        "id": "turmeric",
+        "qty": 3,
+        "unit": "g"
+      },
+      {
+        "id": "ginger_ground",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 20,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Peel and dice 500 g of butternut squash into 2 cm cubes; peel and finely dice 1 onion.",
+      "Mince 2 cloves of garlic and grate 5 g of fresh ginger.",
+      "Warm 20 ml of olive oil in a large pot over medium heat.",
+      "Add the onion and cook for 4 to 5 minutes, stirring, until softened and translucent.",
+      "Stir in the garlic, fresh ginger, turmeric, and ground ginger; cook for 1 minute until fragrant.",
+      "Add the butternut squash, 400 g of cooked chickpeas, 400 ml of coconut milk, and 480 ml of vegetable broth.",
+      "Bring to a boil, then reduce heat and simmer uncovered for 18 to 20 minutes, until the squash is completely tender.",
+      "Use an immersion blender to partially blend the soup, leaving some chickpeas and squash pieces whole.",
+      "Stir in 15 ml of lemon juice and serve warm in bowls.",
+      "Yield: 4 family portions. Refrigerate up to 3 days or freeze in portions up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "eggplant-ground-turkey-rice-bake",
+    "name": "Eggplant and Ground Turkey Rice Bake",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 9,
+    "timeMinutes": 45,
+    "ingredients": [
+      {
+        "id": "eggplant",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "ground_turkey",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 300,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "oregano",
+        "qty": 4,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "tomato_paste",
+        "qty": 30,
+        "unit": "ml",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 190 °C (375 °F) and lightly oil a 23 x 33 cm baking dish.",
+      "Peel and dice the eggplant into 1 cm cubes; finely chop the onion and mince the garlic.",
+      "Heat olive oil in a large skillet over medium heat; cook the onion for 3 minutes until softened.",
+      "Add the garlic and ground turkey; cook for 5 minutes, breaking up the meat, until no pink remains.",
+      "Stir in the tomato paste, oregano, and crushed tomatoes; cook for 2 minutes.",
+      "Add the eggplant cubes, rice, and vegetable broth; stir to combine evenly.",
+      "Transfer the mixture to the prepared baking dish and spread into an even layer.",
+      "Cover tightly with foil and bake for 30 minutes, until the rice is tender and liquid is absorbed.",
+      "Remove the foil and bake for a further 5 minutes until the top is lightly set.",
+      "Cool for 5 minutes before serving. Keeps refrigerated for 3 days or frozen up to 2 months. Yields 4 family portions."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "oat-and-apple-baked-fingers",
+    "name": "Apple & Oat Baked Fingers",
+    "category": "Snack",
+    "servings": "16 fingers · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "applesauce",
+        "qty": 120,
+        "unit": "ml",
+        "role": "binder"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 30,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "apple",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "baking_powder",
+        "qty": 4,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 180 °C (350 °F) and line a 20 x 20 cm baking pan with parchment paper.",
+      "Peel and finely grate 1 Apple into a large bowl; squeeze out excess liquid with your hands.",
+      "Add Rolled oats, Cinnamon, and Baking powder to the bowl; stir to combine.",
+      "Add Unsweetened applesauce, 1 Egg, and Canola oil; stir until a thick, even batter forms.",
+      "Spread the batter evenly into the prepared pan, pressing it flat with a spatula.",
+      "Bake for 18 to 20 minutes, until the top is golden and the centre feels firm to the touch.",
+      "Let cool in the pan for 10 minutes, then cut into 16 fingers with a sharp knife.",
+      "Serve warm or at room temperature. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "oat-and-banana-stovetop-porridge-bites",
+    "name": "Banana Oat Stovetop Patties",
+    "category": "Snack",
+    "servings": "12 patties · 4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 20,
+    "ingredients": [
+      {
+        "id": "rolled_oats",
+        "qty": 160,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "mashed_banana",
+        "qty": 200,
+        "unit": "g",
+        "role": "binder"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "vanilla",
+        "qty": 2,
+        "unit": "ml"
+      },
+      {
+        "id": "cinnamon",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "canola_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "blueberries",
+        "qty": 80,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Combine Rolled oats, Cinnamon, Mashed banana, 1 Egg, Coconut milk, and Vanilla extract in a large bowl.",
+      "Fold Blueberries gently into the batter; let the mixture rest for 5 minutes so the oats absorb the liquid.",
+      "Heat Canola oil in a large non-stick skillet over medium heat, about 160 °C (325 °F).",
+      "Drop heaped tablespoons of batter into the skillet, forming 12 small round patties.",
+      "Cook for 3 to 4 minutes on the first side, until the edges look set and the bottoms are golden.",
+      "Flip each patty carefully and cook for 2 to 3 minutes more, until cooked through with no raw centre.",
+      "Transfer to a plate lined with paper towel; cool for 5 minutes before serving.",
+      "Makes 12 patties. Store in an airtight container in the fridge for up to 3 days, or freeze for up to 1 month."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "green-pea-and-chicken-quinoa-bowl",
+    "name": "Green Pea and Chicken Quinoa Bowl",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "green_peas",
+        "qty": 300,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chicken",
+        "qty": 350,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "quinoa",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g"
+      },
+      {
+        "id": "salt",
+        "qty": 1,
+        "unit": "g"
+      }
+    ],
+    "steps": [
+      "Rinse 200 g quinoa under cold water; set aside. Dice the onion and mince the 2 garlic cloves.",
+      "Cut 350 g chicken into 1 cm cubes. Measure 300 g green peas (thawed if frozen).",
+      "Heat 15 ml olive oil in a large saucepan over medium heat.",
+      "Cook the diced onion and minced garlic for 3 minutes, until softened and fragrant.",
+      "Add the chicken cubes and cook for 5 minutes, stirring, until no pink remains.",
+      "Stir in the rinsed quinoa, 400 ml unsalted vegetable broth, 2 g cumin, and 1 g salt.",
+      "Bring to a boil, then reduce heat to low; cover and simmer for 12 minutes.",
+      "Stir in the green peas; cover and cook 3 more minutes, until peas are tender and bright.",
+      "Remove from heat; drizzle with 15 ml lemon juice and fluff with a fork.",
+      "Serve warm. Yields about 4 family portions; refrigerate leftovers up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "zucchini-chickpea-coconut-soup",
+    "name": "Zucchini and Chickpea Coconut Soup",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "zucchini",
+        "qty": 400,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "chickpeas",
+        "qty": 240,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 300,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "cumin",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "turmeric",
+        "qty": 1,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Peel and dice the onion; mince the garlic; trim and slice the zucchini into 1 cm rounds.",
+      "Heat olive oil in a large saucepan over medium heat.",
+      "Add the onion and garlic; cook for 3 to 4 minutes, until softened and translucent.",
+      "Stir in the cumin and turmeric; cook for 1 minute, until fragrant.",
+      "Add the zucchini, drained cooked chickpeas, coconut milk, and unsalted vegetable broth.",
+      "Bring to a gentle boil, then reduce heat and simmer for 12 to 15 minutes, until zucchini is very tender.",
+      "Remove from heat and blend with an immersion blender until smooth and creamy.",
+      "Ladle into bowls and check texture is fully smooth before serving to young children.",
+      "Yields about 1.4 litres · 4 family portions. Refrigerate for up to 3 days or freeze in portions for up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "zucchini-ground-beef-quinoa-skillet",
+    "name": "Zucchini and Ground Beef Quinoa Skillet",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 6,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "zucchini",
+        "qty": 350,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "ground_beef",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "quinoa",
+        "qty": 180,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 200,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 360,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove",
+        "role": "seasoning"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "oregano",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      },
+      {
+        "id": "paprika",
+        "qty": 2,
+        "unit": "g",
+        "role": "seasoning"
+      }
+    ],
+    "steps": [
+      "Rinse the quinoa under cold water; peel and dice the onion; mince the garlic; trim and dice the zucchini into small cubes.",
+      "Heat olive oil in a large deep skillet over medium-high heat.",
+      "Add the onion and garlic; cook for 3 minutes, until softened.",
+      "Add the lean ground beef; cook for 5 to 6 minutes, breaking it up, until no pink remains.",
+      "Stir in the oregano and paprika; cook for 1 minute, until fragrant.",
+      "Add the zucchini, rinsed quinoa, crushed tomatoes, and unsalted vegetable broth; stir to combine.",
+      "Bring to a boil, then cover and reduce heat to low; cook for 15 minutes, until quinoa is tender and liquid is absorbed.",
+      "Fluff with a fork and check that zucchini is fully soft before serving.",
+      "Yields about 6 cups · 4 family portions. Refrigerate for up to 3 days or freeze in portions for up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-sweet-potato-coconut-soup",
+    "name": "Lentil and Sweet Potato Coconut Soup",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 35,
+    "ingredients": [
+      {
+        "id": "lentils",
+        "qty": 400,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 400,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 400,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 500,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "cumin",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "turmeric",
+        "qty": 3,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      }
+    ],
+    "steps": [
+      "Peel and dice the sweet potato into 2 cm cubes; finely dice the onion and mince the garlic.",
+      "Heat the olive oil in a large saucepan over medium heat.",
+      "Add the onion and cook for 3 to 4 minutes, stirring, until softened and translucent.",
+      "Stir in the garlic, cumin, and turmeric; cook for 1 minute until fragrant.",
+      "Add the sweet potato cubes, cooked lentils, coconut milk, and unsalted vegetable broth.",
+      "Bring to a boil, then reduce heat and simmer for 18 to 20 minutes, until sweet potato is completely tender.",
+      "Remove from heat and stir in the lemon juice.",
+      "Use an immersion blender to blend the soup partially, leaving some texture, about 5 seconds.",
+      "Ladle into bowls; yields about 1.8 litres · 4 family portions. Refrigerate up to 3 days or freeze up to 2 months."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "lentil-spinach-tomato-rice-bake",
+    "name": "Lentil, Spinach and Tomato Rice Bake",
+    "category": "Meal",
+    "servings": "4 family portions",
+    "minAgeMonths": 12,
+    "timeMinutes": 45,
+    "ingredients": [
+      {
+        "id": "lentils",
+        "qty": 350,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "rice",
+        "qty": 200,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "spinach",
+        "qty": 100,
+        "unit": "g",
+        "role": "vegetable"
+      },
+      {
+        "id": "crushed_tomatoes",
+        "qty": 400,
+        "unit": "ml",
+        "role": "vegetable"
+      },
+      {
+        "id": "vegetable_broth",
+        "qty": 350,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "onion",
+        "qty": 1,
+        "unit": "unit",
+        "role": "vegetable"
+      },
+      {
+        "id": "garlic",
+        "qty": 2,
+        "unit": "clove"
+      },
+      {
+        "id": "tomato_paste",
+        "qty": 30,
+        "unit": "ml"
+      },
+      {
+        "id": "oregano",
+        "qty": 5,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "mozzarella",
+        "qty": 80,
+        "unit": "g",
+        "role": "dairy"
+      }
+    ],
+    "steps": [
+      "Preheat the oven to 190 °C (375 °F); lightly oil a 23 x 33 cm baking dish.",
+      "Finely dice the onion and mince the garlic; roughly chop the spinach.",
+      "Heat the olive oil in a large oven-safe skillet over medium heat.",
+      "Cook the onion for 3 to 4 minutes, until softened, then add the garlic and oregano for 1 minute.",
+      "Stir in the tomato paste, crushed tomatoes, unsalted vegetable broth, cooked lentils, and rice.",
+      "Transfer the mixture to the prepared baking dish and stir in the chopped spinach.",
+      "Cover tightly with foil and bake for 25 minutes, until the rice is cooked through.",
+      "Remove the foil, scatter the mozzarella over the top, and bake uncovered for 5 more minutes until melted.",
+      "Rest for 5 minutes before serving; yields one full dish · 4 family portions. Refrigerate up to 3 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
+  },
+  {
+    "id": "salmon-sweet-potato-coconut-patties",
+    "name": "Salmon and Sweet Potato Coconut Patties",
+    "category": "Meal",
+    "servings": "16 patties · 4 family portions",
+    "minAgeMonths": 24,
+    "timeMinutes": 30,
+    "ingredients": [
+      {
+        "id": "salmon",
+        "qty": 300,
+        "unit": "g",
+        "role": "protein"
+      },
+      {
+        "id": "sweet_potato",
+        "qty": 300,
+        "unit": "g"
+      },
+      {
+        "id": "coconut_milk",
+        "qty": 60,
+        "unit": "ml",
+        "role": "liquid"
+      },
+      {
+        "id": "egg",
+        "qty": 1,
+        "unit": "unit",
+        "role": "binder"
+      },
+      {
+        "id": "rice_flour",
+        "qty": 40,
+        "unit": "g",
+        "role": "flour"
+      },
+      {
+        "id": "green_onion",
+        "qty": 2,
+        "unit": "unit"
+      },
+      {
+        "id": "dill",
+        "qty": 5,
+        "unit": "g"
+      },
+      {
+        "id": "lemon_juice",
+        "qty": 15,
+        "unit": "ml"
+      },
+      {
+        "id": "olive_oil",
+        "qty": 15,
+        "unit": "ml",
+        "role": "fat"
+      },
+      {
+        "id": "salt",
+        "qty": 1,
+        "unit": "pinch"
+      }
+    ],
+    "steps": [
+      "Peel and cube sweet potato, then boil in water for 12 minutes until completely tender.",
+      "Drain sweet potato and mash with coconut milk until smooth; set aside to cool slightly.",
+      "Flake salmon into a large bowl, removing any bones and skin.",
+      "Finely slice green onion and chop fresh dill; add both to the bowl.",
+      "Add mashed sweet potato, egg, rice flour, lemon juice, and salt to the bowl.",
+      "Mix gently until a firm mixture forms; shape into 16 equal round patties.",
+      "Heat olive oil in a large non-stick skillet over medium heat.",
+      "Cook patties in batches for 3 to 4 minutes per side, until golden and cooked through.",
+      "Transfer to a paper-towel-lined plate; serve warm. Refrigerate leftovers up to 2 days."
+    ],
+    "source": {
+      "source": "assisted generation",
+      "engine": "anthropic",
+      "on": "2026-09-12",
+      "license": "original content, written for Bouchees",
+      "cookedByAHuman": false
+    }
   }
 ]
