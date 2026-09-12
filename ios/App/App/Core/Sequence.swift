@@ -27,11 +27,11 @@ struct RecipeSequence {
 
     /// The meal and the snack for one day. `history` holds the days already
     /// shown, frozen; `pool` is the catalogue. Deterministic for a seed.
-    func pick(day: Int, pool: [Recipe], history: [Int: DayPick]) -> DayPick {
+    func pick(day: Int, pool: [Recipe], history: [Int: DayPick], freeOnly: Bool = false) -> DayPick {
         if let fixed = history[day] { return fixed }
-        /* The free window applies only when the pool carries free flags;
-         * a pool without any falls back on all of it rather than on nothing. */
-        let free = day < Self.freeDays && pool.contains { $0.free == true }
+        /* Free recipes only, for as long as there is no subscription: a week
+         * the server will not open reads as a row of padlocks. */
+        let free = (freeOnly || day < Self.freeDays) && pool.contains { $0.free == true }
         let meals = pool.filter { $0.isMeal && (!free || $0.free == true) }
         let snacks = pool.filter { $0.isSnack && (!free || $0.free == true) }
         return DayPick(meal: choose(day: day, from: meals, history: history, isMeal: true),
@@ -40,12 +40,12 @@ struct RecipeSequence {
 
     /// The days from `from` to `to` inclusive, walking forward so each day
     /// sees the ones before it.
-    func picks(from: Int, to: Int, pool: [Recipe], history: [Int: DayPick]) -> [Int: DayPick] {
+    func picks(from: Int, to: Int, pool: [Recipe], history: [Int: DayPick], freeOnly: Bool = false) -> [Int: DayPick] {
         var seen = history
         var out: [Int: DayPick] = [:]
         let start = min(from, (history.keys.min() ?? from))
         for d in start...max(to, start) {
-            let p = pick(day: d, pool: pool, history: seen)
+            let p = pick(day: d, pool: pool, history: seen, freeOnly: freeOnly)
             seen[d] = p
             if d >= from { out[d] = p }
         }

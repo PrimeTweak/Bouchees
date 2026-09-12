@@ -74,7 +74,8 @@ final class AppState {
         let p = activeProfile
         let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)/\(p.id)/\(p.ageMonths)/\(p.allergens.sorted().joined(separator: ","))"
         if let hit = picksCache[key] { return hit }
-        let out = sequence.picks(from: start, to: start + 6, pool: servablePool, history: history)
+        let out = sequence.picks(from: start, to: start + 6, pool: servablePool,
+                                 history: history, freeOnly: !subscribed)
         if picksCache.count > 12 { picksCache.removeAll() }
         picksCache[key] = out
         return out
@@ -691,8 +692,11 @@ final class AppState {
     /// shows before asking for money. Real sequence, real pool, no picture.
     func weekPreview(for profile: ChildProfile, days: Int = 3) -> [(day: Int, recipes: [Recipe])] {
         let start = weekStart(0)
+        /* The same pool the parent will actually get: without a subscription
+         * the week draws from the free recipes. */
         let picks = sequence.picks(from: start, to: start + days - 1,
-                                   pool: servablePool(for: profile), history: [:])
+                                   pool: servablePool(for: profile), history: [:],
+                                   freeOnly: !subscribed)
         return (0..<days).map { d in
             let p = picks[start + d]
             let ids = [p?.meal, p?.snack].compactMap { $0 }

@@ -2530,4 +2530,17 @@ test("weeks: the app fetches every day a locked week shows, never one less", () 
   assert(!/Array\(0\.\.<3\)/.test(screen), "the display still hard-codes three days");
 });
 
+test("weeks: without a subscription the week draws from the free recipes, always", () => {
+  /* The free window lasted fourteen days; past it the sequence drew from
+   * the whole pool and the server refused the paid bodies — padlocks in a
+   * parent's own week. */
+  const seq = fs.readFileSync(path.join(__dirname, "..", "ios", "App", "App", "Core", "Sequence.swift"), "utf8");
+  const state = fs.readFileSync(path.join(__dirname, "..", "ios", "App", "App", "Core", "AppState.swift"), "utf8");
+  assert(/freeOnly \|\| day < Self\.freeDays/.test(seq), "the free window is still time-limited only");
+  assert(state.includes("freeOnly: !subscribed"), "the week does not pass freeOnly");
+  const free = read("../dist/catalogue.json").filter((c) => c.free);
+  assert(free.filter((c) => c.category === "Meal").length >= 7, "not enough free meals for one week");
+  assert(free.filter((c) => c.category === "Snack").length >= 7, "not enough free snacks for one week");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });

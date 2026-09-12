@@ -437,9 +437,8 @@ private struct WhoStep: View {
                         .eyebrow()
                     TextField("First name", text: $name)
                         .scaledFont(Type.display, weight: .semibold)
-                        /* The return key reads "Next" and closes the keyboard:
-                         * the age cards are the next choice. */
-                        .submitLabel(.next)
+                        /* "Done" is a word; .next draws a bare chevron. */
+                        .submitLabel(.done)
                         .onSubmit { focused = false }
                         /* The draft carries the name as it is typed: later
                          * steps greet the child by it. */
@@ -591,7 +590,7 @@ private struct WeekStep: View {
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
-                Text(String(format: String(localized: "Fourteen recipes, one meal and one snack a day — every one of them safe for %@, already adapted."), firstName))
+                Text(String(format: String(localized: "Fourteen recipes — a meal and a snack each day, every one adapted to %@."), firstName))
                     .scaledFont(Type.body)
                     .foregroundStyle(Tone.textSecondary)
                     .padding(.top, 8)
@@ -626,15 +625,16 @@ private struct WeekStep: View {
         }
     }
 
-    /// The first three days, fading out: there is more below the fold.
+    /// One whole day and the start of the next, fading out: the feature
+    /// tiles and the button have to fit on the same screen.
     private var preview: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(app.weekPreview(for: draft), id: \.day) { entry in
+            ForEach(app.weekPreview(for: draft, days: 2), id: \.day) { entry in
                 Text(WeekDay.full[entry.day])
                     .eyebrow()
                     .padding(.top, entry.day == 0 ? 0 : 12)
                     .padding(.bottom, 4)
-                ForEach(entry.recipes, id: \.id) { r in
+                ForEach(entry.day == 0 ? entry.recipes : Array(entry.recipes.prefix(1)), id: \.id) { r in
                     HStack(spacing: 12) {
                         if let res = app.adaptPreview(r, for: draft) ?? app.liteResult(for: r, profile: draft) {
                             RecipeVisual(recipe: r, result: res)
@@ -655,7 +655,9 @@ private struct WeekStep: View {
                 }
             }
         }
-        .mask(LinearGradient(stops: [.init(color: .black, location: 0.72), .init(color: .clear, location: 1)],
+        .mask(LinearGradient(stops: [.init(color: .black, location: 0.58),
+                                     .init(color: .black.opacity(0.35), location: 0.82),
+                                     .init(color: .clear, location: 1)],
                              startPoint: .top, endPoint: .bottom))
     }
 
