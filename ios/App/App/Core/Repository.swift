@@ -86,11 +86,8 @@ enum Settings {
 @MainActor
 final class LocalStore {
 
-    /* Ticked items, per week. A shopping list without memory is useless in an
-     * aisle — the phone goes away to pick something up and the place is lost.
-     * Keyed by week index so a new week starts clean on its own. */
-    /// The week plan, per batch. Moving a recipe to another day has to
-    /// survive a relaunch — it is a decision the parent made.
+    /* Ticked items, keyed on the week: the list is walked over several
+     * days and a fresh one every open would be useless. */
     func saveWeekPlan(_ plan: WeekPlan, week: Int) {
         let paires = plan.days.map { ["day": $0.key, "ids": $0.value] as [String: Any] }
         guard let d = try? JSONSerialization.data(withJSONObject: paires) else { return }

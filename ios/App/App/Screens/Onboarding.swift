@@ -437,9 +437,8 @@ private struct WhoStep: View {
                         .eyebrow()
                     TextField("First name", text: $name)
                         .scaledFont(Type.display, weight: .semibold)
-                        /* The draft carries the name from the first keystroke:
-                         * it used to be filled only at the very end, so step 4
-                         * read the placeholder and greeted "For My". */
+                        /* The draft carries the name as it is typed: later
+                         * steps greet the child by it. */
                         .onChange(of: name) { _, v in draft.name = v.trimmingCharacters(in: .whitespaces) }
                         .foregroundStyle(Tone.text)
                         .focused($focused)
@@ -468,9 +467,8 @@ private struct WhoStep: View {
                     }
                 }
 
-                /* The exact month, once a stage is picked: the same counter
-                 * the settings use. A stage is a band; the alerts are set
-                 * month by month. */
+                /* The exact month, once a stage is picked: a stage is a
+                 * band, the alerts are set month by month. */
                 if draft.ageMonths > 0 {
                     Text("Exact age").eyebrow()
                         .padding(.top, 20)
@@ -481,12 +479,11 @@ private struct WhoStep: View {
             .padding(.horizontal, Layout.gutter)
             .padding(.bottom, 16)
         }
-        /* Scrolling puts the keyboard away: with it up there is no room left
-         * to reach the last two age cards, and the footer is translucent by
-         * design, so they read as being under the button. */
+        /* Scrolling puts the keyboard away: with it up the last age cards
+         * are out of reach. */
         .scrollDismissesKeyboard(.immediately)
-        /* No footer while the keyboard is up: the button is disabled until an
-         * age is picked anyway, and it sat over the last two age cards. */
+        /* No footer while the keyboard is up: it covers the age cards, and
+         * the button is disabled until an age is picked. */
         .safeAreaInset(edge: .bottom) {
             if !focused {
             VStack(spacing: 9) {
@@ -747,9 +744,7 @@ private struct OfferStep: View {
                 Button(action: finish) {
                     VStack(spacing: 3) {
                         Text("Continue with the free recipes")
-                        /* Stated where the parent can still say no, and in
-                         * the present tense: a perpetual promise on a screen
-                         * that sells is a debt, not an argument. */
+                        /* Stated in the present tense, next to the way out. */
                         Text("The engine and the scanner are free, with or without a subscription.")
                             .scaledFont(Type.micro)
                             .foregroundStyle(Tone.textTertiary)
@@ -762,8 +757,8 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                /* Price, period and renewal in one sentence, then the three
-                 * links Apple requires on a screen that sells. */
+                /* Price, period and renewal, then the three links Apple
+                 * requires on a screen that sells. */
                 Text(app.subscription.priceLine
                      ?? String(localized: "7 days free, then a monthly subscription."))
                     .scaledFont(Type.secondary)

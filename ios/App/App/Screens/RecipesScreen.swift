@@ -145,10 +145,8 @@ struct RecipesScreen: View {
         }
     }
 
-    /* The week, not the verdict: a recipe with two swaps is not lesser; it
-     * has two different lines on the shopping list. */
-    /// The heading follows the rail: the rail underneath carries the dates, so
-    /// the name only has to say which of the three is open.
+    /* The week, not the verdict: a swap is the app working, not a
+     * lesser recipe. */
     private var weekHeader: some View {
         let slot = app.currentSlot
         return HStack(alignment: .firstTextBaseline) {
@@ -165,12 +163,7 @@ struct RecipesScreen: View {
         .padding(.top, 20)
     }
 
-    /* The bookmark led nowhere: savedRecipes has persisted to disk since the
-     * first build and the bookmark on the detail page has always written to
-     * it. */
-    /// The two side doors, always open: both are permanent now and say what
-    /// they hold when they hold nothing, which is also where a parent learns
-    /// the bookmark exists.
+    /* A bookmark on every row: the saved shelf is on the same screen. */
     private var shelves: some View {
         let n = app.saved.recipes.count
         let votes = app.topRated.count
@@ -489,8 +482,7 @@ extension RecipesScreen {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("With a subscription").eyebrow(Tone.brand)
 
-                    /* Not a count of the pool: the subscription gives a week
-                     * at a time, and a number read as a library to browse. */
+                    /* What the subscription gives, not a count of the pool. */
                     Text("Fourteen new recipes every Monday")
                         .scaledFont(Type.heading, weight: .bold)
                         .foregroundStyle(Tone.upsellText)

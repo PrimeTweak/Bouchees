@@ -343,9 +343,8 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
 
     static let defaut = ChildProfile(name: String(localized: "My child"), ageMonths: 9, allergens: [])
 
-    /// A blank draft for the onboarding: age zero means nothing was chosen,
-    /// and the button stays inactive. A default of nine months let a parent
-    /// walk past the one choice that decides every choking alert.
+    /// A blank draft for the onboarding: age zero means nothing was
+    /// chosen, and the button stays inactive until one is.
     static let brouillon = ChildProfile(name: "", ageMonths: 0, allergens: [])
 
     /// Profile resolved when several children eat the same dish: the youngest
@@ -492,9 +491,8 @@ struct ShoppingQuantity: Codable, Hashable, Sendable {
 /// recipe ids — not a list, because a day can hold two things and another
 /// none.
 struct WeekPlan: Codable, Equatable {
-    /// Days a locked week previews: the last one fades into the offer. One
-    /// number, so the fetch and the display can never disagree — they did,
-    /// and the day that was shown but not fetched read as a padlock.
+    /// Days a locked week previews; the last one fades into the offer.
+    /// Drives both the fetch and the display, so they cannot disagree.
     static let glimpseDays = 3
 
     /// Monday is 0. Matches the ISO week the batch is named after.

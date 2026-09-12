@@ -45,8 +45,7 @@ function normaliser(t) {
  * tournesol" is not butter. Matched before the vocabulary, they cancel
  * the family they would otherwise trigger. */
 const INNOCENTS = [
-  /* Formes anglaises — les descriptions de vision sont maintenant en anglais,
-   * dairy, and "coconut milk" does the same in English. */
+  /* English forms: vision descriptions come back in English. */
   { reason: /\b(coconut|rice|oat|almond|soy|hazelnut) milk\b/, except: null },
   { reason: /\b(coconut|rice|oat|soy) (beverage|drink|cream)\b/, except: null },
   { reason: /\b(coconut|soy|oat) yogh?urt\b/, except: null },
@@ -223,17 +222,10 @@ function comparer(description, recipe, data) {
   const seen = description.aliments.map(normaliser);
   const presentes = Engine.analyserAllergenes(recipe, catalogue);
 
-  /* What the recipe holds that LOOKS like the thing a vision names: coconut
-   * milk photographs as milk, sunflower seed butter as peanut butter,
-   * chickpea flour as breadcrumb. The model described the right ingredient
-   * with the commonest word it had; the check used to call that an intruder
-   * and threw out four photos in five. */
-  /* Pairs, not families: what the vision NAMED, and what the recipe holds
-   * that photographs like it. Three rejected photos, opened one by one,
-   * showed the same thing: the model names TEXTURES — a pan-seared crust
-   * as "breadcrumb", rolled oats as "walnut", chia as "almond" — and its
-   * confidence predicts nothing, so a hedge and a certainty are treated
-   * alike here. */
+  /* What the recipe holds that looks like the thing a vision names:
+   * coconut milk photographs as milk, chickpea flour as breadcrumb. */
+  /* Pairs, not families: what the vision named, and what the recipe holds
+   * that photographs like it. A hedge and a sighting are judged alike. */
   const SOSIES = [
     { vu: /^milk$|^cream$|^cream sauce$|^butter$|^yogh?urt$/,
       tenu: /coconut (milk|cream|yogh?urt|butter)|oat (milk|beverage)|rice milk|soy (milk|beverage|yogh?urt)|applesauce/ },
@@ -276,10 +268,7 @@ function comparer(description, recipe, data) {
     });
   });
 
-  /* 1b. A HEDGE THAT NAMES AN AVOIDED ALLERGEN IS A REJECTION.
-   *     "could be butter or oil" on a milk-free recipe used to pass as a
-   *     warning. On this one question the doubt decides against the image:
-   *     a parent must never see a photo that might show what they avoid. */
+  /* 1b. A HEDGE THAT NAMES AN AVOIDED ALLERGEN IS A REJECTION. */
   description.incertitudes.forEach(function (doute) {
     normaliser(doute).split(/[^a-z]+/).forEach(function (mot) {
       if (mot.length < 4) return;

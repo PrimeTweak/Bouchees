@@ -332,8 +332,7 @@ struct DishArtwork: View {
                         style: StrokeStyle(lineWidth: side * 0.014, lineCap: .round))
     }
 
-    /// La base se dessine selon sa nature : un potage remplit le bowl, un plat
-    /// something in pieces sits as pieces, a bake forms a dome.
+    /// The base follows the dish: a soup fills the bowl, a baked one sits on
     private func dessinerContenu(_ context: inout GraphicsContext, center: CGPoint, radius: CGFloat,
                                  base: IngredientVisual, accents: [IngredientVisual],
                                  rng: inout SeededRandom) {

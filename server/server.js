@@ -51,10 +51,8 @@ function hashEmail(email) { return crypto.createHash("sha256").update("bouchees:
  * Persisted beside accounts.json so a redeploy does not start cold. */
 const CACHE_FILE = process.env.BOUCHEES_PRODUCT_CACHE ||
                       path.join(__dirname, "product-cache.json");
-/* Products found once, shipped in the repository: Render's disk is wiped on
- * every deploy, so a file cache alone forgot every product at each push,
- * and each forgotten product cost its lookups again. The seed loads under
- * the live cache and never expires; the cycle commits it. */
+/* Products found once, shipped in the repository: Render's disk is wiped
+ * on every deploy. */
 const SEED_FILE = path.join(__dirname, "..", "data", "products-seen.json");
 
 const ProductCache = (function () {
@@ -239,10 +237,8 @@ function validToken(db, token) {
   return entry.email;
 }
 
-/* The receipt is the key. A bearer with two dots is a signed Apple
- * transaction: verified up to Apple's root and still in force, it entitles
- * this request on its own — no account, no email, nothing stored. A
- * session token from a real sign-in still works when one exists. */
+/* The receipt is the key: a bearer with two dots is a signed Apple
+ * transaction, verified up to Apple's root. */
 function accountFromRequest(req, db) {
   const auth = req.headers.authorization || "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
@@ -315,12 +311,8 @@ async function lookupProductOnce(ctx) {
     "User-Agent": process.env.OFF_USER_AGENT || "Bouchees/1.0 (https://bouchees.onrender.com)"
   };
 
-  /* Food only. The three sibling databases (beauty, pet food, products)
-   * hold nothing a child eats, and asking them cost three calls per
-   * unknown product against a budget of twelve a minute shared by every
-   * parent: two unknowns in a row and the next real product came back
-   * "busy". One call per form of the code, and the forms are ordered
-   * longest first — the thirteen-digit one is the canonical index. */
+  /* Food only: the sibling databases hold nothing edible and each miss
+   * cost a call. */
   const steps = forms.slice().sort(function (a, b) { return b.length - a.length; })
     .map(function (forme) { return { hote: "world.openfoodfacts.org", genre: "food", forme: forme }; });
 
@@ -724,10 +716,7 @@ function serveStatic(req, res, url) {
     });
   }
 
-  /* Nothing else is served. The repository is not a document root: dist/,
-   * data/ and server/ hold the recipe bodies and the accounts, the web demo
-   * inlines the whole corpus, and a wall the API enforces is worth nothing
-   * if a plain URL walks around it. The demo runs locally, from web/. */
+  /* Nothing else is served: the repository is not a document root. */
   if (rel === "/" || rel === "/index.html") {
     res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
     return res.end("Bouchees");

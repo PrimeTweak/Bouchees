@@ -18,8 +18,7 @@ function lireJSONb64(s) {
   return JSON.parse(base64urlVersBuffer(s).toString("utf8"));
 }
 
-/* La signature ES256 d'un JWS est en format raw (r||s, 64 octets).
- * Node attend du DER : on convertit. */
+/* An ES256 JWS signature is raw (r||s, 64 bytes); verification wants DER. */
 function bruteVersDER(sig) {
   if (sig.length !== 64) return null;
   const entier = function (b) {
@@ -155,8 +154,8 @@ function lireNotification(signedPayload, options) {
   const base = tx ? etatDepuisTransaction(tx.charge, options) : { ok: true, status: null };
   if (!base.ok) return { ok: false, reason: base.reason };
 
-  /* Le type de notification prime sur la date d'expiration : un remboursement
-   * cuts access immediately; a failed payment lets the grace period run. */
+  /* The notification type outranks the expiry date: a refund ends access
+  * even inside a paid period. */
   const carte = {
     SUBSCRIBED: "actif", DID_RENEW: "actif", OFFER_REDEEMED: "actif",
     DID_CHANGE_RENEWAL_STATUS: base.status || "actif",

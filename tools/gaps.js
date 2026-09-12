@@ -156,10 +156,7 @@ function commission(classement, target) {
   /* The pool has a target beyond coverage: when the gaps are filled and the
    * quota is not, ask for variety — meals and snacks in turn, one profile
    * and one age at a time, so no two runs ask for the same thing. */
-  /* Focused, not fair: the youngest ages first, because a six-month-old has
-   * six meals and sees the same one every six days, and only the five major
-   * allergens, because a recipe free of milk, egg, peanut, tree nut and wheat
-   * already serves most families. Mustard and sulphites come after. */
+/* The youngest ages first: their pool is the thinnest. */
   if (reste > 0 && commission.pool) {
     const deficit = { Meal: commission.pool.Meal.missing, Snack: commission.pool.Snack.missing };
     const tour = commission.pool.seed || 0;

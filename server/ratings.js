@@ -23,8 +23,8 @@ function write(db) {
 
 /* ratings[recipeId][voter] = { rating, le } — voter is a hash of the account,
  * never the address itself. */
-/* The age band the ranking groups by. A parent of a nine-month-old wants
- * what other parents of nine-month-olds cooked, not a toddler's favourite. */
+/* The age band the ranking groups by: a parent wants what other parents
+ * of the same age cooked. */
 const BANDES = [6, 9, 12, 24, 48];
 function bande(ageMonths) {
   const a = Number(ageMonths);
@@ -89,8 +89,8 @@ function overallAverage(db) {
 
 /* The ranking: identifiers and scores only. The caller fetches the
  * recipe content; the ranking knows votes, not recipes. */
-/* Ranked within one age band. Entries from before the band was recorded
- * carry none and stay out: they cannot be attributed to an age. */
+/* Ranked within one age band. An entry with no band stays out: it cannot
+ * be attributed to an age. */
 function ranking(limit, ageMonths) {
   const cible = bande(ageMonths);
   if (cible !== null) return rankingDeBande(limit, cible);

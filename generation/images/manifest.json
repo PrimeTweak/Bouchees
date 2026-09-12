@@ -42,51 +42,6 @@
       ]
     }
   },
-  "lentil-and-carrot-patties": {
-    "fichier": "images/lentil-and-carrot-patties-0123c3ee5c50.png",
-    "empreinte": "0123c3ee5c50",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T02:09:32.818Z",
-      "detectes": [
-        "lentil",
-        "sweet potato",
-        "carrot",
-        "quinoa",
-        "oat"
-      ],
-      "reconnus": 2,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : quinoa or breadcrumb as binder, carrot or sweet potato (orange chunks)"
-      ]
-    }
-  },
-  "apple-cinnamon-oatmeal": {
-    "fichier": "images/apple-cinnamon-oatmeal-2fc4c8865097.png",
-    "empreinte": "2fc4c8865097",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T03:02:07.662Z",
-      "detectes": [
-        "oat",
-        "apple"
-      ],
-      "reconnus": 2,
-      "attendus": 4,
-      "avertissements": [
-        "la vision hésite sur : liquid base could be water or milk, fruit pieces could be apple or pear"
-      ]
-    }
-  },
   "date-energy-bites": {
     "fichier": "images/date-energy-bites-ac096890077d.png",
     "empreinte": "ac096890077d",
@@ -109,74 +64,6 @@
       "attendus": 5,
       "avertissements": [
         "la vision hésite sur : raisin or dried cranberry, peanut butter or almond butter, flaxseed or sesame seed"
-      ]
-    }
-  },
-  "silky-hummus": {
-    "fichier": "images/silky-hummus-ee2d60d8b5d1.png",
-    "empreinte": "ee2d60d8b5d1",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T07:38:24.842Z",
-      "detectes": [
-        "chickpea",
-        "olive oil",
-        "hummus"
-      ],
-      "reconnus": 2,
-      "attendus": 6,
-      "avertissements": [
-        "la vision hésite sur : possible tahini blended into hummus but not distinctly visible, possible lemon juice blended in but not visible"
-      ]
-    }
-  },
-  "mini-vegetable-frittatas": {
-    "fichier": "images/mini-vegetable-frittatas-bbc198f62d4a.png",
-    "empreinte": "bbc198f62d4a",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T11:38:17.816Z",
-      "detectes": [
-        "egg",
-        "spinach",
-        "zucchini",
-        "cheddar cheese",
-        "ricotta cheese"
-      ],
-      "reconnus": 3,
-      "attendus": 6,
-      "avertissements": [
-        "la vision hésite sur : ricotta cheese or cottage cheese, possible feta cheese"
-      ]
-    }
-  },
-  "squash-and-coconut-soup": {
-    "fichier": "images/squash-and-coconut-soup-06cc7f3798a6.png",
-    "empreinte": "06cc7f3798a6",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-08-31T12:39:29.652Z",
-      "detectes": [
-        "butternut squash",
-        "onion",
-        "potato"
-      ],
-      "reconnus": 2,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : potato or turnip or parsnip for the white chunks"
       ]
     }
   },
@@ -359,52 +246,6 @@
       ]
     }
   },
-  "white-bean-and-tomato-stew": {
-    "fichier": "images/white-bean-and-tomato-stew-b26c645ae6de.png",
-    "empreinte": "b26c645ae6de",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T13:56:52.985Z",
-      "detectes": [
-        "white bean",
-        "carrot",
-        "tomato",
-        "onion",
-        "celery"
-      ],
-      "reconnus": 4,
-      "attendus": 8,
-      "avertissements": [
-        "la vision hésite sur : celery or leek, tomato sauce or crushed tomato"
-      ]
-    }
-  },
-  "chicken-and-broccoli-rice": {
-    "fichier": "images/chicken-and-broccoli-rice-3d09880bcc6a.png",
-    "empreinte": "3d09880bcc6a",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T14:03:13.962Z",
-      "detectes": [
-        "rice",
-        "broccoli",
-        "chicken"
-      ],
-      "reconnus": 4,
-      "attendus": 6,
-      "avertissements": [
-        "la vision hésite sur : brown rice vs white rice, chicken breast vs chicken thigh"
-      ]
-    }
-  },
   "lentil-shepherds-pie": {
     "fichier": "images/lentil-shepherds-pie-3b9b83f06c66.png",
     "empreinte": "3b9b83f06c66",
@@ -426,27 +267,6 @@
       "avertissements": [
         "la vision hésite sur : onion, turnip"
       ]
-    }
-  },
-  "tofu-and-vegetable-fried-rice": {
-    "fichier": "images/tofu-and-vegetable-fried-rice-0918a82ae0d0.png",
-    "empreinte": "0918a82ae0d0",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T14:15:55.347Z",
-      "detectes": [
-        "rice",
-        "tofu",
-        "pea",
-        "carrot"
-      ],
-      "reconnus": 4,
-      "attendus": 8,
-      "avertissements": []
     }
   },
   "creamy-shrimp-and-pea-risotto": {
@@ -588,24 +408,6 @@
       ]
     }
   },
-  "roasted-sweet-potato-sticks": {
-    "fichier": "images/roasted-sweet-potato-sticks-bb6d0b3760c5.png",
-    "empreinte": "bb6d0b3760c5",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T15:51:27.418Z",
-      "detectes": [
-        "sweet potato"
-      ],
-      "reconnus": 1,
-      "attendus": 3,
-      "avertissements": []
-    }
-  },
   "salmon-sweet-potato-patties": {
     "fichier": "images/salmon-sweet-potato-patties-622d906ff50e.png",
     "empreinte": "622d906ff50e",
@@ -669,30 +471,6 @@
       "attendus": 9,
       "avertissements": [
         "la vision hésite sur : seasoning or herb on salmon difficult to identify precisely"
-      ]
-    }
-  },
-  "sweet-potato-oat-bites": {
-    "fichier": "images/sweet-potato-oat-bites-642c421cd31b.png",
-    "empreinte": "642c421cd31b",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-02T16:55:33.674Z",
-      "detectes": [
-        "oat",
-        "pumpkin",
-        "sweet potato",
-        "date",
-        "nut"
-      ],
-      "reconnus": 2,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : pumpkin or sweet potato (orange interior filling), date or dried apricot (visible orange chunks), nut type (possibly almond or cashew mixed in interior)"
       ]
     }
   },
@@ -992,76 +770,6 @@
       ]
     }
   },
-  "lentil-sweet-potato-bowl": {
-    "fichier": "images/lentil-sweet-potato-bowl-04163d25f85f.png",
-    "empreinte": "04163d25f85f",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-05T17:54:24.732Z",
-      "detectes": [
-        "lentil",
-        "rice",
-        "butternut squash",
-        "tomato sauce"
-      ],
-      "reconnus": 2,
-      "attendus": 11,
-      "avertissements": [
-        "la vision hésite sur : sweet potato instead of butternut squash, crushed tomato instead of tomato sauce"
-      ]
-    }
-  },
-  "turkey-zucchini-rice-skillet": {
-    "fichier": "images/turkey-zucchini-rice-skillet-54e0a6882c32.png",
-    "empreinte": "54e0a6882c32",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-05T18:00:53.466Z",
-      "detectes": [
-        "rice",
-        "ground meat",
-        "zucchini",
-        "red bell pepper",
-        "yellow bell pepper",
-        "green bell pepper"
-      ],
-      "reconnus": 4,
-      "attendus": 11,
-      "avertissements": [
-        "la vision hésite sur : ground turkey or ground chicken or ground pork"
-      ]
-    }
-  },
-  "lentil-sweet-potato-rice-bowl": {
-    "fichier": "images/lentil-sweet-potato-rice-bowl-8d242e671774.png",
-    "empreinte": "8d242e671774",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-05T18:07:17.660Z",
-      "detectes": [
-        "lentil",
-        "rice",
-        "sweet potato"
-      ],
-      "reconnus": 3,
-      "attendus": 8,
-      "avertissements": [
-        "la vision hésite sur : brown lentil or green lentil, white rice or brown rice, sweet potato or butternut squash"
-      ]
-    }
-  },
   "chicken-couscous": {
     "fichier": "images/chicken-couscous-e0964b7bd23f.png",
     "empreinte": "e0964b7bd23f",
@@ -1173,28 +881,6 @@
       ]
     }
   },
-  "chicken-sweet-potato-and-green-peas": {
-    "fichier": "images/chicken-sweet-potato-and-green-peas-f459f436763e.png",
-    "empreinte": "f459f436763e",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T01:26:11.696Z",
-      "detectes": [
-        "pea",
-        "sweet potato",
-        "chicken"
-      ],
-      "reconnus": 4,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : sweet potato or butternut squash, chicken or turkey"
-      ]
-    }
-  },
   "chickpea-cucumber-yogurt-dip-pita": {
     "fichier": "images/chickpea-cucumber-yogurt-dip-pita-fcb706b491cb.png",
     "empreinte": "fcb706b491cb",
@@ -1262,29 +948,6 @@
       "attendus": 9,
       "avertissements": [
         "la vision hésite sur : ground turkey vs ground beef"
-      ]
-    }
-  },
-  "chicken-zucchini-rice-bowl": {
-    "fichier": "images/chicken-zucchini-rice-bowl-f83b7e4f2bd7.png",
-    "empreinte": "f83b7e4f2bd7",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T03:27:15.766Z",
-      "detectes": [
-        "rice",
-        "zucchini",
-        "carrot",
-        "chicken"
-      ],
-      "reconnus": 5,
-      "attendus": 8,
-      "avertissements": [
-        "la vision hésite sur : chicken could be turkey or another white meat"
       ]
     }
   },
@@ -1378,29 +1041,6 @@
       "attendus": 9,
       "avertissements": [
         "la vision hésite sur : orzo could be rice"
-      ]
-    }
-  },
-  "turkey-veggie-rice-bowl": {
-    "fichier": "images/turkey-veggie-rice-bowl-0b457f85ac5c.png",
-    "empreinte": "0b457f85ac5c",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T03:59:03.605Z",
-      "detectes": [
-        "ground meat",
-        "rice",
-        "zucchini",
-        "carrot"
-      ],
-      "reconnus": 5,
-      "attendus": 10,
-      "avertissements": [
-        "la vision hésite sur : ground turkey vs ground chicken vs ground pork"
       ]
     }
   },
@@ -1520,51 +1160,6 @@
       ]
     }
   },
-  "zucchini-lentil-coconut-soup": {
-    "fichier": "images/zucchini-lentil-coconut-soup-ef99f4315e81.png",
-    "empreinte": "ef99f4315e81",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T05:08:54.619Z",
-      "detectes": [
-        "lentil",
-        "zucchini",
-        "onion"
-      ],
-      "reconnus": 3,
-      "attendus": 11,
-      "avertissements": [
-        "la vision hésite sur : the broth base could include potato or turnip among the pale chunks"
-      ]
-    }
-  },
-  "salmon-coconut-rice-bowl": {
-    "fichier": "images/salmon-coconut-rice-bowl-566c622cf96b.png",
-    "empreinte": "566c622cf96b",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T05:27:59.518Z",
-      "detectes": [
-        "salmon",
-        "rice",
-        "spinach",
-        "carrot"
-      ],
-      "reconnus": 4,
-      "attendus": 11,
-      "avertissements": [
-        "la vision hésite sur : green onion"
-      ]
-    }
-  },
   "salmon-lentil-coconut-soup": {
     "fichier": "images/salmon-lentil-coconut-soup-ee9dbd7dbbb2.png",
     "empreinte": "ee9dbd7dbbb2",
@@ -1585,29 +1180,6 @@
       "attendus": 12,
       "avertissements": [
         "la vision hésite sur : carrot or sweet potato (orange cubes could be either or both)"
-      ]
-    }
-  },
-  "peach-chia-yogurt-cups": {
-    "fichier": "images/peach-chia-yogurt-cups-e7242da04d18.png",
-    "empreinte": "e7242da04d18",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T05:40:44.082Z",
-      "detectes": [
-        "chia seed",
-        "milk",
-        "mango",
-        "peach"
-      ],
-      "reconnus": 2,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : mango or peach (orange fruit pieces difficult to distinguish precisely)"
       ]
     }
   },
@@ -1818,29 +1390,6 @@
       ]
     }
   },
-  "cod-and-sweet-potato-coconut-curry": {
-    "fichier": "images/cod-and-sweet-potato-coconut-curry-65a26c2bee06.png",
-    "empreinte": "65a26c2bee06",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T07:41:35.617Z",
-      "detectes": [
-        "rice",
-        "fish",
-        "tomato",
-        "sweet potato"
-      ],
-      "reconnus": 4,
-      "attendus": 12,
-      "avertissements": [
-        "la vision hésite sur : fish species uncertain (possibly mackerel or sardine based on skin color)"
-      ]
-    }
-  },
   "turkey-and-spinach-coconut-curry": {
     "fichier": "images/turkey-and-spinach-coconut-curry-68413e02f465.png",
     "empreinte": "68413e02f465",
@@ -1909,28 +1458,6 @@
       "attendus": 11,
       "avertissements": [
         "la vision hésite sur : liquid or broth mixed into the grains"
-      ]
-    }
-  },
-  "beet-and-chickpea-coconut-bites": {
-    "fichier": "images/beet-and-chickpea-coconut-bites-226c53ed8853.png",
-    "empreinte": "226c53ed8853",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T09:04:13.086Z",
-      "detectes": [
-        "chickpea",
-        "beetroot",
-        "red bean"
-      ],
-      "reconnus": 3,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : red bean or kidney bean, beetroot or dried cranberry, possible binding agent such as oat or flour not clearly distinguishable"
       ]
     }
   },
@@ -2047,29 +1574,6 @@
       ]
     }
   },
-  "sweet-potato-sunflower-pinwheel-bites": {
-    "fichier": "images/sweet-potato-sunflower-pinwheel-bites-51c53db2353a.png",
-    "empreinte": "51c53db2353a",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T10:14:15.936Z",
-      "detectes": [
-        "flour tortilla",
-        "sweet potato",
-        "bean",
-        "seed"
-      ],
-      "reconnus": 4,
-      "attendus": 6,
-      "avertissements": [
-        "la vision hésite sur : seeds could be sunflower seeds or pumpkin seeds, filling could include lentil or refried bean, orange filling could be sweet potato puree or pumpkin puree"
-      ]
-    }
-  },
   "cauliflower-chickpea-tomato-skillet": {
     "fichier": "images/cauliflower-chickpea-tomato-skillet-55e9e9fbd49b.png",
     "empreinte": "55e9e9fbd49b",
@@ -2090,29 +1594,6 @@
       "attendus": 11,
       "avertissements": [
         "la vision hésite sur : sauce base could include onion or garlic, not visually distinct"
-      ]
-    }
-  },
-  "quinoa-white-bean-tomato-skillet": {
-    "fichier": "images/quinoa-white-bean-tomato-skillet-e13822b3bfec.png",
-    "empreinte": "e13822b3bfec",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-06T10:39:38.306Z",
-      "detectes": [
-        "white bean",
-        "quinoa",
-        "zucchini",
-        "tomato"
-      ],
-      "reconnus": 4,
-      "attendus": 10,
-      "avertissements": [
-        "la vision hésite sur : sauce may include onion or garlic not distinctly visible, tomato may be canned crushed tomato rather than fresh"
       ]
     }
   },
@@ -2433,52 +1914,6 @@
       ]
     }
   },
-  "sweet-potato-chickpea-mini-patties": {
-    "fichier": "images/sweet-potato-chickpea-mini-patties-559f09c22503.png",
-    "empreinte": "559f09c22503",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T18:37:29.601Z",
-      "detectes": [
-        "chickpea",
-        "carrot",
-        "sweet potato"
-      ],
-      "reconnus": 3,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : exact binding ingredient of the patty crust (breadcrumb, flour, or semolina), possible herbs or spices mixed inside"
-      ]
-    }
-  },
-  "chickpea-sweet-potato-mini-patties": {
-    "fichier": "images/chickpea-sweet-potato-mini-patties-cb7c9a91ee55.png",
-    "empreinte": "cb7c9a91ee55",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T18:50:16.260Z",
-      "detectes": [
-        "chickpea",
-        "carrot",
-        "breadcrumb",
-        "sweet potato"
-      ],
-      "reconnus": 4,
-      "attendus": 9,
-      "avertissements": [
-        "vision named \"breadcrumb\"; the recipe holds a look-alike",
-        "la vision hésite sur : exact binding ingredient (egg, flaxseed, flour), exact spices used, possible lentil mixed with chickpea"
-      ]
-    }
-  },
   "oat-and-apple-breakfast-bites": {
     "fichier": "images/oat-and-apple-breakfast-bites-08309d5b726b.png",
     "empreinte": "08309d5b726b",
@@ -2569,30 +2004,6 @@
       ]
     }
   },
-  "salmon-and-sweet-potato-cakes": {
-    "fichier": "images/salmon-and-sweet-potato-cakes-88c499f7e3ec.png",
-    "empreinte": "88c499f7e3ec",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T21:01:24.253Z",
-      "detectes": [
-        "salmon",
-        "scallion",
-        "sweet potato",
-        "breadcrumb"
-      ],
-      "reconnus": 2,
-      "attendus": 6,
-      "avertissements": [
-        "vision named \"breadcrumb\"; the recipe holds a look-alike",
-        "la vision hésite sur : exact fish type (could be tuna or other fish), binding agent (egg or mayonnaise), exact herb (could be parsley instead of scallion)"
-      ]
-    }
-  },
   "creamy-mango-oatmeal": {
     "fichier": "images/creamy-mango-oatmeal-48861b854eb8.png",
     "empreinte": "48861b854eb8",
@@ -2620,33 +2031,6 @@
       ]
     }
   },
-  "salmon-lentil-veggie-patties": {
-    "fichier": "images/salmon-lentil-veggie-patties-b34d30537ad7.png",
-    "empreinte": "b34d30537ad7",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T21:26:48.874Z",
-      "detectes": [
-        "lentil",
-        "zucchini",
-        "carrot",
-        "salmon",
-        "breadcrumb",
-        "grain",
-        "rice"
-      ],
-      "reconnus": 4,
-      "attendus": 11,
-      "avertissements": [
-        "vision named \"breadcrumb\"; the recipe holds a look-alike",
-        "la vision hésite sur : grain type (rice or quinoa or bulgur), salmon or other fish, possible egg as binder, possible onion or shallot"
-      ]
-    }
-  },
   "banana-chickpea-energy-balls": {
     "fichier": "images/banana-chickpea-energy-balls-ec650f80161b.png",
     "empreinte": "ec650f80161b",
@@ -2669,31 +2053,6 @@
       "avertissements": [
         "vision named \"peanut butter\"; the recipe holds a look-alike",
         "la vision hésite sur : chickpea or macadamia nut (round pale element visible on some balls), honey or maple syrup as binder (not directly visible but suggested by texture), possible flaxseed or sunflower seed mixed in"
-      ]
-    }
-  },
-  "banana-oat-blender-bites": {
-    "fichier": "images/banana-oat-blender-bites-f9d2924029fb.png",
-    "empreinte": "f9d2924029fb",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T21:58:41.052Z",
-      "detectes": [
-        "oat",
-        "peanut butter",
-        "honey",
-        "coconut"
-      ],
-      "reconnus": 2,
-      "attendus": 8,
-      "avertissements": [
-        "vision named \"peanut butter\"; the recipe holds a look-alike",
-        "vision hedged on \"almond\"; the recipe holds a look-alike",
-        "la vision hésite sur : honey or maple syrup as binder, coconut flour or almond flour in interior, possible protein powder in mixture"
       ]
     }
   },
@@ -2840,30 +2199,6 @@
       ]
     }
   },
-  "sweet-potato-lentil-coconut-bites": {
-    "fichier": "images/sweet-potato-lentil-coconut-bites-e1e78c7c90ef.png",
-    "empreinte": "e1e78c7c90ef",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-07T22:55:51.965Z",
-      "detectes": [
-        "lentil",
-        "sweet potato",
-        "quinoa",
-        "grain"
-      ],
-      "reconnus": 2,
-      "attendus": 8,
-      "avertissements": [
-        "vision hedged on \"couscous\"; the recipe holds a look-alike",
-        "la vision hésite sur : exact grain type (quinoa or couscous or bulgur), lentil variety (green or brown), possible spices not visually distinct"
-      ]
-    }
-  },
   "blueberry-chia-coconut-yogurt-cups": {
     "fichier": "images/blueberry-chia-coconut-yogurt-cups-08a3eaacce70.png",
     "empreinte": "08a3eaacce70",
@@ -2889,70 +2224,6 @@
         "vision hedged on \"milk\"; the recipe holds a look-alike",
         "vision hedged on \"yogurt\"; the recipe holds a look-alike",
         "la vision hésite sur : unclear whether the liquid base is milk, coconut milk, or yogurt, the frozen or fresh nature of the blueberries inside the bars is uncertain"
-      ]
-    }
-  },
-  "oatmeal-raisin-cookies": {
-    "fichier": "images/oatmeal-raisin-cookies-b0f94efd28b1.png",
-    "empreinte": "b0f94efd28b1",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T00:39:11.185Z",
-      "detectes": [
-        "oat",
-        "raisin"
-      ],
-      "reconnus": 2,
-      "attendus": 8,
-      "avertissements": []
-    }
-  },
-  "lentil-squash-and-carrot-puree": {
-    "fichier": "images/lentil-squash-and-carrot-puree-cb7c553dbab0.png",
-    "empreinte": "cb7c553dbab0",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T00:51:53.975Z",
-      "detectes": [
-        "lentil",
-        "carrot",
-        "butternut squash",
-        "sweet potato"
-      ],
-      "reconnus": 3,
-      "attendus": 5,
-      "avertissements": [
-        "la vision hésite sur : butternut squash or sweet potato (the orange cubes could be either)"
-      ]
-    }
-  },
-  "sweet-potato-chickpea-bites": {
-    "fichier": "images/sweet-potato-chickpea-bites-879764e73295.png",
-    "empreinte": "879764e73295",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T01:04:36.254Z",
-      "detectes": [
-        "chickpea",
-        "semolina",
-        "cornmeal"
-      ],
-      "reconnus": 2,
-      "attendus": 8,
-      "avertissements": [
-        "la vision hésite sur : exact grain base (semolina, cornmeal, or chickpea flour), binding agent (egg, oil), possible spices or seasoning"
       ]
     }
   },
@@ -3004,29 +2275,6 @@
       ]
     }
   },
-  "plum-chia-yogurt-cups": {
-    "fichier": "images/plum-chia-yogurt-cups-27ce0dfd5cd1.png",
-    "empreinte": "27ce0dfd5cd1",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T01:42:47.880Z",
-      "detectes": [
-        "chia seed",
-        "plum",
-        "milk",
-        "peach"
-      ],
-      "reconnus": 2,
-      "attendus": 7,
-      "avertissements": [
-        "la vision hésite sur : plum or nectarine, cow milk or plant-based milk"
-      ]
-    }
-  },
   "pear-chia-compote-cups": {
     "fichier": "images/pear-chia-compote-cups-c7652249e9ea.png",
     "empreinte": "c7652249e9ea",
@@ -3046,57 +2294,6 @@
       "attendus": 5,
       "avertissements": [
         "la vision hésite sur : liquid base could be tea, broth, or sugar syrup, fruit chunks could be pear or jicama"
-      ]
-    }
-  },
-  "quinoa-lentil-sweet-potato-skillet": {
-    "fichier": "images/quinoa-lentil-sweet-potato-skillet-c840c2fd1ca2.png",
-    "empreinte": "c840c2fd1ca2",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T02:08:13.007Z",
-      "detectes": [
-        "lentil",
-        "quinoa",
-        "sweet potato",
-        "tomato"
-      ],
-      "reconnus": 5,
-      "attendus": 12,
-      "avertissements": [
-        "la vision hésite sur : exact seasoning or spices not visible, liquid base unclear"
-      ]
-    }
-  },
-  "date-and-coconut-bliss-bites": {
-    "fichier": "images/date-and-coconut-bliss-bites-454b024618c6.png",
-    "empreinte": "454b024618c6",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T02:59:05.337Z",
-      "detectes": [
-        "oat",
-        "raisin",
-        "sunflower seed",
-        "peanut butter",
-        "honey"
-      ],
-      "reconnus": 2,
-      "attendus": 7,
-      "avertissements": [
-        "vision named \"peanut butter\"; the recipe holds a look-alike",
-        "vision hedged on \"peanut\"; the recipe holds a look-alike",
-        "vision hedged on \"butter\"; the recipe holds a look-alike",
-        "vision hedged on \"butter\"; the recipe holds a look-alike",
-        "la vision hésite sur : peanut butter (could be another nut butter), honey (could be another liquid sweetener such as maple syrup), raisin (could be another dried fruit such as cranberry or date)"
       ]
     }
   },
@@ -3146,32 +2343,6 @@
       "reconnus": 4,
       "attendus": 12,
       "avertissements": []
-    }
-  },
-  "sweet-potato-coconut-chia-cups": {
-    "fichier": "images/sweet-potato-coconut-chia-cups-3e9b091175cd.png",
-    "empreinte": "3e9b091175cd",
-    "largeur": 1408,
-    "hauteur": 1408,
-    "moteur": "drawthings",
-    "revisePar": "vérification automatique (anthropic)",
-    "verification": {
-      "moteur": "anthropic",
-      "le": "2026-09-08T03:37:12.874Z",
-      "detectes": [
-        "sweet potato",
-        "chia seed",
-        "coconut milk",
-        "cream"
-      ],
-      "reconnus": 3,
-      "attendus": 6,
-      "avertissements": [
-        "vision named \"cream\"; the recipe holds a look-alike",
-        "vision hedged on \"milk\"; the recipe holds a look-alike",
-        "vision hedged on \"cream\"; the recipe holds a look-alike",
-        "la vision hésite sur : coconut milk or regular cream, possible mashed squash instead of sweet potato"
-      ]
     }
   },
   "melon-coconut-yogurt-swirl-cups": {

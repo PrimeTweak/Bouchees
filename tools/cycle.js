@@ -1,5 +1,4 @@
-/* The cycle log says so on every run. Le cycle du mois — une seule commission
- * node tools/cycle.js */
+/* The cycle: one run commissions, writes, validates and publishes. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -304,9 +303,8 @@ async function cycleImages(data, options) {
 
     let verdict = await Vision.verifier(img.octets, recipe, data, { moteur: mVision, typeMime: "image/png" });
 
-    /* Framing, before anything else is judged: the hero shows the square
-     * under a title covering its lower third, so a dish that starts below
-     * DEPART_MAX sits inside the title and reads as a bowl rim. */
+    /* Framing, before anything else: a dish starting below DEPART_MAX
+     * sits inside the hero's title. */
     if (verdict.ok) {
       const tmp = path.join(require("os").tmpdir(), "bouchees-cadrage-" + process.pid + ".png");
       fs.writeFileSync(tmp, img.octets);

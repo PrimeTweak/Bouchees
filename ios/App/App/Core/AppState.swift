@@ -69,9 +69,8 @@ final class AppState {
     /// on the current week only.
     func picks(week offset: Int) -> [Int: DayPick] {
         let start = weekStart(offset)
-        /* Age and allergens belong in the key: editing them leaves the
-         * profile's id untouched, and the old week came back out of the
-         * cache while the servable pool had changed. */
+        /* Keyed on age and allergens too: both change the servable pool
+         * without changing the profile's id. */
         let p = activeProfile
         let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)/\(p.id)/\(p.ageMonths)/\(p.allergens.sorted().joined(separator: ","))"
         if let hit = picksCache[key] { return hit }
@@ -171,9 +170,8 @@ final class AppState {
         loadCooked()
         let start = weekStart(0)
         let week = picks(week: 0)
-        /* The whole current week is frozen, not just up to today: a parent
-         * who shopped on Sunday keeps the Wednesday they bought for. An
-         * empty day is never frozen — that would lock it at nothing. */
+        /* The whole current week is frozen; a change lands next Monday.
+         * An empty day is never frozen: that would lock it at nothing. */
         var frozen = history.filter { $0.value.meal != nil || $0.value.snack != nil }
         for d in (start...(start + 6)) {
             if let p = week[d], p.meal != nil || p.snack != nil { frozen[d] = p }
@@ -489,15 +487,12 @@ final class AppState {
     /// Bodies for the three weeks on the rail, asked for together; on a
     /// refusal, the free ones are asked for alone.
     private func fetchMissingBodies(token: String?) async {
-        /* What the subscription actually gives, never the whole pool: this
-         * week and the one before, whatever is saved, and the top fifteen
-         * for the child's age. A parent without one gets this week only. */
+        /* What the subscription gives: this week, the week before, what is
+         * saved, and the top fifteen. Never the whole pool. */
         let semaines = subscribed ? [-1, 0] : [0]
         var needed: [String] = semaines
             .flatMap { picks(week: $0).values.flatMap { [$0.meal, $0.snack] } }.compactMap { $0 }
-        /* Every day a locked week SHOWS, not one less: the rail previews
-         * three — two whole and one fading — and fetching two left the third
-         * without a body, which reads as a padlock. */
+        /* Every day a locked week previews, so each has a body to open. */
         needed += [-1, 1].flatMap { w in
             (0..<WeekPlan.glimpseDays).compactMap { d in picks(week: w)[weekStart(w) + d] }
                 .flatMap { [$0.meal, $0.snack] }

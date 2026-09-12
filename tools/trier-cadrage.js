@@ -1,8 +1,5 @@
 "use strict";
-/* Withholds the photos whose dish starts too low in the square. The hero
- * shows that square under a title covering its lower third, so those read
- * as a bowl rim and a counter. Nothing is deleted: the file moves to
- * images/rejected/ and the next PHOTOS.command run makes a new one. */
+/* Withholds the photos whose dish starts too low in the square. */
 
 const fs = require("fs");
 const path = require("path");
