@@ -1,5 +1,5 @@
 {
-  "build": 210,
+  "build": 211,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -31,6 +31,9 @@
     "the card under the week counted the locked pool — '191 more recipes' read as a library to browse. It says what the subscription gives: fourteen new recipes every Monday, last week stays open, and what you save stays yours",
     "the padlock on last week was mine, and measuring it said so: the rail previews three days of a locked week, my delta 205 fetched two, and the third had no body. Not the wall refusing a paid recipe as I had guessed — a day shown but never asked for. WeekPlan.glimpseDays is one constant that drives both the fetch and the display, and a test holds them together",
     "every comment in the repository is three lines or fewer, impersonal, and says what the code does. Thirty-five were longer or told how the code got there — the history belongs in this file, which exists for it, not in the source",
-    "36 of 139 photos start below 0.45 of the height and are withheld in images/rejected/ — none deleted. The catalogue is republished: 210 cards, 103 with a photo. PHOTOS.command makes the missing ones with the corrected framing prompt"
+    "36 of 139 photos start below 0.45 of the height and are withheld in images/rejected/ — none deleted. The catalogue is republished: 210 cards, 103 with a photo. PHOTOS.command makes the missing ones with the corrected framing prompt",
+    "the offer footer stacked five blocks and put the price UNDER the way out, where it read as describing the free tier. Price and renewal now sit above the button they pay for, a rule separates buying from not buying, and the free-tier line sits under the way out where it answers a real question",
+    "the return key on the name field reads Next and closes the keyboard; the age cards are the next choice",
+    "the buy button names the child: Start Livia's week"
   ]
 }

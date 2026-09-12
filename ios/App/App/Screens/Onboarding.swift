@@ -437,6 +437,10 @@ private struct WhoStep: View {
                         .eyebrow()
                     TextField("First name", text: $name)
                         .scaledFont(Type.display, weight: .semibold)
+                        /* The return key reads "Next" and closes the keyboard:
+                         * the age cards are the next choice. */
+                        .submitLabel(.next)
+                        .onSubmit { focused = false }
                         /* The draft carries the name as it is typed: later
                          * steps greet the child by it. */
                         .onChange(of: name) { _, v in draft.name = v.trimmingCharacters(in: .whitespaces) }
@@ -730,22 +734,37 @@ private struct OfferStep: View {
         }
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 6) {
+                /* Above the button it pays for: the price describes the
+                 * purchase, not the way out below it. */
+                Text(app.subscription.priceLine
+                     ?? String(localized: "7 days free, then a monthly subscription."))
+                    .scaledFont(Type.secondary, weight: .semibold)
+                    .foregroundStyle(Tone.text)
+                    .multilineTextAlignment(.center)
+                Text("Renews automatically. Cancel any time in your Apple account, at least 24 hours before the period ends.")
+                    .scaledFont(Type.micro)
+                    .foregroundStyle(Tone.textTertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, 4)
+
                 Button(action: finish) {
-                    Text("Try 7 days free")
+                    Text(draft.firstName.isEmpty
+                         ? String(localized: "Try 7 days free")
+                         : String(format: String(localized: "Start %@'s week"), draft.firstName))
                         .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
                 .buttonStyle(PrimaryButton())
 
-                /* A visible way out RAISES conversion: it removes the sense of
-                 * a trap, and it avoids the subscriber who cancels on day 8
-                 * feeling tricked. */
+                /* A rule between two decisions: buying, and not buying. */
+                Divider().overlay(Tone.hairline).padding(.top, 6)
+
                 Button(action: finish) {
                     VStack(spacing: 3) {
                         Text("Continue with the free recipes")
                         /* Stated in the present tense, next to the way out. */
-                        Text("The engine and the scanner are free, with or without a subscription.")
+                        Text("The engine and the scanner stay free.")
                             .scaledFont(Type.micro)
                             .foregroundStyle(Tone.textTertiary)
                             .multilineTextAlignment(.center)
@@ -757,17 +776,7 @@ private struct OfferStep: View {
                 }
                 .buttonStyle(.plain)
 
-                /* Price, period and renewal, then the three links Apple
-                 * requires on a screen that sells. */
-                Text(app.subscription.priceLine
-                     ?? String(localized: "7 days free, then a monthly subscription."))
-                    .scaledFont(Type.secondary)
-                    .foregroundStyle(Tone.text2)
-                    .multilineTextAlignment(.center)
-                Text("Renews automatically. Cancel any time in your Apple account, at least 24 hours before the period ends.")
-                    .scaledFont(Type.micro)
-                    .foregroundStyle(Tone.textTertiary)
-                    .multilineTextAlignment(.center)
+                /* The three links Apple requires on a screen that sells. */
                 HStack(spacing: 16) {
                     Button("Restore") { Task { await app.subscription.restore() } }
                     Link("Terms", destination: Settings.terms)
