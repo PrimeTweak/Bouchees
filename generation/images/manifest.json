@@ -3604,5 +3604,268 @@
         "la vision hésite sur : seeds could be sunflower seeds or pumpkin seeds, filling could include lentil or refried bean, orange filling could be sweet potato puree or pumpkin puree"
       ]
     }
+  },
+  "sweet-potato-and-chicken-puree": {
+    "fichier": "images/sweet-potato-and-chicken-puree-6d2bd2cfa2ab.png",
+    "empreinte": "6d2bd2cfa2ab",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T16:21:53.325Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 4,
+      "avertissements": [
+        "to review — only one ingredient recognised out of 4 and the dish was not identified as Sweet potato and chicken purée",
+        "the vision hesitates on : could be mashed sweet potato, mashed butternut squash, or mashed carrot — the orange color and texture are consistent with all three"
+      ]
+    }
+  },
+  "tofu-and-vegetable-fried-rice": {
+    "fichier": "images/tofu-and-vegetable-fried-rice-0918a82ae0d0.png",
+    "empreinte": "0918a82ae0d0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T16:53:57.187Z",
+      "detectes": [
+        "rice",
+        "tofu",
+        "carrot",
+        "pea"
+      ],
+      "reconnus": 4,
+      "attendus": 8,
+      "avertissements": [
+        "the vision hesitates on : possible corn kernels mixed in the rice, tofu may be baked or pan-fried but cannot be confirmed"
+      ]
+    }
+  },
+  "lentil-squash-and-carrot-puree": {
+    "fichier": "images/lentil-squash-and-carrot-puree-cb7c553dbab0.png",
+    "empreinte": "cb7c553dbab0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T17:06:41.007Z",
+      "detectes": [
+        "lentil",
+        "carrot"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "the vision hesitates on : orange chunks could be carrot or sweet potato, brown grainy base could include onion or other aromatics"
+      ]
+    }
+  },
+  "roasted-sweet-potato-sticks": {
+    "fichier": "images/roasted-sweet-potato-sticks-bb6d0b3760c5.png",
+    "empreinte": "bb6d0b3760c5",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T17:13:00.882Z",
+      "detectes": [
+        "sweet potato"
+      ],
+      "reconnus": 1,
+      "attendus": 3,
+      "avertissements": [
+        "the vision hesitates on : seasoning or spices on the fries cannot be identified with certainty"
+      ]
+    }
+  },
+  "tender-rice-flour-crepes": {
+    "fichier": "images/tender-rice-flour-crepes-925f5b06d7a8.png",
+    "empreinte": "925f5b06d7a8",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T17:19:22.685Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 5,
+      "avertissements": [
+        "to review — only one ingredient recognised out of 5 and the dish was not identified as Tender rice flour crêpes",
+        "the vision hesitates on : possible buckwheat or whole wheat flour suggested by the speckled crumb texture, no toppings or garnishes identifiable"
+      ]
+    }
+  },
+  "oat-banana-blueberry-bites": {
+    "fichier": "images/oat-banana-blueberry-bites-5801dbe459e2.png",
+    "empreinte": "5801dbe459e2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T17:44:48.850Z",
+      "detectes": [
+        "blueberry",
+        "oat"
+      ],
+      "reconnus": 1,
+      "attendus": 9,
+      "avertissements": [
+        "to review — only one ingredient recognised out of 9 and the dish was not identified as Banana Blueberry Oat Bites",
+        "the vision hesitates on : possible banana or other binding ingredient in the interior, possible sweetener such as honey or maple syrup"
+      ]
+    }
+  },
+  "turkey-zucchini-rice-skillet": {
+    "fichier": "images/turkey-zucchini-rice-skillet-54e0a6882c32.png",
+    "empreinte": "54e0a6882c32",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T17:57:32.949Z",
+      "detectes": [
+        "brown rice",
+        "zucchini",
+        "red bell pepper",
+        "yellow bell pepper",
+        "ground meat"
+      ],
+      "reconnus": 4,
+      "attendus": 11,
+      "avertissements": [
+        "the vision hesitates on : ground meat could be turkey, chicken, or pork"
+      ]
+    }
+  },
+  "zucchini-lentil-coconut-soup": {
+    "fichier": "images/zucchini-lentil-coconut-soup-ef99f4315e81.png",
+    "empreinte": "ef99f4315e81",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T18:10:15.953Z",
+      "detectes": [
+        "lentil",
+        "zucchini",
+        "onion",
+        "potato"
+      ],
+      "reconnus": 3,
+      "attendus": 11,
+      "avertissements": [
+        "the vision hesitates on : small pale chunks could be turnip or parsnip rather than potato"
+      ]
+    }
+  },
+  "date-banana-coconut-soft-bites": {
+    "fichier": "images/date-banana-coconut-soft-bites-c9d6eb734b49.png",
+    "empreinte": "c9d6eb734b49",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T18:22:59.194Z",
+      "detectes": [
+        "oat",
+        "date"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Date, Banana & Coconut Soft Bites",
+        "the vision hesitates on : possible nut butter as binder, possible honey or syrup as binder, dark inclusions could be raisins or chocolate chips rather than dates"
+      ]
+    }
+  },
+  "blueberry-oat-coconut-soft-bites": {
+    "fichier": "images/blueberry-oat-coconut-soft-bites-b98010496228.png",
+    "empreinte": "b98010496228",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T19:01:03.545Z",
+      "detectes": [
+        "oat",
+        "blueberry"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Blueberry Oat Coconut Soft Bites",
+        "the vision hesitates on : possible banana or nut butter as binder (suggested by color and texture, not visible as a distinct ingredient)"
+      ]
+    }
+  },
+  "quinoa-white-bean-tomato-skillet": {
+    "fichier": "images/quinoa-white-bean-tomato-skillet-e13822b3bfec.png",
+    "empreinte": "e13822b3bfec",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T19:26:27.292Z",
+      "detectes": [
+        "quinoa",
+        "white bean",
+        "zucchini",
+        "tomato"
+      ],
+      "reconnus": 4,
+      "attendus": 10,
+      "avertissements": [
+        "the vision hesitates on : could be cannellini beans or navy beans, tomato may be crushed canned tomato rather than fresh"
+      ]
+    }
+  },
+  "blueberry-chia-coconut-freezer-bites": {
+    "fichier": "images/blueberry-chia-coconut-freezer-bites-7856568070ec.png",
+    "empreinte": "7856568070ec",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T19:39:11.253Z",
+      "detectes": [
+        "blueberry",
+        "chia seed",
+        "shredded coconut"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "vision hedged on \"almond\"; the recipe holds a look-alike",
+        "the vision hesitates on : white crumbly interior could be desiccated coconut, almond flour, or oats — cannot distinguish with certainty"
+      ]
+    }
   }
 }
