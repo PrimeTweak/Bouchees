@@ -379,7 +379,7 @@ async function cycleImages(data, options) {
     };
     log.acceptees++;
     tentatives++;
-    if (verdict.avertissements.some(function (m) { return /look-alike/.test(m); })) log.surSosie = (log.surSosie || 0) + 1;
+    if (verdict.avertissements.some(function (m) { return /^to review|look-alike/.test(m); })) log.photosARevoir = (log.photosARevoir || 0) + 1;
     console.log("  ok " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
 
         /* The manifest is written AFTER EACH image, not at the end: they are
@@ -453,9 +453,9 @@ async function principal() {
     });
     Object.keys(motifs).forEach(function (m) { console.log("     " + motifs[m] + " for " + m); });
   }
-  if (ji && ji.surSosie) {
-    console.log("  " + ji.surSosie + " published on a look-alike — worth a glance:");
-    console.log("     node tools/photos-sur-sosie.js");
+  if (ji && ji.photosARevoir) {
+    console.log("  " + ji.photosARevoir + " published but flagged — five minutes of your eyes:");
+    console.log("     node tools/photos-a-revoir.js");
   }
   const revoir = (jr && jr.aRevoir.length) || 0;
   if (revoir) console.log("  flagged : " + revoir + " recipe(s) carry a warning");

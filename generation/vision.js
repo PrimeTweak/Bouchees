@@ -221,7 +221,9 @@ function comparer(description, recipe, data) {
     return { ok: false, erreurs: ["the vision judged the image unreadable: " +
       (description.incertitudes.join(", ") || "no detail")], avertissements: [], detectes: [] };
   }
-  if (!description.aliments.length) {
+  /* An empty list is not fatal on its own: a purée or a soup has no thing
+   * to name, only a form. The dish check below decides. */
+  if (!description.aliments.length && !description.plat) {
     return { ok: false, erreurs: ["no food identified in the image"], avertissements: [], detectes: [] };
   }
 
@@ -250,6 +252,15 @@ function comparer(description, recipe, data) {
    * fish are what this check exists to catch, and no texture explains them. */
   const JAMAIS_BLANCHI = /whole (wal|pe|hazel|al)|nut halves|nut pieces|shrimp|prawn|crab|lobster|mussel|scallop|clam|oyster|fish fillet|tuna|salmon fillet|anchovy/;
 
+  /* Families that are things one can point at: a nut, a shrimp, an egg.
+   * Milk, wheat and soy can be named from a surface alone; those warn
+   * unless the word itself is a thing — cheese, bread, pasta. */
+  const FAMILLES_OBJET = ["egg", "peanut", "tree_nut", "sesame", "fish", "shellfish", "mustard"];
+  const MOT_OBJET = /\b(cheese|parmesan|cheddar|mozzarella|feta|yogh?urt|bread|pasta|noodle|tofu|edamame)/;
+  function rejette(famille, mot) {
+    return FAMILLES_OBJET.indexOf(famille) !== -1 || MOT_OBJET.test(normaliser(mot));
+  }
+
   const ingredientsDeLaRecette = (recipe.ingredients || [])
     .map(function (u) { return String(((catalogue[u.id] || {}).name) || u.id).toLowerCase(); })
     .join(" | ");
@@ -270,7 +281,10 @@ function comparer(description, recipe, data) {
       const name = data.base.allergens.find(function (a) { return a.id === famille; });
       const msg = "the image shows \"" + description.aliments[i] + "\" while the recipe contains no " +
         (name ? name.name.toLowerCase() : famille);
-      if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
+      /* A thing one can point at rejects; a word that only names a texture
+       * or a liquid warns, and the photo goes to review. */
+      if (rejette(famille, description.aliments[i])) { if (erreurs.indexOf(msg) === -1) erreurs.push(msg); }
+      else if (avertissements.indexOf(msg) === -1) avertissements.push("to review — " + msg);
     });
   });
 
@@ -284,7 +298,8 @@ function comparer(description, recipe, data) {
         const name = data.base.allergens.find(function (a) { return a.id === famille; });
         const msg = "the vision is unsure and names \"" + mot + "\" — the recipe contains no " +
           (name ? name.name.toLowerCase() : famille);
-        if (erreurs.indexOf(msg) === -1) erreurs.push(msg);
+        if (rejette(famille, mot)) { if (erreurs.indexOf(msg) === -1) erreurs.push(msg); }
+        else if (avertissements.indexOf(msg) === -1) avertissements.push("to review — " + msg);
       });
     });
   });
@@ -353,7 +368,9 @@ function comparer(description, recipe, data) {
         return normaliser(description.plat).indexOf(root) !== -1;
       });
 
-  if (!reconnus.length && !platReconnu) {
+  /* Foods were seen and none is ours, with no dish to vouch for it: that
+   * is another dish, not a shy one. Only a silent list goes to review. */
+  if (!reconnus.length && !platReconnu && description.aliments.length) {
     erreurs.push("no ingredient from the recipe is recognisable in the image, " +
       "and the dish itself was not identified as " + recipe.name);
   } else if (!reconnus.length && platReconnu) {
@@ -363,7 +380,7 @@ function comparer(description, recipe, data) {
     /* One ingredient is normal for a baked dish: a muffin shows its oats and
      * hides the banana. What matters is whether the DISH was identified;
      * hedging on which vegetable it is says nothing about resemblance. */
-    erreurs.push("only one ingredient recognised out of " + principaux.length +
+    avertissements.push("to review — only one ingredient recognised out of " + principaux.length +
       " and the dish was not identified as " + recipe.name);
   } else if (reconnus.length < 2 && principaux.length >= 4) {
     avertissements.push("only one ingredient recognised out of " + principaux.length +

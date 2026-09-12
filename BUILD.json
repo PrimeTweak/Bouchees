@@ -1,5 +1,5 @@
 {
-  "build": 215,
+  "build": 217,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -42,6 +42,10 @@
     "thumbnails were 480-pixel PNGs at 476 KB each: seven megabytes to draw one week on a phone in a grocery aisle. They are 240 pixels, which covers a 66-point square at 3x, and a week is 1.8 MB",
     "the settings paywall still described the old model — '15 recipes, forever', '+7 every Monday', last week listed under free — and the Monday notification announced seven. Every text now says fourteen, last week under the subscription, and nothing forever",
     "dead code: TagFlow, declared and never used. Sixty-seven French strings in the generation and ingest tools are English; one French label fixture in the tests stays French on purpose — the scanner must read it. Every comment in the repository is three lines or fewer and English; fourteen that would have said nothing are deleted rather than kept",
-    "a note, not a fix: refreshPlan() on the midnight notification recomputes the plan locally without syncing, so a parent who leaves the app open across Sunday night sees Monday's week with Sunday's catalogue until the next pull"
+    "a note, not a fix: refreshPlan() on the midnight notification recomputes the plan locally without syncing, so a parent who leaves the app open across Sunday night sees Monday's week with Sunday's catalogue until the next pull",
+    "the 214 prompt told the vision not to infer foods from textures; a purée is only texture, so it named nothing and the check rejected 'no food identified' before the dish check could speak. An empty list is fatal only when no dish is identified either — a purée recognised as a purée passes, a purée that reads as pasta still fails",
+    "MEASURED, at last. The composition prompt did not lift the dish — median 0.34 before, 0.38 after — Draw Things ignores 'high in frame'. But it removed the tail: none of the 53 photos made with it starts past 0.47. At 0.48 every one passes; 0.45 rejected a fifth of good photos. Framing is settled at 0.48 on real data",
+    "the vision cannot be measured from here, so it is made unable to waste a night. Two tiers: a thing one can point at rejects — a nut, a shrimp, an egg, cheese, bread, another dish entirely. A word that only names a surface or a liquid — butter, milk, breadcrumb, flour — publishes the photo and flags it. tools/photos-a-revoir.js lists the flagged ones with their reason; five minutes of eyes replace hours of rejects. Twelve real cases from the logs, twelve right",
+    "a silent list on a recognised dish passes; a silent list on no dish rejects; foods seen with none of ours and no dish is another dish and rejects"
   ]
 }

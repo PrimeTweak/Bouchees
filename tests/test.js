@@ -1559,13 +1559,13 @@ test("vision: the shape comes from the servings field too", async () => {
   assert.equal(miche.ok, true, miche.erreurs.join(" / "));
 });
 
-test("vision: one ingredient and no dish identified is rejected", async () => {
+test("vision: one ingredient and no dish identified goes to review", async () => {
   const r = parId["banana-oat-muffins"];
   const flou = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
     aliments: ["banana"], lisible: true, incertitudes: ["could be couscous or polenta"] }) };
   const v = await Vision.verifier(Buffer.from("x"), r, data, { moteur: flou });
-  assert.equal(v.ok, false, "no dish and one ingredient must reject");
-  assert(v.erreurs.some((e) => /dish was not identified/.test(e)));
+  assert.equal(v.ok, true, "should publish for review: " + v.erreurs.join(" / "));
+  assert(v.avertissements.some((m) => /dish was not identified/.test(m)), "not flagged for review");
 });
 
 test("vision: a baked dish showing one ingredient passes when the dish IS identified", async () => {
@@ -1579,15 +1579,15 @@ test("vision: a baked dish showing one ingredient passes when the dish IS identi
   assert.equal(v.ok, true, v.erreurs.join(" / "));
 });
 
-test("vision: a hedge naming an avoided allergen rejects, certainty or not", async () => {
+test("vision: a hedge on a texture word goes to review; a hedge on a thing rejects", async () => {
   const sansLait = JSON.parse(JSON.stringify(parId["banana-oat-muffins"]));
   sansLait.ingredients = sansLait.ingredients.filter((i) => i.id !== "cow_milk" && i.id !== "butter");
   const doute = { name: "test", disponible: () => true, decrire: async () => JSON.stringify({
     plat: "banana oat muffins", aliments: ["rolled oats", "banana"], lisible: true,
     incertitudes: ["could be butter or oil on top"] }) };
   const v = await Vision.verifier(Buffer.from("x"), sansLait, data, { moteur: doute });
-  assert.equal(v.ok, false, "a doubt naming milk on a milk-free recipe must reject");
-  assert(v.erreurs.some((e) => /unsure and names/.test(e)));
+  assert.equal(v.ok, true, "a butter hedge should publish for review: " + v.erreurs.join(" / "));
+  assert(v.avertissements.some((m) => /to review/.test(m)), "not flagged for review");
 });
 
 test("vision: a cooked dish need not show its raw ingredients", async () => {
@@ -2471,6 +2471,19 @@ test("weeks: without a subscription the week draws from the free recipes, always
   const free = read("../dist/catalogue.json").filter((c) => c.free);
   assert(free.filter((c) => c.category === "Meal").length >= 7, "not enough free meals for one week");
   assert(free.filter((c) => c.category === "Snack").length >= 7, "not enough free snacks for one week");
+});
+
+test("vision: a smooth dish with no thing to name passes when the dish itself is recognised", async () => {
+  /* A purée or a soup has only a form. Told not to infer foods from
+   * textures, the vision names nothing — and that must not reject it. */
+  const r = corpusComplet.find((x) => /pur[ée]e|soup/i.test(x.name));
+  if (!r) return;
+  const stub = (aliments, plat) => ({ name: "t", disponible: () => true,
+    decrire: async () => JSON.stringify({ aliments, lisible: true, incertitudes: [], plat }) });
+  const ok = await Vision.verifier(Buffer.from("x"), r, data, { moteur: stub([], "a bowl of " + r.name.toLowerCase()) });
+  assert.equal(ok.ok, true, "an empty list with the dish recognised was rejected: " + ok.erreurs.join(" / "));
+  const rien = await Vision.verifier(Buffer.from("x"), r, data, { moteur: stub([], null) });
+  assert.equal(rien.ok, false, "nothing identified at all passed");
 });
 
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
