@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
 
-const SIZE = 480;
+const SIZE = 240;
 
 /* Reads an 8-bit RGB or RGBA PNG into raw pixels. Palette, 16-bit and
  * interlaced files are refused; the generator never writes those. */

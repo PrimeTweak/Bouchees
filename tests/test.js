@@ -1,18 +1,13 @@
 /* Tests du engine — node tests/test.js */
 "use strict";
 /* Everything in this file is written in English, with one deliberate
- * exception: the FIXTURES that feed the French normaliser. "1/2 tasse de
- * compote de pommes non sucrée" has to stay French — it is the input being
- * tested, not prose. Translating it would delete the test.
- */
+ * exception: the FIXTURES that feed the French normaliser. */
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 
-/* Ratings must go to a throwaway file. Set BEFORE any require
- * de serveur.js : celui-ci charge notes.js, qui fige son chemin au premier
- * load. Without this line the suite wrote into server/ratings.json — the real
- * file in the repository. */
+/* Ratings must go to a throwaway file. Set BEFORE any require de : qui
+ * serveur.js celui-ci charge notes.js, fige son chemin au premier load. */
 process.env.BOUCHEES_NOTES = "/tmp/bouchees-notes-tests.json";
 try { fs.unlinkSync(process.env.BOUCHEES_NOTES); } catch (e) {}
 
@@ -146,11 +141,8 @@ test("meatballs without mustard: the mustard is dropped, the recipe still works"
 
 /* ---------- steps carry the swapped names ---------- */
 
-/* Step 2 of the banana muffins used to read "Mix the banana, egg, milk and
- * oil" while the engine had just replaced the egg and the milk. A parent
- * mid-recipe read the name of the food their child cannot eat, at the step
- * where they are told to add it — and had to scroll back to translate, with
- * their hands in the batter. */
+/* Step 2 of the banana muffins used to read "Mix the banana, egg, milk
+ * and oil" while the engine had just replaced the egg and the milk. */
 
 test("steps: the replacement name appears in the step text", () => {
   const res = Engine.adapterRecette(parId["banana-oat-muffins"],
@@ -274,10 +266,7 @@ test("shopping: an ingredient shared by several recipes appears once", () => {
 
 /* ---------- a week is a week ---------- */
 
-/* The model called the field `batch`; the JSON calls it `batch`. Every recipe
- * decoded it as nil, silently, so filtering a week by it came back empty and
- * the app fell back to the whole corpus. These two assertions fail on the
- * broken build and pass on the fixed one. */
+/* The model called the field `batch`; the JSON calls it `batch`. */
 
 
 
@@ -298,15 +287,7 @@ test("shopping: a free batch never produces an empty list", () => {
 
 /* ---------- the bridge actually runs ---------- */
 
-/* The decoding checker compares Swift structs to JSON shapes. It cannot see
- * that a bridge function throws at runtime — and `shoppingList` did, on every
- * call, because I used the test harness's names (`Moteur`, `data`) inside
- * a file where they are `Engine` and `required()`. The Swift side falls back
- * to an empty array on any bridge error, so the failure looked like "no
- * items" rather than a crash.
- *
- * This runs the bridge the way JavaScriptCore does: in a bare context with
- * nothing but the engine loaded. */
+/* The decoding checker compares Swift structs to JSON shapes. */
 
 test("bridge: every exported function runs in a bare context", () => {
   const vm = require("vm");
@@ -409,11 +390,8 @@ test("contrast: the old amber would have failed", () => {
 
 /* ---------- barcode forms ---------- */
 
-/* A scan failed on a real product — Archibald beer, bought in Quebec, present
- * in Open Food Facts. We asked for a key that does not exist: the camera hands
- * back one form of the code and the database indexes another.
- *
- * This is pure arithmetic, so it is tested with no network at all. */
+/* A scan failed on a real product — Archibald beer, bought in Quebec,
+ * present in Open Food Facts. */
 
 const Barcode = require("../engine/barcode.js");
 
@@ -466,13 +444,8 @@ test("barcode: junk in, nothing out", () => {
 
 /* ---------- the label lexicon ---------- */
 
-/* Real labels François scanned came back "not sure" on words a person reads
- * without hesitating. The cause was a category error: the catalogue holds 92
- * COOKING ingredients, and a package lists industrial ones — enriched flours,
- * added vitamins, emulsifiers. None of those have a role in a kitchen, so
- * none of them were in it.
- *
- * The lexicon is 600 label terms. These tests use the actual products. */
+/* Real labels François scanned came back "not sure" on words a person
+ * reads without hesitating. */
 
 function evaluerEtiquette(texte, evites) {
   const vm = require("vm");
@@ -559,7 +532,7 @@ test("label: an allergen both present and warned about is named once", () => {
 
 test("label: French warnings are read too", () => {
   ["Peut contenir des traces d'arachides.",
-   "Fabrique dans une usine qui utilise des arachides.",
+   "Fabriqué dans une usine qui utilise des arachides.",
    "Traces possibles d'arachides."].forEach((sentence) => {
     const v = evaluerEtiquette("farine de riz, sucre. " + sentence, ["peanut"]);
     assert.equal(v.status, "caution", sentence + " should read as a warning");
@@ -637,12 +610,7 @@ test("label: the lexicon covers the eleven allergen families", () => {
 
 /* ---------- the week plan ---------- */
 
-/* Seven recipes arrive; the parent decides when to cook them. The plan is the
- * only thing in this app the parent authors, so moving a recipe has to be
- * exact and has to survive a relaunch.
- *
- * The Swift model is mirrored here because the rules are arithmetic, and
- * arithmetic is testable without a simulator. */
+/* Seven recipes arrive; the parent decides when to cook them. */
 
 function planInitial(ids) {
   const days = {};
@@ -785,7 +753,7 @@ test("an age swap still respects allergens", () => {
 
 /* ---------- not adaptable: the honest way out ---------- */
 
-test("aucun substitut valide → status non_adaptable avec alerte bloquante (gating par ageMin)", () => {
+test("no valid substitute → status non_adaptable with a blocking alert (gated by ageMin)", () => {
   const donneesTest = {
     catalogue: data.catalogue,
     base: data.base,
@@ -890,13 +858,13 @@ test("importer: ten recipes imported, three quarantined", () => {
 
 test("importer: one unknown line quarantines the WHOLE recipe", () => {
   const q = importation.quarantine.find((x) => x.name === "Thai Green Curry");
-  assert.equal(q.reason, "lines non reconnues");
+  assert.equal(q.reason, "lines not recognised");
   assert(q.detail.some((d) => /galangal/i.test(d)));
 });
 
 test("importer: recognised but uncurated goes to quarantine", () => {
   const q = importation.quarantine.find((x) => x.name === "Apple Cinnamon Baked Oatmeal");
-  assert.equal(q.reason, "curation manquante");
+  assert.equal(q.reason, "curation missing");
 });
 
 test("importer: every imported recipe carries a curated age and a source", () => {
@@ -1032,7 +1000,7 @@ test("gaps: the ranking puts the emptiest combinations first", () => {
 test("gaps: the brief merges identical gaps instead of repeating them", () => {
   const cmd = Gaps.commande(Gaps.classify(Gaps.analyse(corpusComplet)));
   const cles = cmd.map((c) => c.categories[0] + "|" + c.evite.join(","));
-  assert.equal(new Set(cles).size, cles.length, "la commande contient des doublons");
+  assert.equal(new Set(cles).size, cles.length, "the commission holds duplicates");
 });
 
 test("gaps: a truncated corpus opens a visible gap", () => {
@@ -1110,7 +1078,7 @@ test("validator: rejects a recipe holding the excluded allergen", () => {
     steps: ["Mélanger les ingredients.", "Servir frais."] };
   const v = Validator.validate(faux, { evite: ["milk"], ageMois: 12, categories: ["Collation"] }, data);
   assert.equal(v.ok, false);
-  assert(v.erreurs.some((x) => /allergène que la commande exclut/.test(x)));
+  assert(v.erreurs.some((x) => /allergen the commission excludes/.test(x)));
 });
 
 test("validator: accepts a compliant recipe and flags the ambiguous role", () => {
@@ -1140,9 +1108,6 @@ test("validator: refuses a taken id and marketing superlatives", () => {
 /* --- D : images --- */
 
 test("images: the prompt NAMES the dish, not only its ingredients", () => {
-  /* Le prompt disait « a breakfast dish served in an everyday bowl » puis
-   * listait les ingredients bruts. FLUX obéissait : un bol de gruau avec un
-   * œuf cru, pour une recipe de muffins. Il faut nommer le plat. */
   const m = parId["banana-oat-muffins"];
   const pm = Images.promptPour(m, data);
   assert(pm.positif.toLowerCase().startsWith("homemade banana oat muffins"),
@@ -1197,20 +1162,19 @@ test("images: once a swap happens the photo gives way to the drawing", () => {
   const adaptee = Engine.adapterRecette(r, { allergens: ["milk"], ageMois: 24 }, data);
   const v = Images.visuelPour(r, adaptee, manifest, false);
   assert.equal(v.type, "illustration");
-  assert(/montrerait autre chose/.test(v.reason));
+  assert(/would show something else/.test(v.reason));
 });
 
 test("images: a stale fingerprint invalidates the photo", () => {
   const r = parId["fluffy-pancakes"];
   const v = Images.validerEntree({ fichier: "x.webp", empreinte: "000000000000", revisePar: "François", largeur: 1664 }, r, false);
   assert.equal(v.ok, false);
-  assert(v.erreurs.some((x) => /périmée/.test(x)));
+  assert(v.erreurs.some((x) => /stale fingerprint/.test(x)));
 });
 
 test("images: a photo below the display width is refused", () => {
-  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre before
-   * de remplir. Une image plus petite est agrandie à l'écran — c'est comme ça
-   * qu'un batch de photos molles s'est regapvé livré. */
+  /* L'affichage exige 1320 px sur un iPhone Pro Max, et la vue recadre
+   * before de remplir. */
   const r = parId["fluffy-pancakes"];
   const base = { fichier: "images/x.png", empreinte: Images.empreinte(r),
                  revisePar: "François" };
@@ -1228,7 +1192,7 @@ test("images: a manifest outliving its file publishes nothing", () => {
                    revisePar: "vérification automatique (test)", largeur: 1664,
                    verification: { moteur: "test", reconnus: 3, attendus: 5 } };
   const v = Images.validerEntree(entry, r);
-  assert.equal(v.ok, false, "le disque doit faire foi, pas le manifeste");
+  assert.equal(v.ok, false, "the disk is the truth, not the manifest");
   assert(v.erreurs.some((x) => /introuvable/.test(x)));
 
   const plan = Images.aGenerer([r], data, { [r.id]: entry });
@@ -1431,10 +1395,10 @@ test("apple: the DER and raw signature forms round-trip", () => {
   const crypto3 = require("crypto");
   const { privateKey } = crypto3.generateKeyPairSync("ec", { namedCurve: "prime256v1" });
   const der = crypto3.createSign("SHA256").update("test").sign(privateKey);
-  assert(der.length > 64, "une signature DER est plus longue que 64 octets");
+  assert(der.length > 64, "a DER signature is longer than 64 bytes");
   const brute = Buffer.alloc(64);
   assert.equal(Apple.bruteVersDER(brute).length > 64 || Apple.bruteVersDER(brute).length >= 8, true);
-  assert.equal(Apple.bruteVersDER(Buffer.alloc(63)), null, "une signature de mauvaise taille est rejetée");
+  assert.equal(Apple.bruteVersDER(Buffer.alloc(63)), null, "a signature of the wrong size is rejected");
 });
 
 /* --- the JS bridge Swift calls, pulled out of the template and exercised here --- */
@@ -1443,7 +1407,7 @@ function chargerPont() {
   const src = fs.readFileSync(path.join(__dirname, "..", "web", "template.html"), "utf8");
   const debut = src.indexOf("window.evaluerProduitScanne = function");
   const finish = src.indexOf("/* The native side owns");
-  assert(debut !== -1 && finish > debut, "le pont natif est introuvable dans le gabarit");
+  assert(debut !== -1 && finish > debut, "the native bridge is missing from the template");
   const sansAcc = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const nomAll = (id) => { const a = data.base.allergens.find((x) => x.id === id); return a ? a.name.toLowerCase() : id; };
   const listeFr = (t) => t.length < 2 ? t.join("") : t.slice(0, -1).join(", ") + " et " + t[t.length - 1];
@@ -1492,7 +1456,7 @@ test("iOS: the template hands subscription to StoreKit, no web checkout", () => 
   assert(/if\(SOUS_IOS\)\{ versNatif\("subscription"\); return; \}/.test(src),
     "le chemin iOS doit court-circuiter Stripe (rule 3.1.1)");
   const apresIOS = src.slice(src.indexOf('if(SOUS_IOS){ versNatif("subscription"); return; }'));
-  assert(apresIOS.indexOf("api/paiement") > 0, "la route Stripe existe encore pour le web");
+  assert(apresIOS.indexOf("api/paiement") > 0, "the Stripe route still exists for the web");
 });
 
 /* ---------- weeks glissantes, notes, classement (v1.0) ---------- */
@@ -1530,7 +1494,7 @@ test("ranking: a proven recipe outranks a 5/5 with five votes", () => {
   const grande = cl.find((c) => c.recipeId === "eprouvee");
   assert(grande.score > petite.score,
     "l'ancrage fixe must protéger le classement : " + grande.score + " vs " + petite.score);
-  assert.equal(petite.average, 5, "sa moyenne brute reste parfaite, seul le score la tempère");
+  assert.equal(petite.average, 5, "its raw average stays perfect, only the score tempers it");
 });
 
 test("ranking: sorted, and another person rating is never exposed", () => {
@@ -1541,10 +1505,6 @@ test("ranking: sorted, and another person rating is never exposed", () => {
 });
 
 test("vision: a cooked dish need not show its raw ingredients", async () => {
-  /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
-   * Exiger un ingredient raw rejetait TOUT plat transformé, c'est-à-dire
-   * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
-   * forte que l'ingredient repéré. */
   const crepes = parId["fluffy-pancakes"];
   const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
@@ -1555,15 +1515,12 @@ test("vision: a cooked dish need not show its raw ingredients", async () => {
   assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
     "l'absence d'ingredient brut must be notée, pas fatale");
 
-  /* Mais sans ingredient ET sans le bon plat, on rejette always. */
   const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
     { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
   assert.equal(rien.ok, false);
 });
 
 test("images: the prompt stays short and names the cooked state", () => {
-  /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
-   * pesaient autant que les deux mots qui disent quel est le plat. */
   const p = Images.promptPour(parId["fluffy-pancakes"], data).positif;
   assert(p.length < 500, "prompt trop long : " + p.length + " characters");
   assert(/cooked and ready to eat/.test(p),
@@ -1572,9 +1529,6 @@ test("images: the prompt stays short and names the cooked state", () => {
 });
 
 test("vision: the DISH must match, not only the ingredients", async () => {
-  /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recipe de
-   * muffins parce que banane, avoine et œuf étaient tous présents. Des
-   * ingredients ne font pas un plat. */
   const muffins = parId["banana-oat-muffins"];
   const voit = (plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({
@@ -1582,7 +1536,7 @@ test("vision: the DISH must match, not only the ingredients", async () => {
 
   const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a bowl of oats with a raw egg") });
-  assert.equal(gruau.ok, false, "un bol de gruau n'est pas des muffins");
+  assert.equal(gruau.ok, false, "a bowl of oats is not muffins");
   assert(/does not match/.test(gruau.erreurs.join(" ")));
 
   const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
@@ -1637,10 +1591,6 @@ test("vision: a hedge naming an avoided allergen rejects, certainty or not", asy
 });
 
 test("vision: a cooked dish need not show its raw ingredients", async () => {
-  /* Sur une photo de crêpes, on voit des crêpes — ni farine, ni lait, ni œuf.
-   * Exiger un ingredient raw rejetait TOUT plat transformé, c'est-à-dire
-   * l'essentiel du corpus. Le plat correctement identifié est une preuve plus
-   * forte que l'ingredient repéré. */
   const crepes = parId["fluffy-pancakes"];
   const voit = (aliments, plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({ aliments, plat, lisible: true, incertitudes: [] }) });
@@ -1651,15 +1601,12 @@ test("vision: a cooked dish need not show its raw ingredients", async () => {
   assert(cuit.avertissements.some((a) => /cooked dish/.test(a)),
     "l'absence d'ingredient brut must be notée, pas fatale");
 
-  /* Mais sans ingredient ET sans le bon plat, on rejette always. */
   const rien = await Vision.verifier(Buffer.from("x"), crepes, data,
     { moteur: voit(["bowl", "spoon"], "a bowl of soup") });
   assert.equal(rien.ok, false);
 });
 
 test("images: the prompt stays short and names the cooked state", () => {
-  /* Un prompt de 780 caractères noyait le sujet : vingt adjectifs de lumière
-   * pesaient autant que les deux mots qui disent quel est le plat. */
   const p = Images.promptPour(parId["fluffy-pancakes"], data).positif;
   assert(p.length < 500, "prompt trop long : " + p.length + " characters");
   assert(/cooked and ready to eat/.test(p),
@@ -1668,9 +1615,6 @@ test("images: the prompt stays short and names the cooked state", () => {
 });
 
 test("vision: the DISH must match, not only the ingredients", async () => {
-  /* Le cas réel : un bol de gruau avec un œuf cru, accepté pour une recipe de
-   * muffins parce que banane, avoine et œuf étaient tous présents. Des
-   * ingredients ne font pas un plat. */
   const muffins = parId["banana-oat-muffins"];
   const voit = (plat) => ({ nom: "test", disponible: () => true,
     decrire: async () => JSON.stringify({
@@ -1678,7 +1622,7 @@ test("vision: the DISH must match, not only the ingredients", async () => {
 
   const gruau = await Vision.verifier(Buffer.from("x"), muffins, data,
     { moteur: voit("a bowl of oats with a raw egg") });
-  assert.equal(gruau.ok, false, "un bol de gruau n'est pas des muffins");
+  assert.equal(gruau.ok, false, "a bowl of oats is not muffins");
   assert(/does not match/.test(gruau.erreurs.join(" ")));
 
   const vrais = await Vision.verifier(Buffer.from("x"), muffins, data,
@@ -1701,7 +1645,6 @@ test("vision: the shape comes from the servings field too", async () => {
   assert.equal(miche.ok, true, miche.erreurs.join(" / "));
 });
 
-/* ---------- codes-barres : ce que la camera tend au serveur (build 121) ---------- */
 
 const Barcode2 = require(path.join(__dirname, "..", "engine", "barcode.js"));
 
@@ -1867,14 +1810,7 @@ test("server: a QR with no GTIN answers 400 with a clear reason, never a lookup"
 test("server: a full miss spends one unit per request made, and nothing before the first", async () => {
   const t = await serveurDeTest();
   t.S._OffBudget._reset(); t.S._ProductCache._reset();
-  /* NO NETWORK IN THIS TEST, WHATEVER THE MACHINE HAS.
-   *
-   * The first version measured the loop by letting every fetch fail, which
-   * only holds where there is no connection. On GitHub Actions the first
-   * call reaches Open Food Facts, may find the product, and the plan stops
-   * early having spent one unit — the assertion then blamed the budget.
-   * The database is stubbed to answer "not found" every time, so every
-   * step runs and the count means one thing on every machine. */
+  /* NO NETWORK IN THIS TEST, WHATEVER THE MACHINE HAS. */
   const vraiFetch = global.fetch;
   let appels = 0;
   global.fetch = async function () {
@@ -2220,9 +2156,7 @@ test("prompt: the model is told what already exists and what this run wrote", ()
 
 test("bundle: the demo recipe ships with a body, a photo, and three allergens to swap", () => {
   /* The saved catalogue is the server's — cards without bodies — and the
-   * demo asks for one recipe by name. Its body has to be in the bundle,
-   * its photo has to be published, and a tap on milk, egg or wheat has to
-   * show a swap. */
+   * demo asks for one recipe by name. */
   const man = read("../dist/manifest.json");
   assert(man.free.includes("fluffy-pancakes"), "fluffy-pancakes is not among the bundled free bodies");
   const card = read("../dist/catalogue.json").find((c) => c.id === "fluffy-pancakes");
@@ -2325,7 +2259,7 @@ test("importer: a document with no licence field is quarantined, never imported"
   fs.writeFileSync(path.join(tmp, "mealdb-fixture.json"), JSON.stringify(sans));
   const r = importAll({ dossierSources: tmp });
   assert.equal(r.imported.length, 0, "imported without a licence");
-  assert(r.quarantine.some((q) => q.reason === "licence manquante"), r.quarantine.map((q) => q.reason).join(","));
+  assert(r.quarantine.some((q) => q.reason === "licence missing"), r.quarantine.map((q) => q.reason).join(","));
 });
 
 test("prompts: a dish named triangles is not mistaken for the framing", () => {
@@ -2411,10 +2345,8 @@ test("vision: a whole nut is never cleared by a look-alike", async () => {
 });
 
 test("vision: a hedge is treated like a sighting — the model's confidence predicts nothing", async () => {
-  /* Three rejected photos, opened one by one, showed the model naming
-   * textures: a pan-seared crust as "breadcrumb" with certainty, chia as
-   * "almond" as a hedge. Both are cleared by a look-alike, neither by
-   * itself. */
+  /* Three rejected photos, opened one by one, showed the model naming a
+   * textures: pan-seared crust as "breadcrumb" with certainty, chia as "almond" as a hedge. */
   const soupe = parId["squash-and-coconut-soup"];
   const nomsSoupe = soupe.ingredients.map((u) => data.catalogue[u.id].name);
   const avec = (r, noms, doutes) => Vision.verifier(Buffer.from("x"), r, data,
@@ -2446,10 +2378,8 @@ test("vision: a look-alike the recipe holds is not an intruder, a real one still
 });
 
 test("framing: the two photos judged good pass, the two judged bad do not", () => {
-  /* The threshold is set from four labelled photos, not from a guess:
-   * creamy-salmon-pasta at 0.202 and chicken-couscous at 0.343 read well;
-   * lentil-squash-purée at 0.495 and coconut-rice-pudding at 0.551 are
-   * covered by the hero's title. */
+  /* The threshold is set from four labelled photos, not from a guess: at
+   * creamy-salmon-pasta 0.202 and chicken-couscous at 0.343 read well; */
   const Cadrage = require(path.join(__dirname, "..", "tools", "cadrage.js"));
   const images = path.join(__dirname, "..", "images");
   const trouve = (base) => {

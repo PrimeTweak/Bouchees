@@ -46,14 +46,14 @@ function validate(r, brief, data, idsExistants) {
   const evite = (brief && brief.evite) || [];
   const presents = Engine.analyserAllergenes(r, catalogue);
   const fuite = presents.filter(function (x) { return evite.indexOf(x) !== -1; });
-  if (fuite.length) e.push("contient un allergène que la commande exclut : " + fuite.join(", "));
+  if (fuite.length) e.push("holds an allergen the commission excludes: " + fuite.join(", "));
 
   if (r.category !== "Meal" && r.category !== "Snack")
     e.push("category must be Meal or Snack, not \"" + r.category + "\"");
   if (brief && brief.categories && brief.categories.indexOf(r.category) === -1)
     a.push("catégorie « " + r.category + " » différente de la commande (" + brief.categories.join("/") + ")");
   if (brief && r.minAgeMonths > brief.ageMois)
-    a.push("âge minimal " + r.minAgeMonths + " mois alors que la commande visait " + brief.ageMois + " mois");
+    a.push("âge minimal " + r.minAgeMonths + " months while the commission targeted " + brief.ageMois + " mois");
 
   /* --- the recipe standard (docs/RECIPE-STANDARD.md), the checkable part --- */
   standard(r, catalogue).forEach(function (x) { e.push(x); });
@@ -71,7 +71,7 @@ function validate(r, brief, data, idsExistants) {
   try {
     const res = Engine.adapterRecette(r, { allergens: evite, ageMois: r.minAgeMonths }, data);
     if (res.status === "not_adaptable")
-      e.push("le moteur la déclare non adaptable pour la commande elle-même");
+      e.push("the engine declares it not adaptable for the commission itself");
     const restant = res.remainingAllergens.filter(function (x) { return evite.indexOf(x) !== -1; });
     if (restant.length) e.push("invariant violé après adaptation : " + restant.join(", "));
   } catch (err) {

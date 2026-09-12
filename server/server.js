@@ -605,14 +605,14 @@ const routes = {
     try { corps = JSON.parse((await rawBody(req)).toString("utf8")); }
     catch (e) { if (e.status === 413) throw e; return json(res, 400, { error: "invalid JSON" }); }
     const email = normaliseEmail(corps.email);
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: "email invalide" });
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: "invalid email" });
     const db = ctx.db;
     if (!db.accounts[email]) db.accounts[email] = { email: email, cree: new Date().toISOString(), subscription: null };
     const token = newToken();
     db.tokens[hashToken(token)] = { email: email, cree: Date.now() };
     writeAccounts(db);
     json(res, 200, { token: token, email: email, subscribed: subscriptionActive(db.accounts[email]),
-                     note: "En production, ce token s'envoie par email — il ne revient pas dans la réponse." });
+                     note: "In production this token is sent by email — it does not come back in the answer." });
   },
 
   "POST /api/logout": async function (req, res, ctx) {

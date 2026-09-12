@@ -1,13 +1,5 @@
-/* Visual system
- * Illustration.plat(adaptedResult, catalogue) -> SVG string
- *
- * The key point: the drawing is derived from the ingredients AFTER adaptation.
- * Quand le beurre d'arachide devient du beurre de tournesol, la tuile change
- * de couleur. Une image ne peut donc jamais contredire la fiche — c'est le
- * the fatal flaw of a stock photo in an allergy app.
- *
- * Deterministic: same recipe plus same profile -> same image, to the pixel.
- */
+/* Visual system Illustration.plat(adaptedResult, catalogue) -> SVG The
+ * string key point: the drawing is derived from the ingredients AFTER adaptation. */
 (function (racine, fabrique) {
   if (typeof module !== "undefined" && module.exports) module.exports = fabrique();
   else racine.Illustration = fabrique();
@@ -247,8 +239,6 @@
 
     s += '<g clip-path="url(#' + uid + ')">';
 
-    /* La base se dessine selon sa NATURE : un potage remplit le bol,
-     * something in pieces sits as pieces, a bake forms a dome. */
     var mode = (base.forme === "arc") ? "liquid" : (base.forme === "chunk" ? "morceaux" : "dome");
     if (mode === "liquid") {
       s += '<circle cx="' + cx + '" cy="' + cy + '" r="74" fill="' + base.couleur + '"/>';
@@ -274,7 +264,6 @@
       }
     }
 
-    /* garnitures : assez nombreuses pour que le bol ait l'air plein */
     var n = accents.length;
     accents.forEach(function (a, i) {
       var reps = n <= 2 ? 3 : (n <= 4 ? 2 : 1);

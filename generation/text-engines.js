@@ -14,7 +14,7 @@ function extraireJSON(texte) {
       const un = JSON.parse(t.slice(o1, o2 + 1));
       return Array.isArray(un) ? un : [un];
     }
-    throw new Error("aucun JSON trouvé dans la réponse du modèle");
+    throw new Error("no JSON found in the model answer");
   }
   return JSON.parse(t.slice(debut, finish + 1));
 }
@@ -96,9 +96,9 @@ const simule = {
           { id: assais, qty: 2, unit: "ml" }
         ],
         steps: [
-          "Écraser le premier ingrédient à la fourchette.",
+          "Mash the first ingredient with a fork.",
           "Incorporer les autres ingrédients et mélanger.",
-          "Servir tiède, à la texture qui convient à l'âge."
+          "Serve warm, at the texture that suits the age."
         ]
       });
     }

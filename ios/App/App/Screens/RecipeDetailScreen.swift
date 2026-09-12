@@ -360,25 +360,6 @@ struct RecipeDetailScreen: View {
 
 // MARK: - Ingredient row
 
-/// Wrapping labels, without depending on recent API.
-struct TagFlow: View {
-    let etiquettes: [(texte: String, color: Color)]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ForEach(Array(etiquettes.enumerated()), id: \.offset) { _, e in
-                Text(e.texte)
-                    .font(.caption2)
-                    .foregroundStyle(e.color)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(e.color.opacity(0.12),
-                                in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-}
 
 // MARK: - Ingredient line
 

@@ -1,6 +1,3 @@
-/* An ingredient is never guessed dans une app d'allergies. 2. Human curation:
- * with no entry in curation.json (validated minimum age, confirmed roles,
- * rewritten steps), no import — even if everything is recognized. */
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -33,7 +30,7 @@ function importAll(options) {
 
       if (inconnues.length > 0) {
         quarantine.push({
-          key: key, name: brute.originalName, reason: "lines non reconnues",
+          key: key, name: brute.originalName, reason: "lines not recognised",
           detail: inconnues.map(function (l) { return l.originalText; })
         });
         return;
@@ -41,20 +38,20 @@ function importAll(options) {
       /* No licence, no import: a recipe whose right to be stored is not
        * stated is quarantined, exactly like one without curation. */
       if (!brute.license) {
-        quarantine.push({ key: key, name: brute.originalName, reason: "licence manquante",
+        quarantine.push({ key: key, name: brute.originalName, reason: "licence missing",
                           detail: ["The source document states no licence for storing this recipe."] });
         return;
       }
       const cur = curation[key];
       if (!cur) {
         quarantine.push({
-          key: key, name: brute.originalName, reason: "curation manquante",
-          detail: ["Tous les ingrédients sont reconnus, mais aucune entrée de curation (âge minimal, rôles, étapes FR)."]
+          key: key, name: brute.originalName, reason: "curation missing",
+          detail: ["Every ingredient is recognised, but there is no curation entry (minimum age, roles, steps)."]
         });
         return;
       }
       if (idsReserves.has(cur.id)) {
-        quarantine.push({ key: key, name: brute.originalName, reason: "conflit d'identifiant", detail: [cur.id] });
+        quarantine.push({ key: key, name: brute.originalName, reason: "id conflict", detail: [cur.id] });
         return;
       }
       idsReserves.add(cur.id);
@@ -107,8 +104,8 @@ function rapportMarkdown(result) {
     q.detail.forEach(function (d) { l.push("    - " + d); });
   });
   l.push("");
-  l.push("Règle : une ligne inconnue = recette entière en quarantine. L'IA peut proposer");
-  l.push("de nouveaux alias de lexique ou une entrée de curation; un humain les valide.");
+  l.push("Rule: one unknown line puts the whole recipe in quarantine. The AI may suggest");
+  l.push("new lexicon aliases or a curation entry; a human validates them.");
   return l.join("\n");
 }
 

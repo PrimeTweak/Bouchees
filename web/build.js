@@ -11,7 +11,7 @@ const lireJson = (p) => JSON.parse(lire(p));
 const temoins = lireJson("data/recipes.json");
 let importees = [];
 try { importees = lireJson("data/imported/imported-recipes.json"); }
-catch (e) { console.warn("Aucune recette importée (exécuter ingest/importer.js d'abord)."); }
+catch (e) { console.warn("No imported recipe (run ingest/importer.js first)."); }
 
 const donnees = {
   ingredients: lireJson("data/ingredients.json"),

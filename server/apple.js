@@ -74,7 +74,7 @@ function verifierChaine(x5c, racine, maintenant) {
   if (!racine) return { ok: false, reason: "racine Apple absente — impossible de vérifier (refuse out of caution)" };
   if (empreinteCert(sommet) !== empreinteCert(racine)) {
     if (!sommet.verify(racine.publicKey))
-      return { ok: false, reason: "la chaîne ne remonte pas à la racine fournie" };
+      return { ok: false, reason: "the chain does not reach the provided root" };
   }
   if (EMPREINTE_RACINE && empreinteCert(racine) !== EMPREINTE_RACINE.toLowerCase())
     return { ok: false, reason: "la racine fournie ne correspond pas à l'empreinte épinglée" };

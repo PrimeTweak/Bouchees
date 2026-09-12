@@ -137,7 +137,7 @@ function colonnes(entetes) {
 }
 
 async function lireUSDA(file, ecrire) {
-  console.log("    1re passe — repérage de la version la plus récente...");
+  console.log("    First pass — locating the most recent version...");
   const vue = await versionsRecentes(file);
   console.log("    version jugée d'après      " + vue.cle);
   console.log("    codes-barres distincts     " + vue.meilleur.size);

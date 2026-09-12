@@ -112,10 +112,16 @@ const CONSIGNE = [
   "}",
   "",
   "Rules:",
-  "- Name every visible food, even in small quantity, even as a garnish.",
-  "- If you hesitate between two foods, put BOTH in aliments.",
+  "- Name every food you can IDENTIFY as a thing: a slice of carrot, a piece",
+  "  of chicken, a whole nut, a shrimp, a strawberry.",
+  "- Do NOT name what you only infer from a texture or a surface. A glossy",
+  "  purée is not butter. A white sauce is not milk. A golden crust is not",
+  "  breadcrumb. Flakes on a muffin are not nuts. If a food is only suggested",
+  "  by how something looks, leave it out of aliments; you may mention it in",
+  "  incertitudes.",
+  "- Between two foods you cannot tell apart, put the one you can identify in",
+  "  aliments and the doubt in incertitudes, never both in aliments.",
   "- If the image is blurry, empty, or is not a dish, set lisible to false.",
-  "- Invent nothing: name only what is visible.",
   "- Use the plain everyday English word: oats, milk, egg, banana, carrot.",
   "- For plat, describe the FORM of the dish, not its ingredients. A bowl of",
   "  loose oats is \"a bowl of oats\", not \"muffins\", even if muffins are made",
@@ -213,10 +219,10 @@ function comparer(description, recipe, data) {
 
   if (!description.lisible) {
     return { ok: false, erreurs: ["the vision judged the image unreadable: " +
-      (description.incertitudes.join(", ") || "sans détail")], avertissements: [], detectes: [] };
+      (description.incertitudes.join(", ") || "no detail")], avertissements: [], detectes: [] };
   }
   if (!description.aliments.length) {
-    return { ok: false, erreurs: ["aucun aliment identifié dans l'image"], avertissements: [], detectes: [] };
+    return { ok: false, erreurs: ["no food identified in the image"], avertissements: [], detectes: [] };
   }
 
   const seen = description.aliments.map(normaliser);
@@ -365,7 +371,7 @@ function comparer(description, recipe, data) {
   }
 
   if (description.incertitudes.length)
-    avertissements.push("la vision hésite sur : " + description.incertitudes.join(", "));
+    avertissements.push("the vision hesitates on : " + description.incertitudes.join(", "));
 
   return { ok: erreurs.length === 0, erreurs: erreurs, avertissements: avertissements,
            detectes: description.aliments, reconnus: reconnus.length, attendus: principaux.length };

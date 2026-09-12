@@ -137,7 +137,7 @@ if (require.main === module) {
     process.exit(1);
   }
   if (!commission.length) {
-    console.log("Aucun trou sous les seuils — pas de commande à générer ce mois-ci.");
+    console.log("No gap below the thresholds — nothing to commission this month.");
     process.exit(0);
   }
   const prompts = construireTout(commission, data);

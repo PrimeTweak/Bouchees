@@ -51,7 +51,7 @@ function principal() {
 
   const recettes = Array.isArray(raw) ? raw : (raw.recettes || []);
   if (!recettes.length) {
-    console.error("Aucune recette dans ce fichier.");
+    console.error("No recipe in this file.");
     process.exit(1);
   }
 

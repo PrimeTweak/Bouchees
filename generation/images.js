@@ -334,11 +334,11 @@ function validerEntree(entry, recipe, dossierImages) {
   }
   if (!entry.empreinte) e.push("empreinte manquante");
   if (recipe && entry.empreinte !== empreinte(recipe))
-    e.push("empreinte périmée : les ingrédients ont changé depuis la génération");
+    e.push("stale fingerprint: the ingredients changed after the photo was made");
   if (!entry.revisePar) e.push("aucune révision — image non publiable");
   if (entry.revisePar && /automatique/i.test(entry.revisePar)) {
     if (!entry.verification) e.push("révision automatique sans verdict de vision");
-    else if (!entry.verification.reconnus) e.push("la vision n'a reconnu aucun ingrédient de la recette");
+    else if (!entry.verification.reconnus) e.push("the vision recognised no ingredient of the recipe");
     else if (entry.verification.moteur === "absent") e.push("aucun moteur de vision n'a réellement vérifié");
   }
   /* The display needs 1320 px on an iPhone Pro Max, 1640 on an iPad, and the
@@ -358,7 +358,7 @@ function visuelPour(recipe, result, manifest, dossierImages) {
   }
   return { type: "illustration",
            reason: !utilisable ? "aucune photo révisée"
-                               : "la recette est adaptée — la photo montrerait autre chose" };
+                               : "the recipe is adapted — the photo would show something else" };
 }
 
 if (require.main === module) {

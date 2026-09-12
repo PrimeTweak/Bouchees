@@ -242,13 +242,13 @@ async function cycleImages(data, options) {
     console.log("");
     console.log("  ARRET — AUCUN MOTEUR D'IMAGE");
     console.log("");
-    console.log("  Le mode simule ecrit des rectangles de couleur, pas des");
+    console.log("  Simulation mode writes coloured rectangles, not");
     console.log("  photos. Il sert aux tests hors ligne.");
     console.log("");
     console.log("  Draw Things n'a pas ete trouve. Verifie que l'app est");
-    console.log("  ouverte et que API Server est allume, puis relance.");
+    console.log("  is open and API Server is on, then run again.");
     console.log("");
-    console.log("  (SIMULE_ASSUME=1 pour forcer le mode simule volontairement)");
+    console.log("  (SIMULE_ASSUME=1 forces simulation mode on purpose)");
     console.log("");
     process.exit(1);
   }
@@ -263,7 +263,16 @@ async function cycleImages(data, options) {
 
   title("7 · Generation and verification");
   const aFaire = steps.filter(function (p) { return ecartees.indexOf(p.id) < 0; });
+  /* Past ten attempts, a rejection rate above two thirds stops the run:
+   * a prompt or a threshold has drifted, and a night of that is waste. */
+  let tentatives = 0, rejets = 0;
   for (const p of aFaire.slice(0, limit)) {
+    if (tentatives >= 10 && rejets / tentatives > 0.66) {
+      console.log("");
+      console.log("  STOPPED — " + rejets + " of " + tentatives + " rejected. Something drifted.");
+      console.log("  Read the reasons above, fix the cause, and run again.");
+      break;
+    }
     const recipe = corpus.find((r) => r.id === p.id);
     let img;
         /* SQUARE, and that is the whole point: fLUX schnell is trained square,
@@ -290,7 +299,7 @@ async function cycleImages(data, options) {
     }
     if (!img) {
       const m = erreurReseau ? erreurReseau.message : "unknown";
-      log.rejetees.push({ id: p.id, reason: "génération : " + m });
+      log.rejetees.push({ id: p.id, reason: "generation: " + m });
       console.log("  x  " + p.name + " — " + m);
       continue;
     }
@@ -313,8 +322,8 @@ async function cycleImages(data, options) {
         if (m.sujetHaut >= Cadrage.DEPART_MAX) {
           verdict = { ok: false, moteur: verdict.moteur, le: verdict.le, detectes: [], reconnus: [], attendus: [],
                       avertissements: [],
-                      erreurs: ["the dish starts at " + m.sujetHaut.toFixed(2) + " of the height, below " +
-                                Cadrage.DEPART_MAX + " — the hero's title would cover it"] };
+                      erreurs: ["the dish starts " + m.sujetHaut.toFixed(2) + " of the way down, past the " +
+                                Cadrage.DEPART_MAX + " mark — the hero's title would cover it"] };
         }
       } catch (e) { /* unreadable png: the vision verdict already stands */ }
       try { fs.unlinkSync(tmp); } catch (e) { /* gone */ }
@@ -349,6 +358,7 @@ async function cycleImages(data, options) {
       const filePath = path.join(dossierRejets, p.id + ".png");
       fs.writeFileSync(filePath, img.octets);
 
+      tentatives++; rejets++;
       log.rejetees.push({ id: p.id, reason: verdict.erreurs.join(" ; "),
                               detectes: verdict.detectes, fichier: "images/rejected/" + p.id + ".png" });
       console.log("  x  " + p.name + " — " + verdict.erreurs[0]);
@@ -368,6 +378,7 @@ async function cycleImages(data, options) {
                       avertissements: verdict.avertissements }
     };
     log.acceptees++;
+    tentatives++;
     if (verdict.avertissements.some(function (m) { return /look-alike/.test(m); })) log.surSosie = (log.surSosie || 0) + 1;
     console.log("  ok " + p.name + (verdict.avertissements.length ? "  (" + verdict.avertissements[0] + ")" : ""));
 
@@ -391,7 +402,7 @@ async function cycleImages(data, options) {
       console.log("\n  " + orphans.length + " image(s) on disk with no vision verdict:");
       orphans.slice(0, 5).forEach(function (f) { console.log("      " + f); });
       console.log("  They will NOT be published — an image with no verdict is never shown.");
-      console.log("  Relance le cycle pour les refaire, ou supprime-les.");
+      console.log("  Run the cycle again to remake them, or delete them.");
       log.orphans = orphans;
     }
   }
@@ -431,6 +442,17 @@ async function principal() {
   title("Summary");
   if (jr) console.log("  recipes : " + jr.acceptees + " accepted, " + jr.rejetees.length + " rejected");
   if (ji) console.log("  images  : " + ji.acceptees + " published, " + ji.rejetees.length + " rejected");
+  if (ji && ji.rejetees && ji.rejetees.length) {
+    const motifs = {};
+    ji.rejetees.forEach(function (r) {
+      const m = /of the way down/.test(r.reason || "") ? "framing"
+              : /the image shows|the vision is unsure|vision named/.test(r.reason || "") ? "an ingredient the recipe lacks"
+              : /dish does not match|not identified/.test(r.reason || "") ? "the dish does not match"
+              : "other";
+      motifs[m] = (motifs[m] || 0) + 1;
+    });
+    Object.keys(motifs).forEach(function (m) { console.log("     " + motifs[m] + " for " + m); });
+  }
   if (ji && ji.surSosie) {
     console.log("  " + ji.surSosie + " published on a look-alike — worth a glance:");
     console.log("     node tools/photos-sur-sosie.js");
@@ -500,21 +522,21 @@ async function principal() {
       console.log("  ILS NE CONCORDENT PAS.");
       console.log("");
       if (entries < surDisque) {
-        console.log("  Des fichiers existent sans entree au manifeste : le cycle");
-        console.log("  a ete interrompu, ou la vision les a rejetes. PHOTOS.command les reprend.");
+        console.log("  Files exist with no manifest entry: the cycle");
+        console.log("  was interrupted, or the vision rejected them. PHOTOS.command takes them again.");
       }
       if (orphans.length) {
-        console.log("  Le manifeste declare une photo dont le FICHIER manque :");
+        console.log("  The manifest declares a photo whose FILE is missing:");
         orphans.forEach(function (o) { console.log("    " + o); });
-        console.log("  Le fichier a ete efface ou jamais pousse. PHOTOS.command le refait.");
+        console.log("  The file was deleted or never pushed. PHOTOS.command remakes it.");
       }
       if (nonPubliees.length && !orphans.length) {
-        console.log("  Une photo est prete mais la recette n'est pas dans le catalogue publie :");
+        console.log("  A photo is ready but its recipe is not in the published catalogue:");
         nonPubliees.forEach(function (o) { console.log("    " + o); });
-        console.log("  La recette a ete retiree du bassin, ou n'y est pas encore. Rien a faire.");
+        console.log("  The recipe left the pool, or is not in it yet. Nothing to do.");
       }
       console.log("");
-      console.log("  L'app affiche les photos qui existent ; celles-ci manqueront seulement.");
+      console.log("  The app shows the photos that exist; these will simply be missing.");
     }
   })();
 

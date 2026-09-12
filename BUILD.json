@@ -1,5 +1,5 @@
 {
-  "build": 212,
+  "build": 215,
   "date": "2026-09-06",
   "carries": [
     "PHOTOS. A run of 104 photos stopped for one prompt: the convention checker found the framing by keyword and matched 'angle' inside 'flatbread tri-ANGLE-s' — the dish's own name — then reported it as a framing with no distance. The framing is the fourth part of every prompt by construction; the checker reads it there, on word boundaries",
@@ -37,6 +37,11 @@
     "the buy button names the child: Start Livia's week",
     "the padlocks were the fourteen-day free window: past day 14 the sequence drew from all 210 recipes and the server refused the paid bodies to a parent without a subscription — a row of padlocks in his own week. Without a subscription the week draws from the free recipes for as long as there is none",
     "step three fits on one screen: one whole day, the start of the next fading out, and the four feature tiles and the button above the fold. It previewed three days and pushed everything the app can do below it",
-    "the return key on the name field says Done; .next draws a bare chevron"
+    "the return key on the name field says Done; .next draws a bare chevron",
+    "QA pass before launch. Monday replayed end to end against the server — manifest, catalogue, fourteen free bodies in one request, a photo and its thumbnail, a stable checksum on the second pull, twenty parents at once in 75 ms — and every step answers. The wall still refuses a paid body without a token",
+    "thumbnails were 480-pixel PNGs at 476 KB each: seven megabytes to draw one week on a phone in a grocery aisle. They are 240 pixels, which covers a 66-point square at 3x, and a week is 1.8 MB",
+    "the settings paywall still described the old model — '15 recipes, forever', '+7 every Monday', last week listed under free — and the Monday notification announced seven. Every text now says fourteen, last week under the subscription, and nothing forever",
+    "dead code: TagFlow, declared and never used. Sixty-seven French strings in the generation and ingest tools are English; one French label fixture in the tests stays French on purpose — the scanner must read it. Every comment in the repository is three lines or fewer and English; fourteen that would have said nothing are deleted rather than kept",
+    "a note, not a fix: refreshPlan() on the midnight notification recomputes the plan locally without syncing, so a parent who leaves the app open across Sunday night sees Monday's week with Sunday's catalogue until the next pull"
   ]
 }

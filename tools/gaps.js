@@ -197,7 +197,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   l.push("");
   l.push("Corpus: **" + nCorpus + " recipes**. Thresholds: **" + SEUIL_SEMAINE +
     " usable recipes** per combination (enough for a week) and **" + SEUIL_CATEGORIE +
-    " par catégorie** (un parent ne sert pas que des soupers).");
+    " per category** (a parent does not serve only dinners).");
   l.push("");
   l.push("\"Too old\" = recipes whose minimum age is above the age being tested. They do not count.");
   l.push("");
@@ -224,7 +224,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   l.push("");
   l.push("## Suggested commission for the next batch");
   l.push("");
-  if (!cmd.length) l.push("Aucun trou sous le seuil — le prochain lot peut viser la variété plutôt que la couverture.");
+  if (!cmd.length) l.push("No gap below the threshold — the next batch can aim for variety rather than coverage.");
   cmd.forEach(function (c) {
     l.push("- **" + c.n + " " + c.categories[0].toLowerCase() + "** from " + c.ageMois + " months — " +
       (c.passePartout ? "**works for everyone** (none of the 11 priority allergens)" : profileName(c.evite)));
@@ -232,7 +232,7 @@ function markdown(classement, blockers, cmd, nCorpus) {
   });
   l.push("");
   l.push("Ce fichier est régénéré par `node tools/gaps.js`. Il alimente");
-  l.push("`generation/recipe-prompt.js`, qui transforme la commande en prompt contraint.");
+  l.push("`generation/recipe-prompt.js`, which turns the commission into a constrained prompt.");
   return l.join("\n");
 }
 

@@ -38,8 +38,8 @@ enum WeeklyReminder {
         let content = UNMutableNotificationContent()
         content.title = String(localized: "New week, new recipes")
         content.body = firstName.isEmpty
-            ? String(localized: "7 new recipes are open this week.")
-            : String(format: String(localized: "7 new recipes for %@ this week."), firstName)
+            ? String(localized: "Fourteen new recipes are open this week.")
+            : String(format: String(localized: "Fourteen new recipes for %@ this week."), firstName)
         content.sound = .default
         var date = DateComponents()
         date.weekday = 2

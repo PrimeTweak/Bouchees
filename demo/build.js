@@ -1,6 +1,3 @@
-/* Build du banc d'essai : node demo/build.js
- * One source of truth — the engine and the data are injected
- * tels quels dans le gabarit. Produit demo/index.html autonome. */
 "use strict";
 const fs = require("fs");
 const path = require("path");

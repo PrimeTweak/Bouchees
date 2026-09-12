@@ -1,0 +1,215 @@
+name: Unsigned IPA (sideload)
+
+# Produces an UNSIGNED .ipa. Feather signs it afterwards with your certificate.
+# No Apple developer account required: GitHub's macOS runner already has Xcode,
+# and XcodeGen builds the project from ios/project.yml.
+# No certificate and no key ever passes through GitHub.
+
+# ON DEMAND ONLY.
+#
+# This used to run on every push to main, which meant a fifteen-minute macOS
+# build for a comment change or a data tweak. The IPA is only worth producing
+# when you actually intend to install one.
+#
+# To build: Actions -> Unsigned IPA (sideload) -> Run workflow.
+#
+# The guards that matter still run on every push, in checks.yml — repository
+# integrity, the engine tests, the Swift sources, cross-module agreement and
+# decoding. Those take under a minute on a Linux runner and catch the class of
+# mistake that costs an evening.
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: "Bundle identifier (empty = ca.bouchees.app)"
+        required: false
+        default: ""
+
+# The runner lives in UTC; the files it makes should carry Montreal time.
+env:
+  TZ: America/Toronto
+
+jobs:
+  construire:
+    # macos-15 ships Xcode 16.4 — SDK iOS 18.5, no glassEffect. The newer
+    # image carries Xcode 26, which is where native Liquid Glass lives.
+    # `latest` follows GitHub as they roll images forward.
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check repository integrity
+        # Runs first and costs a second. A folder dropped in the Finder
+        # replaces rather than merges, and a partial delivery silently deletes
+        # everything it does not carry. Naming the missing file here beats a
+        # MODULE_NOT_FOUND thirty minutes into the build.
+        run: node tools/check-repo.js
+
+      - name: Run engine tests before building
+        # Si les tests tombent, aucun IPA n'est produit. Un moteur cassé qui
+        # part sur un téléphone, c'est exactement ce qu'on empêche.
+        run: node tests/test.js
+
+      - name: Publish content and build web page
+        run: |
+          node tools/publish.js
+          node web/build.js
+
+      - name: Bundle resources into the iOS app
+        # The JavaScript engine, the safety tables and the catalogue travel
+        # with the app, so everything works offline from the first launch.
+        # Only the FREE bodies are bundled: a file inside an IPA can be read
+        # with a text editor, so a paid body there would be no wall at all.
+        run: |
+          R=ios/App/App/Bundled
+          rm -rf "$R"; mkdir -p "$R/recipes"
+          cp engine/engine.js engine/native-bridge.js "$R/"
+          cp data/ingredients.json data/substitutions.json data/base.json "$R/"
+          cp data/label-lexicon.json data/step-verbs.json "$R/"
+          cp dist/catalogue.json "$R/"
+          python3 - <<'PY'
+          import json, shutil, pathlib
+          m = json.load(open('dist/manifest.json'))
+          dest = pathlib.Path('ios/App/App/Bundled/recipes')
+          for rid in sorted(m['free']):
+              src = pathlib.Path('dist/recipes') / (rid + '.json')
+              if src.exists():
+                  shutil.copy(src, dest / src.name)
+          print('bundled free bodies:', len(list(dest.glob('*.json'))), 'of', len(m['free']))
+          PY
+          ls -R "$R"
+
+      - name: Check bundled resource names
+        # The Swift loads bundled files by name, as string literals. A rename
+        # in the repository does not rename those literals, and nothing else
+        # catches it: the build passes, the IPA installs, and the app dies on
+        # first launch. One second here beats a reinstall.
+        run: node tools/check-bundle-names.js
+
+      - name: Check Swift sources
+        # Pas un compilateur : attrape les symboles manquants, les types en
+        # double, les assets absents. Deux secondes ici évitent quinze minutes
+        # de build pour une faute qu'on peut voir sans Xcode.
+        run: python3 tools/check-swift.py
+
+      - name: Check cross-module agreement
+        # Two modules that must use the same word, renamed on one side only.
+        # Four failures tonight had that exact shape, and none of them is a
+        # syntax error — both sides compile and the app breaks at runtime.
+        run: node tools/check-agreement.js
+
+      - name: Check Swift decodes the real JSON
+        # A required Swift field the JSON does not carry, or a bridge function
+        # renamed on one side only: both compile, both install, and the app
+        # dies on first launch with a message that names nothing. Neither side
+        # is wrong on its own — they simply disagree.
+        run: node tools/check-decoding.js
+
+      # THE NEWEST XCODE ON THE RUNNER, NOT THE DEFAULT.
+      #
+      # The default is 16.4, whose SDK is iOS 18.5 — no `glassEffect`, no
+      # native Liquid Glass. Apple said at WWDC26 that the iOS 27 refinements
+      # apply AUTOMATICALLY to apps built against the framework, so the single
+      # highest-value change here is compiling with a newer SDK.
+      #
+      # If none is installed the step reports it and the build continues on
+      # the default; the code compiles either way.
+      - name: Select the newest Xcode
+        run: |
+          ls /Applications | grep -i '^Xcode' || true
+          NEWEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$NEWEST" ]; then
+            sudo xcode-select -s "$NEWEST/Contents/Developer"
+          fi
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Custom bundle identifier
+        # Si ton profil Feather n'est pas en wildcard, lance le workflow à la
+        # main (Actions -> Run workflow) en donnant ton identifiant.
+        if: ${{ github.event.inputs.bundle_id != '' }}
+        run: |
+          BID="${{ github.event.inputs.bundle_id }}"
+          sed -i '' "s|PRODUCT_BUNDLE_IDENTIFIER: .*|PRODUCT_BUNDLE_IDENTIFIER: ${BID}|" ios/project.yml
+          echo "Bundle identifier : ${BID}"
+
+      - name: Generate the Xcode project
+        run: |
+          cd ios
+          xcodegen generate --spec project.yml
+          ls -la App.xcodeproj
+
+      - name: Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            clean build 2>&1 | tee /tmp/build.log | tail -60 || true
+
+          # The pipeline above ends in `tail`, which succeeds even when
+          # xcodebuild fails — so the step used to stop before reaching this
+          # block and the errors were never shown. PIPESTATUS carries the real
+          # exit code, and the errors print BEFORE we act on it.
+          #
+          # xcodebuild prints its errors first, then hundreds of lines of build
+          # commands, which is why `tail` alone shows a file list and nothing
+          # useful.
+          echo ""
+          echo "======== errors ========"
+          grep -E "error:" /tmp/build.log | head -40 || echo "(none matched)"
+          echo "======== end ========"
+
+          if grep -q "BUILD FAILED" /tmp/build.log; then
+            echo "Build failed — see the errors above."
+            exit 1
+          fi
+
+      - name: Package as .ipa
+        # zip, exactly as in the build that installs.
+        #
+        # Measured, not assumed: the known-good workflow packages with
+        # `zip -qry` and its IPA installs. I had replaced this with
+        # `ditto -c -k --sequesterRsrc`, and --sequesterRsrc is the flag that
+        # writes a __MACOSX directory into the archive next to Payload/.
+        # That replacement was a theory; the comparison says zip is what works.
+        run: |
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          if [ -z "$APP" ]; then echo "No .app was produced — see the previous step"; exit 1; fi
+          mkdir -p sortie/Payload
+          cp -R "$APP" sortie/Payload/
+          cd sortie && zip -qry Bouchees-unsigned.ipa Payload && cd ..
+          # A zip stores times WITHOUT a zone; the Finder reads the number as
+          # local. upload-artifact rewraps the file and does not read TZ, so
+          # the stamp has to be set here, shifted so the Finder shows Montreal.
+          touch -t "$(TZ=America/Toronto date +%Y%m%d%H%M.%S | cut -d. -f1)" sortie/Bouchees-unsigned.ipa
+          ls -lh sortie/Bouchees-unsigned.ipa
+          echo "horodatage pose : $(TZ=America/Toronto date '+%Y-%m-%d %H:%M %Z')"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bouchees-unsigned-ipa
+          path: sortie/Bouchees-unsigned.ipa
+          retention-days: 30

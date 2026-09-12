@@ -37,9 +37,9 @@ function bande(ageMonths) {
 function rate(recipeId, email, rating, ageMonths) {
   const n = Number(rating);
   if (!Number.isInteger(n) || n < 1 || n > 5) {
-    return { ok: false, reason: "la rating doit être un entier de 1 à 5" };
+    return { ok: false, reason: "the rating must be an integer from 1 to 5" };
   }
-  if (!recipeId || !email) return { ok: false, reason: "recette ou account manquant" };
+  if (!recipeId || !email) return { ok: false, reason: "recipe or account missing" };
 
   const db = read();
   if (!db.ratings[recipeId]) db.ratings[recipeId] = {};

@@ -13,7 +13,7 @@ const SEUIL_SUJET = 0.55;
 
 /* Where the subject may start, as a fraction of the height. Below this
  * the hero's title covers the dish. */
-const DEPART_MAX = 0.45;
+const DEPART_MAX = 0.48;
 
 function profil(chemin) {
   const img = Thumbs.scale(Thumbs.decode(fs.readFileSync(chemin)), 200);

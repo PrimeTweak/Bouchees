@@ -124,9 +124,9 @@ function verifier(recipe, data) {
     });
   }
   if (jamaisNommes.length > 2)
-    erreurs.push("ingrédients listés mais jamais utilisés dans les étapes : " + jamaisNommes.join(", "));
+    erreurs.push("ingredients listed but never used in the steps : " + jamaisNommes.join(", "));
   else if (jamaisNommes.length)
-    avertissements.push("ingrédient peu clair dans les étapes : " + jamaisNommes.join(", "));
+    avertissements.push("ingredient unclear in the steps : " + jamaisNommes.join(", "));
 
   /* 2. Liquid to absorbent ratio. A batter with three times more liquid than
    *    flour does not hold — you can see that without turning on the oven. */
@@ -135,12 +135,12 @@ function verifier(recipe, data) {
   const cuisson = contient(txt, OVEN_WORDS);
   if (liquide > 0 && absorbant > 0 && cuisson) {
     const ratio = liquide / absorbant;
-    if (ratio > 2.5) erreurs.push("beaucoup trop de liquide pour la farine (" + ratio.toFixed(1) +
+    if (ratio > 2.5) erreurs.push("far too much liquid for the flour (" + ratio.toFixed(1) +
       "×) — la pâte ne tiendra pas");
     else if (ratio > 1.8) avertissements.push("pâte très liquide (" + ratio.toFixed(1) + "×) — à revoir");
   }
   if (cuisson && absorbant === 0 && liquide > 200)
-    avertissements.push("cuisson au four avec beaucoup de liquide et aucun absorbant");
+    avertissements.push("oven cooking with a lot of liquid and nothing to absorb it");
 
   /* 3. An oven with no temperature makes a recipe unusable. */
   if (cuisson && !/\d{2,3}\s*°|\d{3}\s*(f|degr)/i.test(txt))
@@ -161,7 +161,7 @@ function verifier(recipe, data) {
       recipe.timeMinutes);
   if (recipe.timeMinutes && recipe.timeMinutes > 20 && sommeEtapes === 0 &&
       (cuisson || contient(txt, SIMMER_WORDS)))
-    avertissements.push("cuisson décrite sans aucune durée dans les étapes");
+    avertissements.push("cooking described with no duration in the steps");
 
   /* 5. Total volume has to be plausible for the number of servings. */
   const total = recipe.ingredients.reduce(function (s, u) { return s + enMl(u, catalogue); }, 0);

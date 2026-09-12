@@ -36,11 +36,11 @@ async function demander(chemin) {
     console.error("  " + BASE + " est silencieux.");
     console.error("");
     console.error("  Dans Draw Things :");
-    console.error("    1. icone ENGRENAGE, dans la barre de GAUCHE");
+    console.error("    1. the GEAR icon, in the LEFT bar");
     console.error("    2. onglet  Advanced");
     console.error("    3. descends jusqu'a  API Server");
     console.error("");
-    console.error("  Quatre reglages, et le deuxieme est celui qu'on rate :");
+    console.error("  Four settings, and the second is the one that gets missed:");
     console.error("    Server Online   On  (le point doit etre vert)");
     console.error("    Protocol        HTTP     <-- PAS gRPC");
     console.error("    Port            celui que l'app propose");
@@ -56,13 +56,13 @@ async function demander(chemin) {
   const modele = String(etat.model || etat.sd_model_checkpoint ||
                         etat.sd_model || etat.checkpoint || "");
   if (!modele) {
-    notes.push("le modèle n'est pas exposé par cette version de Draw Things");
+    notes.push("the model is not exposed by this version of Draw Things");
   } else {
     const bas = modele.toLowerCase();
     if (bas.includes("raw")) {
       problemes.push(
         "le modèle sélectionné est « " + modele + " ».\n" +
-        "      Raw est le checkpoint d'ENTRAÎNEMENT : 52 étapes par image.\n" +
+        "      Raw is the TRAINING checkpoint: 52 steps per image.\n" +
         "      Krea recommande Turbo pour générer — 8 étapes, treize fois\n" +
         "      plus rapide. Dix images passeraient de vingt heures à deux.");
     } else {

@@ -288,7 +288,7 @@ struct SettingsScreen: View {
                         Text(app.subscribed ? "Active" : "Weeks ahead")
                             .scaledFont(Type.body)
                             .foregroundStyle(Tone.text)
-                        Text("7 new recipes every week")
+                        Text("Fourteen new recipes every Monday")
                             .scaledFont(Type.caption)
                             .foregroundStyle(Tone.text2)
                     }
@@ -375,7 +375,7 @@ struct PaywallScreen: View {
                             .scaledFont(Type.display, weight: .heavy, design: .rounded)
                         Text(app.subscribed
                              ? "Every week is open. The next one arrives Monday."
-                             : "Seven new recipes every Monday, adapted to your children.")
+                             : "Fourteen new recipes every Monday, adapted to your children.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -443,25 +443,23 @@ struct PaywallScreen: View {
         .task { await app.subscription.load() }
     }
 
-    /// Two columns: what is free, what the subscription adds. Weekly, since
-    /// the rolling window; the old copy still said monthly.
+    /// Two columns: what is free, what the subscription adds.
     private var comparison: some View {
         HStack(alignment: .top, spacing: 10) {
-            ComparisonBlock(title: "Free", figure: "15", figureLabel: "recipes, forever",
+            ComparisonBlock(title: "Free", figure: "28", figureLabel: "recipes",
                             accent: Tone.yes, lines: [
+                "A meal and a snack every day",
                 "Swaps for every allergen",
                 "Age and texture guidance",
                 "The product scanner",
-                "Shopping list",
-                "Last week's recipes"
+                "Shopping list"
             ])
-            ComparisonBlock(title: "Weeks ahead", figure: "+7", figureLabel: "every Monday",
+            ComparisonBlock(title: "With a subscription", figure: "14", figureLabel: "new every Monday",
                             accent: Tone.brand, lines: [
                 "Everything free has",
-                "New recipes every week",
-                "Adapted to your children",
-                "Three weeks open at once",
-                "Next week, before it starts"
+                "Last week stays open",
+                "Everything you save stays yours",
+                "The fifteen best for your child's age"
             ])
         }
     }
