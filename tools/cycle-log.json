@@ -1,214 +1,117 @@
 {
-  "le": "2026-09-08T03:49:54.508Z",
-  "recettes": null,
-  "images": {
-    "generees": 33,
-    "acceptees": 13,
+  "le": "2026-09-12T00:15:07.247Z",
+  "recettes": {
+    "commandees": 20,
+    "redigees": 20,
+    "acceptees": 6,
     "rejetees": [
       {
-        "id": "sweet-potato-and-chicken-puree",
-        "reason": "the image shows \"butter\" while the recipe contains no milk ; the vision is unsure and names \"butter\" — the recipe contains no milk",
-        "detectes": [
-          "sweet potato",
-          "butter",
-          "olive oil"
-        ],
-        "fichier": "images/rejected/sweet-potato-and-chicken-puree.png"
+        "id": "polenta-chicken-spinach-bowl",
+        "erreurs": [
+          "standard 1: cornmeal is never named in a step",
+          "standard 5: step 6 cooks without a duration or a doneness cue"
+        ]
       },
       {
-        "id": "pasta-in-rose-sauce-with-chicken",
-        "reason": "the image shows \"tuna\" while the recipe contains no fish ; the vision is unsure and names \"tuna\" — the recipe contains no fish",
-        "detectes": [
-          "spaghetti",
-          "tomato",
-          "onion",
-          "tuna",
-          "chicken"
-        ],
-        "fichier": "images/rejected/pasta-in-rose-sauce-with-chicken.png"
+        "id": "polenta-lentil-tomato-bake",
+        "erreurs": [
+          "standard 1: cornmeal is never named in a step"
+        ]
       },
       {
-        "id": "coconut-rice-pudding-with-mango",
-        "reason": "the dish starts at 0.52 of the height, below 0.48 — the hero's title would cover it",
-        "detectes": [],
-        "fichier": "images/rejected/coconut-rice-pudding-with-mango.png"
+        "id": "pear-and-oat-mini-muffins",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words",
+          "standard 2: the oven is preheated before anything bakes"
+        ]
       },
       {
-        "id": "tender-rice-flour-crepes",
-        "reason": "no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Tender rice flour crêpes",
-        "detectes": [
-          "pancake"
-        ],
-        "fichier": "images/rejected/tender-rice-flour-crepes.png"
+        "id": "pear-and-ricotta-soft-bites",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words",
+          "standard 2: the oven is preheated before anything bakes"
+        ]
       },
       {
-        "id": "banana-oat-bites",
-        "reason": "only one ingredient recognised out of 6 and the dish was not identified as Banana Oat Bites",
-        "detectes": [
-          "oat",
-          "blueberry"
-        ],
-        "fichier": "images/rejected/banana-oat-bites.png"
+        "id": "salmon-sweet-potato-coconut-curry",
+        "erreurs": [
+          "standard 6: step 7 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "oat-banana-blueberry-bites",
-        "reason": "only one ingredient recognised out of 9 and the dish was not identified as Banana Blueberry Oat Bites",
-        "detectes": [
-          "oat",
-          "blueberry"
-        ],
-        "fichier": "images/rejected/oat-banana-blueberry-bites.png"
+        "id": "peach-ricotta-quinoa-cups",
+        "erreurs": [
+          "standard 6: step 10 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "banana-chickpea-soft-cookies",
-        "reason": "the recipe is Banana and Chickpea Soft Cookies but the image shows two pan-fried patties — the dish does not match ; only one ingredient recognised out of 7 and the dish was not identified as Banana and Chickpea Soft Cookies",
-        "detectes": [
-          "chickpea",
-          "breadcrumb",
-          "onion",
-          "herb"
-        ],
-        "fichier": "images/rejected/banana-chickpea-soft-cookies.png"
+        "id": "white-bean-and-leek-potato-soup",
+        "erreurs": [
+          "ingrédient hors catalogue : « thyme » — inventé par le modèle"
+        ]
       },
       {
-        "id": "date-and-oat-energy-balls",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
-        "detectes": [
-          "oat",
-          "cranberry",
-          "date"
-        ],
-        "fichier": "images/rejected/date-and-oat-energy-balls.png"
+        "id": "carrot-lentil-coconut-patties",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "date-banana-coconut-soft-bites",
-        "reason": "the image shows \"sesame seed\" while the recipe contains no sesame",
-        "detectes": [
-          "oat",
-          "date",
-          "raisin",
-          "sesame seed",
-          "almond",
-          "nut"
-        ],
-        "fichier": "images/rejected/date-banana-coconut-soft-bites.png"
+        "id": "ground-beef-and-sweet-potato-rice-skillet",
+        "erreurs": [
+          "standard 5: step 7 cooks without a duration or a doneness cue"
+        ]
       },
       {
-        "id": "melon-chia-coconut-cups",
-        "reason": "the dish starts at 0.53 of the height, below 0.48 — the hero's title would cover it",
-        "detectes": [],
-        "fichier": "images/rejected/melon-chia-coconut-cups.png"
+        "id": "apple-cinnamon-oat-soft-bars",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "melon-oat-soft-bars",
-        "reason": "the recipe is Melon and Oat Soft Bars but the image shows a baked oat cup — the dish does not match ; only one ingredient recognised out of 8 and the dish was not identified as Melon and Oat Soft Bars",
-        "detectes": [
-          "rolled oat",
-          "brown sugar",
-          "dried fruit"
-        ],
-        "fichier": "images/rejected/melon-oat-soft-bars.png"
+        "id": "apple-ricotta-quinoa-cups",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "beet-and-oat-soft-bites",
-        "reason": "the vision is unsure and names \"butter\" — the recipe contains no milk",
-        "detectes": [
-          "oat",
-          "raspberry",
-          "beetroot",
-          "date",
-          "almond"
-        ],
-        "fichier": "images/rejected/beet-and-oat-soft-bites.png"
+        "id": "chickpea-and-zucchini-tomato-rice-bowl",
+        "erreurs": [
+          "standard 6: step 9 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "blueberry-oat-coconut-soft-bites",
-        "reason": "only one ingredient recognised out of 7 and the dish was not identified as Blueberry Oat Coconut Soft Bites",
-        "detectes": [
-          "blueberry",
-          "oat",
-          "oat flake"
-        ],
-        "fichier": "images/rejected/blueberry-oat-coconut-soft-bites.png"
+        "id": "raspberry-ricotta-quinoa-bites",
+        "erreurs": [
+          "standard 6: step 8 runs past the ceiling of twenty-six words"
+        ]
       },
       {
-        "id": "banana-coconut-oat-flatbread",
-        "reason": "the recipe is Banana & Coconut Oat Flatbread but the image shows baked crumble dish — the dish does not match",
-        "detectes": [
-          "oat",
-          "flour",
-          "sugar",
-          "butter",
-          "milk"
-        ],
-        "fichier": "images/rejected/banana-coconut-oat-flatbread.png"
-      },
-      {
-        "id": "banana-sunflower-quinoa-bites",
-        "reason": "the dish starts at 0.57 of the height, below 0.48 — the hero's title would cover it",
-        "detectes": [],
-        "fichier": "images/rejected/banana-sunflower-quinoa-bites.png"
-      },
-      {
-        "id": "sweet-potato-coconut-flatbread-triangles",
-        "reason": "the image shows \"cheese\" while the recipe contains no milk ; the vision is unsure and names \"cheese\" — the recipe contains no milk ; the vision is unsure and names \"cheddar\" — the recipe contains no milk ; the vision is unsure and names \"bread\" — the recipe contains no wheat and triticale ; the recipe is Sweet Potato Coconut Flatbread Triangles but the image shows a bowl of quesadilla wedges — the dish does not match ; no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Sweet Potato Coconut Flatbread Triangles",
-        "detectes": [
-          "flatbread",
-          "cheese"
-        ],
-        "fichier": "images/rejected/sweet-potato-coconut-flatbread-triangles.png"
-      },
-      {
-        "id": "melon-coconut-chia-freezer-bites",
-        "reason": "only one ingredient recognised out of 4 and the dish was not identified as Melon & Coconut Chia Freezer Bites",
-        "detectes": [
-          "coconut",
-          "chocolate sprinkle",
-          "cake ball",
-          "caramel filling"
-        ],
-        "fichier": "images/rejected/melon-coconut-chia-freezer-bites.png"
-      },
-      {
-        "id": "blueberry-chia-coconut-freezer-bites",
-        "reason": "the vision is unsure and names \"cheese\" — the recipe contains no milk",
-        "detectes": [
-          "blueberry",
-          "chia seed",
-          "shredded coconut",
-          "coconut",
-          "blueberry jam"
-        ],
-        "fichier": "images/rejected/blueberry-chia-coconut-freezer-bites.png"
-      },
-      {
-        "id": "banana-coconut-quinoa-bites",
-        "reason": "the vision is unsure and names \"sesame\" — the recipe contains no sesame",
-        "detectes": [
-          "quinoa",
-          "millet",
-          "date",
-          "coconut",
-          "oat"
-        ],
-        "fichier": "images/rejected/banana-coconut-quinoa-bites.png"
-      },
-      {
-        "id": "date-carrot-and-coconut-bites",
-        "reason": "only one ingredient recognised out of 8 and the dish was not identified as Date, Carrot and Coconut Bites",
-        "detectes": [
-          "oat",
-          "carrot",
-          "quinoa"
-        ],
-        "fichier": "images/rejected/date-carrot-and-coconut-bites.png"
+        "id": "raspberry-coconut-yogurt-bark",
+        "erreurs": [
+          "beaucoup trop de liquide pour la farine (30.0×) — la pâte ne tiendra pas",
+          "cuisson au four sans température indiquée"
+        ]
       }
     ],
-    "surSosie": 6,
-    "orphans": [
-      "banana-chickpea-soft-cookies-e67e2d6ed7a2.png",
-      "banana-sunflower-quinoa-bites-4974cdc95d8f.png",
-      "coconut-rice-pudding-with-mango-b4cc825e83cc.png"
+    "aRevoir": [
+      {
+        "id": "salmon-lentil-tomato-bake",
+        "avertissements": [
+          "unité inhabituelle sur paprika : tsp",
+          "unité inhabituelle sur oregano : tsp",
+          "unité inhabituelle sur dill : tbsp"
+        ]
+      }
+    ],
+    "nouvelles": [
+      "salmon-lentil-tomato-bake",
+      "peach-avocado-chia-smash-cups",
+      "white-bean-and-ground-turkey-tomato-bake",
+      "carrot-coconut-milk-soft-bites",
+      "ground-beef-and-lentil-tomato-bowl",
+      "chickpea-and-sweet-potato-coconut-curry"
     ]
-  }
+  },
+  "images": null
 }
