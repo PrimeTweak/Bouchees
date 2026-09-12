@@ -94,9 +94,12 @@ struct SearchScreen: View {
     private var results: [(recipe: Recipe, result: AdaptedRecipe)] {
         let q = query.lowercased().trimmingCharacters(in: .whitespaces)
         guard q.count > 1 else { return [] }
-        /* Only what this account can open: a locked card has no body to
-         * search, and a name alone would advertise what it cannot show. */
+        /* Only what the subscription gives: this week, the week before, what
+         * is saved, and the top fifteen. Searching the whole pool would let
+         * a name advertise a recipe the account cannot open. */
+        let portee = Set(app.searchScope.map(\.id))
         return app.recipes.filter { r in
+            portee.contains(r.id) &&
             r.hasBody && (r.name.lowercased().contains(q)
                 || r.ingredients.contains { $0.id.lowercased().contains(q) })
         }

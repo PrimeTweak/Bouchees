@@ -23,7 +23,18 @@ function write(db) {
 
 /* ratings[recipeId][voter] = { rating, le } — voter is a hash of the account,
  * never the address itself. */
-function rate(recipeId, email, rating) {
+/* The age band the ranking groups by. A parent of a nine-month-old wants
+ * what other parents of nine-month-olds cooked, not a toddler's favourite. */
+const BANDES = [6, 9, 12, 24, 48];
+function bande(ageMonths) {
+  const a = Number(ageMonths);
+  if (!Number.isFinite(a)) return null;
+  let out = BANDES[0];
+  BANDES.forEach(function (b) { if (a >= b) out = b; });
+  return out;
+}
+
+function rate(recipeId, email, rating, ageMonths) {
   const n = Number(rating);
   if (!Number.isInteger(n) || n < 1 || n > 5) {
     return { ok: false, reason: "la rating doit être un entier de 1 à 5" };
@@ -32,7 +43,7 @@ function rate(recipeId, email, rating) {
 
   const db = read();
   if (!db.ratings[recipeId]) db.ratings[recipeId] = {};
-  db.ratings[recipeId][email] = { rating: n, le: new Date().toISOString() };
+  db.ratings[recipeId][email] = { rating: n, le: new Date().toISOString(), bande: bande(ageMonths) };
   write(db);
   return { ok: true, aggregate: aggregate(recipeId, db) };
 }
@@ -78,7 +89,28 @@ function overallAverage(db) {
 
 /* The ranking: identifiers and scores only. The caller fetches the
  * recipe content; the ranking knows votes, not recipes. */
-function ranking(limit) {
+/* Ranked within one age band. Entries from before the band was recorded
+ * carry none and stay out: they cannot be attributed to an age. */
+function ranking(limit, ageMonths) {
+  const cible = bande(ageMonths);
+  if (cible !== null) return rankingDeBande(limit, cible);
+  return rankingGlobal(limit);
+}
+
+function rankingDeBande(limit, cible) {
+  const db = read();
+  const out = [];
+  Object.keys(db.ratings).forEach(function (recipeId) {
+    const notes = Object.values(db.ratings[recipeId]).filter(function (e) { return e.bande === cible; });
+    if (notes.length < MIN_VOTES) return;
+    const somme = notes.reduce(function (a, e) { return a + e.rating; }, 0);
+    out.push({ recipeId: recipeId, votes: notes.length, average: Math.round((somme / notes.length) * 10) / 10 });
+  });
+  out.sort(function (a, b) { return b.average - a.average || b.votes - a.votes; });
+  return limit ? out.slice(0, limit) : out;
+}
+
+function rankingGlobal(limit) {
   const db = read();
   const out = [];
 
@@ -130,6 +162,8 @@ function progress() {
 }
 
 module.exports = {
+  bande: bande,
+  TOP: 15,
   MIN_VOTES: MIN_VOTES, WEIGHT: WEIGHT, ANCHOR: ANCHOR,
   rate: rate, removeRating: removeRating, ratingBy: ratingBy,
   aggregate: aggregate, aggregates: aggregates, ranking: ranking,

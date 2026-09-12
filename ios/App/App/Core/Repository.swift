@@ -306,10 +306,10 @@ actor RemoteStore {
     struct RatingResponse: Decodable { let ok: Bool?; let summary: RawSummary? }
     struct RawSummary: Decodable { let votes: Int; let average: Double? }
 
-    func rate(_ recetteId: String, note: Int?, token: String) async throws -> RatingSummary {
+    func rate(_ recetteId: String, note: Int?, ageMonths: Int, token: String) async throws -> RatingSummary {
         var r = request("api/rating", token: token)
         r.httpMethod = "POST"
-        let charge: [String: Any] = ["recipe": recetteId, "note": note as Any]
+        let charge: [String: Any] = ["recipe": recetteId, "note": note as Any, "ageMonths": ageMonths]
         r.httpBody = try JSONSerialization.data(withJSONObject: charge)
         let rep = try await execute(RatingResponse.self, r)
         return RatingSummary(votes: rep.summary?.votes ?? 0,
@@ -317,8 +317,9 @@ actor RemoteStore {
                            myRating: note)
     }
 
-    func topRated(token: String?) async throws -> TopRatedResponse {
-        try await execute(TopRatedResponse.self, request("api/top-rated", token: token))
+    func topRated(ageMonths: Int, token: String?) async throws -> TopRatedResponse {
+        try await execute(TopRatedResponse.self, request("api/top-rated", token: token,
+                          items: [URLQueryItem(name: "age", value: String(ageMonths))]))
     }
 
     func product(code: String, token: String?) async throws -> GroceryProduct {

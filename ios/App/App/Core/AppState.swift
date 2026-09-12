@@ -69,7 +69,11 @@ final class AppState {
     /// on the current week only.
     func picks(week offset: Int) -> [Int: DayPick] {
         let start = weekStart(offset)
-        let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)/\(activeProfile.id)"
+        /* Age and allergens belong in the key: editing them leaves the
+         * profile's id untouched, and the old week came back out of the
+         * cache while the servable pool had changed. */
+        let p = activeProfile
+        let key = "\(start)/\(recipes.count)/\(history.count)/\(subscribed)/\(p.id)/\(p.ageMonths)/\(p.allergens.sorted().joined(separator: ","))"
         if let hit = picksCache[key] { return hit }
         let out = sequence.picks(from: start, to: start + 6, pool: servablePool, history: history)
         if picksCache.count > 12 { picksCache.removeAll() }
@@ -100,6 +104,21 @@ final class AppState {
         if selectedWeek == 0 { return recipes(on: day) }
         guard let p = picks(week: selectedWeek)[weekStart(selectedWeek) + day] else { return [] }
         return [p.meal, p.snack].compactMap { id in id.flatMap { recipeByID($0) } }
+    }
+
+    /// What search may reach: this week, the week before for a subscriber,
+    /// everything saved, and the top fifteen. Never the whole pool.
+    var searchScope: [Recipe] {
+        var out = (0..<7).flatMap { recipes(on: $0) }
+        if subscribed {
+            let start = weekStart(-1), passee = picks(week: -1)
+            out += (0..<7).flatMap { d in (passee[start + d].map { [$0.meal, $0.snack] } ?? []).compactMap { $0 } }
+                .compactMap { recipeByID($0) }
+            out += topRated
+        }
+        out += saved.recipes
+        var vus = Set<String>()
+        return out.filter { vus.insert($0.id).inserted }
     }
 
     /// The current week, with the plan's moves.
@@ -152,12 +171,11 @@ final class AppState {
         loadCooked()
         let start = weekStart(0)
         let week = picks(week: 0)
-        /* Freeze every day up to today, so a recipe joining the pool changes
-         * only the days to come. */
-        /* Never freeze an empty day: an old cache or a sync not yet answered
-         * would lock today at nothing. Repair any such entry from before. */
+        /* The whole current week is frozen, not just up to today: a parent
+         * who shopped on Sunday keeps the Wednesday they bought for. An
+         * empty day is never frozen — that would lock it at nothing. */
         var frozen = history.filter { $0.value.meal != nil || $0.value.snack != nil }
-        for d in (start...(start + 6)) where d <= todayIndex {
+        for d in (start...(start + 6)) {
             if let p = week[d], p.meal != nil || p.snack != nil { frozen[d] = p }
         }
         if frozen != history { history = frozen; local.writeHistory(history) }
@@ -471,11 +489,18 @@ final class AppState {
     /// Bodies for the three weeks on the rail, asked for together; on a
     /// refusal, the free ones are asked for alone.
     private func fetchMissingBodies(token: String?) async {
-        /* A subscriber gets the whole pool, so search reaches all of it;
-         * anyone else gets the three weeks on the rail. */
-        let needed: [String] = subscribed
-            ? recipes.map(\.id)
-            : [-1, 0, 1].flatMap { picks(week: $0).values.flatMap { [$0.meal, $0.snack] } }.compactMap { $0 }
+        /* What the subscription actually gives, never the whole pool: this
+         * week and the one before, whatever is saved, and the top fifteen
+         * for the child's age. A parent without one gets this week only. */
+        let semaines = subscribed ? [-1, 0] : [0]
+        var needed: [String] = semaines
+            .flatMap { picks(week: $0).values.flatMap { [$0.meal, $0.snack] } }.compactMap { $0 }
+        /* The two days each locked week previews, for everyone. */
+        needed += [-1, 1].flatMap { w in
+            (0..<2).compactMap { d in picks(week: w)[weekStart(w) + d] }.flatMap { [$0.meal, $0.snack] }
+        }.compactMap { $0 }
+        needed += saved.recipes.map(\.id)
+        if subscribed { needed += topRated.map(\.id) }
         let missing = Array(Set(needed)).filter { id in recipeByID(id)?.hasBody == false }
         guard !missing.isEmpty else { return }
         func merge(_ got: [Recipe]) {
@@ -584,7 +609,7 @@ final class AppState {
                                            average: shared?.average, myRating: mine)
         guard let token = subscription.serverToken else { return }
         do {
-            let a = try await serveur.rate(recetteId, note: note, token: token)
+            let a = try await serveur.rate(recetteId, note: note, ageMonths: activeProfile.ageMonths, token: token)
             ratings[recetteId] = a
         } catch {
             syncMessage = "The rating couldn’t be saved. Try again later."
@@ -601,7 +626,7 @@ final class AppState {
     }
 
     func loadTopRated() async {
-        if let r = try? await serveur.topRated(token: subscription.serverToken) {
+        if let r = try? await serveur.topRated(ageMonths: activeProfile.ageMonths, token: subscription.serverToken) {
             topRated = r.recipes
             ratingThreshold = r.threshold
         }

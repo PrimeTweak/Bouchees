@@ -122,7 +122,7 @@
 "New recipes every month" = "New recipes every month";
 "Your subscription is active" = "Your subscription is active";
 "Every month, a batch of recipes chosen where your profile runs short — not at random." = "Every month, a batch of recipes chosen where your profile runs short — not at random.";
-"Every batch is unlocked. The next one arrives at the start of next month." = "Every batch is unlocked. The next one arrives at the start of next month.";
+"Every batch is unlocked. The next one arrives at the start of next month." = "Everything is open. Fourteen new recipes arrive next Monday.";
 "Always free" = "Always free";
 "With the subscription" = "With the subscription";
 "Ingredient swaps for every allergen" = "Ingredient swaps for every allergen";
@@ -421,7 +421,7 @@
 "Swaps for every allergen" = "Swaps for every allergen";
 "Last week's recipes" = "Last week's recipes";
 "Everything free has" = "Everything free has";
-"New recipes every week" = "New recipes every week";
+"New recipes every week" = "A new week, every Monday";
 "Adapted to your children" = "Adapted to your children";
 "Three weeks open at once" = "Three weeks open at once";
 "Next week, before it starts" = "Next week, before it starts";
@@ -429,7 +429,7 @@
 "Seven new recipes every Monday, adapted to your children." = "Seven new recipes every Monday, adapted to your children.";
 "7 days free, then $4.99/month" = "7 days free, then $4.99/month";
 "7 new ones every week, adapted to %@" = "7 new ones every week, adapted to %@";
-"7 new recipes every week" = "7 new recipes every week";
+"7 new recipes every week" = "Fourteen recipes every Monday";
 "Continue with the free recipes" = "Continue with the free recipes";
 "Drag a recipe here from another day, or cook something you already know." = "Drag a recipe here from another day, or cook something you already know.";
 "Free, forever" = "Free, forever";
@@ -517,3 +517,10 @@
 "original" = "original";
 "The photo shows the dish before the swaps." = "The photo shows the dish before the swaps.";
 "2 of %lld" = "2 of %lld";
+"This week and last week" = "This week and last week";
+"Fourteen new ones every Monday, and the week before stays open" = "Fourteen new ones every Monday, and the week before stays open";
+"Everything you save stays yours" = "Everything you save stays yours";
+"Bookmark a recipe and it stays on this device" = "Bookmark a recipe and it stays on this device";
+"The fifteen best for this age" = "The fifteen best for this age";
+"Ranked by the parents who cooked them — it moves as they rate" = "Ranked by the parents who cooked them — it moves as they rate";
+"Choose an age" = "Choose an age";

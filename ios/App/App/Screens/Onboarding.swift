@@ -9,7 +9,7 @@ struct OnboardingFlow: View {
     @Environment(AppState.self) private var app
 
     @State private var step = 0
-    @State private var draft = ChildProfile.defaut
+    @State private var draft = ChildProfile.brouillon
     @State private var name = ""
 
     var body: some View {
@@ -39,7 +39,7 @@ struct ReplayDemo: View {
     @Environment(AppState.self) private var app
     let done: () -> Void
     @State private var step = 0
-    @State private var draft = ChildProfile.defaut
+    @State private var draft = ChildProfile.brouillon
 
     var body: some View {
         ZStack {
@@ -436,7 +436,7 @@ private struct WhoStep: View {
                     Text("First name")
                         .eyebrow()
                     TextField("First name", text: $name)
-                        .scaledFont(Type.secondary)
+                        .scaledFont(Type.display, weight: .semibold)
                         .foregroundStyle(Tone.text)
                         .focused($focused)
                         .submitLabel(.next)
@@ -459,6 +459,7 @@ private struct WhoStep: View {
                     ForEach(AgeStage.all, id: \.months) { st in
                         StageRow(stage: st, selected: draft.ageMonths == st.months) {
                             draft.ageMonths = st.months
+                            focused = false
                         }
                     }
                 }
@@ -469,14 +470,17 @@ private struct WhoStep: View {
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 9) {
                 Button(action: next) {
-                    Text(name.trimmingCharacters(in: .whitespaces).isEmpty
-                         ? String(localized: "Plan the week")
-                         : String(format: String(localized: "Plan %@'s week"), name.trimmingCharacters(in: .whitespaces)))
+                    Text(draft.ageMonths == 0
+                         ? String(localized: "Choose an age")
+                         : (name.trimmingCharacters(in: .whitespaces).isEmpty
+                            ? String(localized: "Plan the week")
+                            : String(format: String(localized: "Plan %@'s week"), name.trimmingCharacters(in: .whitespaces))))
                         .scaledFont(Type.heading, weight: .semibold)
                         .frame(maxWidth: .infinity)
                         .frame(height: Layout.tapTarget + 6)
                 }
                 .buttonStyle(PrimaryButton())
+                .disabled(draft.ageMonths == 0)
 
                 Text("Not medical advice. Swaps come from versioned tables a professional should review.")
                     .scaledFont(Type.secondary)
@@ -487,7 +491,8 @@ private struct WhoStep: View {
             .padding(.bottom, 12)
             .softFooter()
         }
-        .onAppear { focused = true }
+        /* The keyboard no longer opens on its own: it covered three of the
+         * five age cards, and the age is the more important choice. */
     }
 }
 
@@ -678,23 +683,28 @@ private struct OfferStep: View {
             VStack(alignment: .leading, spacing: 0) {
                 StepHeader(label: "For \(draft.firstName)", back: back)
 
-                Text("\(tally.total) today.\n7 more every week.")
+                Text("\(draft.firstName)'s week,\ncooked for her.")
                     .scaledFont(Type.display)
                     .foregroundStyle(Tone.text)
                     .padding(.top, 8)
 
-                GrowthBars(today: tally.total)
-                    .padding(.top, 22)
+                Text("Every Monday, fourteen recipes — a meal and a snack for each day, adapted to her age and what she avoids.")
+                    .scaledFont(Type.body)
+                    .foregroundStyle(Tone.text2)
+                    .padding(.top, 10)
 
                 FreeForever()
                     .padding(.top, 20)
 
                 VStack(spacing: 0) {
-                    Perk(title: "7 new recipes every week",
-                         detail: "Written for the profiles with the fewest options")
+                    Perk(title: "This week and last week",
+                         detail: "Fourteen new ones every Monday, and the week before stays open")
                     Divider().overlay(Tone.hairline)
-                    Perk(title: "Every past week, kept",
-                         detail: "Nothing disappears once it is unlocked")
+                    Perk(title: "Everything you save stays yours",
+                         detail: "Bookmark a recipe and it stays on this device")
+                    Divider().overlay(Tone.hairline)
+                    Perk(title: "The fifteen best for this age",
+                         detail: "Ranked by the parents who cooked them — it moves as they rate")
                 }
                 .padding(.top, 18)
             }
@@ -737,39 +747,6 @@ private struct OfferStep: View {
 }
 
 /// Honest arithmetic: today, and the same corpus a year out at seven a week.
-private struct GrowthBars: View {
-    let today: Int
-
-    private var points: [(label: LocalizedStringKey, value: Int)] {
-        [("Now", today), ("1 mo", today + 28), ("3 mo", today + 84),
-         ("6 mo", today + 182), ("1 yr", today + 364)]
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .bottom, spacing: 7) {
-                ForEach(Array(points.enumerated()), id: \.offset) { i, p in
-                    let peak = points.last?.value ?? 1
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(i == 0 ? Tone.yes : Tone.brand.opacity(0.35 + 0.14 * Double(i)))
-                        .frame(height: max(18, 96 * CGFloat(p.value) / CGFloat(peak)))
-                }
-            }
-            HStack(spacing: 7) {
-                ForEach(Array(points.enumerated()), id: \.offset) { _, p in
-                    Text(p.label)
-                        .scaledFont(Type.micro, weight: .medium)
-                        .foregroundStyle(Tone.textTertiary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            Text("\(points.last?.value ?? 0) recipes a year from now")
-                .scaledFont(Type.secondary)
-                .foregroundStyle(Tone.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-    }
-}
 
 private struct FreeForever: View {
     var body: some View {

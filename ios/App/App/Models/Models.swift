@@ -343,6 +343,11 @@ struct ChildProfile: Codable, Hashable, Identifiable, Sendable {
 
     static let defaut = ChildProfile(name: String(localized: "My child"), ageMonths: 9, allergens: [])
 
+    /// A blank draft for the onboarding: age zero means nothing was chosen,
+    /// and the button stays inactive. A default of nine months let a parent
+    /// walk past the one choice that decides every choking alert.
+    static let brouillon = ChildProfile(name: "", ageMonths: 0, allergens: [])
+
     /// Profile resolved when several children eat the same dish: the youngest
     /// age and the union of the allergens. This is the hard case in a family,
     /// and it has to be strict by construction.

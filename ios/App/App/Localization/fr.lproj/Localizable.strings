@@ -120,7 +120,7 @@
 "New recipes every month" = "De nouvelles recettes chaque mois";
 "Your subscription is active" = "Votre abonnement est actif";
 "Every month, a batch of recipes chosen where your profile runs short — not at random." = "Chaque mois, un lot de recettes choisies là où votre profil manque de choix — pas au hasard.";
-"Every batch is unlocked. The next one arrives at the start of next month." = "Tous les lots sont déverrouillés. Le prochain arrive au début du mois prochain.";
+"Every batch is unlocked. The next one arrives at the start of next month." = "Tout est ouvert. Quatorze nouvelles recettes arrivent lundi prochain.";
 "Always free" = "Toujours gratuit";
 "With the subscription" = "Avec l’abonnement";
 "Ingredient swaps for every allergen" = "Les échanges d’ingrédients pour chaque allergène";
@@ -420,7 +420,7 @@
 "Swaps for every allergen" = "Des substitutions pour chaque allergène";
 "Last week's recipes" = "Les recettes de la semaine passée";
 "Everything free has" = "Tout ce que le gratuit a";
-"New recipes every week" = "De nouvelles recettes chaque semaine";
+"New recipes every week" = "Une nouvelle semaine, chaque lundi";
 "Adapted to your children" = "Adaptées à vos enfants";
 "Three weeks open at once" = "Trois semaines ouvertes à la fois";
 "Next week, before it starts" = "La semaine prochaine, avant qu'elle commence";
@@ -428,7 +428,7 @@
 "Seven new recipes every Monday, adapted to your children." = "Sept nouvelles recettes chaque lundi, adaptées à vos enfants.";
 "7 days free, then $4.99/month" = "7 jours gratuits, puis 4,99 $/mois";
 "7 new ones every week, adapted to %@" = "7 nouvelles chaque semaine, adaptées à %@";
-"7 new recipes every week" = "7 nouvelles recettes chaque semaine";
+"7 new recipes every week" = "Quatorze recettes chaque lundi";
 "Continue with the free recipes" = "Continuer avec les recettes gratuites";
 "Drag a recipe here from another day, or cook something you already know." = "Glissez une recette ici depuis un autre jour, ou cuisinez quelque chose que vous connaissez.";
 "Free, forever" = "Gratuit, pour toujours";
@@ -516,3 +516,10 @@
 "original" = "originale";
 "The photo shows the dish before the swaps." = "La photo montre le plat avant les échanges.";
 "2 of %lld" = "2 sur %lld";
+"This week and last week" = "Cette semaine et la semaine passée";
+"Fourteen new ones every Monday, and the week before stays open" = "Quatorze nouvelles chaque lundi, et la semaine d'avant reste ouverte";
+"Everything you save stays yours" = "Tout ce que tu enregistres te reste";
+"Bookmark a recipe and it stays on this device" = "Marque une recette et elle reste sur cet appareil";
+"The fifteen best for this age" = "Les quinze meilleures pour cet âge";
+"Ranked by the parents who cooked them — it moves as they rate" = "Classées par les parents qui les ont cuisinées — ça bouge selon leurs notes";
+"Choose an age" = "Choisis un âge";

@@ -461,7 +461,7 @@ const routes = {
 
     const r = corps.rating === null
       ? Ratings.removeRating(corps.recipe, hashEmail(ctx.account.email))
-      : Ratings.rate(corps.recipe, hashEmail(ctx.account.email), corps.rating);
+      : Ratings.rate(corps.recipe, hashEmail(ctx.account.email), corps.rating, corps.ageMonths);
     if (!r.ok) return json(res, 400, { error: r.reason });
     json(res, 200, { ok: true, aggregate: r.aggregate });
   },
@@ -479,7 +479,7 @@ const routes = {
    * otherwise the ranking would show titles nobody can open. */
   "GET /api/top-rated": function (req, res, ctx) {
     const limit = Math.min(Number(ctx.url.searchParams.get("limit")) || 10, 50);
-    const ranked = Ratings.ranking(limit);
+    const ranked = Ratings.ranking(limit || Ratings.TOP, ctx.url.searchParams.get("age"));
     if (!ranked.length) {
       return json(res, 200, { threshold: Ratings.MIN_VOTES, recipes: [],
         progress: Ratings.progress() });

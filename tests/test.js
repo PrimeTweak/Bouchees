@@ -2484,4 +2484,35 @@ test("prompts: every framing says where the dish sits", () => {
   });
 });
 
+test("age: the servable pool grows with the child, and a recipe's own content follows", () => {
+  /* Two mechanisms, both driven by age: which recipes may appear at all
+   * (minAgeMonths on the card), and how one recipe is written (the age
+   * rules — honey before 12 months, nuts before 48). */
+  const cat = read("../dist/catalogue.json");
+  const a9 = cat.filter((c) => c.minAgeMonths <= 9).length;
+  const a24 = cat.filter((c) => c.minAgeMonths <= 24).length;
+  assert(a24 > a9, "the pool does not grow between 9 and 24 months");
+
+  const barres = parId["chewy-granola-bars"] || corpusComplet.find((r) => r.ingredients.some((u) => u.id === "honey"));
+  if (!barres) return;
+  const jeune = Engine.adapterRecette(barres, { allergens: [], ageMois: 9 }, data);
+  const grand = Engine.adapterRecette(barres, { allergens: [], ageMois: 48 }, data);
+  const compte = (r) => (r.alerts || r.alertes || []).length;
+  assert(compte(jeune) > compte(grand),
+         "the same recipe carries as many alerts at 9 months as at 48");
+});
+
+test("ratings: the ranking is per age band and capped at fifteen", () => {
+  /* A parent of a nine-month-old wants what other parents of nine-month-olds
+   * cooked. Entries from before the band was recorded carry none and stay
+   * out — they cannot be attributed to an age. */
+  const R = require(path.join(__dirname, "..", "server", "ratings.js"));
+  assert.equal(R.TOP, 15, "the cap is not fifteen");
+  assert.equal(R.bande(9), 9);
+  assert.equal(R.bande(11), 9, "eleven months belongs to the nine-month band");
+  assert.equal(R.bande(13), 12);
+  assert.equal(R.bande(60), 48);
+  assert.equal(R.bande(undefined), null, "a rating with no age must not land in a band");
+});
+
 Promise.all(enAttente).then(function () { console.log("\n" + n + " tests."); });
