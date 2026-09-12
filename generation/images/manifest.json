@@ -3189,5 +3189,164 @@
         "la vision hésite sur : the red fruit could be beet or cranberry, the pale chunk could be apple or pear"
       ]
     }
+  },
+  "chickpea-and-roasted-red-pepper-quinoa-bowl": {
+    "fichier": "images/chickpea-and-roasted-red-pepper-quinoa-bowl-b6eef01478f1.png",
+    "empreinte": "b6eef01478f1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T11:32:43.659Z",
+      "detectes": [
+        "chickpea",
+        "quinoa",
+        "spinach",
+        "red bell pepper"
+      ],
+      "reconnus": 4,
+      "attendus": 10,
+      "avertissements": []
+    }
+  },
+  "chickpea-and-butternut-squash-coconut-soup": {
+    "fichier": "images/chickpea-and-butternut-squash-coconut-soup-21f1d6fa8da1.png",
+    "empreinte": "21f1d6fa8da1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T11:39:06.302Z",
+      "detectes": [
+        "chickpea",
+        "butternut squash",
+        "onion"
+      ],
+      "reconnus": 3,
+      "attendus": 11,
+      "avertissements": [
+        "la vision hésite sur : broth type (vegetable or chicken), possible garlic in broth"
+      ]
+    }
+  },
+  "eggplant-ground-turkey-rice-bake": {
+    "fichier": "images/eggplant-ground-turkey-rice-bake-699373ab392d.png",
+    "empreinte": "699373ab392d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T11:45:28.467Z",
+      "detectes": [
+        "eggplant",
+        "ground meat",
+        "rice",
+        "tomato",
+        "green pepper"
+      ],
+      "reconnus": 5,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : type of ground meat (beef, pork, turkey, or lamb), green pepper or zucchini"
+      ]
+    }
+  },
+  "oat-and-apple-baked-fingers": {
+    "fichier": "images/oat-and-apple-baked-fingers-7608b458d7bc.png",
+    "empreinte": "7608b458d7bc",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T11:51:49.715Z",
+      "detectes": [
+        "oat",
+        "apple",
+        "almond"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "vision named \"almond\"; the recipe holds a look-alike",
+        "vision hedged on \"almond\"; the recipe holds a look-alike",
+        "la vision hésite sur : almond (could be another nut), apple (could be pear)"
+      ]
+    }
+  },
+  "zucchini-chickpea-coconut-soup": {
+    "fichier": "images/zucchini-chickpea-coconut-soup-8b92b40d20f1.png",
+    "empreinte": "8b92b40d20f1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T12:10:52.930Z",
+      "detectes": [
+        "chickpea",
+        "zucchini",
+        "onion"
+      ],
+      "reconnus": 3,
+      "attendus": 9,
+      "avertissements": [
+        "la vision hésite sur : broth type (vegetable or chicken), possible celery or leek instead of onion"
+      ]
+    }
+  },
+  "lentil-sweet-potato-coconut-soup": {
+    "fichier": "images/lentil-sweet-potato-coconut-soup-f4683b949b79.png",
+    "empreinte": "f4683b949b79",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T12:23:34.988Z",
+      "detectes": [
+        "lentil",
+        "carrot",
+        "onion",
+        "celery"
+      ],
+      "reconnus": 2,
+      "attendus": 10,
+      "avertissements": [
+        "la vision hésite sur : celery or leek, broth type (vegetable or meat)"
+      ]
+    }
+  },
+  "lentil-spinach-tomato-rice-bake": {
+    "fichier": "images/lentil-spinach-tomato-rice-bake-47fcadedec2b.png",
+    "empreinte": "47fcadedec2b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T12:29:57.258Z",
+      "detectes": [
+        "lentil",
+        "rice",
+        "spinach",
+        "tomato"
+      ],
+      "reconnus": 5,
+      "attendus": 11,
+      "avertissements": [
+        "la vision hésite sur : spinach or chard, brown lentil or green lentil, fresh tomato or canned tomato"
+      ]
+    }
   }
 }
