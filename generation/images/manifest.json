@@ -3890,5 +3890,924 @@
         "the vision hesitates on : ground meat could be beef, pork, or turkey, orange cubes could be sweet potato or butternut squash"
       ]
     }
+  },
+  "apple-cinnamon-oatmeal": {
+    "fichier": "images/apple-cinnamon-oatmeal-2fc4c8865097.png",
+    "empreinte": "2fc4c8865097",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T20:22:42.573Z",
+      "detectes": [
+        "oat",
+        "apple"
+      ],
+      "reconnus": 2,
+      "attendus": 4,
+      "avertissements": [
+        "the vision hesitates on : small fruit pieces could be apple or pear, liquid base could be milk, water, or plant-based milk, possible cinnamon or spice suggested by the brownish tint but not visually identifiable",
+        "to review — the dish starts 0.50 of the way down after two draws"
+      ]
+    }
+  },
+  "pasta-in-rose-sauce-with-chicken": {
+    "fichier": "images/pasta-in-rose-sauce-with-chicken-3bfcf284f1ed.png",
+    "empreinte": "3bfcf284f1ed",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T20:35:20.312Z",
+      "detectes": [
+        "spaghetti",
+        "tomato",
+        "onion",
+        "piece of chicken"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "the vision hesitates on : herb specks visible on chicken could be parsley, oregano, or basil — cannot confirm"
+      ]
+    }
+  },
+  "squash-and-coconut-soup": {
+    "fichier": "images/squash-and-coconut-soup-06cc7f3798a6.png",
+    "empreinte": "06cc7f3798a6",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T20:41:41.452Z",
+      "detectes": [
+        "butternut squash",
+        "onion",
+        "celery"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "the vision hesitates on : orange chunks could be carrot rather than butternut squash, broth color suggests possible cream or stock base but not identifiable with certainty",
+        "to review — the dish starts 0.59 of the way down after two draws"
+      ]
+    }
+  },
+  "salmon-and-sweet-potato-cakes": {
+    "fichier": "images/salmon-and-sweet-potato-cakes-88c499f7e3ec.png",
+    "empreinte": "88c499f7e3ec",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:00:43.003Z",
+      "detectes": [
+        "salmon",
+        "green onion"
+      ],
+      "reconnus": 2,
+      "attendus": 6,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "the vision hesitates on : orange vegetable visible inside patties (sweet potato or carrot or butternut squash), possible breadcrumb coating suggested by golden crust but not distinctly identifiable",
+        "to review — the dish starts 0.49 of the way down after two draws"
+      ]
+    }
+  },
+  "coconut-rice-pudding-with-mango": {
+    "fichier": "images/coconut-rice-pudding-with-mango-b4cc825e83cc.png",
+    "empreinte": "b4cc825e83cc",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:07:03.844Z",
+      "detectes": [
+        "rice",
+        "mango"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "the vision hesitates on : toasted coconut flakes suggested by brown flecks on top, but not certain"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-bites": {
+    "fichier": "images/sweet-potato-chickpea-bites-879764e73295.png",
+    "empreinte": "879764e73295",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:19:44.897Z",
+      "detectes": [
+        "chickpea"
+      ],
+      "reconnus": 2,
+      "attendus": 8,
+      "avertissements": [
+        "the vision hesitates on : golden binding base may be chickpea flour, besan, or another legume paste, possible spice coating such as turmeric or gram flour"
+      ]
+    }
+  },
+  "banana-oat-bites": {
+    "fichier": "images/banana-oat-bites-74ebcf551541.png",
+    "empreinte": "74ebcf551541",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:26:04.089Z",
+      "detectes": [
+        "oat",
+        "blueberry"
+      ],
+      "reconnus": 1,
+      "attendus": 6,
+      "avertissements": [
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 6 and the dish was not identified as Banana Oat Bites",
+        "the vision hesitates on : possible honey or syrup as binder, possible nut butter inside"
+      ]
+    }
+  },
+  "sweet-potato-chickpea-mini-patties": {
+    "fichier": "images/sweet-potato-chickpea-mini-patties-559f09c22503.png",
+    "empreinte": "559f09c22503",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:38:44.622Z",
+      "detectes": [
+        "chickpea"
+      ],
+      "reconnus": 2,
+      "attendus": 7,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "the vision hesitates on : exact grain or legume base of the patties (could be chickpea, lentil, or mixed), possible breadcrumb coating on the exterior"
+      ]
+    }
+  },
+  "chickpea-sweet-potato-mini-patties": {
+    "fichier": "images/chickpea-sweet-potato-mini-patties-cb7c9a91ee55.png",
+    "empreinte": "cb7c9a91ee55",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:45:07.298Z",
+      "detectes": [
+        "chickpea"
+      ],
+      "reconnus": 2,
+      "attendus": 9,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "the vision hesitates on : exact legume used (chickpeas or white beans), herbs or spices blended into the patty mixture, possible breadcrumb coating on the surface",
+        "to review — the dish starts 0.49 of the way down after two draws"
+      ]
+    }
+  },
+  "banana-chickpea-soft-cookies": {
+    "fichier": "images/banana-chickpea-soft-cookies-e67e2d6ed7a2.png",
+    "empreinte": "e67e2d6ed7a2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T21:57:47.598Z",
+      "detectes": [
+        "oat",
+        "chickpea"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
+        "the vision hesitates on : small round pale pieces could be white chocolate chips rather than chickpeas, possible presence of sugar crystals on surface"
+      ]
+    }
+  },
+  "date-and-oat-energy-balls": {
+    "fichier": "images/date-and-oat-energy-balls-281cb7455d0a.png",
+    "empreinte": "281cb7455d0a",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:04:08.965Z",
+      "detectes": [
+        "oat",
+        "dried cranberry"
+      ],
+      "reconnus": 1,
+      "attendus": 6,
+      "avertissements": [
+        "to review — the vision is unsure and names \"sesame\" — the recipe contains no sesame",
+        "vision hedged on \"peanut\"; the recipe holds a look-alike",
+        "to review — the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "only one ingredient recognised out of 6 — normal for a baked dish, the dish itself was identified",
+        "the vision hesitates on : small seeds visible on surface — possibly sunflower seeds or sesame seeds, binding agent unclear — could be peanut butter, honey, or another paste"
+      ]
+    }
+  },
+  "quinoa-lentil-sweet-potato-skillet": {
+    "fichier": "images/quinoa-lentil-sweet-potato-skillet-c840c2fd1ca2.png",
+    "empreinte": "c840c2fd1ca2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:16:45.136Z",
+      "detectes": [
+        "lentil",
+        "quinoa",
+        "sweet potato",
+        "tomato"
+      ],
+      "reconnus": 5,
+      "attendus": 12,
+      "avertissements": [
+        "the vision hesitates on : small dark seeds visible on the counter may be quinoa or another seed, tomato could be sun-dried tomato or fresh cooked tomato"
+      ]
+    }
+  },
+  "melon-chia-coconut-cups": {
+    "fichier": "images/melon-chia-coconut-cups-670ce46c1bd9.png",
+    "empreinte": "670ce46c1bd9",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:29:24.677Z",
+      "detectes": [
+        "melon cube"
+      ],
+      "reconnus": 1,
+      "attendus": 6,
+      "avertissements": [
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 6 and the dish was not identified as Melon and Chia Coconut Cups",
+        "the vision hesitates on : white liquid base could be coconut milk or regular milk, small translucent pearls visible in the liquid could be tapioca or sago, orange cubes identified as melon but could be papaya or cantaloupe"
+      ]
+    }
+  },
+  "melon-oat-soft-bars": {
+    "fichier": "images/melon-oat-soft-bars-3833f37c488f.png",
+    "empreinte": "3833f37c488f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:35:43.856Z",
+      "detectes": [
+        "rolled oats"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "to review — the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "to review — the recipe is Melon and Oat Soft Bars but the image shows a baked oat dish — the dish does not match",
+        "to review — only one ingredient recognised out of 8 and the dish was not identified as Melon and Oat Soft Bars",
+        "the vision hesitates on : the dense base could be a baked oatmeal, a flapjack, or an oat cake — texture suggests sugar or butter is present but neither is distinctly visible"
+      ]
+    }
+  },
+  "beet-and-oat-soft-bites": {
+    "fichier": "images/beet-and-oat-soft-bites-14e7bf0fc949.png",
+    "empreinte": "14e7bf0fc949",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:42:05.961Z",
+      "detectes": [
+        "oat"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "to review — the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Beet & Oat Soft Bites",
+        "the vision hesitates on : red/purple interior could be beetroot, berry, or red fruit jam, possible nut butter or date as binder, seeds possibly present on exterior",
+        "to review — the dish starts 0.48 of the way down after two draws"
+      ]
+    }
+  },
+  "beet-and-chickpea-coconut-bites": {
+    "fichier": "images/beet-and-chickpea-coconut-bites-226c53ed8853.png",
+    "empreinte": "226c53ed8853",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T22:54:45.263Z",
+      "detectes": [
+        "chickpea",
+        "beetroot"
+      ],
+      "reconnus": 3,
+      "attendus": 7,
+      "avertissements": [
+        "the vision hesitates on : dark specks could be raisins, dates, or chocolate chips, red crumb coating could be dried beetroot or a spice mix",
+        "to review — the dish starts 0.53 of the way down after two draws"
+      ]
+    }
+  },
+  "banana-coconut-oat-flatbread": {
+    "fichier": "images/banana-coconut-oat-flatbread-ab3125cb4b5d.png",
+    "empreinte": "ab3125cb4b5d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:07:25.698Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 6,
+      "avertissements": [
+        "to review — the recipe is Banana & Coconut Oat Flatbread but the image shows a baked crumble — the dish does not match",
+        "to review — only one ingredient recognised out of 6 and the dish was not identified as Banana & Coconut Oat Flatbread",
+        "the vision hesitates on : possible oats or coconut in the topping, possible nuts mixed in, unknown filling beneath the crust (fruit, grain, or other)"
+      ]
+    }
+  },
+  "banana-sunflower-quinoa-bites": {
+    "fichier": "images/banana-sunflower-quinoa-bites-4974cdc95d8f.png",
+    "empreinte": "4974cdc95d8f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:20:07.170Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 7,
+      "avertissements": [
+        "to review — the vision is unsure and names \"sesame\" — the recipe contains no sesame",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Banana & Sunflower Quinoa Bites",
+        "the vision hesitates on : small round seeds covering the outside could be quinoa, millet, or sesame, larger seeds visible could be sunflower seeds, pine nuts, or pumpkin seeds, dark interior filling is unidentifiable, browned topping could be caramelized sugar, spice crust, or toasted seeds"
+      ]
+    }
+  },
+  "sweet-potato-coconut-flatbread-triangles": {
+    "fichier": "images/sweet-potato-coconut-flatbread-triangles-65404e79bda2.png",
+    "empreinte": "65404e79bda2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:26:28.609Z",
+      "detectes": [
+        "flatbread"
+      ],
+      "reconnus": 0,
+      "attendus": 6,
+      "avertissements": [
+        "to review — the vision is unsure and names \"cheese\" — the recipe contains no milk",
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "the vision hesitates on : orange filling or topping visible on some wedges — possibly cheese, tomato paste, or a spread, cannot identify with certainty"
+      ]
+    }
+  },
+  "melon-coconut-chia-freezer-bites": {
+    "fichier": "images/melon-coconut-chia-freezer-bites-b564a53f717e.png",
+    "empreinte": "b564a53f717e",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:32:49.316Z",
+      "detectes": [
+        "chia seed"
+      ],
+      "reconnus": 1,
+      "attendus": 4,
+      "avertissements": [
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "to review — the vision is unsure and names \"cheese\" — the recipe contains no milk",
+        "to review — only one ingredient recognised out of 4 and the dish was not identified as Melon & Coconut Chia Freezer Bites",
+        "the vision hesitates on : white interior could be coconut, cream cheese, or another white base — not identifiable with certainty"
+      ]
+    }
+  },
+  "date-carrot-and-coconut-bites": {
+    "fichier": "images/date-carrot-and-coconut-bites-68de1bd60da4.png",
+    "empreinte": "68de1bd60da4",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:39:08.733Z",
+      "detectes": [
+        "carrot",
+        "oat"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 8 and the dish was not identified as Date, Carrot and Coconut Bites",
+        "the vision hesitates on : possible nut butter or another binding agent suggested by the texture, possible sweetener such as honey or maple syrup, possible spice such as cinnamon suggested by the warm brown color"
+      ]
+    }
+  },
+  "salmon-spinach-and-quinoa-skillet": {
+    "fichier": "images/salmon-spinach-and-quinoa-skillet-e9829b603ff0.png",
+    "empreinte": "e9829b603ff0",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-12T23:45:27.201Z",
+      "detectes": [
+        "salmon",
+        "quinoa",
+        "spinach",
+        "onion"
+      ],
+      "reconnus": 4,
+      "attendus": 11,
+      "avertissements": [
+        "the vision hesitates on : seasoning or oil not visually identifiable",
+        "to review — the dish starts 0.48 of the way down after two draws"
+      ]
+    }
+  },
+  "peach-oat-coconut-soft-bites": {
+    "fichier": "images/peach-oat-coconut-soft-bites-94c1d832e955.png",
+    "empreinte": "94c1d832e955",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:04:26.733Z",
+      "detectes": [
+        "oat flake"
+      ],
+      "reconnus": 0,
+      "attendus": 6,
+      "avertissements": [
+        "to review — the vision is unsure and names \"peanut\" — the recipe contains no peanuts",
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Peach and Coconut Oat Soft Bites",
+        "the vision hesitates on : possible nut pieces or dried fruit visible in the cross-section interior, possible honey or syrup as binder, possible peanut butter or another paste in the interior",
+        "to review — the dish starts 0.56 of the way down after two draws"
+      ]
+    }
+  },
+  "chickpea-spinach-tomato-skillet": {
+    "fichier": "images/chickpea-spinach-tomato-skillet-47e58546a2c3.png",
+    "empreinte": "47e58546a2c3",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:10:47.439Z",
+      "detectes": [
+        "chickpea",
+        "spinach",
+        "tomato",
+        "rice"
+      ],
+      "reconnus": 4,
+      "attendus": 12,
+      "avertissements": [
+        "the vision hesitates on : grain could be rice or another small grain such as orzo or barley"
+      ]
+    }
+  },
+  "green-pea-and-salmon-rice-bowl": {
+    "fichier": "images/green-pea-and-salmon-rice-bowl-b81eb4a22be9.png",
+    "empreinte": "b81eb4a22be9",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:23:25.937Z",
+      "detectes": [
+        "salmon",
+        "pea",
+        "rice"
+      ],
+      "reconnus": 3,
+      "attendus": 9,
+      "avertissements": []
+    }
+  },
+  "plum-chia-quinoa-bites": {
+    "fichier": "images/plum-chia-quinoa-bites-d5b5e79d10b3.png",
+    "empreinte": "d5b5e79d10b3",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:36:05.633Z",
+      "detectes": [
+        "cranberry",
+        "quinoa"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "to review — the vision is unsure and names \"butter\" — the recipe contains no milk",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Plum and Quinoa Chia Bites",
+        "the vision hesitates on : possible oats or another grain inside the balls, possible nut butter or date paste as binding agent (suggested by interior texture, not clearly identifiable)"
+      ]
+    }
+  },
+  "peach-avocado-chia-smash-cups": {
+    "fichier": "images/peach-avocado-chia-smash-cups-978ec8f02ecf.png",
+    "empreinte": "978ec8f02ecf",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:42:27.447Z",
+      "detectes": [
+        "yogurt",
+        "peach",
+        "avocado",
+        "chia seed"
+      ],
+      "reconnus": 4,
+      "attendus": 6,
+      "avertissements": [
+        "the vision hesitates on : white base could be yogurt or cream or soft cheese",
+        "to review — the dish starts 0.50 of the way down after two draws"
+      ]
+    }
+  },
+  "carrot-coconut-milk-soft-bites": {
+    "fichier": "images/carrot-coconut-milk-soft-bites-ffb96aa7dc97.png",
+    "empreinte": "ffb96aa7dc97",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T00:55:07.274Z",
+      "detectes": [
+        "carrot"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "vision hedged on \"butter\"; the recipe holds a look-alike",
+        "to review — only one ingredient recognised out of 7 and the dish was not identified as Carrot and Coconut Milk Soft Bites",
+        "the vision hesitates on : possible oats or coconut on the surface, possible nut butter as a binder, possible dates or dried fruit in the interior"
+      ]
+    }
+  },
+  "chickpea-and-carrot-coconut-patties": {
+    "fichier": "images/chickpea-and-carrot-coconut-patties-2607206db37b.png",
+    "empreinte": "2607206db37b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:01:32.157Z",
+      "detectes": [
+        "chickpea",
+        "carrot"
+      ],
+      "reconnus": 3,
+      "attendus": 8,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "the vision hesitates on : green flecks visible in patties — possibly parsley or spinach, cannot confirm, binding ingredient unclear — possibly breadcrumb or flour, only inferred from texture"
+      ]
+    }
+  },
+  "raspberry-ricotta-rice-flour-mini-pancakes": {
+    "fichier": "images/raspberry-ricotta-rice-flour-mini-pancakes-beeeade49aa1.png",
+    "empreinte": "beeeade49aa1",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:07:54.727Z",
+      "detectes": [
+        "raspberry",
+        "pancake"
+      ],
+      "reconnus": 0,
+      "attendus": 8,
+      "avertissements": [
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "the vision hesitates on : filling between pancakes may contain cream or yogurt in addition to raspberry",
+        "to review — the dish starts 0.49 of the way down after two draws"
+      ]
+    }
+  },
+  "beet-and-lentil-patties": {
+    "fichier": "images/beet-and-lentil-patties-0acd9533950f.png",
+    "empreinte": "0acd9533950f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:26:58.044Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 8,
+      "avertissements": [
+        "vision hedged on \"breadcrumbs\"; the recipe holds a look-alike",
+        "no raw ingredient visible — normal for a cooked dish, the dish itself was identified",
+        "the vision hesitates on : legumes visible in the patties (possibly lentils or chickpeas), red specks could be beetroot or sun-dried tomato, dark round inclusions could be chocolate chips or black beans, binding ingredient unclear (oats, breadcrumbs, or flour)"
+      ]
+    }
+  },
+  "avocado-banana-chia-smash-cups": {
+    "fichier": "images/avocado-banana-chia-smash-cups-64a2e140a74d.png",
+    "empreinte": "64a2e140a74d",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:33:19.486Z",
+      "detectes": [
+        "chia seed",
+        "banana",
+        "avocado"
+      ],
+      "reconnus": 3,
+      "attendus": 5,
+      "avertissements": [
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"almond\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "the vision hesitates on : liquid base could be coconut milk, almond milk, or dairy milk"
+      ]
+    }
+  },
+  "avocado-mango-coconut-chia-cups": {
+    "fichier": "images/avocado-mango-coconut-chia-cups-6b4c8122b5e5.png",
+    "empreinte": "6b4c8122b5e5",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:46:02.377Z",
+      "detectes": [
+        "avocado",
+        "mango"
+      ],
+      "reconnus": 2,
+      "attendus": 5,
+      "avertissements": [
+        "the vision hesitates on : yellow chunks could be mango or potato or another yellow fruit/vegetable, green purée base could include other ingredients beyond avocado"
+      ]
+    }
+  },
+  "chicken-sweet-potato-coconut-patties": {
+    "fichier": "images/chicken-sweet-potato-coconut-patties-887fc58134e4.png",
+    "empreinte": "887fc58134e4",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T01:52:23.340Z",
+      "detectes": [
+        "piece of chicken",
+        "carrot"
+      ],
+      "reconnus": 1,
+      "attendus": 9,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "only one ingredient recognised out of 9 — normal for a baked dish, the dish itself was identified",
+        "the vision hesitates on : golden crust may be breadcrumb or cornmeal coating, green flecks could be parsley or another herb, inner filling could be sweet potato rather than carrot"
+      ]
+    }
+  },
+  "mango-chia-coconut-freezer-bites": {
+    "fichier": "images/mango-chia-coconut-freezer-bites-ef7f802e82a2.png",
+    "empreinte": "ef7f802e82a2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:05:13.270Z",
+      "detectes": [],
+      "reconnus": 0,
+      "attendus": 5,
+      "avertissements": [
+        "to review — only one ingredient recognised out of 5 and the dish was not identified as Mango Chia Coconut Freezer Bites",
+        "the vision hesitates on : yellow filling inside the balls — possibly mango, passion fruit, or another yellow fruit, outer coating with dark specks — possibly shredded coconut mixed with chia seeds or poppy seeds, base of the balls — possibly a dough, rice flour, or glutinous rice wrapper"
+      ]
+    }
+  },
+  "mango-oat-soft-bars": {
+    "fichier": "images/mango-oat-soft-bars-752b69d62199.png",
+    "empreinte": "752b69d62199",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:11:34.340Z",
+      "detectes": [
+        "oat"
+      ],
+      "reconnus": 1,
+      "attendus": 7,
+      "avertissements": [
+        "only one ingredient recognised out of 7 — normal for a baked dish, the dish itself was identified",
+        "the vision hesitates on : yellow filling could be mango, peach, or apricot — cannot identify with certainty"
+      ]
+    }
+  },
+  "blueberry-avocado-chia-smash-cups": {
+    "fichier": "images/blueberry-avocado-chia-smash-cups-948236e2a579.png",
+    "empreinte": "948236e2a579",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:17:55.652Z",
+      "detectes": [
+        "blueberry"
+      ],
+      "reconnus": 0,
+      "attendus": 7,
+      "avertissements": [
+        "vision hedged on \"yogurt\"; the recipe holds a look-alike",
+        "vision hedged on \"milk\"; the recipe holds a look-alike",
+        "vision hedged on \"cream\"; the recipe holds a look-alike",
+        "to review — no ingredient from the recipe is recognisable in the image, and the dish itself was not identified as Blueberry and Avocado Chia Smash Cups",
+        "the vision hesitates on : white base could be yogurt, milk, or cream, green flecks visible beneath blueberries could be kiwi, oats, or herbs"
+      ]
+    }
+  },
+  "oat-and-banana-stovetop-porridge-bites": {
+    "fichier": "images/oat-and-banana-stovetop-porridge-bites-0f9e029f9755.png",
+    "empreinte": "0f9e029f9755",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:24:16.657Z",
+      "detectes": [
+        "oat",
+        "blueberry"
+      ],
+      "reconnus": 1,
+      "attendus": 8,
+      "avertissements": [
+        "only one ingredient recognised out of 8 — normal for a baked dish, the dish itself was identified",
+        "the vision hesitates on : possible banana or other binding ingredient not visually identifiable"
+      ]
+    }
+  },
+  "green-pea-and-chicken-quinoa-bowl": {
+    "fichier": "images/green-pea-and-chicken-quinoa-bowl-41280584da9f.png",
+    "empreinte": "41280584da9f",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:30:37.083Z",
+      "detectes": [
+        "pea",
+        "quinoa",
+        "onion"
+      ],
+      "reconnus": 3,
+      "attendus": 10,
+      "avertissements": [
+        "to review — the vision is unsure and names \"tuna\" — the recipe contains no fish",
+        "the vision hesitates on : pale cooked meat pieces — could be chicken, tuna, or pork"
+      ]
+    }
+  },
+  "zucchini-ground-beef-quinoa-skillet": {
+    "fichier": "images/zucchini-ground-beef-quinoa-skillet-6bc53e98199b.png",
+    "empreinte": "6bc53e98199b",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:43:16.005Z",
+      "detectes": [
+        "quinoa",
+        "zucchini",
+        "tomato"
+      ],
+      "reconnus": 3,
+      "attendus": 10,
+      "avertissements": [
+        "the vision hesitates on : ground meat possibly mixed in, suggested by brown granular texture among quinoa",
+        "to review — the dish starts 0.48 of the way down after two draws"
+      ]
+    }
+  },
+  "salmon-sweet-potato-coconut-patties": {
+    "fichier": "images/salmon-sweet-potato-coconut-patties-331e29ffbdc2.png",
+    "empreinte": "331e29ffbdc2",
+    "largeur": 1408,
+    "hauteur": 1408,
+    "moteur": "drawthings",
+    "revisePar": "vérification automatique (anthropic)",
+    "verification": {
+      "moteur": "anthropic",
+      "le": "2026-09-13T02:49:35.199Z",
+      "detectes": [
+        "scallion",
+        "salmon"
+      ],
+      "reconnus": 1,
+      "attendus": 10,
+      "avertissements": [
+        "vision hedged on \"breadcrumb\"; the recipe holds a look-alike",
+        "to review — the recipe is Salmon and Sweet Potato Coconut Patties but the image shows two fish cakes — the dish does not match",
+        "to review — only one ingredient recognised out of 10 and the dish was not identified as Salmon and Sweet Potato Coconut Patties",
+        "the vision hesitates on : orange-tinted interior could be sweet potato or carrot, binding agent unclear — possibly breadcrumb or flour crust"
+      ]
+    }
   }
 }
